@@ -1,13 +1,15 @@
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { StatusBadge } from '../../components/flex-badge'
 import { ContentCard } from '../../components/flex-card'
+import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import { Prose } from '../../components/flex-prose'
-import { StatusBadge } from '../../components/flex-badge'
 import { TagList } from '../../components/flex-tag-list'
 import { parseMarkdown, readMarkdownDir } from '../../lib/markdown'
 import type { Decision } from '../../types/models'
+import { getCatalogSidebar } from './sidebar'
 
 const decisions = new Hono()
 
@@ -44,8 +46,11 @@ async function loadDecisions(): Promise<Record<string, Decision[]>> {
 decisions.get('/', async (c) => {
   const groups = await loadDecisions()
 
+  const sidebarData = getCatalogSidebar('/catalog/decisions')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
   return c.html(
-    <Layout title="Decisions">
+    <Layout title="Decisions" sidebar={sidebar}>
       <h1>Architectural Decisions</h1>
       <p>
         Decisions document what we chose, why, and what alternatives we
@@ -84,6 +89,9 @@ decisions.get('/:group/:slug', async (c) => {
     `${slug}.md`,
   )
 
+  const sidebarData = getCatalogSidebar('/catalog/decisions')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
   try {
     const file = await parseMarkdown(filePath)
     const title = file.content.split('\n')[0]?.replace(/^#\s+/, '') || slug
@@ -95,7 +103,7 @@ decisions.get('/:group/:slug', async (c) => {
     const decided = file.frontmatter.decided || ''
 
     return c.html(
-      <Layout title={title}>
+      <Layout title={title} sidebar={sidebar}>
         <div class="l-cluster">
           <StatusBadge status={status} />
           <TagList tags={tags} />
@@ -109,7 +117,7 @@ decisions.get('/:group/:slug', async (c) => {
     )
   } catch {
     return c.html(
-      <Layout title="Not Found">
+      <Layout title="Not Found" sidebar={sidebar}>
         <h1>Decision Not Found</h1>
         <p>
           <a href="/catalog/decisions">← Back to Decisions</a>

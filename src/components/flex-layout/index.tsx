@@ -2,6 +2,7 @@ import type { FC, PropsWithChildren } from 'hono/jsx'
 
 interface LayoutProps {
   title?: string
+  sidebar?: any
 }
 
 export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
@@ -22,15 +23,22 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           <nav class="site-nav">
             <a href="/">Home</a>
             <a href="/catalog">Catalog</a>
-            <a href="/catalog/personas">Personas</a>
-            <a href="/catalog/decisions">Decisions</a>
-            <a href="/catalog/architecture">Architecture</a>
-            <a href="/catalog/stories">Stories</a>
           </nav>
         </header>
-        <main class="l-center">
-          <div class="l-stack">{props.children}</div>
-        </main>
+        {props.sidebar ? (
+          <div class="l-center">
+            <div class="l-sidebar">
+              <aside class="catalog-sidebar">{props.sidebar}</aside>
+              <main>
+                <div class="l-stack">{props.children}</div>
+              </main>
+            </div>
+          </div>
+        ) : (
+          <main class="l-center">
+            <div class="l-stack">{props.children}</div>
+          </main>
+        )}
       </body>
     </html>
   )

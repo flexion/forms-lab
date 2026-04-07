@@ -34,3 +34,39 @@
 .site-nav a:hover {
   text-decoration: underline;
 }
+
+.catalog-sidebar {
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-base);
+}
+
+.catalog-sidebar h2 {
+  font-size: var(--flex-text-base);
+  font-weight: 600;
+  color: var(--flex-color-text);
+  margin-bottom: var(--flex-space-sm);
+}
+
+.catalog-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.catalog-sidebar li {
+  margin-bottom: var(--flex-space-xs);
+}
+
+.catalog-sidebar a {
+  color: var(--flex-color-text);
+  text-decoration: none;
+  font-size: var(--flex-text-sm);
+}
+
+.catalog-sidebar a:hover {
+  color: var(--flex-color-accent);
+}
+
+.catalog-sidebar a[aria-current="page"] {
+  color: var(--flex-color-accent);
+  font-weight: 600;
+}

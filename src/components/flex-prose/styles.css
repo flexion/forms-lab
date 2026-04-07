@@ -6,21 +6,21 @@
 }
 
 .prose h1 {
-  font-size: 1.5em;
+  font-size: 2em;
   font-weight: 700;
   margin-top: var(--flex-space-xl);
   margin-bottom: var(--flex-space-md);
 }
 
 .prose h2 {
-  font-size: 1.25em;
+  font-size: 1.43em;
   font-weight: 600;
   margin-top: var(--flex-space-lg);
   margin-bottom: var(--flex-space-sm);
 }
 
 .prose h3 {
-  font-size: 1.1em;
+  font-size: 1.17em;
   font-weight: 600;
   margin-top: var(--flex-space-lg);
   margin-bottom: var(--flex-space-sm);
@@ -63,11 +63,20 @@
 
 .prose a {
   color: var(--flex-color-accent);
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 .prose a:hover {
-  text-decoration: underline;
+  text-decoration: none;
+}
+
+.prose .task-list-item {
+  list-style: none;
+  margin-left: calc(-1 * var(--flex-space-lg));
+}
+
+.prose .task-list-item input[type="checkbox"] {
+  margin-right: var(--flex-space-xs);
 }
 
 .prose strong {

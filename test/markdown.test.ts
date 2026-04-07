@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import { parseMarkdown, renderMarkdown } from '../src/lib/markdown'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { parseMarkdown, renderMarkdown } from '../src/lib/markdown'
 
 describe('renderMarkdown', () => {
   it('renders basic markdown to HTML', () => {
@@ -13,6 +13,12 @@ describe('renderMarkdown', () => {
   it('does not pass through raw HTML', () => {
     const html = renderMarkdown('<script>alert("xss")</script>')
     expect(html).not.toContain('<script>')
+  })
+
+  it('renders task list checkboxes', () => {
+    const html = renderMarkdown('- [ ] Todo\n- [x] Done')
+    expect(html).toContain('type="checkbox"')
+    expect(html).toContain('checked')
   })
 
   it('renders GFM-style tables', () => {
@@ -28,7 +34,10 @@ describe('parseMarkdown', () => {
     const dir = join(import.meta.dir, '__fixtures__')
     await mkdir(dir, { recursive: true })
     const file = join(dir, 'quoted.md')
-    await writeFile(file, '---\nrole: "Form Creator (Program Officer)"\n---\n\nContent here.')
+    await writeFile(
+      file,
+      '---\nrole: "Form Creator (Program Officer)"\n---\n\nContent here.',
+    )
 
     const result = await parseMarkdown(file)
     expect(result.frontmatter.role).toBe('Form Creator (Program Officer)')

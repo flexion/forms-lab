@@ -1,10 +1,12 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { StatusBadge } from '../../components/flex-badge'
 import { ContentCard } from '../../components/flex-card'
+import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import { Prose } from '../../components/flex-prose'
-import { StatusBadge } from '../../components/flex-badge'
 import { parseMarkdown, readMarkdownDir } from '../../lib/markdown'
+import { getCatalogSidebar } from './sidebar'
 
 const architecture = new Hono()
 
@@ -17,8 +19,11 @@ architecture.get('/', async (c) => {
     // directory may not exist
   }
 
+  const sidebarData = getCatalogSidebar('/catalog/architecture')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
   return c.html(
-    <Layout title="Architecture">
+    <Layout title="Architecture" sidebar={sidebar}>
       <h1>Architecture</h1>
       <p>System documentation describing how Forms Lab works.</p>
       <div class="l-stack">
@@ -48,12 +53,15 @@ architecture.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
   const filePath = join(process.cwd(), 'catalog', 'architecture', `${slug}.md`)
 
+  const sidebarData = getCatalogSidebar('/catalog/architecture')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
   try {
     const file = await parseMarkdown(filePath)
     const title = file.content.split('\n')[0]?.replace(/^#\s+/, '') || slug
 
     return c.html(
-      <Layout title={title}>
+      <Layout title={title} sidebar={sidebar}>
         <Prose content={file.content} />
         <p style="margin-top: var(--flex-space-lg);">
           <a href="/catalog/architecture">← Back to Architecture</a>
@@ -62,7 +70,7 @@ architecture.get('/:slug', async (c) => {
     )
   } catch {
     return c.html(
-      <Layout title="Not Found">
+      <Layout title="Not Found" sidebar={sidebar}>
         <h1>Document Not Found</h1>
         <p>
           <a href="/catalog/architecture">← Back to Architecture</a>

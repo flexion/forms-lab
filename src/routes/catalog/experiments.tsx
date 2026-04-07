@@ -1,10 +1,12 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { StatusBadge } from '../../components/flex-badge'
 import { ContentCard } from '../../components/flex-card'
+import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import { Prose } from '../../components/flex-prose'
-import { StatusBadge } from '../../components/flex-badge'
 import { parseMarkdown, readMarkdownDir } from '../../lib/markdown'
+import { getCatalogSidebar } from './sidebar'
 
 const experiments = new Hono()
 
@@ -17,8 +19,11 @@ experiments.get('/', async (c) => {
     // directory may not exist
   }
 
+  const sidebarData = getCatalogSidebar('/catalog/experiments')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
   return c.html(
-    <Layout title="Experiments">
+    <Layout title="Experiments" sidebar={sidebar}>
       <h1>Experiments</h1>
       <p>
         LLM experiments comparing baseline and alternative approaches with
@@ -53,12 +58,15 @@ experiments.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
   const filePath = join(process.cwd(), 'catalog', 'experiments', `${slug}.md`)
 
+  const sidebarData = getCatalogSidebar('/catalog/experiments')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
   try {
     const file = await parseMarkdown(filePath)
     const title = file.content.split('\n')[0]?.replace(/^#\s+/, '') || slug
 
     return c.html(
-      <Layout title={title}>
+      <Layout title={title} sidebar={sidebar}>
         <Prose content={file.content} />
         <p style="margin-top: var(--flex-space-lg);">
           <a href="/catalog/experiments">← Back to Experiments</a>
@@ -67,7 +75,7 @@ experiments.get('/:slug', async (c) => {
     )
   } catch {
     return c.html(
-      <Layout title="Not Found">
+      <Layout title="Not Found" sidebar={sidebar}>
         <h1>Experiment Not Found</h1>
         <p>
           <a href="/catalog/experiments">← Back to Experiments</a>

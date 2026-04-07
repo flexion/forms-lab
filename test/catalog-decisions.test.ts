@@ -17,7 +17,9 @@ describe('Catalog Decisions', () => {
 
   describe('GET /catalog/decisions/:group/:slug', () => {
     it('returns 200 for a known decision', async () => {
-      const res = await app.request('/catalog/decisions/architecture/hono-on-bun')
+      const res = await app.request(
+        '/catalog/decisions/architecture/hono-on-bun',
+      )
       expect(res.status).toBe(200)
 
       const body = await res.text()
@@ -26,7 +28,9 @@ describe('Catalog Decisions', () => {
     })
 
     it('returns 404 for unknown decision', async () => {
-      const res = await app.request('/catalog/decisions/architecture/nonexistent')
+      const res = await app.request(
+        '/catalog/decisions/architecture/nonexistent',
+      )
       expect(res.status).toBe(404)
     })
   })

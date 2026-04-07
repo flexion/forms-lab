@@ -5,24 +5,40 @@
   "rules": {
     "scale-unlimited/declaration-strict-value": [
       [
-        "/color$/", "background", "background-color", "border-color", "outline-color",
+        "/color$/",
+        "background",
+        "background-color",
+        "border-color",
+        "outline-color",
         "font-family",
         "font-size"
       ],
       {
         "ignoreValues": [
-          "inherit", "initial", "transparent", "currentColor", "none", "white",
-          "/^var\\(/", "/^color-mix\\(/", "0", "50%",
+          "inherit",
+          "initial",
+          "transparent",
+          "currentColor",
+          "none",
+          "white",
+          "/^var\\(/",
+          "/^color-mix\\(/",
+          "0",
+          "50%",
           "/^\\d+(\\.\\d+)?em$/",
-          "/^local\\(/", "/^\\d+(\\.\\d+)?%$/"
+          "/^local\\(/",
+          "/^\\d+(\\.\\d+)?%$/"
         ],
         "disableFix": true,
         "message": "Use a design token (--flex-*, --font-*, --text-*) instead of a hard-coded value"
       }
     ],
-    "at-rule-no-unknown": [true, {
-      "ignoreAtRules": ["layer", "property"]
-    }],
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": ["layer", "property"]
+      }
+    ],
     "import-notation": null,
     "no-descending-specificity": null,
     "custom-property-no-missing-var-function": true

@@ -1,12 +1,14 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { StatusBadge } from '../../components/flex-badge'
 import { ContentCard } from '../../components/flex-card'
+import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import { Prose } from '../../components/flex-prose'
-import { StatusBadge } from '../../components/flex-badge'
 import { TagList } from '../../components/flex-tag-list'
 import { parseMarkdown, readMarkdownDir } from '../../lib/markdown'
 import type { Story } from '../../types/models'
+import { getCatalogSidebar } from './sidebar'
 
 const stories = new Hono()
 
@@ -52,8 +54,11 @@ stories.get('/', async (c) => {
     byMilestone[key].push(story)
   }
 
+  const sidebarData = getCatalogSidebar('/catalog/stories')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
   return c.html(
-    <Layout title="Stories">
+    <Layout title="Stories" sidebar={sidebar}>
       <h1>User Stories</h1>
       <p>
         Stories are synced from{' '}
@@ -101,12 +106,15 @@ stories.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
   const filePath = join(process.cwd(), 'catalog', 'stories', `${slug}.md`)
 
+  const sidebarData = getCatalogSidebar('/catalog/stories')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
   try {
     const file = await parseMarkdown(filePath)
     const story = parseStory({ ...file, filename: slug })
 
     return c.html(
-      <Layout title={story.title}>
+      <Layout title={story.title} sidebar={sidebar}>
         <div class="l-cluster">
           <StatusBadge status={story.state} />
           {story.milestone && (
@@ -132,7 +140,7 @@ stories.get('/:slug', async (c) => {
     )
   } catch {
     return c.html(
-      <Layout title="Not Found">
+      <Layout title="Not Found" sidebar={sidebar}>
         <h1>Story Not Found</h1>
         <p>
           <a href="/catalog/stories">← Back to Stories</a>

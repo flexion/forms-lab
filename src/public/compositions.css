@@ -37,6 +37,9 @@
 
 .l-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(var(--grid-min, 250px), 100%), 1fr));
+  grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(var(--grid-min, 250px), 100%), 1fr)
+    );
   gap: var(--grid-space, var(--flex-space-md));
 }

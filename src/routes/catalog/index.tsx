@@ -1,11 +1,14 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import { readMarkdownDir } from '../../lib/markdown'
 import architecture from './architecture'
 import decisions from './decisions'
+import designSystem from './design-system'
 import experiments from './experiments'
 import personas from './personas'
+import { getCatalogSidebar } from './sidebar'
 import stories from './stories'
 
 const catalog = new Hono()
@@ -16,6 +19,7 @@ catalog.route('/decisions', decisions)
 catalog.route('/architecture', architecture)
 catalog.route('/stories', stories)
 catalog.route('/experiments', experiments)
+catalog.route('/design-system', designSystem)
 
 // Catalog landing page
 catalog.get('/', async (c) => {
@@ -46,8 +50,11 @@ catalog.get('/', async (c) => {
     // decisions directory may not exist yet
   }
 
+  const sidebarData = getCatalogSidebar('/catalog')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
   return c.html(
-    <Layout title="Catalog">
+    <Layout title="Catalog" sidebar={sidebar}>
       <h1>Catalog</h1>
       <p>
         The catalog is the system's self-documentation: personas, stories,
@@ -83,6 +90,12 @@ catalog.get('/', async (c) => {
             <a href="/catalog/experiments">Experiments</a>
           </h2>
           <p>Coming soon</p>
+        </div>
+        <div class="content-card">
+          <h2>
+            <a href="/catalog/design-system">Design System</a>
+          </h2>
+          <p>Tokens, components, and compositions</p>
         </div>
       </div>
     </Layout>,
