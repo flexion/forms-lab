@@ -19,19 +19,15 @@
 }
 
 .l-sidebar {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 12rem 1fr;
   gap: var(--flex-space-lg);
 }
 
-.l-sidebar > :first-child {
-  flex-basis: 12rem;
-  flex-shrink: 0;
-}
-
-.l-sidebar > :last-child {
-  flex-grow: 1;
-  min-width: 0;
+@media (max-width: 600px) {
+  .l-sidebar {
+    grid-template-columns: 1fr;
+  }
 }
 
 .l-grid {
