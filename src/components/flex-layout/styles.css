@@ -1,14 +1,25 @@
 .site-header {
   background: var(--flex-color-surface);
   border-bottom: 1px solid var(--flex-color-border);
-  padding: var(--flex-space-md) var(--flex-space-lg);
+}
+
+.site-header-inner {
+  padding-block: var(--flex-space-md);
 }
 
 .site-header h1 {
   font-family: var(--flex-font-sans);
   font-size: 1.5em;
   font-weight: 700;
+}
+
+.site-header h1 a {
   color: var(--flex-color-text);
+  text-decoration: none;
+}
+
+.site-header h1 a:hover {
+  text-decoration: underline;
 }
 
 .site-header p {
@@ -33,6 +44,21 @@
 
 .site-nav a:hover {
   text-decoration: underline;
+}
+
+.site-footer {
+  border-top: 1px solid var(--flex-color-border);
+  margin-top: var(--flex-space-xl);
+}
+
+.site-footer-inner {
+  padding-block: var(--flex-space-md);
+}
+
+.site-footer p {
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
 }
 
 .catalog-sidebar {
