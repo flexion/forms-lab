@@ -1,7 +1,8 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.10/schema.json",
   "files": {
-    "includes": ["**", "!dist", "!*.css"]
+    "includes": ["src/**", "test/**", "scripts/**"],
+    "ignoreUnknown": true
   },
   "assist": {
     "actions": {
@@ -10,7 +11,15 @@
   },
   "linter": {
     "enabled": true,
-    "rules": { "recommended": true }
+    "rules": {
+      "recommended": true,
+      "complexity": {
+        "noImportantStyles": "off"
+      },
+      "style": {
+        "noDescendingSpecificity": "off"
+      }
+    }
   },
   "formatter": {
     "enabled": true,
@@ -21,6 +30,14 @@
     "formatter": {
       "quoteStyle": "single",
       "semicolons": "asNeeded"
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": true
+    },
+    "formatter": {
+      "enabled": true
     }
   }
 }

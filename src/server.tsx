@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
+import { Layout } from './components/flex-layout'
 import catalog from './routes/catalog/index'
 
 const app = new Hono()
@@ -27,29 +28,16 @@ app.get('/health', (c) => {
 // Root page
 app.get('/', (c) => {
   return c.html(
-    `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forms Lab</title>
-  <link rel="stylesheet" href="/static/styles.css">
-</head>
-<body>
-  <header class="site-header">
-    <h1>Forms Lab</h1>
-    <p>LLM-Assisted Forms Platform</p>
-    <nav class="site-nav">
-      <a href="/catalog">Catalog</a>
-    </nav>
-  </header>
-  <main class="l-center">
-    <div class="l-stack">
-      <p>LLM-Assisted Forms Platform for government forms.</p>
-    </div>
-  </main>
-</body>
-</html>`,
+    <Layout>
+      <h1>Forms Lab</h1>
+      <p>
+        Upload a government PDF form, extract structured specs, deliver form
+        experiences (static or conversational), and generate completed PDFs.
+      </p>
+      <p>
+        <a href="/catalog">Browse the Catalog</a>
+      </p>
+    </Layout>,
   )
 })
 

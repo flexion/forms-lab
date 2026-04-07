@@ -1,8 +1,8 @@
-import type { FC, PropsWithChildren } from 'hono/jsx'
+import type { Child, FC, PropsWithChildren } from 'hono/jsx'
 
 interface LayoutProps {
   title?: string
-  sidebar?: any
+  sidebar?: Child
 }
 
 export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
@@ -19,7 +19,9 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
       <body>
         <header class="site-header">
           <div class="l-center">
-            <h1><a href="/">Forms Lab</a></h1>
+            <h1>
+              <a href="/">Forms Lab</a>
+            </h1>
             <p>LLM-Assisted Forms Platform</p>
             <nav class="site-nav">
               <a href="/">Home</a>
