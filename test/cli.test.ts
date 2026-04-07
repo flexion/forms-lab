@@ -23,8 +23,8 @@ describe('CLI', () => {
     it('returns sync-stories command', () => {
       const cmd = getCommand('sync-stories')
       expect(cmd).toBeDefined()
-      expect(cmd!.name).toBe('sync-stories')
-      expect(cmd!.description).toBe('Sync user stories from GitHub Issues')
+      expect(cmd?.name).toBe('sync-stories')
+      expect(cmd?.description).toBe('Sync user stories from GitHub Issues')
     })
 
     it('returns undefined for unknown command', () => {
