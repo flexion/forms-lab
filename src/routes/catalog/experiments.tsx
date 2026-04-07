@@ -1,0 +1,81 @@
+import { join } from 'node:path'
+import { Hono } from 'hono'
+import { ContentCard } from '../../components/ContentCard'
+import { Layout } from '../../components/Layout'
+import { Prose } from '../../components/Prose'
+import { StatusBadge } from '../../components/StatusBadge'
+import { parseMarkdown, readMarkdownDir } from '../../lib/markdown'
+
+const experiments = new Hono()
+
+experiments.get('/', async (c) => {
+  const expDir = join(process.cwd(), 'catalog', 'experiments')
+  let files: Awaited<ReturnType<typeof readMarkdownDir>> = []
+  try {
+    files = await readMarkdownDir(expDir)
+  } catch {
+    // directory may not exist
+  }
+
+  return c.html(
+    <Layout title="Experiments">
+      <h1>Experiments</h1>
+      <p>
+        LLM experiments comparing baseline and alternative approaches with
+        evaluation metrics.
+      </p>
+      <div class="l-stack">
+        {files.map((file) => {
+          const title =
+            file.content.split('\n')[0]?.replace(/^#\s+/, '') || file.filename
+          const status = file.frontmatter.status || 'draft'
+          return (
+            <ContentCard
+              key={file.filename}
+              title={title}
+              href={`/catalog/experiments/${file.filename}`}
+            >
+              <StatusBadge status={status} />
+            </ContentCard>
+          )
+        })}
+        {files.length === 0 && (
+          <p class="flex-empty">
+            No experiments yet. Experiments will be added starting with Slice 2.
+          </p>
+        )}
+      </div>
+    </Layout>,
+  )
+})
+
+experiments.get('/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const filePath = join(process.cwd(), 'catalog', 'experiments', `${slug}.md`)
+
+  try {
+    const file = await parseMarkdown(filePath)
+    const title = file.content.split('\n')[0]?.replace(/^#\s+/, '') || slug
+
+    return c.html(
+      <Layout title={title}>
+        <Prose content={file.content} />
+        <p style="margin-top: var(--flex-space-lg);">
+          <a href="/catalog/experiments">← Back to Experiments</a>
+        </p>
+      </Layout>,
+    )
+  } catch {
+    return c.html(
+      <Layout title="Not Found">
+        <h1>Experiment Not Found</h1>
+        <p>
+          <a href="/catalog/experiments">← Back to Experiments</a>
+        </p>
+      </Layout>,
+      404,
+    )
+  }
+})
+
+export default experiments
