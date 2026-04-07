@@ -37,5 +37,6 @@ bunx @biomejs/biome check --write . # Lint + format fix
 
 ## Related
 
-- Design spec: `/home/daniel/src/llm-class-2026-winter-cohort/notes/final-project/2026-04-07-design.md`
-- Skeleton plan: `/home/daniel/src/llm-class-2026-winter-cohort/notes/final-project/2026-04-07-skeleton-plan.md`
+- [Design spec](https://github.com/flexion/llm-class-2026-winter-cohort/blob/main/notes/final-project/2026-04-07-design.md)
+- [Skeleton plan](https://github.com/flexion/llm-class-2026-winter-cohort/blob/main/notes/final-project/2026-04-07-skeleton-plan.md)
+- [Project brainstorming](https://github.com/flexion/llm-class-2026-winter-cohort/blob/main/notes/2026-03-22-final-project-brainstorming.md)
