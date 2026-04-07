@@ -1,0 +1,33 @@
+apiVersion: kb/v1
+name: forms-lab
+description: "LLM-Assisted Forms Platform"
+
+entrypoints:
+  human: README.md
+  agent: CLAUDE.md
+
+paths:
+  docs: catalog
+  notes: notes
+
+rules:
+  lifecycle:
+    statuses: ["draft", "working", "stable", "deprecated"]
+  provenance:
+    requiredFor: ["decisions", "architecture"]
+  writes:
+    allow: ["catalog/**", "src/**", "test/**", "notes/**", "scripts/**"]
+    deny: ["infrastructure/secrets/**"]
+
+metadata:
+  schema:
+    decisions:
+      required: ["status", "tags", "decided"]
+      status: ["draft", "working", "stable", "deprecated"]
+    personas:
+      required: ["id", "name", "role"]
+    architecture:
+      required: ["status", "tags"]
+      status: ["draft", "working", "stable", "deprecated"]
+    stories:
+      required: ["issue", "title", "milestone", "state"]
