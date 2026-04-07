@@ -1,0 +1,37 @@
+.content-card {
+  background: var(--flex-color-surface);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-md);
+  padding: var(--flex-space-lg);
+}
+
+.content-card h2 {
+  font-family: var(--flex-font-sans);
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--flex-color-text);
+  margin-bottom: var(--flex-space-xs);
+}
+
+.content-card h2 a {
+  color: var(--flex-color-accent);
+  text-decoration: none;
+}
+
+.content-card h2 a:hover {
+  text-decoration: underline;
+}
+
+.content-card p {
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-base);
+  color: var(--flex-color-text-muted);
+  line-height: 1.5;
+}
+
+.content-card .card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--flex-space-xs);
+  margin-top: var(--flex-space-sm);
+}

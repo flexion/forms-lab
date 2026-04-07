@@ -1,0 +1,2467 @@
+/* ============================================================================
+   TIER 1: PALETTE TOKENS (@property definitions)
+   ============================================================================ */
+@property --flex-gray-1 { syntax: "<color>"; inherits: true; initial-value: #fcfcfc; }
+
+@property --flex-gray-2 { syntax: "<color>"; inherits: true; initial-value: #f9f9f9; }
+
+@property --flex-gray-3 { syntax: "<color>"; inherits: true; initial-value: #f6f6f6; }
+
+@property --flex-gray-4 { syntax: "<color>"; inherits: true; initial-value: #f3f3f3; }
+
+@property --flex-gray-5 { syntax: "<color>"; inherits: true; initial-value: #f0f0f0; }
+
+@property --flex-gray-10 { syntax: "<color>"; inherits: true; initial-value: #e6e6e6; }
+
+@property --flex-gray-20 { syntax: "<color>"; inherits: true; initial-value: #c9c9c9; }
+
+@property --flex-gray-30 { syntax: "<color>"; inherits: true; initial-value: #adadad; }
+
+@property --flex-gray-40 { syntax: "<color>"; inherits: true; initial-value: #919191; }
+
+@property --flex-gray-50 { syntax: "<color>"; inherits: true; initial-value: #757575; }
+
+@property --flex-gray-60 { syntax: "<color>"; inherits: true; initial-value: #5c5c5c; }
+
+@property --flex-gray-70 { syntax: "<color>"; inherits: true; initial-value: #454545; }
+
+@property --flex-gray-80 { syntax: "<color>"; inherits: true; initial-value: #2e2e2e; }
+
+@property --flex-gray-90 { syntax: "<color>"; inherits: true; initial-value: #1b1b1b; }
+
+@property --flex-gray-100 { syntax: "<color>"; inherits: true; initial-value: #000; }
+
+@property --flex-gray-cool-1 { syntax: "<color>"; inherits: true; initial-value: #fbfcfd; }
+
+@property --flex-gray-cool-2 { syntax: "<color>"; inherits: true; initial-value: #f7f9fa; }
+
+@property --flex-gray-cool-3 { syntax: "<color>"; inherits: true; initial-value: #f5f6f7; }
+
+@property --flex-gray-cool-4 { syntax: "<color>"; inherits: true; initial-value: #f1f3f6; }
+
+@property --flex-gray-cool-5 { syntax: "<color>"; inherits: true; initial-value: #edeff0; }
+
+@property --flex-gray-cool-10 { syntax: "<color>"; inherits: true; initial-value: #dfe1e2; }
+
+@property --flex-gray-cool-20 { syntax: "<color>"; inherits: true; initial-value: #c6cace; }
+
+@property --flex-gray-cool-30 { syntax: "<color>"; inherits: true; initial-value: #a9aeb1; }
+
+@property --flex-gray-cool-40 { syntax: "<color>"; inherits: true; initial-value: #8d9297; }
+
+@property --flex-gray-cool-50 { syntax: "<color>"; inherits: true; initial-value: #71767a; }
+
+@property --flex-gray-cool-60 { syntax: "<color>"; inherits: true; initial-value: #565c65; }
+
+@property --flex-gray-cool-70 { syntax: "<color>"; inherits: true; initial-value: #3d4551; }
+
+@property --flex-gray-cool-80 { syntax: "<color>"; inherits: true; initial-value: #2d2e2f; }
+
+@property --flex-gray-cool-90 { syntax: "<color>"; inherits: true; initial-value: #1c1d1f; }
+
+@property --flex-gray-warm-1 { syntax: "<color>"; inherits: true; initial-value: #fcfcfb; }
+
+@property --flex-gray-warm-2 { syntax: "<color>"; inherits: true; initial-value: #f9f9f7; }
+
+@property --flex-gray-warm-3 { syntax: "<color>"; inherits: true; initial-value: #f6f6f2; }
+
+@property --flex-gray-warm-4 { syntax: "<color>"; inherits: true; initial-value: #f5f5f0; }
+
+@property --flex-gray-warm-5 { syntax: "<color>"; inherits: true; initial-value: #f0f0ec; }
+
+@property --flex-gray-warm-10 { syntax: "<color>"; inherits: true; initial-value: #e6e6e2; }
+
+@property --flex-gray-warm-20 { syntax: "<color>"; inherits: true; initial-value: #cac9c0; }
+
+@property --flex-gray-warm-30 { syntax: "<color>"; inherits: true; initial-value: #afaea2; }
+
+@property --flex-gray-warm-40 { syntax: "<color>"; inherits: true; initial-value: #929285; }
+
+@property --flex-gray-warm-50 { syntax: "<color>"; inherits: true; initial-value: #76766a; }
+
+@property --flex-gray-warm-60 { syntax: "<color>"; inherits: true; initial-value: #5d5d52; }
+
+@property --flex-gray-warm-70 { syntax: "<color>"; inherits: true; initial-value: #454540; }
+
+@property --flex-gray-warm-80 { syntax: "<color>"; inherits: true; initial-value: #2e2e2a; }
+
+@property --flex-gray-warm-90 { syntax: "<color>"; inherits: true; initial-value: #171716; }
+
+@property --flex-red-5 { syntax: "<color>"; inherits: true; initial-value: #f9eeee; }
+
+@property --flex-red-10 { syntax: "<color>"; inherits: true; initial-value: #f8e1de; }
+
+@property --flex-red-20 { syntax: "<color>"; inherits: true; initial-value: #f7bbb1; }
+
+@property --flex-red-30 { syntax: "<color>"; inherits: true; initial-value: #f2938c; }
+
+@property --flex-red-40 { syntax: "<color>"; inherits: true; initial-value: #e9695f; }
+
+@property --flex-red-50 { syntax: "<color>"; inherits: true; initial-value: #d83933; }
+
+@property --flex-red-60 { syntax: "<color>"; inherits: true; initial-value: #a23737; }
+
+@property --flex-red-70 { syntax: "<color>"; inherits: true; initial-value: #6f3331; }
+
+@property --flex-red-80 { syntax: "<color>"; inherits: true; initial-value: #3e2927; }
+
+@property --flex-red-90 { syntax: "<color>"; inherits: true; initial-value: #1b1616; }
+
+@property --flex-red-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #fff3f2; }
+
+@property --flex-red-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #fde0db; }
+
+@property --flex-red-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #fdb8ae; }
+
+@property --flex-red-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #ff8d7b; }
+
+@property --flex-red-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #fb5a47; }
+
+@property --flex-red-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #e52207; }
+
+@property --flex-red-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #b50909; }
+
+@property --flex-red-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #8b0a03; }
+
+@property --flex-red-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #5c1111; }
+
+@property --flex-red-cool-5 { syntax: "<color>"; inherits: true; initial-value: #f8eff1; }
+
+@property --flex-red-cool-10 { syntax: "<color>"; inherits: true; initial-value: #f3e1e4; }
+
+@property --flex-red-cool-20 { syntax: "<color>"; inherits: true; initial-value: #ecbec6; }
+
+@property --flex-red-cool-30 { syntax: "<color>"; inherits: true; initial-value: #e09aa6; }
+
+@property --flex-red-cool-40 { syntax: "<color>"; inherits: true; initial-value: #e16b80; }
+
+@property --flex-red-cool-50 { syntax: "<color>"; inherits: true; initial-value: #cd425b; }
+
+@property --flex-red-cool-60 { syntax: "<color>"; inherits: true; initial-value: #9e394b; }
+
+@property --flex-red-cool-70 { syntax: "<color>"; inherits: true; initial-value: #68363f; }
+
+@property --flex-red-cool-80 { syntax: "<color>"; inherits: true; initial-value: #40282c; }
+
+@property --flex-red-cool-90 { syntax: "<color>"; inherits: true; initial-value: #1e1517; }
+
+@property --flex-red-cool-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #fff2f5; }
+
+@property --flex-red-cool-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #f8dfe2; }
+
+@property --flex-red-cool-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #f8b9c5; }
+
+@property --flex-red-cool-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #fd8ba0; }
+
+@property --flex-red-cool-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #f45d79; }
+
+@property --flex-red-cool-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #e41d3d; }
+
+@property --flex-red-cool-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #b21d38; }
+
+@property --flex-red-cool-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #822133; }
+
+@property --flex-red-cool-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #4f1c24; }
+
+@property --flex-red-warm-5 { syntax: "<color>"; inherits: true; initial-value: #f6efea; }
+
+@property --flex-red-warm-10 { syntax: "<color>"; inherits: true; initial-value: #f4e3db; }
+
+@property --flex-red-warm-20 { syntax: "<color>"; inherits: true; initial-value: #ecc0a7; }
+
+@property --flex-red-warm-30 { syntax: "<color>"; inherits: true; initial-value: #dca081; }
+
+@property --flex-red-warm-40 { syntax: "<color>"; inherits: true; initial-value: #d27a56; }
+
+@property --flex-red-warm-50 { syntax: "<color>"; inherits: true; initial-value: #c3512c; }
+
+@property --flex-red-warm-60 { syntax: "<color>"; inherits: true; initial-value: #805039; }
+
+@property --flex-red-warm-70 { syntax: "<color>"; inherits: true; initial-value: #524236; }
+
+@property --flex-red-warm-80 { syntax: "<color>"; inherits: true; initial-value: #332d29; }
+
+@property --flex-red-warm-90 { syntax: "<color>"; inherits: true; initial-value: #1f1c18; }
+
+@property --flex-red-warm-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #fff5ee; }
+
+@property --flex-red-warm-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #fce1d4; }
+
+@property --flex-red-warm-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #f6bd9c; }
+
+@property --flex-red-warm-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #f39268; }
+
+@property --flex-red-warm-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #ef5e25; }
+
+@property --flex-red-warm-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #d54309; }
+
+@property --flex-red-warm-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #9c3d10; }
+
+@property --flex-red-warm-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #63340f; }
+
+@property --flex-red-warm-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #3e2a1e; }
+
+@property --flex-orange-5 { syntax: "<color>"; inherits: true; initial-value: #f6efe9; }
+
+@property --flex-orange-10 { syntax: "<color>"; inherits: true; initial-value: #f2e4d4; }
+
+@property --flex-orange-20 { syntax: "<color>"; inherits: true; initial-value: #f3bf90; }
+
+@property --flex-orange-30 { syntax: "<color>"; inherits: true; initial-value: #f09860; }
+
+@property --flex-orange-40 { syntax: "<color>"; inherits: true; initial-value: #dd7533; }
+
+@property --flex-orange-50 { syntax: "<color>"; inherits: true; initial-value: #a86437; }
+
+@property --flex-orange-60 { syntax: "<color>"; inherits: true; initial-value: #775540; }
+
+@property --flex-orange-70 { syntax: "<color>"; inherits: true; initial-value: #524236; }
+
+@property --flex-orange-80 { syntax: "<color>"; inherits: true; initial-value: #332d27; }
+
+@property --flex-orange-90 { syntax: "<color>"; inherits: true; initial-value: #1b1614; }
+
+@property --flex-orange-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #fef2e4; }
+
+@property --flex-orange-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #fce2c5; }
+
+@property --flex-orange-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #ffbc78; }
+
+@property --flex-orange-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #fa9441; }
+
+@property --flex-orange-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #e66f0e; }
+
+@property --flex-orange-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #c05600; }
+
+@property --flex-orange-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #8c471c; }
+
+@property --flex-orange-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #5f3617; }
+
+@property --flex-orange-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #352313; }
+
+@property --flex-orange-warm-5 { syntax: "<color>"; inherits: true; initial-value: #faeee5; }
+
+@property --flex-orange-warm-10 { syntax: "<color>"; inherits: true; initial-value: #fbe0d0; }
+
+@property --flex-orange-warm-20 { syntax: "<color>"; inherits: true; initial-value: #f7bca2; }
+
+@property --flex-orange-warm-30 { syntax: "<color>"; inherits: true; initial-value: #f3966d; }
+
+@property --flex-orange-warm-40 { syntax: "<color>"; inherits: true; initial-value: #e17141; }
+
+@property --flex-orange-warm-50 { syntax: "<color>"; inherits: true; initial-value: #bd5727; }
+
+@property --flex-orange-warm-60 { syntax: "<color>"; inherits: true; initial-value: #914734; }
+
+@property --flex-orange-warm-70 { syntax: "<color>"; inherits: true; initial-value: #633a32; }
+
+@property --flex-orange-warm-80 { syntax: "<color>"; inherits: true; initial-value: #3d2925; }
+
+@property --flex-orange-warm-90 { syntax: "<color>"; inherits: true; initial-value: #1c1615; }
+
+@property --flex-orange-warm-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #fff3ea; }
+
+@property --flex-orange-warm-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #ffe2d1; }
+
+@property --flex-orange-warm-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #fbbaa7; }
+
+@property --flex-orange-warm-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #fc906d; }
+
+@property --flex-orange-warm-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #ff580a; }
+
+@property --flex-orange-warm-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #cf4900; }
+
+@property --flex-orange-warm-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #a72f10; }
+
+@property --flex-orange-warm-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #782312; }
+
+@property --flex-orange-warm-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #3d231d; }
+
+@property --flex-gold-5 { syntax: "<color>"; inherits: true; initial-value: #f5f0e6; }
+
+@property --flex-gold-10 { syntax: "<color>"; inherits: true; initial-value: #f1e5cd; }
+
+@property --flex-gold-20 { syntax: "<color>"; inherits: true; initial-value: #dec69a; }
+
+@property --flex-gold-30 { syntax: "<color>"; inherits: true; initial-value: #c7a97b; }
+
+@property --flex-gold-40 { syntax: "<color>"; inherits: true; initial-value: #ad8b65; }
+
+@property --flex-gold-50 { syntax: "<color>"; inherits: true; initial-value: #8e704f; }
+
+@property --flex-gold-60 { syntax: "<color>"; inherits: true; initial-value: #6b5947; }
+
+@property --flex-gold-70 { syntax: "<color>"; inherits: true; initial-value: #4d4438; }
+
+@property --flex-gold-80 { syntax: "<color>"; inherits: true; initial-value: #322d26; }
+
+@property --flex-gold-90 { syntax: "<color>"; inherits: true; initial-value: #191714; }
+
+@property --flex-gold-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #fef0c8; }
+
+@property --flex-gold-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #ffe396; }
+
+@property --flex-gold-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #ffbe2e; }
+
+@property --flex-gold-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #e5a000; }
+
+@property --flex-gold-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #c2850c; }
+
+@property --flex-gold-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #936f38; }
+
+@property --flex-gold-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #7a591a; }
+
+@property --flex-gold-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #5c410a; }
+
+@property --flex-gold-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #3b2b15; }
+
+@property --flex-yellow-5 { syntax: "<color>"; inherits: true; initial-value: #faf3d1; }
+
+@property --flex-yellow-10 { syntax: "<color>"; inherits: true; initial-value: #f5e6af; }
+
+@property --flex-yellow-20 { syntax: "<color>"; inherits: true; initial-value: #e6c74c; }
+
+@property --flex-yellow-30 { syntax: "<color>"; inherits: true; initial-value: #c9ab48; }
+
+@property --flex-yellow-40 { syntax: "<color>"; inherits: true; initial-value: #a88f48; }
+
+@property --flex-yellow-50 { syntax: "<color>"; inherits: true; initial-value: #8a7237; }
+
+@property --flex-yellow-60 { syntax: "<color>"; inherits: true; initial-value: #6b5a39; }
+
+@property --flex-yellow-70 { syntax: "<color>"; inherits: true; initial-value: #504332; }
+
+@property --flex-yellow-80 { syntax: "<color>"; inherits: true; initial-value: #332d27; }
+
+@property --flex-yellow-90 { syntax: "<color>"; inherits: true; initial-value: #1a1614; }
+
+@property --flex-yellow-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #fff5c2; }
+
+@property --flex-yellow-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #fee685; }
+
+@property --flex-yellow-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #face00; }
+
+@property --flex-yellow-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #ddaa01; }
+
+@property --flex-yellow-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #b38c00; }
+
+@property --flex-yellow-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #947100; }
+
+@property --flex-yellow-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #776017; }
+
+@property --flex-yellow-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #5c4809; }
+
+@property --flex-yellow-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #422d19; }
+
+@property --flex-green-5 { syntax: "<color>"; inherits: true; initial-value: #eaf4dd; }
+
+@property --flex-green-10 { syntax: "<color>"; inherits: true; initial-value: #dfeacd; }
+
+@property --flex-green-20 { syntax: "<color>"; inherits: true; initial-value: #b8d293; }
+
+@property --flex-green-30 { syntax: "<color>"; inherits: true; initial-value: #9bb672; }
+
+@property --flex-green-40 { syntax: "<color>"; inherits: true; initial-value: #7d9b4e; }
+
+@property --flex-green-50 { syntax: "<color>"; inherits: true; initial-value: #607f35; }
+
+@property --flex-green-60 { syntax: "<color>"; inherits: true; initial-value: #4c6424; }
+
+@property --flex-green-70 { syntax: "<color>"; inherits: true; initial-value: #3c4a29; }
+
+@property --flex-green-80 { syntax: "<color>"; inherits: true; initial-value: #293021; }
+
+@property --flex-green-90 { syntax: "<color>"; inherits: true; initial-value: #161814; }
+
+@property --flex-green-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #ddf9c7; }
+
+@property --flex-green-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #c5ee93; }
+
+@property --flex-green-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #98d035; }
+
+@property --flex-green-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #7fb135; }
+
+@property --flex-green-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #719f2a; }
+
+@property --flex-green-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #538200; }
+
+@property --flex-green-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #466c04; }
+
+@property --flex-green-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #2f4a0b; }
+
+@property --flex-green-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #243413; }
+
+@property --flex-green-cool-5 { syntax: "<color>"; inherits: true; initial-value: #ecf3ec; }
+
+@property --flex-green-cool-10 { syntax: "<color>"; inherits: true; initial-value: #dbebde; }
+
+@property --flex-green-cool-20 { syntax: "<color>"; inherits: true; initial-value: #b4d0b9; }
+
+@property --flex-green-cool-30 { syntax: "<color>"; inherits: true; initial-value: #86b98e; }
+
+@property --flex-green-cool-40 { syntax: "<color>"; inherits: true; initial-value: #5e9f69; }
+
+@property --flex-green-cool-50 { syntax: "<color>"; inherits: true; initial-value: #4d8055; }
+
+@property --flex-green-cool-60 { syntax: "<color>"; inherits: true; initial-value: #446443; }
+
+@property --flex-green-cool-70 { syntax: "<color>"; inherits: true; initial-value: #37493b; }
+
+@property --flex-green-cool-80 { syntax: "<color>"; inherits: true; initial-value: #28312a; }
+
+@property --flex-green-cool-90 { syntax: "<color>"; inherits: true; initial-value: #1a1f1a; }
+
+@property --flex-green-cool-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #e3f5e1; }
+
+@property --flex-green-cool-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #b7f5bd; }
+
+@property --flex-green-cool-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #70e17b; }
+
+@property --flex-green-cool-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #21c834; }
+
+@property --flex-green-cool-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #00a91c; }
+
+@property --flex-green-cool-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #008817; }
+
+@property --flex-green-cool-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #216e1f; }
+
+@property --flex-green-cool-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #154c21; }
+
+@property --flex-green-cool-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #19311e; }
+
+@property --flex-green-warm-5 { syntax: "<color>"; inherits: true; initial-value: #f1f4d7; }
+
+@property --flex-green-warm-10 { syntax: "<color>"; inherits: true; initial-value: #e7eab7; }
+
+@property --flex-green-warm-20 { syntax: "<color>"; inherits: true; initial-value: #cbd17a; }
+
+@property --flex-green-warm-30 { syntax: "<color>"; inherits: true; initial-value: #a6b557; }
+
+@property --flex-green-warm-40 { syntax: "<color>"; inherits: true; initial-value: #8a984b; }
+
+@property --flex-green-warm-50 { syntax: "<color>"; inherits: true; initial-value: #6f7a41; }
+
+@property --flex-green-warm-60 { syntax: "<color>"; inherits: true; initial-value: #5a5f38; }
+
+@property --flex-green-warm-70 { syntax: "<color>"; inherits: true; initial-value: #45472f; }
+
+@property --flex-green-warm-80 { syntax: "<color>"; inherits: true; initial-value: #2d2f21; }
+
+@property --flex-green-warm-90 { syntax: "<color>"; inherits: true; initial-value: #171712; }
+
+@property --flex-green-warm-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #f5fbc1; }
+
+@property --flex-green-warm-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #e7f434; }
+
+@property --flex-green-warm-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #c5d30a; }
+
+@property --flex-green-warm-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #a3b72c; }
+
+@property --flex-green-warm-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #7e9c1d; }
+
+@property --flex-green-warm-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #6a7d00; }
+
+@property --flex-green-warm-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #5a6613; }
+
+@property --flex-green-warm-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #4b4e10; }
+
+@property --flex-green-warm-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #38380b; }
+
+@property --flex-cyan-5 { syntax: "<color>"; inherits: true; initial-value: #e7f6f8; }
+
+@property --flex-cyan-10 { syntax: "<color>"; inherits: true; initial-value: #ccecf2; }
+
+@property --flex-cyan-20 { syntax: "<color>"; inherits: true; initial-value: #99deea; }
+
+@property --flex-cyan-30 { syntax: "<color>"; inherits: true; initial-value: #5dc0d1; }
+
+@property --flex-cyan-40 { syntax: "<color>"; inherits: true; initial-value: #449dac; }
+
+@property --flex-cyan-50 { syntax: "<color>"; inherits: true; initial-value: #168092; }
+
+@property --flex-cyan-60 { syntax: "<color>"; inherits: true; initial-value: #2a646d; }
+
+@property --flex-cyan-70 { syntax: "<color>"; inherits: true; initial-value: #2c4a4e; }
+
+@property --flex-cyan-80 { syntax: "<color>"; inherits: true; initial-value: #203133; }
+
+@property --flex-cyan-90 { syntax: "<color>"; inherits: true; initial-value: #111819; }
+
+@property --flex-cyan-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #e5faff; }
+
+@property --flex-cyan-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #a8f2ff; }
+
+@property --flex-cyan-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #52daf2; }
+
+@property --flex-cyan-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #00bde3; }
+
+@property --flex-cyan-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #009ec1; }
+
+@property --flex-cyan-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #0081a1; }
+
+@property --flex-cyan-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #00687d; }
+
+@property --flex-cyan-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #0e4f5c; }
+
+@property --flex-cyan-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #093b44; }
+
+@property --flex-mint-5 { syntax: "<color>"; inherits: true; initial-value: #dbf6ed; }
+
+@property --flex-mint-10 { syntax: "<color>"; inherits: true; initial-value: #c7efe2; }
+
+@property --flex-mint-20 { syntax: "<color>"; inherits: true; initial-value: #92d9bb; }
+
+@property --flex-mint-30 { syntax: "<color>"; inherits: true; initial-value: #5abf95; }
+
+@property --flex-mint-40 { syntax: "<color>"; inherits: true; initial-value: #34a37e; }
+
+@property --flex-mint-50 { syntax: "<color>"; inherits: true; initial-value: #2e8367; }
+
+@property --flex-mint-60 { syntax: "<color>"; inherits: true; initial-value: #286846; }
+
+@property --flex-mint-70 { syntax: "<color>"; inherits: true; initial-value: #204e34; }
+
+@property --flex-mint-80 { syntax: "<color>"; inherits: true; initial-value: #193324; }
+
+@property --flex-mint-90 { syntax: "<color>"; inherits: true; initial-value: #0d1a12; }
+
+@property --flex-mint-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #c9fbeb; }
+
+@property --flex-mint-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #83fcd4; }
+
+@property --flex-mint-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #0ceda6; }
+
+@property --flex-mint-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #04c585; }
+
+@property --flex-mint-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #00a871; }
+
+@property --flex-mint-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #008659; }
+
+@property --flex-mint-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #146947; }
+
+@property --flex-mint-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #0c4e29; }
+
+@property --flex-mint-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #0d351e; }
+
+@property --flex-mint-cool-5 { syntax: "<color>"; inherits: true; initial-value: #e0f7f6; }
+
+@property --flex-mint-cool-10 { syntax: "<color>"; inherits: true; initial-value: #c4eeeb; }
+
+@property --flex-mint-cool-20 { syntax: "<color>"; inherits: true; initial-value: #9bd4cf; }
+
+@property --flex-mint-cool-30 { syntax: "<color>"; inherits: true; initial-value: #6fbab3; }
+
+@property --flex-mint-cool-40 { syntax: "<color>"; inherits: true; initial-value: #4f9e99; }
+
+@property --flex-mint-cool-50 { syntax: "<color>"; inherits: true; initial-value: #40807e; }
+
+@property --flex-mint-cool-60 { syntax: "<color>"; inherits: true; initial-value: #376462; }
+
+@property --flex-mint-cool-70 { syntax: "<color>"; inherits: true; initial-value: #2a4b45; }
+
+@property --flex-mint-cool-80 { syntax: "<color>"; inherits: true; initial-value: #203131; }
+
+@property --flex-mint-cool-90 { syntax: "<color>"; inherits: true; initial-value: #111818; }
+
+@property --flex-mint-cool-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #d5fbf3; }
+
+@property --flex-mint-cool-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #7efbe1; }
+
+@property --flex-mint-cool-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #29e1cb; }
+
+@property --flex-mint-cool-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #1dc2ae; }
+
+@property --flex-mint-cool-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #00a398; }
+
+@property --flex-mint-cool-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #008480; }
+
+@property --flex-mint-cool-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #0f6460; }
+
+@property --flex-mint-cool-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #0b4b3f; }
+
+@property --flex-mint-cool-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #123131; }
+
+@property --flex-blue-5 { syntax: "<color>"; inherits: true; initial-value: #eff6fb; }
+
+@property --flex-blue-10 { syntax: "<color>"; inherits: true; initial-value: #d9e8f6; }
+
+@property --flex-blue-20 { syntax: "<color>"; inherits: true; initial-value: #aacdec; }
+
+@property --flex-blue-30 { syntax: "<color>"; inherits: true; initial-value: #73b3e7; }
+
+@property --flex-blue-40 { syntax: "<color>"; inherits: true; initial-value: #4f97d1; }
+
+@property --flex-blue-50 { syntax: "<color>"; inherits: true; initial-value: #2378c3; }
+
+@property --flex-blue-60 { syntax: "<color>"; inherits: true; initial-value: #2c608a; }
+
+@property --flex-blue-70 { syntax: "<color>"; inherits: true; initial-value: #274863; }
+
+@property --flex-blue-80 { syntax: "<color>"; inherits: true; initial-value: #1f303e; }
+
+@property --flex-blue-90 { syntax: "<color>"; inherits: true; initial-value: #11181d; }
+
+@property --flex-blue-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #e8f5ff; }
+
+@property --flex-blue-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #cfe8ff; }
+
+@property --flex-blue-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #a1d3ff; }
+
+@property --flex-blue-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #58b4ff; }
+
+@property --flex-blue-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #2491ff; }
+
+@property --flex-blue-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #0076d6; }
+
+@property --flex-blue-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #005ea2; }
+
+@property --flex-blue-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #0b4778; }
+
+@property --flex-blue-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #112f4e; }
+
+@property --flex-blue-cool-5 { syntax: "<color>"; inherits: true; initial-value: #e7f2f5; }
+
+@property --flex-blue-cool-10 { syntax: "<color>"; inherits: true; initial-value: #dae9ee; }
+
+@property --flex-blue-cool-20 { syntax: "<color>"; inherits: true; initial-value: #adcfdc; }
+
+@property --flex-blue-cool-30 { syntax: "<color>"; inherits: true; initial-value: #82b4c9; }
+
+@property --flex-blue-cool-40 { syntax: "<color>"; inherits: true; initial-value: #6499af; }
+
+@property --flex-blue-cool-50 { syntax: "<color>"; inherits: true; initial-value: #3a7d95; }
+
+@property --flex-blue-cool-60 { syntax: "<color>"; inherits: true; initial-value: #2e6276; }
+
+@property --flex-blue-cool-70 { syntax: "<color>"; inherits: true; initial-value: #224a58; }
+
+@property --flex-blue-cool-80 { syntax: "<color>"; inherits: true; initial-value: #14333d; }
+
+@property --flex-blue-cool-90 { syntax: "<color>"; inherits: true; initial-value: #0f191c; }
+
+@property --flex-blue-cool-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #e1f3f8; }
+
+@property --flex-blue-cool-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #c3ebfa; }
+
+@property --flex-blue-cool-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #97d4ea; }
+
+@property --flex-blue-cool-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #59b9de; }
+
+@property --flex-blue-cool-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #28a0cb; }
+
+@property --flex-blue-cool-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #0d7ea2; }
+
+@property --flex-blue-cool-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #07648d; }
+
+@property --flex-blue-cool-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #074b69; }
+
+@property --flex-blue-cool-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #002d3f; }
+
+@property --flex-blue-warm-5 { syntax: "<color>"; inherits: true; initial-value: #ecf1f7; }
+
+@property --flex-blue-warm-10 { syntax: "<color>"; inherits: true; initial-value: #e1e7f1; }
+
+@property --flex-blue-warm-20 { syntax: "<color>"; inherits: true; initial-value: #bbcae4; }
+
+@property --flex-blue-warm-30 { syntax: "<color>"; inherits: true; initial-value: #98afd2; }
+
+@property --flex-blue-warm-40 { syntax: "<color>"; inherits: true; initial-value: #7292c7; }
+
+@property --flex-blue-warm-50 { syntax: "<color>"; inherits: true; initial-value: #4a77b4; }
+
+@property --flex-blue-warm-60 { syntax: "<color>"; inherits: true; initial-value: #345d96; }
+
+@property --flex-blue-warm-70 { syntax: "<color>"; inherits: true; initial-value: #2f4668; }
+
+@property --flex-blue-warm-80 { syntax: "<color>"; inherits: true; initial-value: #252f3e; }
+
+@property --flex-blue-warm-90 { syntax: "<color>"; inherits: true; initial-value: #13171f; }
+
+@property --flex-blue-warm-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #edf5ff; }
+
+@property --flex-blue-warm-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #d4e5ff; }
+
+@property --flex-blue-warm-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #adcdff; }
+
+@property --flex-blue-warm-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #81aefc; }
+
+@property --flex-blue-warm-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #5994f6; }
+
+@property --flex-blue-warm-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #2672de; }
+
+@property --flex-blue-warm-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #0050d8; }
+
+@property --flex-blue-warm-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #1a4480; }
+
+@property --flex-blue-warm-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #162e51; }
+
+@property --flex-indigo-5 { syntax: "<color>"; inherits: true; initial-value: #efeff8; }
+
+@property --flex-indigo-10 { syntax: "<color>"; inherits: true; initial-value: #e5e4fa; }
+
+@property --flex-indigo-20 { syntax: "<color>"; inherits: true; initial-value: #c5c5f3; }
+
+@property --flex-indigo-30 { syntax: "<color>"; inherits: true; initial-value: #a5a8eb; }
+
+@property --flex-indigo-40 { syntax: "<color>"; inherits: true; initial-value: #8889db; }
+
+@property --flex-indigo-50 { syntax: "<color>"; inherits: true; initial-value: #676cc8; }
+
+@property --flex-indigo-60 { syntax: "<color>"; inherits: true; initial-value: #4d52af; }
+
+@property --flex-indigo-70 { syntax: "<color>"; inherits: true; initial-value: #3d4076; }
+
+@property --flex-indigo-80 { syntax: "<color>"; inherits: true; initial-value: #2b2c40; }
+
+@property --flex-indigo-90 { syntax: "<color>"; inherits: true; initial-value: #16171f; }
+
+@property --flex-indigo-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #f0f0ff; }
+
+@property --flex-indigo-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #e0e0ff; }
+
+@property --flex-indigo-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #ccceff; }
+
+@property --flex-indigo-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #a3a7fa; }
+
+@property --flex-indigo-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #8289ff; }
+
+@property --flex-indigo-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #656bd7; }
+
+@property --flex-indigo-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #4a50c4; }
+
+@property --flex-indigo-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #3333a3; }
+
+@property --flex-indigo-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #212463; }
+
+@property --flex-indigo-cool-5 { syntax: "<color>"; inherits: true; initial-value: #eef0f9; }
+
+@property --flex-indigo-cool-10 { syntax: "<color>"; inherits: true; initial-value: #e1e6f9; }
+
+@property --flex-indigo-cool-20 { syntax: "<color>"; inherits: true; initial-value: #bbc8f5; }
+
+@property --flex-indigo-cool-30 { syntax: "<color>"; inherits: true; initial-value: #96abee; }
+
+@property --flex-indigo-cool-40 { syntax: "<color>"; inherits: true; initial-value: #6b8ee8; }
+
+@property --flex-indigo-cool-50 { syntax: "<color>"; inherits: true; initial-value: #496fd8; }
+
+@property --flex-indigo-cool-60 { syntax: "<color>"; inherits: true; initial-value: #3f57a6; }
+
+@property --flex-indigo-cool-70 { syntax: "<color>"; inherits: true; initial-value: #374274; }
+
+@property --flex-indigo-cool-80 { syntax: "<color>"; inherits: true; initial-value: #292d42; }
+
+@property --flex-indigo-cool-90 { syntax: "<color>"; inherits: true; initial-value: #151622; }
+
+@property --flex-indigo-cool-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #edf0ff; }
+
+@property --flex-indigo-cool-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #dee5ff; }
+
+@property --flex-indigo-cool-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #b8c8ff; }
+
+@property --flex-indigo-cool-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #94adff; }
+
+@property --flex-indigo-cool-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #628ef4; }
+
+@property --flex-indigo-cool-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #4866ff; }
+
+@property --flex-indigo-cool-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #3e4ded; }
+
+@property --flex-indigo-cool-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #222fbf; }
+
+@property --flex-indigo-cool-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #1b2b85; }
+
+@property --flex-indigo-warm-5 { syntax: "<color>"; inherits: true; initial-value: #f1eff7; }
+
+@property --flex-indigo-warm-10 { syntax: "<color>"; inherits: true; initial-value: #e7e3fa; }
+
+@property --flex-indigo-warm-20 { syntax: "<color>"; inherits: true; initial-value: #cbc4f2; }
+
+@property --flex-indigo-warm-30 { syntax: "<color>"; inherits: true; initial-value: #afa5e8; }
+
+@property --flex-indigo-warm-40 { syntax: "<color>"; inherits: true; initial-value: #9287d8; }
+
+@property --flex-indigo-warm-50 { syntax: "<color>"; inherits: true; initial-value: #7665d1; }
+
+@property --flex-indigo-warm-60 { syntax: "<color>"; inherits: true; initial-value: #5e519e; }
+
+@property --flex-indigo-warm-70 { syntax: "<color>"; inherits: true; initial-value: #453c7b; }
+
+@property --flex-indigo-warm-80 { syntax: "<color>"; inherits: true; initial-value: #2e2c40; }
+
+@property --flex-indigo-warm-90 { syntax: "<color>"; inherits: true; initial-value: #18161d; }
+
+@property --flex-indigo-warm-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #f5f2ff; }
+
+@property --flex-indigo-warm-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #e4deff; }
+
+@property --flex-indigo-warm-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #cfc4fd; }
+
+@property --flex-indigo-warm-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #b69fff; }
+
+@property --flex-indigo-warm-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #967efb; }
+
+@property --flex-indigo-warm-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #745fe9; }
+
+@property --flex-indigo-warm-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #5942d2; }
+
+@property --flex-indigo-warm-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #3d2c9d; }
+
+@property --flex-indigo-warm-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #261f5b; }
+
+@property --flex-violet-5 { syntax: "<color>"; inherits: true; initial-value: #f4f1f9; }
+
+@property --flex-violet-10 { syntax: "<color>"; inherits: true; initial-value: #ebe3f9; }
+
+@property --flex-violet-20 { syntax: "<color>"; inherits: true; initial-value: #d0c3e9; }
+
+@property --flex-violet-30 { syntax: "<color>"; inherits: true; initial-value: #b8a2e3; }
+
+@property --flex-violet-40 { syntax: "<color>"; inherits: true; initial-value: #9d84d2; }
+
+@property --flex-violet-50 { syntax: "<color>"; inherits: true; initial-value: #8168b3; }
+
+@property --flex-violet-60 { syntax: "<color>"; inherits: true; initial-value: #665190; }
+
+@property --flex-violet-70 { syntax: "<color>"; inherits: true; initial-value: #4c3d69; }
+
+@property --flex-violet-80 { syntax: "<color>"; inherits: true; initial-value: #312b3f; }
+
+@property --flex-violet-90 { syntax: "<color>"; inherits: true; initial-value: #18161d; }
+
+@property --flex-violet-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #f7f2ff; }
+
+@property --flex-violet-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #ede3ff; }
+
+@property --flex-violet-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #d5bfff; }
+
+@property --flex-violet-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #c39deb; }
+
+@property --flex-violet-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #ad79e9; }
+
+@property --flex-violet-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #9355dc; }
+
+@property --flex-violet-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #783cb9; }
+
+@property --flex-violet-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #54278f; }
+
+@property --flex-violet-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #39215e; }
+
+@property --flex-violet-warm-5 { syntax: "<color>"; inherits: true; initial-value: #f8f0f9; }
+
+@property --flex-violet-warm-10 { syntax: "<color>"; inherits: true; initial-value: #f6dff8; }
+
+@property --flex-violet-warm-20 { syntax: "<color>"; inherits: true; initial-value: #e2bee4; }
+
+@property --flex-violet-warm-30 { syntax: "<color>"; inherits: true; initial-value: #d29ad8; }
+
+@property --flex-violet-warm-40 { syntax: "<color>"; inherits: true; initial-value: #bf77c8; }
+
+@property --flex-violet-warm-50 { syntax: "<color>"; inherits: true; initial-value: #b04abd; }
+
+@property --flex-violet-warm-60 { syntax: "<color>"; inherits: true; initial-value: #864381; }
+
+@property --flex-violet-warm-70 { syntax: "<color>"; inherits: true; initial-value: #5c395a; }
+
+@property --flex-violet-warm-80 { syntax: "<color>"; inherits: true; initial-value: #382936; }
+
+@property --flex-violet-warm-90 { syntax: "<color>"; inherits: true; initial-value: #1b151b; }
+
+@property --flex-violet-warm-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #fef2ff; }
+
+@property --flex-violet-warm-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #fbdcff; }
+
+@property --flex-violet-warm-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #f4b2ff; }
+
+@property --flex-violet-warm-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #ee83ff; }
+
+@property --flex-violet-warm-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #d85bef; }
+
+@property --flex-violet-warm-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #be32d0; }
+
+@property --flex-violet-warm-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #93348c; }
+
+@property --flex-violet-warm-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #711e6c; }
+
+@property --flex-violet-warm-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #481441; }
+
+@property --flex-magenta-5 { syntax: "<color>"; inherits: true; initial-value: #f9f0f2; }
+
+@property --flex-magenta-10 { syntax: "<color>"; inherits: true; initial-value: #f6e1e8; }
+
+@property --flex-magenta-20 { syntax: "<color>"; inherits: true; initial-value: #f0bbcc; }
+
+@property --flex-magenta-30 { syntax: "<color>"; inherits: true; initial-value: #e895b3; }
+
+@property --flex-magenta-40 { syntax: "<color>"; inherits: true; initial-value: #e0699f; }
+
+@property --flex-magenta-50 { syntax: "<color>"; inherits: true; initial-value: #c84281; }
+
+@property --flex-magenta-60 { syntax: "<color>"; inherits: true; initial-value: #8b4566; }
+
+@property --flex-magenta-70 { syntax: "<color>"; inherits: true; initial-value: #66364b; }
+
+@property --flex-magenta-80 { syntax: "<color>"; inherits: true; initial-value: #402731; }
+
+@property --flex-magenta-90 { syntax: "<color>"; inherits: true; initial-value: #1b1617; }
+
+@property --flex-magenta-vivid-5 { syntax: "<color>"; inherits: true; initial-value: #fff2f5; }
+
+@property --flex-magenta-vivid-10 { syntax: "<color>"; inherits: true; initial-value: #ffddea; }
+
+@property --flex-magenta-vivid-20 { syntax: "<color>"; inherits: true; initial-value: #ffb4cf; }
+
+@property --flex-magenta-vivid-30 { syntax: "<color>"; inherits: true; initial-value: #ff87b2; }
+
+@property --flex-magenta-vivid-40 { syntax: "<color>"; inherits: true; initial-value: #fd4496; }
+
+@property --flex-magenta-vivid-50 { syntax: "<color>"; inherits: true; initial-value: #d72d79; }
+
+@property --flex-magenta-vivid-60 { syntax: "<color>"; inherits: true; initial-value: #ab2165; }
+
+@property --flex-magenta-vivid-70 { syntax: "<color>"; inherits: true; initial-value: #731f44; }
+
+@property --flex-magenta-vivid-80 { syntax: "<color>"; inherits: true; initial-value: #4f172e; }
+
+@property --flex-white { syntax: "<color>"; inherits: true; initial-value: #fff; }
+
+@property --flex-black { syntax: "<color>"; inherits: true; initial-value: #000; }
+
+/* ============================================================================
+   TIER 2: SEMANTIC TOKENS (@property definitions)
+   ============================================================================ */
+
+@property --flex-color-bg { syntax: "<color>"; inherits: true; initial-value: #f7f9fa; }
+
+@property --flex-color-surface { syntax: "<color>"; inherits: true; initial-value: #fff; }
+
+@property --flex-color-border { syntax: "<color>"; inherits: true; initial-value: #c6cace; }
+
+@property --flex-color-text { syntax: "<color>"; inherits: true; initial-value: #1b1b1b; }
+
+@property --flex-color-text-muted { syntax: "<color>"; inherits: true; initial-value: #5c5c5c; }
+
+@property --flex-color-accent { syntax: "<color>"; inherits: true; initial-value: #005ea2; }
+
+@property --flex-color-success { syntax: "<color>"; inherits: true; initial-value: #216e1f; }
+
+@property --flex-color-error { syntax: "<color>"; inherits: true; initial-value: #b50909; }
+
+@property --flex-color-ink { syntax: "<color>"; inherits: true; initial-value: #71767a; }
+
+@property --flex-color-table-header { syntax: "<color>"; inherits: true; initial-value: #dfe1e2; }
+
+@property --flex-color-on-accent { syntax: "<color>"; inherits: true; initial-value: #fff; }
+
+@property --flex-color-info { syntax: "<color>"; inherits: true; initial-value: #00bde3; }
+
+@property --flex-color-info-lighter { syntax: "<color>"; inherits: true; initial-value: #e7f6f8; }
+
+@property --flex-color-warning { syntax: "<color>"; inherits: true; initial-value: #face00; }
+
+@property --flex-color-warning-lighter { syntax: "<color>"; inherits: true; initial-value: #faf3d1; }
+
+@property --flex-color-error-lighter { syntax: "<color>"; inherits: true; initial-value: #f4e3db; }
+
+@property --flex-color-success-lighter { syntax: "<color>"; inherits: true; initial-value: #e0f7f6; }
+
+@property --flex-space-xs { syntax: "<length>"; inherits: true; initial-value: 4px; }
+
+@property --flex-space-sm { syntax: "<length>"; inherits: true; initial-value: 8px; }
+
+@property --flex-space-md { syntax: "<length>"; inherits: true; initial-value: 16px; }
+
+@property --flex-space-lg { syntax: "<length>"; inherits: true; initial-value: 24px; }
+
+@property --flex-space-xl { syntax: "<length>"; inherits: true; initial-value: 32px; }
+
+@property --flex-focus-offset { syntax: "<length>"; inherits: true; initial-value: 2px; }
+
+@property --flex-focus-offset-inset { syntax: "<length>"; inherits: true; initial-value: 0; }
+
+@property --flex-control-max-width { syntax: "<length>"; inherits: true; initial-value: 480px; }
+
+@property --flex-control-height { syntax: "<length>"; inherits: true; initial-value: 40px; }
+
+@property --flex-control-padding { syntax: "<length>"; inherits: true; initial-value: 8px; }
+
+@property --flex-control-margin-top { syntax: "<length>"; inherits: true; initial-value: 8px; }
+
+/* ============================================================================
+   TIER 1: PALETTE TOKENS (:root values with @uswds provenance)
+   ============================================================================ */
+
+:root {
+  /* @uswds usa-color-gray-1 */
+  --flex-gray-1: #fcfcfc;
+
+  /* @uswds usa-color-gray-2 */
+  --flex-gray-2: #f9f9f9;
+
+  /* @uswds usa-color-gray-3 */
+  --flex-gray-3: #f6f6f6;
+
+  /* @uswds usa-color-gray-4 */
+  --flex-gray-4: #f3f3f3;
+
+  /* @uswds usa-color-gray-5 */
+  --flex-gray-5: #f0f0f0;
+
+  /* @uswds usa-color-gray-10 */
+  --flex-gray-10: #e6e6e6;
+
+  /* @uswds usa-color-gray-20 */
+  --flex-gray-20: #c9c9c9;
+
+  /* @uswds usa-color-gray-30 */
+  --flex-gray-30: #adadad;
+
+  /* @uswds usa-color-gray-40 */
+  --flex-gray-40: #919191;
+
+  /* @uswds usa-color-gray-50 */
+  --flex-gray-50: #757575;
+
+  /* @uswds usa-color-gray-60 */
+  --flex-gray-60: #5c5c5c;
+
+  /* @uswds usa-color-gray-70 */
+  --flex-gray-70: #454545;
+
+  /* @uswds usa-color-gray-80 */
+  --flex-gray-80: #2e2e2e;
+
+  /* @uswds usa-color-gray-90 */
+  --flex-gray-90: #1b1b1b;
+
+  /* @uswds usa-color-gray-100 */
+  --flex-gray-100: #000;
+
+  /* @uswds usa-color-gray-cool-1 */
+  --flex-gray-cool-1: #fbfcfd;
+
+  /* @uswds usa-color-gray-cool-2 */
+  --flex-gray-cool-2: #f7f9fa;
+
+  /* @uswds usa-color-gray-cool-3 */
+  --flex-gray-cool-3: #f5f6f7;
+
+  /* @uswds usa-color-gray-cool-4 */
+  --flex-gray-cool-4: #f1f3f6;
+
+  /* @uswds usa-color-gray-cool-5 */
+  --flex-gray-cool-5: #edeff0;
+
+  /* @uswds usa-color-gray-cool-10 */
+  --flex-gray-cool-10: #dfe1e2;
+
+  /* @uswds usa-color-gray-cool-20 */
+  --flex-gray-cool-20: #c6cace;
+
+  /* @uswds usa-color-gray-cool-30 */
+  --flex-gray-cool-30: #a9aeb1;
+
+  /* @uswds usa-color-gray-cool-40 */
+  --flex-gray-cool-40: #8d9297;
+
+  /* @uswds usa-color-gray-cool-50 */
+  --flex-gray-cool-50: #71767a;
+
+  /* @uswds usa-color-gray-cool-60 */
+  --flex-gray-cool-60: #565c65;
+
+  /* @uswds usa-color-gray-cool-70 */
+  --flex-gray-cool-70: #3d4551;
+
+  /* @uswds usa-color-gray-cool-80 */
+  --flex-gray-cool-80: #2d2e2f;
+
+  /* @uswds usa-color-gray-cool-90 */
+  --flex-gray-cool-90: #1c1d1f;
+
+  /* @uswds usa-color-gray-warm-1 */
+  --flex-gray-warm-1: #fcfcfb;
+
+  /* @uswds usa-color-gray-warm-2 */
+  --flex-gray-warm-2: #f9f9f7;
+
+  /* @uswds usa-color-gray-warm-3 */
+  --flex-gray-warm-3: #f6f6f2;
+
+  /* @uswds usa-color-gray-warm-4 */
+  --flex-gray-warm-4: #f5f5f0;
+
+  /* @uswds usa-color-gray-warm-5 */
+  --flex-gray-warm-5: #f0f0ec;
+
+  /* @uswds usa-color-gray-warm-10 */
+  --flex-gray-warm-10: #e6e6e2;
+
+  /* @uswds usa-color-gray-warm-20 */
+  --flex-gray-warm-20: #cac9c0;
+
+  /* @uswds usa-color-gray-warm-30 */
+  --flex-gray-warm-30: #afaea2;
+
+  /* @uswds usa-color-gray-warm-40 */
+  --flex-gray-warm-40: #929285;
+
+  /* @uswds usa-color-gray-warm-50 */
+  --flex-gray-warm-50: #76766a;
+
+  /* @uswds usa-color-gray-warm-60 */
+  --flex-gray-warm-60: #5d5d52;
+
+  /* @uswds usa-color-gray-warm-70 */
+  --flex-gray-warm-70: #454540;
+
+  /* @uswds usa-color-gray-warm-80 */
+  --flex-gray-warm-80: #2e2e2a;
+
+  /* @uswds usa-color-gray-warm-90 */
+  --flex-gray-warm-90: #171716;
+
+  /* @uswds usa-color-red-5 */
+  --flex-red-5: #f9eeee;
+
+  /* @uswds usa-color-red-10 */
+  --flex-red-10: #f8e1de;
+
+  /* @uswds usa-color-red-20 */
+  --flex-red-20: #f7bbb1;
+
+  /* @uswds usa-color-red-30 */
+  --flex-red-30: #f2938c;
+
+  /* @uswds usa-color-red-40 */
+  --flex-red-40: #e9695f;
+
+  /* @uswds usa-color-red-50 */
+  --flex-red-50: #d83933;
+
+  /* @uswds usa-color-red-60 */
+  --flex-red-60: #a23737;
+
+  /* @uswds usa-color-red-70 */
+  --flex-red-70: #6f3331;
+
+  /* @uswds usa-color-red-80 */
+  --flex-red-80: #3e2927;
+
+  /* @uswds usa-color-red-90 */
+  --flex-red-90: #1b1616;
+
+  /* @uswds usa-color-red-vivid-5 */
+  --flex-red-vivid-5: #fff3f2;
+
+  /* @uswds usa-color-red-vivid-10 */
+  --flex-red-vivid-10: #fde0db;
+
+  /* @uswds usa-color-red-vivid-20 */
+  --flex-red-vivid-20: #fdb8ae;
+
+  /* @uswds usa-color-red-vivid-30 */
+  --flex-red-vivid-30: #ff8d7b;
+
+  /* @uswds usa-color-red-vivid-40 */
+  --flex-red-vivid-40: #fb5a47;
+
+  /* @uswds usa-color-red-vivid-50 */
+  --flex-red-vivid-50: #e52207;
+
+  /* @uswds usa-color-red-vivid-60 */
+  --flex-red-vivid-60: #b50909;
+
+  /* @uswds usa-color-red-vivid-70 */
+  --flex-red-vivid-70: #8b0a03;
+
+  /* @uswds usa-color-red-vivid-80 */
+  --flex-red-vivid-80: #5c1111;
+
+  /* @uswds usa-color-red-cool-5 */
+  --flex-red-cool-5: #f8eff1;
+
+  /* @uswds usa-color-red-cool-10 */
+  --flex-red-cool-10: #f3e1e4;
+
+  /* @uswds usa-color-red-cool-20 */
+  --flex-red-cool-20: #ecbec6;
+
+  /* @uswds usa-color-red-cool-30 */
+  --flex-red-cool-30: #e09aa6;
+
+  /* @uswds usa-color-red-cool-40 */
+  --flex-red-cool-40: #e16b80;
+
+  /* @uswds usa-color-red-cool-50 */
+  --flex-red-cool-50: #cd425b;
+
+  /* @uswds usa-color-red-cool-60 */
+  --flex-red-cool-60: #9e394b;
+
+  /* @uswds usa-color-red-cool-70 */
+  --flex-red-cool-70: #68363f;
+
+  /* @uswds usa-color-red-cool-80 */
+  --flex-red-cool-80: #40282c;
+
+  /* @uswds usa-color-red-cool-90 */
+  --flex-red-cool-90: #1e1517;
+
+  /* @uswds usa-color-red-cool-vivid-5 */
+  --flex-red-cool-vivid-5: #fff2f5;
+
+  /* @uswds usa-color-red-cool-vivid-10 */
+  --flex-red-cool-vivid-10: #f8dfe2;
+
+  /* @uswds usa-color-red-cool-vivid-20 */
+  --flex-red-cool-vivid-20: #f8b9c5;
+
+  /* @uswds usa-color-red-cool-vivid-30 */
+  --flex-red-cool-vivid-30: #fd8ba0;
+
+  /* @uswds usa-color-red-cool-vivid-40 */
+  --flex-red-cool-vivid-40: #f45d79;
+
+  /* @uswds usa-color-red-cool-vivid-50 */
+  --flex-red-cool-vivid-50: #e41d3d;
+
+  /* @uswds usa-color-red-cool-vivid-60 */
+  --flex-red-cool-vivid-60: #b21d38;
+
+  /* @uswds usa-color-red-cool-vivid-70 */
+  --flex-red-cool-vivid-70: #822133;
+
+  /* @uswds usa-color-red-cool-vivid-80 */
+  --flex-red-cool-vivid-80: #4f1c24;
+
+  /* @uswds usa-color-red-warm-5 */
+  --flex-red-warm-5: #f6efea;
+
+  /* @uswds usa-color-red-warm-10 */
+  --flex-red-warm-10: #f4e3db;
+
+  /* @uswds usa-color-red-warm-20 */
+  --flex-red-warm-20: #ecc0a7;
+
+  /* @uswds usa-color-red-warm-30 */
+  --flex-red-warm-30: #dca081;
+
+  /* @uswds usa-color-red-warm-40 */
+  --flex-red-warm-40: #d27a56;
+
+  /* @uswds usa-color-red-warm-50 */
+  --flex-red-warm-50: #c3512c;
+
+  /* @uswds usa-color-red-warm-60 */
+  --flex-red-warm-60: #805039;
+
+  /* @uswds usa-color-red-warm-70 */
+  --flex-red-warm-70: #524236;
+
+  /* @uswds usa-color-red-warm-80 */
+  --flex-red-warm-80: #332d29;
+
+  /* @uswds usa-color-red-warm-90 */
+  --flex-red-warm-90: #1f1c18;
+
+  /* @uswds usa-color-red-warm-vivid-5 */
+  --flex-red-warm-vivid-5: #fff5ee;
+
+  /* @uswds usa-color-red-warm-vivid-10 */
+  --flex-red-warm-vivid-10: #fce1d4;
+
+  /* @uswds usa-color-red-warm-vivid-20 */
+  --flex-red-warm-vivid-20: #f6bd9c;
+
+  /* @uswds usa-color-red-warm-vivid-30 */
+  --flex-red-warm-vivid-30: #f39268;
+
+  /* @uswds usa-color-red-warm-vivid-40 */
+  --flex-red-warm-vivid-40: #ef5e25;
+
+  /* @uswds usa-color-red-warm-vivid-50 */
+  --flex-red-warm-vivid-50: #d54309;
+
+  /* @uswds usa-color-red-warm-vivid-60 */
+  --flex-red-warm-vivid-60: #9c3d10;
+
+  /* @uswds usa-color-red-warm-vivid-70 */
+  --flex-red-warm-vivid-70: #63340f;
+
+  /* @uswds usa-color-red-warm-vivid-80 */
+  --flex-red-warm-vivid-80: #3e2a1e;
+
+  /* @uswds usa-color-orange-5 */
+  --flex-orange-5: #f6efe9;
+
+  /* @uswds usa-color-orange-10 */
+  --flex-orange-10: #f2e4d4;
+
+  /* @uswds usa-color-orange-20 */
+  --flex-orange-20: #f3bf90;
+
+  /* @uswds usa-color-orange-30 */
+  --flex-orange-30: #f09860;
+
+  /* @uswds usa-color-orange-40 */
+  --flex-orange-40: #dd7533;
+
+  /* @uswds usa-color-orange-50 */
+  --flex-orange-50: #a86437;
+
+  /* @uswds usa-color-orange-60 */
+  --flex-orange-60: #775540;
+
+  /* @uswds usa-color-orange-70 */
+  --flex-orange-70: #524236;
+
+  /* @uswds usa-color-orange-80 */
+  --flex-orange-80: #332d27;
+
+  /* @uswds usa-color-orange-90 */
+  --flex-orange-90: #1b1614;
+
+  /* @uswds usa-color-orange-vivid-5 */
+  --flex-orange-vivid-5: #fef2e4;
+
+  /* @uswds usa-color-orange-vivid-10 */
+  --flex-orange-vivid-10: #fce2c5;
+
+  /* @uswds usa-color-orange-vivid-20 */
+  --flex-orange-vivid-20: #ffbc78;
+
+  /* @uswds usa-color-orange-vivid-30 */
+  --flex-orange-vivid-30: #fa9441;
+
+  /* @uswds usa-color-orange-vivid-40 */
+  --flex-orange-vivid-40: #e66f0e;
+
+  /* @uswds usa-color-orange-vivid-50 */
+  --flex-orange-vivid-50: #c05600;
+
+  /* @uswds usa-color-orange-vivid-60 */
+  --flex-orange-vivid-60: #8c471c;
+
+  /* @uswds usa-color-orange-vivid-70 */
+  --flex-orange-vivid-70: #5f3617;
+
+  /* @uswds usa-color-orange-vivid-80 */
+  --flex-orange-vivid-80: #352313;
+
+  /* @uswds usa-color-orange-warm-5 */
+  --flex-orange-warm-5: #faeee5;
+
+  /* @uswds usa-color-orange-warm-10 */
+  --flex-orange-warm-10: #fbe0d0;
+
+  /* @uswds usa-color-orange-warm-20 */
+  --flex-orange-warm-20: #f7bca2;
+
+  /* @uswds usa-color-orange-warm-30 */
+  --flex-orange-warm-30: #f3966d;
+
+  /* @uswds usa-color-orange-warm-40 */
+  --flex-orange-warm-40: #e17141;
+
+  /* @uswds usa-color-orange-warm-50 */
+  --flex-orange-warm-50: #bd5727;
+
+  /* @uswds usa-color-orange-warm-60 */
+  --flex-orange-warm-60: #914734;
+
+  /* @uswds usa-color-orange-warm-70 */
+  --flex-orange-warm-70: #633a32;
+
+  /* @uswds usa-color-orange-warm-80 */
+  --flex-orange-warm-80: #3d2925;
+
+  /* @uswds usa-color-orange-warm-90 */
+  --flex-orange-warm-90: #1c1615;
+
+  /* @uswds usa-color-orange-warm-vivid-5 */
+  --flex-orange-warm-vivid-5: #fff3ea;
+
+  /* @uswds usa-color-orange-warm-vivid-10 */
+  --flex-orange-warm-vivid-10: #ffe2d1;
+
+  /* @uswds usa-color-orange-warm-vivid-20 */
+  --flex-orange-warm-vivid-20: #fbbaa7;
+
+  /* @uswds usa-color-orange-warm-vivid-30 */
+  --flex-orange-warm-vivid-30: #fc906d;
+
+  /* @uswds usa-color-orange-warm-vivid-40 */
+  --flex-orange-warm-vivid-40: #ff580a;
+
+  /* @uswds usa-color-orange-warm-vivid-50 */
+  --flex-orange-warm-vivid-50: #cf4900;
+
+  /* @uswds usa-color-orange-warm-vivid-60 */
+  --flex-orange-warm-vivid-60: #a72f10;
+
+  /* @uswds usa-color-orange-warm-vivid-70 */
+  --flex-orange-warm-vivid-70: #782312;
+
+  /* @uswds usa-color-orange-warm-vivid-80 */
+  --flex-orange-warm-vivid-80: #3d231d;
+
+  /* @uswds usa-color-gold-5 */
+  --flex-gold-5: #f5f0e6;
+
+  /* @uswds usa-color-gold-10 */
+  --flex-gold-10: #f1e5cd;
+
+  /* @uswds usa-color-gold-20 */
+  --flex-gold-20: #dec69a;
+
+  /* @uswds usa-color-gold-30 */
+  --flex-gold-30: #c7a97b;
+
+  /* @uswds usa-color-gold-40 */
+  --flex-gold-40: #ad8b65;
+
+  /* @uswds usa-color-gold-50 */
+  --flex-gold-50: #8e704f;
+
+  /* @uswds usa-color-gold-60 */
+  --flex-gold-60: #6b5947;
+
+  /* @uswds usa-color-gold-70 */
+  --flex-gold-70: #4d4438;
+
+  /* @uswds usa-color-gold-80 */
+  --flex-gold-80: #322d26;
+
+  /* @uswds usa-color-gold-90 */
+  --flex-gold-90: #191714;
+
+  /* @uswds usa-color-gold-vivid-5 */
+  --flex-gold-vivid-5: #fef0c8;
+
+  /* @uswds usa-color-gold-vivid-10 */
+  --flex-gold-vivid-10: #ffe396;
+
+  /* @uswds usa-color-gold-vivid-20 */
+  --flex-gold-vivid-20: #ffbe2e;
+
+  /* @uswds usa-color-gold-vivid-30 */
+  --flex-gold-vivid-30: #e5a000;
+
+  /* @uswds usa-color-gold-vivid-40 */
+  --flex-gold-vivid-40: #c2850c;
+
+  /* @uswds usa-color-gold-vivid-50 */
+  --flex-gold-vivid-50: #936f38;
+
+  /* @uswds usa-color-gold-vivid-60 */
+  --flex-gold-vivid-60: #7a591a;
+
+  /* @uswds usa-color-gold-vivid-70 */
+  --flex-gold-vivid-70: #5c410a;
+
+  /* @uswds usa-color-gold-vivid-80 */
+  --flex-gold-vivid-80: #3b2b15;
+
+  /* @uswds usa-color-yellow-5 */
+  --flex-yellow-5: #faf3d1;
+
+  /* @uswds usa-color-yellow-10 */
+  --flex-yellow-10: #f5e6af;
+
+  /* @uswds usa-color-yellow-20 */
+  --flex-yellow-20: #e6c74c;
+
+  /* @uswds usa-color-yellow-30 */
+  --flex-yellow-30: #c9ab48;
+
+  /* @uswds usa-color-yellow-40 */
+  --flex-yellow-40: #a88f48;
+
+  /* @uswds usa-color-yellow-50 */
+  --flex-yellow-50: #8a7237;
+
+  /* @uswds usa-color-yellow-60 */
+  --flex-yellow-60: #6b5a39;
+
+  /* @uswds usa-color-yellow-70 */
+  --flex-yellow-70: #504332;
+
+  /* @uswds usa-color-yellow-80 */
+  --flex-yellow-80: #332d27;
+
+  /* @uswds usa-color-yellow-90 */
+  --flex-yellow-90: #1a1614;
+
+  /* @uswds usa-color-yellow-vivid-5 */
+  --flex-yellow-vivid-5: #fff5c2;
+
+  /* @uswds usa-color-yellow-vivid-10 */
+  --flex-yellow-vivid-10: #fee685;
+
+  /* @uswds usa-color-yellow-vivid-20 */
+  --flex-yellow-vivid-20: #face00;
+
+  /* @uswds usa-color-yellow-vivid-30 */
+  --flex-yellow-vivid-30: #ddaa01;
+
+  /* @uswds usa-color-yellow-vivid-40 */
+  --flex-yellow-vivid-40: #b38c00;
+
+  /* @uswds usa-color-yellow-vivid-50 */
+  --flex-yellow-vivid-50: #947100;
+
+  /* @uswds usa-color-yellow-vivid-60 */
+  --flex-yellow-vivid-60: #776017;
+
+  /* @uswds usa-color-yellow-vivid-70 */
+  --flex-yellow-vivid-70: #5c4809;
+
+  /* @uswds usa-color-yellow-vivid-80 */
+  --flex-yellow-vivid-80: #422d19;
+
+  /* @uswds usa-color-green-5 */
+  --flex-green-5: #eaf4dd;
+
+  /* @uswds usa-color-green-10 */
+  --flex-green-10: #dfeacd;
+
+  /* @uswds usa-color-green-20 */
+  --flex-green-20: #b8d293;
+
+  /* @uswds usa-color-green-30 */
+  --flex-green-30: #9bb672;
+
+  /* @uswds usa-color-green-40 */
+  --flex-green-40: #7d9b4e;
+
+  /* @uswds usa-color-green-50 */
+  --flex-green-50: #607f35;
+
+  /* @uswds usa-color-green-60 */
+  --flex-green-60: #4c6424;
+
+  /* @uswds usa-color-green-70 */
+  --flex-green-70: #3c4a29;
+
+  /* @uswds usa-color-green-80 */
+  --flex-green-80: #293021;
+
+  /* @uswds usa-color-green-90 */
+  --flex-green-90: #161814;
+
+  /* @uswds usa-color-green-vivid-5 */
+  --flex-green-vivid-5: #ddf9c7;
+
+  /* @uswds usa-color-green-vivid-10 */
+  --flex-green-vivid-10: #c5ee93;
+
+  /* @uswds usa-color-green-vivid-20 */
+  --flex-green-vivid-20: #98d035;
+
+  /* @uswds usa-color-green-vivid-30 */
+  --flex-green-vivid-30: #7fb135;
+
+  /* @uswds usa-color-green-vivid-40 */
+  --flex-green-vivid-40: #719f2a;
+
+  /* @uswds usa-color-green-vivid-50 */
+  --flex-green-vivid-50: #538200;
+
+  /* @uswds usa-color-green-vivid-60 */
+  --flex-green-vivid-60: #466c04;
+
+  /* @uswds usa-color-green-vivid-70 */
+  --flex-green-vivid-70: #2f4a0b;
+
+  /* @uswds usa-color-green-vivid-80 */
+  --flex-green-vivid-80: #243413;
+
+  /* @uswds usa-color-green-cool-5 */
+  --flex-green-cool-5: #ecf3ec;
+
+  /* @uswds usa-color-green-cool-10 */
+  --flex-green-cool-10: #dbebde;
+
+  /* @uswds usa-color-green-cool-20 */
+  --flex-green-cool-20: #b4d0b9;
+
+  /* @uswds usa-color-green-cool-30 */
+  --flex-green-cool-30: #86b98e;
+
+  /* @uswds usa-color-green-cool-40 */
+  --flex-green-cool-40: #5e9f69;
+
+  /* @uswds usa-color-green-cool-50 */
+  --flex-green-cool-50: #4d8055;
+
+  /* @uswds usa-color-green-cool-60 */
+  --flex-green-cool-60: #446443;
+
+  /* @uswds usa-color-green-cool-70 */
+  --flex-green-cool-70: #37493b;
+
+  /* @uswds usa-color-green-cool-80 */
+  --flex-green-cool-80: #28312a;
+
+  /* @uswds usa-color-green-cool-90 */
+  --flex-green-cool-90: #1a1f1a;
+
+  /* @uswds usa-color-green-cool-vivid-5 */
+  --flex-green-cool-vivid-5: #e3f5e1;
+
+  /* @uswds usa-color-green-cool-vivid-10 */
+  --flex-green-cool-vivid-10: #b7f5bd;
+
+  /* @uswds usa-color-green-cool-vivid-20 */
+  --flex-green-cool-vivid-20: #70e17b;
+
+  /* @uswds usa-color-green-cool-vivid-30 */
+  --flex-green-cool-vivid-30: #21c834;
+
+  /* @uswds usa-color-green-cool-vivid-40 */
+  --flex-green-cool-vivid-40: #00a91c;
+
+  /* @uswds usa-color-green-cool-vivid-50 */
+  --flex-green-cool-vivid-50: #008817;
+
+  /* @uswds usa-color-green-cool-vivid-60 */
+  --flex-green-cool-vivid-60: #216e1f;
+
+  /* @uswds usa-color-green-cool-vivid-70 */
+  --flex-green-cool-vivid-70: #154c21;
+
+  /* @uswds usa-color-green-cool-vivid-80 */
+  --flex-green-cool-vivid-80: #19311e;
+
+  /* @uswds usa-color-green-warm-5 */
+  --flex-green-warm-5: #f1f4d7;
+
+  /* @uswds usa-color-green-warm-10 */
+  --flex-green-warm-10: #e7eab7;
+
+  /* @uswds usa-color-green-warm-20 */
+  --flex-green-warm-20: #cbd17a;
+
+  /* @uswds usa-color-green-warm-30 */
+  --flex-green-warm-30: #a6b557;
+
+  /* @uswds usa-color-green-warm-40 */
+  --flex-green-warm-40: #8a984b;
+
+  /* @uswds usa-color-green-warm-50 */
+  --flex-green-warm-50: #6f7a41;
+
+  /* @uswds usa-color-green-warm-60 */
+  --flex-green-warm-60: #5a5f38;
+
+  /* @uswds usa-color-green-warm-70 */
+  --flex-green-warm-70: #45472f;
+
+  /* @uswds usa-color-green-warm-80 */
+  --flex-green-warm-80: #2d2f21;
+
+  /* @uswds usa-color-green-warm-90 */
+  --flex-green-warm-90: #171712;
+
+  /* @uswds usa-color-green-warm-vivid-5 */
+  --flex-green-warm-vivid-5: #f5fbc1;
+
+  /* @uswds usa-color-green-warm-vivid-10 */
+  --flex-green-warm-vivid-10: #e7f434;
+
+  /* @uswds usa-color-green-warm-vivid-20 */
+  --flex-green-warm-vivid-20: #c5d30a;
+
+  /* @uswds usa-color-green-warm-vivid-30 */
+  --flex-green-warm-vivid-30: #a3b72c;
+
+  /* @uswds usa-color-green-warm-vivid-40 */
+  --flex-green-warm-vivid-40: #7e9c1d;
+
+  /* @uswds usa-color-green-warm-vivid-50 */
+  --flex-green-warm-vivid-50: #6a7d00;
+
+  /* @uswds usa-color-green-warm-vivid-60 */
+  --flex-green-warm-vivid-60: #5a6613;
+
+  /* @uswds usa-color-green-warm-vivid-70 */
+  --flex-green-warm-vivid-70: #4b4e10;
+
+  /* @uswds usa-color-green-warm-vivid-80 */
+  --flex-green-warm-vivid-80: #38380b;
+
+  /* @uswds usa-color-cyan-5 */
+  --flex-cyan-5: #e7f6f8;
+
+  /* @uswds usa-color-cyan-10 */
+  --flex-cyan-10: #ccecf2;
+
+  /* @uswds usa-color-cyan-20 */
+  --flex-cyan-20: #99deea;
+
+  /* @uswds usa-color-cyan-30 */
+  --flex-cyan-30: #5dc0d1;
+
+  /* @uswds usa-color-cyan-40 */
+  --flex-cyan-40: #449dac;
+
+  /* @uswds usa-color-cyan-50 */
+  --flex-cyan-50: #168092;
+
+  /* @uswds usa-color-cyan-60 */
+  --flex-cyan-60: #2a646d;
+
+  /* @uswds usa-color-cyan-70 */
+  --flex-cyan-70: #2c4a4e;
+
+  /* @uswds usa-color-cyan-80 */
+  --flex-cyan-80: #203133;
+
+  /* @uswds usa-color-cyan-90 */
+  --flex-cyan-90: #111819;
+
+  /* @uswds usa-color-cyan-vivid-5 */
+  --flex-cyan-vivid-5: #e5faff;
+
+  /* @uswds usa-color-cyan-vivid-10 */
+  --flex-cyan-vivid-10: #a8f2ff;
+
+  /* @uswds usa-color-cyan-vivid-20 */
+  --flex-cyan-vivid-20: #52daf2;
+
+  /* @uswds usa-color-cyan-vivid-30 */
+  --flex-cyan-vivid-30: #00bde3;
+
+  /* @uswds usa-color-cyan-vivid-40 */
+  --flex-cyan-vivid-40: #009ec1;
+
+  /* @uswds usa-color-cyan-vivid-50 */
+  --flex-cyan-vivid-50: #0081a1;
+
+  /* @uswds usa-color-cyan-vivid-60 */
+  --flex-cyan-vivid-60: #00687d;
+
+  /* @uswds usa-color-cyan-vivid-70 */
+  --flex-cyan-vivid-70: #0e4f5c;
+
+  /* @uswds usa-color-cyan-vivid-80 */
+  --flex-cyan-vivid-80: #093b44;
+
+  /* @uswds usa-color-mint-5 */
+  --flex-mint-5: #dbf6ed;
+
+  /* @uswds usa-color-mint-10 */
+  --flex-mint-10: #c7efe2;
+
+  /* @uswds usa-color-mint-20 */
+  --flex-mint-20: #92d9bb;
+
+  /* @uswds usa-color-mint-30 */
+  --flex-mint-30: #5abf95;
+
+  /* @uswds usa-color-mint-40 */
+  --flex-mint-40: #34a37e;
+
+  /* @uswds usa-color-mint-50 */
+  --flex-mint-50: #2e8367;
+
+  /* @uswds usa-color-mint-60 */
+  --flex-mint-60: #286846;
+
+  /* @uswds usa-color-mint-70 */
+  --flex-mint-70: #204e34;
+
+  /* @uswds usa-color-mint-80 */
+  --flex-mint-80: #193324;
+
+  /* @uswds usa-color-mint-90 */
+  --flex-mint-90: #0d1a12;
+
+  /* @uswds usa-color-mint-vivid-5 */
+  --flex-mint-vivid-5: #c9fbeb;
+
+  /* @uswds usa-color-mint-vivid-10 */
+  --flex-mint-vivid-10: #83fcd4;
+
+  /* @uswds usa-color-mint-vivid-20 */
+  --flex-mint-vivid-20: #0ceda6;
+
+  /* @uswds usa-color-mint-vivid-30 */
+  --flex-mint-vivid-30: #04c585;
+
+  /* @uswds usa-color-mint-vivid-40 */
+  --flex-mint-vivid-40: #00a871;
+
+  /* @uswds usa-color-mint-vivid-50 */
+  --flex-mint-vivid-50: #008659;
+
+  /* @uswds usa-color-mint-vivid-60 */
+  --flex-mint-vivid-60: #146947;
+
+  /* @uswds usa-color-mint-vivid-70 */
+  --flex-mint-vivid-70: #0c4e29;
+
+  /* @uswds usa-color-mint-vivid-80 */
+  --flex-mint-vivid-80: #0d351e;
+
+  /* @uswds usa-color-mint-cool-5 */
+  --flex-mint-cool-5: #e0f7f6;
+
+  /* @uswds usa-color-mint-cool-10 */
+  --flex-mint-cool-10: #c4eeeb;
+
+  /* @uswds usa-color-mint-cool-20 */
+  --flex-mint-cool-20: #9bd4cf;
+
+  /* @uswds usa-color-mint-cool-30 */
+  --flex-mint-cool-30: #6fbab3;
+
+  /* @uswds usa-color-mint-cool-40 */
+  --flex-mint-cool-40: #4f9e99;
+
+  /* @uswds usa-color-mint-cool-50 */
+  --flex-mint-cool-50: #40807e;
+
+  /* @uswds usa-color-mint-cool-60 */
+  --flex-mint-cool-60: #376462;
+
+  /* @uswds usa-color-mint-cool-70 */
+  --flex-mint-cool-70: #2a4b45;
+
+  /* @uswds usa-color-mint-cool-80 */
+  --flex-mint-cool-80: #203131;
+
+  /* @uswds usa-color-mint-cool-90 */
+  --flex-mint-cool-90: #111818;
+
+  /* @uswds usa-color-mint-cool-vivid-5 */
+  --flex-mint-cool-vivid-5: #d5fbf3;
+
+  /* @uswds usa-color-mint-cool-vivid-10 */
+  --flex-mint-cool-vivid-10: #7efbe1;
+
+  /* @uswds usa-color-mint-cool-vivid-20 */
+  --flex-mint-cool-vivid-20: #29e1cb;
+
+  /* @uswds usa-color-mint-cool-vivid-30 */
+  --flex-mint-cool-vivid-30: #1dc2ae;
+
+  /* @uswds usa-color-mint-cool-vivid-40 */
+  --flex-mint-cool-vivid-40: #00a398;
+
+  /* @uswds usa-color-mint-cool-vivid-50 */
+  --flex-mint-cool-vivid-50: #008480;
+
+  /* @uswds usa-color-mint-cool-vivid-60 */
+  --flex-mint-cool-vivid-60: #0f6460;
+
+  /* @uswds usa-color-mint-cool-vivid-70 */
+  --flex-mint-cool-vivid-70: #0b4b3f;
+
+  /* @uswds usa-color-mint-cool-vivid-80 */
+  --flex-mint-cool-vivid-80: #123131;
+
+  /* @uswds usa-color-blue-5 */
+  --flex-blue-5: #eff6fb;
+
+  /* @uswds usa-color-blue-10 */
+  --flex-blue-10: #d9e8f6;
+
+  /* @uswds usa-color-blue-20 */
+  --flex-blue-20: #aacdec;
+
+  /* @uswds usa-color-blue-30 */
+  --flex-blue-30: #73b3e7;
+
+  /* @uswds usa-color-blue-40 */
+  --flex-blue-40: #4f97d1;
+
+  /* @uswds usa-color-blue-50 */
+  --flex-blue-50: #2378c3;
+
+  /* @uswds usa-color-blue-60 */
+  --flex-blue-60: #2c608a;
+
+  /* @uswds usa-color-blue-70 */
+  --flex-blue-70: #274863;
+
+  /* @uswds usa-color-blue-80 */
+  --flex-blue-80: #1f303e;
+
+  /* @uswds usa-color-blue-90 */
+  --flex-blue-90: #11181d;
+
+  /* @uswds usa-color-blue-vivid-5 */
+  --flex-blue-vivid-5: #e8f5ff;
+
+  /* @uswds usa-color-blue-vivid-10 */
+  --flex-blue-vivid-10: #cfe8ff;
+
+  /* @uswds usa-color-blue-vivid-20 */
+  --flex-blue-vivid-20: #a1d3ff;
+
+  /* @uswds usa-color-blue-vivid-30 */
+  --flex-blue-vivid-30: #58b4ff;
+
+  /* @uswds usa-color-blue-vivid-40 */
+  --flex-blue-vivid-40: #2491ff;
+
+  /* @uswds usa-color-blue-vivid-50 */
+  --flex-blue-vivid-50: #0076d6;
+
+  /* @uswds usa-color-blue-vivid-60 */
+  --flex-blue-vivid-60: #005ea2;
+
+  /* @uswds usa-color-blue-vivid-70 */
+  --flex-blue-vivid-70: #0b4778;
+
+  /* @uswds usa-color-blue-vivid-80 */
+  --flex-blue-vivid-80: #112f4e;
+
+  /* @uswds usa-color-blue-cool-5 */
+  --flex-blue-cool-5: #e7f2f5;
+
+  /* @uswds usa-color-blue-cool-10 */
+  --flex-blue-cool-10: #dae9ee;
+
+  /* @uswds usa-color-blue-cool-20 */
+  --flex-blue-cool-20: #adcfdc;
+
+  /* @uswds usa-color-blue-cool-30 */
+  --flex-blue-cool-30: #82b4c9;
+
+  /* @uswds usa-color-blue-cool-40 */
+  --flex-blue-cool-40: #6499af;
+
+  /* @uswds usa-color-blue-cool-50 */
+  --flex-blue-cool-50: #3a7d95;
+
+  /* @uswds usa-color-blue-cool-60 */
+  --flex-blue-cool-60: #2e6276;
+
+  /* @uswds usa-color-blue-cool-70 */
+  --flex-blue-cool-70: #224a58;
+
+  /* @uswds usa-color-blue-cool-80 */
+  --flex-blue-cool-80: #14333d;
+
+  /* @uswds usa-color-blue-cool-90 */
+  --flex-blue-cool-90: #0f191c;
+
+  /* @uswds usa-color-blue-cool-vivid-5 */
+  --flex-blue-cool-vivid-5: #e1f3f8;
+
+  /* @uswds usa-color-blue-cool-vivid-10 */
+  --flex-blue-cool-vivid-10: #c3ebfa;
+
+  /* @uswds usa-color-blue-cool-vivid-20 */
+  --flex-blue-cool-vivid-20: #97d4ea;
+
+  /* @uswds usa-color-blue-cool-vivid-30 */
+  --flex-blue-cool-vivid-30: #59b9de;
+
+  /* @uswds usa-color-blue-cool-vivid-40 */
+  --flex-blue-cool-vivid-40: #28a0cb;
+
+  /* @uswds usa-color-blue-cool-vivid-50 */
+  --flex-blue-cool-vivid-50: #0d7ea2;
+
+  /* @uswds usa-color-blue-cool-vivid-60 */
+  --flex-blue-cool-vivid-60: #07648d;
+
+  /* @uswds usa-color-blue-cool-vivid-70 */
+  --flex-blue-cool-vivid-70: #074b69;
+
+  /* @uswds usa-color-blue-cool-vivid-80 */
+  --flex-blue-cool-vivid-80: #002d3f;
+
+  /* @uswds usa-color-blue-warm-5 */
+  --flex-blue-warm-5: #ecf1f7;
+
+  /* @uswds usa-color-blue-warm-10 */
+  --flex-blue-warm-10: #e1e7f1;
+
+  /* @uswds usa-color-blue-warm-20 */
+  --flex-blue-warm-20: #bbcae4;
+
+  /* @uswds usa-color-blue-warm-30 */
+  --flex-blue-warm-30: #98afd2;
+
+  /* @uswds usa-color-blue-warm-40 */
+  --flex-blue-warm-40: #7292c7;
+
+  /* @uswds usa-color-blue-warm-50 */
+  --flex-blue-warm-50: #4a77b4;
+
+  /* @uswds usa-color-blue-warm-60 */
+  --flex-blue-warm-60: #345d96;
+
+  /* @uswds usa-color-blue-warm-70 */
+  --flex-blue-warm-70: #2f4668;
+
+  /* @uswds usa-color-blue-warm-80 */
+  --flex-blue-warm-80: #252f3e;
+
+  /* @uswds usa-color-blue-warm-90 */
+  --flex-blue-warm-90: #13171f;
+
+  /* @uswds usa-color-blue-warm-vivid-5 */
+  --flex-blue-warm-vivid-5: #edf5ff;
+
+  /* @uswds usa-color-blue-warm-vivid-10 */
+  --flex-blue-warm-vivid-10: #d4e5ff;
+
+  /* @uswds usa-color-blue-warm-vivid-20 */
+  --flex-blue-warm-vivid-20: #adcdff;
+
+  /* @uswds usa-color-blue-warm-vivid-30 */
+  --flex-blue-warm-vivid-30: #81aefc;
+
+  /* @uswds usa-color-blue-warm-vivid-40 */
+  --flex-blue-warm-vivid-40: #5994f6;
+
+  /* @uswds usa-color-blue-warm-vivid-50 */
+  --flex-blue-warm-vivid-50: #2672de;
+
+  /* @uswds usa-color-blue-warm-vivid-60 */
+  --flex-blue-warm-vivid-60: #0050d8;
+
+  /* @uswds usa-color-blue-warm-vivid-70 */
+  --flex-blue-warm-vivid-70: #1a4480;
+
+  /* @uswds usa-color-blue-warm-vivid-80 */
+  --flex-blue-warm-vivid-80: #162e51;
+
+  /* @uswds usa-color-indigo-5 */
+  --flex-indigo-5: #efeff8;
+
+  /* @uswds usa-color-indigo-10 */
+  --flex-indigo-10: #e5e4fa;
+
+  /* @uswds usa-color-indigo-20 */
+  --flex-indigo-20: #c5c5f3;
+
+  /* @uswds usa-color-indigo-30 */
+  --flex-indigo-30: #a5a8eb;
+
+  /* @uswds usa-color-indigo-40 */
+  --flex-indigo-40: #8889db;
+
+  /* @uswds usa-color-indigo-50 */
+  --flex-indigo-50: #676cc8;
+
+  /* @uswds usa-color-indigo-60 */
+  --flex-indigo-60: #4d52af;
+
+  /* @uswds usa-color-indigo-70 */
+  --flex-indigo-70: #3d4076;
+
+  /* @uswds usa-color-indigo-80 */
+  --flex-indigo-80: #2b2c40;
+
+  /* @uswds usa-color-indigo-90 */
+  --flex-indigo-90: #16171f;
+
+  /* @uswds usa-color-indigo-vivid-5 */
+  --flex-indigo-vivid-5: #f0f0ff;
+
+  /* @uswds usa-color-indigo-vivid-10 */
+  --flex-indigo-vivid-10: #e0e0ff;
+
+  /* @uswds usa-color-indigo-vivid-20 */
+  --flex-indigo-vivid-20: #ccceff;
+
+  /* @uswds usa-color-indigo-vivid-30 */
+  --flex-indigo-vivid-30: #a3a7fa;
+
+  /* @uswds usa-color-indigo-vivid-40 */
+  --flex-indigo-vivid-40: #8289ff;
+
+  /* @uswds usa-color-indigo-vivid-50 */
+  --flex-indigo-vivid-50: #656bd7;
+
+  /* @uswds usa-color-indigo-vivid-60 */
+  --flex-indigo-vivid-60: #4a50c4;
+
+  /* @uswds usa-color-indigo-vivid-70 */
+  --flex-indigo-vivid-70: #3333a3;
+
+  /* @uswds usa-color-indigo-vivid-80 */
+  --flex-indigo-vivid-80: #212463;
+
+  /* @uswds usa-color-indigo-cool-5 */
+  --flex-indigo-cool-5: #eef0f9;
+
+  /* @uswds usa-color-indigo-cool-10 */
+  --flex-indigo-cool-10: #e1e6f9;
+
+  /* @uswds usa-color-indigo-cool-20 */
+  --flex-indigo-cool-20: #bbc8f5;
+
+  /* @uswds usa-color-indigo-cool-30 */
+  --flex-indigo-cool-30: #96abee;
+
+  /* @uswds usa-color-indigo-cool-40 */
+  --flex-indigo-cool-40: #6b8ee8;
+
+  /* @uswds usa-color-indigo-cool-50 */
+  --flex-indigo-cool-50: #496fd8;
+
+  /* @uswds usa-color-indigo-cool-60 */
+  --flex-indigo-cool-60: #3f57a6;
+
+  /* @uswds usa-color-indigo-cool-70 */
+  --flex-indigo-cool-70: #374274;
+
+  /* @uswds usa-color-indigo-cool-80 */
+  --flex-indigo-cool-80: #292d42;
+
+  /* @uswds usa-color-indigo-cool-90 */
+  --flex-indigo-cool-90: #151622;
+
+  /* @uswds usa-color-indigo-cool-vivid-5 */
+  --flex-indigo-cool-vivid-5: #edf0ff;
+
+  /* @uswds usa-color-indigo-cool-vivid-10 */
+  --flex-indigo-cool-vivid-10: #dee5ff;
+
+  /* @uswds usa-color-indigo-cool-vivid-20 */
+  --flex-indigo-cool-vivid-20: #b8c8ff;
+
+  /* @uswds usa-color-indigo-cool-vivid-30 */
+  --flex-indigo-cool-vivid-30: #94adff;
+
+  /* @uswds usa-color-indigo-cool-vivid-40 */
+  --flex-indigo-cool-vivid-40: #628ef4;
+
+  /* @uswds usa-color-indigo-cool-vivid-50 */
+  --flex-indigo-cool-vivid-50: #4866ff;
+
+  /* @uswds usa-color-indigo-cool-vivid-60 */
+  --flex-indigo-cool-vivid-60: #3e4ded;
+
+  /* @uswds usa-color-indigo-cool-vivid-70 */
+  --flex-indigo-cool-vivid-70: #222fbf;
+
+  /* @uswds usa-color-indigo-cool-vivid-80 */
+  --flex-indigo-cool-vivid-80: #1b2b85;
+
+  /* @uswds usa-color-indigo-warm-5 */
+  --flex-indigo-warm-5: #f1eff7;
+
+  /* @uswds usa-color-indigo-warm-10 */
+  --flex-indigo-warm-10: #e7e3fa;
+
+  /* @uswds usa-color-indigo-warm-20 */
+  --flex-indigo-warm-20: #cbc4f2;
+
+  /* @uswds usa-color-indigo-warm-30 */
+  --flex-indigo-warm-30: #afa5e8;
+
+  /* @uswds usa-color-indigo-warm-40 */
+  --flex-indigo-warm-40: #9287d8;
+
+  /* @uswds usa-color-indigo-warm-50 */
+  --flex-indigo-warm-50: #7665d1;
+
+  /* @uswds usa-color-indigo-warm-60 */
+  --flex-indigo-warm-60: #5e519e;
+
+  /* @uswds usa-color-indigo-warm-70 */
+  --flex-indigo-warm-70: #453c7b;
+
+  /* @uswds usa-color-indigo-warm-80 */
+  --flex-indigo-warm-80: #2e2c40;
+
+  /* @uswds usa-color-indigo-warm-90 */
+  --flex-indigo-warm-90: #18161d;
+
+  /* @uswds usa-color-indigo-warm-vivid-5 */
+  --flex-indigo-warm-vivid-5: #f5f2ff;
+
+  /* @uswds usa-color-indigo-warm-vivid-10 */
+  --flex-indigo-warm-vivid-10: #e4deff;
+
+  /* @uswds usa-color-indigo-warm-vivid-20 */
+  --flex-indigo-warm-vivid-20: #cfc4fd;
+
+  /* @uswds usa-color-indigo-warm-vivid-30 */
+  --flex-indigo-warm-vivid-30: #b69fff;
+
+  /* @uswds usa-color-indigo-warm-vivid-40 */
+  --flex-indigo-warm-vivid-40: #967efb;
+
+  /* @uswds usa-color-indigo-warm-vivid-50 */
+  --flex-indigo-warm-vivid-50: #745fe9;
+
+  /* @uswds usa-color-indigo-warm-vivid-60 */
+  --flex-indigo-warm-vivid-60: #5942d2;
+
+  /* @uswds usa-color-indigo-warm-vivid-70 */
+  --flex-indigo-warm-vivid-70: #3d2c9d;
+
+  /* @uswds usa-color-indigo-warm-vivid-80 */
+  --flex-indigo-warm-vivid-80: #261f5b;
+
+  /* @uswds usa-color-violet-5 */
+  --flex-violet-5: #f4f1f9;
+
+  /* @uswds usa-color-violet-10 */
+  --flex-violet-10: #ebe3f9;
+
+  /* @uswds usa-color-violet-20 */
+  --flex-violet-20: #d0c3e9;
+
+  /* @uswds usa-color-violet-30 */
+  --flex-violet-30: #b8a2e3;
+
+  /* @uswds usa-color-violet-40 */
+  --flex-violet-40: #9d84d2;
+
+  /* @uswds usa-color-violet-50 */
+  --flex-violet-50: #8168b3;
+
+  /* @uswds usa-color-violet-60 */
+  --flex-violet-60: #665190;
+
+  /* @uswds usa-color-violet-70 */
+  --flex-violet-70: #4c3d69;
+
+  /* @uswds usa-color-violet-80 */
+  --flex-violet-80: #312b3f;
+
+  /* @uswds usa-color-violet-90 */
+  --flex-violet-90: #18161d;
+
+  /* @uswds usa-color-violet-vivid-5 */
+  --flex-violet-vivid-5: #f7f2ff;
+
+  /* @uswds usa-color-violet-vivid-10 */
+  --flex-violet-vivid-10: #ede3ff;
+
+  /* @uswds usa-color-violet-vivid-20 */
+  --flex-violet-vivid-20: #d5bfff;
+
+  /* @uswds usa-color-violet-vivid-30 */
+  --flex-violet-vivid-30: #c39deb;
+
+  /* @uswds usa-color-violet-vivid-40 */
+  --flex-violet-vivid-40: #ad79e9;
+
+  /* @uswds usa-color-violet-vivid-50 */
+  --flex-violet-vivid-50: #9355dc;
+
+  /* @uswds usa-color-violet-vivid-60 */
+  --flex-violet-vivid-60: #783cb9;
+
+  /* @uswds usa-color-violet-vivid-70 */
+  --flex-violet-vivid-70: #54278f;
+
+  /* @uswds usa-color-violet-vivid-80 */
+  --flex-violet-vivid-80: #39215e;
+
+  /* @uswds usa-color-violet-warm-5 */
+  --flex-violet-warm-5: #f8f0f9;
+
+  /* @uswds usa-color-violet-warm-10 */
+  --flex-violet-warm-10: #f6dff8;
+
+  /* @uswds usa-color-violet-warm-20 */
+  --flex-violet-warm-20: #e2bee4;
+
+  /* @uswds usa-color-violet-warm-30 */
+  --flex-violet-warm-30: #d29ad8;
+
+  /* @uswds usa-color-violet-warm-40 */
+  --flex-violet-warm-40: #bf77c8;
+
+  /* @uswds usa-color-violet-warm-50 */
+  --flex-violet-warm-50: #b04abd;
+
+  /* @uswds usa-color-violet-warm-60 */
+  --flex-violet-warm-60: #864381;
+
+  /* @uswds usa-color-violet-warm-70 */
+  --flex-violet-warm-70: #5c395a;
+
+  /* @uswds usa-color-violet-warm-80 */
+  --flex-violet-warm-80: #382936;
+
+  /* @uswds usa-color-violet-warm-90 */
+  --flex-violet-warm-90: #1b151b;
+
+  /* @uswds usa-color-violet-warm-vivid-5 */
+  --flex-violet-warm-vivid-5: #fef2ff;
+
+  /* @uswds usa-color-violet-warm-vivid-10 */
+  --flex-violet-warm-vivid-10: #fbdcff;
+
+  /* @uswds usa-color-violet-warm-vivid-20 */
+  --flex-violet-warm-vivid-20: #f4b2ff;
+
+  /* @uswds usa-color-violet-warm-vivid-30 */
+  --flex-violet-warm-vivid-30: #ee83ff;
+
+  /* @uswds usa-color-violet-warm-vivid-40 */
+  --flex-violet-warm-vivid-40: #d85bef;
+
+  /* @uswds usa-color-violet-warm-vivid-50 */
+  --flex-violet-warm-vivid-50: #be32d0;
+
+  /* @uswds usa-color-violet-warm-vivid-60 */
+  --flex-violet-warm-vivid-60: #93348c;
+
+  /* @uswds usa-color-violet-warm-vivid-70 */
+  --flex-violet-warm-vivid-70: #711e6c;
+
+  /* @uswds usa-color-violet-warm-vivid-80 */
+  --flex-violet-warm-vivid-80: #481441;
+
+  /* @uswds usa-color-magenta-5 */
+  --flex-magenta-5: #f9f0f2;
+
+  /* @uswds usa-color-magenta-10 */
+  --flex-magenta-10: #f6e1e8;
+
+  /* @uswds usa-color-magenta-20 */
+  --flex-magenta-20: #f0bbcc;
+
+  /* @uswds usa-color-magenta-30 */
+  --flex-magenta-30: #e895b3;
+
+  /* @uswds usa-color-magenta-40 */
+  --flex-magenta-40: #e0699f;
+
+  /* @uswds usa-color-magenta-50 */
+  --flex-magenta-50: #c84281;
+
+  /* @uswds usa-color-magenta-60 */
+  --flex-magenta-60: #8b4566;
+
+  /* @uswds usa-color-magenta-70 */
+  --flex-magenta-70: #66364b;
+
+  /* @uswds usa-color-magenta-80 */
+  --flex-magenta-80: #402731;
+
+  /* @uswds usa-color-magenta-90 */
+  --flex-magenta-90: #1b1617;
+
+  /* @uswds usa-color-magenta-vivid-5 */
+  --flex-magenta-vivid-5: #fff2f5;
+
+  /* @uswds usa-color-magenta-vivid-10 */
+  --flex-magenta-vivid-10: #ffddea;
+
+  /* @uswds usa-color-magenta-vivid-20 */
+  --flex-magenta-vivid-20: #ffb4cf;
+
+  /* @uswds usa-color-magenta-vivid-30 */
+  --flex-magenta-vivid-30: #ff87b2;
+
+  /* @uswds usa-color-magenta-vivid-40 */
+  --flex-magenta-vivid-40: #fd4496;
+
+  /* @uswds usa-color-magenta-vivid-50 */
+  --flex-magenta-vivid-50: #d72d79;
+
+  /* @uswds usa-color-magenta-vivid-60 */
+  --flex-magenta-vivid-60: #ab2165;
+
+  /* @uswds usa-color-magenta-vivid-70 */
+  --flex-magenta-vivid-70: #731f44;
+
+  /* @uswds usa-color-magenta-vivid-80 */
+  --flex-magenta-vivid-80: #4f172e;
+
+  /* @uswds usa-color-white */
+  --flex-white: #fff;
+
+  /* @uswds usa-color-black */
+  --flex-black: #000;
+
+  /* ============================================================================
+     TIER 2: SEMANTIC TOKENS
+     ============================================================================ */
+
+  /* Color tokens */
+  --flex-color-bg: var(--flex-gray-cool-2);
+  --flex-color-surface: var(--flex-white);
+  --flex-color-border: var(--flex-gray-cool-20);
+  --flex-color-text: var(--flex-gray-90);
+  --flex-color-text-muted: var(--flex-gray-60);
+  --flex-color-accent: var(--flex-blue-vivid-60);
+  --flex-color-success: var(--flex-green-cool-vivid-60);
+  --flex-color-error: var(--flex-red-vivid-60);
+  --flex-color-ink: var(--flex-gray-cool-50);
+  --flex-color-table-header: var(--flex-gray-cool-10);
+  --flex-color-on-accent: var(--flex-white);
+  --flex-color-info: var(--flex-cyan-vivid-30);
+  --flex-color-info-lighter: var(--flex-cyan-5);
+  --flex-color-warning: var(--flex-yellow-vivid-20);
+  --flex-color-warning-lighter: var(--flex-yellow-5);
+  --flex-color-error-lighter: var(--flex-red-warm-10);
+  --flex-color-success-lighter: var(--flex-mint-cool-5);
+
+  /* Spacing tokens */
+  --flex-space-xs: 4px;
+  --flex-space-sm: 8px;
+  --flex-space-md: 16px;
+  --flex-space-lg: 24px;
+  --flex-space-xl: 32px;
+
+  /* Typography tokens */
+  --flex-radius-sm: 4px;
+  --flex-radius-md: 8px;
+  --flex-radius-bubble: 14px;
+  --flex-font-sans: "Source Sans Pro Normalized", system-ui, -apple-system, sans-serif;
+  --flex-font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", menlo, monospace;
+  --flex-text-xs: 0.7em;
+  --flex-text-sm: 0.82em;
+  --flex-text-base: 0.9em;
+  --flex-text-uswds: 1rem;
+  --flex-text-tag: 0.875rem;
+
+  /* Focus tokens */
+  --flex-focus-ring: 4px solid var(--flex-color-accent);
+  --flex-focus-offset: 2px;
+  --flex-focus-offset-inset: 0px;
+
+  /* Control tokens */
+  --flex-control-max-width: 30rem;
+  --flex-control-height: 2.5rem;
+  --flex-control-padding: 0.5rem;
+  --flex-control-margin-top: 0.5rem;
+  --flex-control-border: 1px solid var(--flex-color-ink);
+
+  /* Breakpoints — CSS can't consume these in @media, so they're documentation.
+     Use these values directly in @media rules. */
+  --flex-bp-sm: 600px;
+  --flex-bp-md: 768px;
+}
+
+/* ============================================================================
+   DARK MODE: Semantic Token Overrides
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --flex-color-bg: var(--flex-gray-90);
+    --flex-color-surface: var(--flex-gray-80);
+    --flex-color-border: var(--flex-gray-70);
+    --flex-color-text: var(--flex-gray-5);
+    --flex-color-text-muted: var(--flex-gray-50);
+    --flex-color-ink: var(--flex-gray-cool-30);
+    --flex-color-table-header: var(--flex-gray-70);
+    --flex-color-accent: var(--flex-blue-30);
+    --flex-color-error: var(--flex-red-vivid-20);
+    --flex-color-success: var(--flex-green-cool-vivid-20);
+    --flex-color-info: var(--flex-cyan-vivid-20);
+    --flex-color-info-lighter: var(--flex-cyan-80);
+    --flex-color-warning: var(--flex-yellow-vivid-30);
+    --flex-color-warning-lighter: var(--flex-yellow-80);
+    --flex-color-error-lighter: var(--flex-red-warm-80);
+    --flex-color-success-lighter: var(--flex-mint-cool-80);
+  }
+}

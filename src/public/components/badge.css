@@ -1,0 +1,52 @@
+.badge {
+  display: inline-block;
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-tag);
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--flex-radius-bubble);
+  line-height: 1.4;
+}
+
+.badge[data-status="draft"] {
+  background: var(--flex-color-warning-lighter);
+  color: var(--flex-color-text);
+}
+
+.badge[data-status="working"] {
+  background: var(--flex-color-info-lighter);
+  color: var(--flex-color-text);
+}
+
+.badge[data-status="stable"] {
+  background: var(--flex-color-success-lighter);
+  color: var(--flex-color-text);
+}
+
+.badge[data-status="deprecated"] {
+  background: var(--flex-color-error-lighter);
+  color: var(--flex-color-text);
+}
+
+.badge[data-variant="tag"] {
+  background: var(--flex-color-surface);
+  border: 1px solid var(--flex-color-border);
+  color: var(--flex-color-text-muted);
+  font-weight: 400;
+}
+
+.badge[data-variant="milestone"] {
+  background: var(--flex-color-info-lighter);
+  color: var(--flex-color-text);
+  font-weight: 500;
+}
+
+.badge[data-state="open"] {
+  background: var(--flex-color-success-lighter);
+  color: var(--flex-color-text);
+}
+
+.badge[data-state="closed"] {
+  background: var(--flex-color-error-lighter);
+  color: var(--flex-color-text);
+}

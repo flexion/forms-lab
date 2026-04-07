@@ -1,0 +1,24 @@
+/* Cascade layer order — specificity is controlled by declaration order here */
+@layer reset, tokens, composition, base, block, utility;
+
+/* Reset */
+@import './reset.css' layer(reset);
+@import './font-normalize.css' layer(reset);
+
+/* Tokens */
+@import './tokens.css' layer(tokens);
+
+/* Compositions */
+@import './compositions.css' layer(composition);
+
+/* Base */
+@import './base.css' layer(base);
+
+/* Block — component styles */
+@import './components/nav.css' layer(block);
+@import './components/badge.css' layer(block);
+@import './components/card.css' layer(block);
+@import './components/prose.css' layer(block);
+
+/* Utility */
+@import './utilities.css' layer(utility);

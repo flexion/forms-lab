@@ -1,0 +1,36 @@
+.site-header {
+  background: var(--flex-color-surface);
+  border-bottom: 1px solid var(--flex-color-border);
+  padding: var(--flex-space-md) var(--flex-space-lg);
+}
+
+.site-header h1 {
+  font-family: var(--flex-font-sans);
+  font-size: 1.5em;
+  font-weight: 700;
+  color: var(--flex-color-text);
+}
+
+.site-header p {
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+}
+
+.site-nav {
+  display: flex;
+  gap: var(--flex-space-md);
+  margin-top: var(--flex-space-sm);
+}
+
+.site-nav a {
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-base);
+  color: var(--flex-color-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.site-nav a:hover {
+  text-decoration: underline;
+}
