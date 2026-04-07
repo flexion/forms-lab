@@ -2,23 +2,23 @@
 @layer reset, tokens, composition, base, block, utility;
 
 /* Reset */
-@import './reset.css' layer(reset);
-@import './font-normalize.css' layer(reset);
+@import "./reset.css" layer(reset);
+@import "./font-normalize.css" layer(reset);
 
 /* Tokens */
-@import './tokens.css' layer(tokens);
+@import "./tokens.css" layer(tokens);
 
 /* Compositions */
-@import './compositions.css' layer(composition);
+@import "./compositions.css" layer(composition);
 
 /* Base */
-@import './base.css' layer(base);
+@import "./base.css" layer(base);
 
 /* Block — component styles */
-@import './components/nav.css' layer(block);
-@import './components/badge.css' layer(block);
-@import './components/card.css' layer(block);
-@import './components/prose.css' layer(block);
+@import '../components/flex-layout/styles.css' layer(block);
+@import '../components/flex-badge/styles.css' layer(block);
+@import '../components/flex-card/styles.css' layer(block);
+@import '../components/flex-prose/styles.css' layer(block);
 
 /* Utility */
-@import './utilities.css' layer(utility);
+@import "./utilities.css" layer(utility);

@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
-import { Layout } from '../../components/Layout'
+import { Layout } from '../../components/flex-layout'
 import { readMarkdownDir } from '../../lib/markdown'
 import architecture from './architecture'
 import decisions from './decisions'

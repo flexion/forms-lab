@@ -1,8 +1,8 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
-import { ContentCard } from '../../components/ContentCard'
-import { Layout } from '../../components/Layout'
-import { Prose } from '../../components/Prose'
+import { ContentCard } from '../../components/flex-card'
+import { Layout } from '../../components/flex-layout'
+import { Prose } from '../../components/flex-prose'
 import { parseMarkdown, readMarkdownDir } from '../../lib/markdown'
 
 const personas = new Hono()

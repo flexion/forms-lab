@@ -5,5 +5,9 @@ interface StatusBadgeProps {
 }
 
 export const StatusBadge: FC<StatusBadgeProps> = ({ status }) => {
-  return <span class="badge" data-status={status}>{status}</span>
+  return (
+    <span class="badge" data-status={status}>
+      {status}
+    </span>
+  )
 }
