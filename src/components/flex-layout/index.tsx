@@ -27,20 +27,18 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             </nav>
           </div>
         </header>
-        <div class="l-center">
-          {props.sidebar ? (
-            <div class="l-sidebar">
-              <aside class="catalog-sidebar">{props.sidebar}</aside>
-              <main>
-                <div class="l-stack">{props.children}</div>
-              </main>
-            </div>
-          ) : (
+        {props.sidebar ? (
+          <div class="catalog-layout">
+            <aside class="catalog-sidebar">{props.sidebar}</aside>
             <main>
               <div class="l-stack">{props.children}</div>
             </main>
-          )}
-        </div>
+          </div>
+        ) : (
+          <main class="l-center">
+            <div class="l-stack">{props.children}</div>
+          </main>
+        )}
         <footer class="site-footer">
           <div class="l-center">
             <p>Forms Lab — LLM-Assisted Forms Platform</p>

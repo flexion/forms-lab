@@ -63,9 +63,32 @@
   color: var(--flex-color-text-muted);
 }
 
+.catalog-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: var(--flex-space-lg);
+  inline-size: 960px;
+  max-inline-size: 100%;
+  margin-inline: auto;
+  padding-inline: var(--flex-space-md);
+  padding-block: var(--flex-space-lg);
+}
+
+@media (max-width: 768px) {
+  .catalog-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 .catalog-sidebar {
   font-family: var(--flex-font-sans);
   font-size: var(--flex-text-base);
+  border-right: 1px solid var(--flex-color-border);
+  padding-right: var(--flex-space-lg);
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+  position: sticky;
+  top: var(--flex-space-md);
 }
 
 .catalog-sidebar h2 {
