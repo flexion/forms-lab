@@ -135,3 +135,41 @@ export interface Persona {
   needs: string[]
   content: string // Full markdown content
 }
+
+/**
+ * Decision - Architectural decision record
+ */
+export interface Decision {
+  slug: string
+  group: string
+  title: string
+  status: string
+  tags: string[]
+  decided: string
+  content: string
+}
+
+/**
+ * ArchitectureDoc - System architecture documentation
+ */
+export interface ArchitectureDoc {
+  slug: string
+  title: string
+  status: string
+  tags: string[]
+  content: string
+}
+
+/**
+ * Story - User story synced from GitHub Issues
+ */
+export interface Story {
+  slug: string
+  issue: number
+  title: string
+  milestone: string
+  labels: string[]
+  state: string
+  syncedAt: string
+  content: string
+}

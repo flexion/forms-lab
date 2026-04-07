@@ -1,5 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import MarkdownIt from 'markdown-it'
 
 /**
  * Parse frontmatter and content from a markdown file
@@ -79,4 +80,17 @@ export async function readMarkdownDir(
   )
 
   return results
+}
+
+const md = new MarkdownIt({
+  html: false,
+  linkify: true,
+  typographer: true,
+})
+
+/**
+ * Render markdown string to HTML
+ */
+export function renderMarkdown(input: string): string {
+  return md.render(input)
 }
