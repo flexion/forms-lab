@@ -18,7 +18,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
       </head>
       <body>
         <header class="site-header">
-          <div class="l-center site-header-inner">
+          <div class="l-center">
             <h1><a href="/">Forms Lab</a></h1>
             <p>LLM-Assisted Forms Platform</p>
             <nav class="site-nav">
@@ -42,7 +42,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           )}
         </div>
         <footer class="site-footer">
-          <div class="l-center site-footer-inner">
+          <div class="l-center">
             <p>Forms Lab — LLM-Assisted Forms Platform</p>
           </div>
         </footer>
