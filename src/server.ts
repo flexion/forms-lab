@@ -53,21 +53,4 @@ app.get('/', (c) => {
   )
 })
 
-// Start server when run directly
-if (import.meta.main) {
-  // Build CSS on startup in dev mode
-  await Bun.build({
-    entrypoints: ['./src/public/styles.css'],
-    outdir: './dist',
-    naming: 'styles.css',
-    minify: false,
-  })
-
-  Bun.serve({
-    port: process.env.PORT || 3000,
-    fetch: app.fetch,
-  })
-  console.log(`Server running on http://localhost:${process.env.PORT || 3000}`)
-}
-
 export default app
