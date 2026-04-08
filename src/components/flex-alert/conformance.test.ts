@@ -25,6 +25,8 @@ const IGNORE = {
     // Outline color inherits from color
     'outline',
     'color',
+    // We use position: relative for CSS-driven icon via ::before pseudo-element
+    'position',
   ],
   ignoreBoxKeys: [
     'width',
@@ -34,6 +36,8 @@ const IGNORE = {
     'paddingBottom',
     'paddingLeft',
   ],
+  // Our alert uses ::before for CSS-driven icons; USWDS uses a different icon approach
+  ignorePseudos: true,
 }
 
 test.describe('flex-alert conformance', () => {

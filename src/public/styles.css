@@ -17,6 +17,7 @@
 /* Block — component styles */
 @import "../components/flex-accordion/styles.css" layer(block);
 @import "../components/flex-alert/styles.css" layer(block);
+@import "../components/flex-icon/styles.css" layer(block);
 @import "../components/flex-layout/styles.css" layer(block);
 @import "../components/flex-badge/styles.css" layer(block);
 @import "../components/flex-card/styles.css" layer(block);

@@ -5,6 +5,19 @@ import catalog from './routes/catalog/index'
 
 const app = new Hono()
 
+// USWDS icon sprite
+app.get('/static/sprite.svg', async (c) => {
+  const { readFile } = await import('node:fs/promises')
+  const { resolve } = await import('node:path')
+  const svg = await readFile(
+    resolve(process.cwd(), 'node_modules/@uswds/uswds/dist/img/sprite.svg'),
+    'utf-8',
+  )
+  c.header('Content-Type', 'image/svg+xml')
+  c.header('Cache-Control', 'public, max-age=31536000')
+  return c.body(svg)
+})
+
 // Static assets (CSS build output)
 app.use(
   '/static/*',

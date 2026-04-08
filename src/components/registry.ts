@@ -1,6 +1,6 @@
 import { meta as accordion } from './flex-accordion/meta'
-
 import { meta as alert } from './flex-alert/meta'
+import { meta as icon } from './flex-icon/meta'
 import { meta as button } from './flex-button/meta'
 import { meta as errorMessage } from './flex-error-message/meta'
 import { meta as label } from './flex-label/meta'
@@ -13,6 +13,7 @@ const components: ComponentMeta[] = [
   alert,
   button,
   errorMessage,
+  icon,
   label,
   textInput,
   textarea,

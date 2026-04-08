@@ -14,6 +14,7 @@ function getFlexCSS(): string {
     'src/public/utilities.css',
     'src/components/flex-accordion/styles.css',
     'src/components/flex-alert/styles.css',
+    'src/components/flex-icon/styles.css',
     'src/components/flex-layout/styles.css',
     'src/components/flex-badge/styles.css',
     'src/components/flex-card/styles.css',
