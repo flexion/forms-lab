@@ -1,4 +1,4 @@
-type Position = 'top' | 'bottom' | 'left' | 'right'
+type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
 
 class FlexTooltipElement extends HTMLElement {
   private trigger: HTMLElement | null = null
@@ -23,8 +23,8 @@ class FlexTooltipElement extends HTMLElement {
     this.trigger?.removeEventListener('focusout', this.hide)
   }
 
-  private get position(): Position {
-    return (this.dataset.position as Position) || 'top'
+  private get position(): TooltipPosition {
+    return (this.dataset.position as TooltipPosition) || 'top'
   }
 
   private show = () => {
@@ -44,7 +44,7 @@ class FlexTooltipElement extends HTMLElement {
 
     const triggerRect = this.trigger.getBoundingClientRect()
     const bodyRect = this.body.getBoundingClientRect()
-    const position = this.resolvePosition(triggerRect, bodyRect)
+    const position = this.resolveTooltipPosition(triggerRect, bodyRect)
 
     this.body.setAttribute('data-position-actual', position)
 
@@ -77,11 +77,11 @@ class FlexTooltipElement extends HTMLElement {
     }
   }
 
-  private resolvePosition(triggerRect: DOMRect, bodyRect: DOMRect): Position {
+  private resolveTooltipPosition(triggerRect: DOMRect, bodyRect: DOMRect): TooltipPosition {
     const preferred = this.position
     const gap = 8
 
-    const fits: Record<Position, boolean> = {
+    const fits: Record<TooltipPosition, boolean> = {
       top: triggerRect.top - bodyRect.height - gap >= 0,
       bottom: triggerRect.bottom + bodyRect.height + gap <= window.innerHeight,
       left: triggerRect.left - bodyRect.width - gap >= 0,
@@ -91,7 +91,7 @@ class FlexTooltipElement extends HTMLElement {
     if (fits[preferred]) return preferred
 
     // Flip to opposite
-    const opposite: Record<Position, Position> = {
+    const opposite: Record<TooltipPosition, TooltipPosition> = {
       top: 'bottom',
       bottom: 'top',
       left: 'right',
@@ -100,7 +100,7 @@ class FlexTooltipElement extends HTMLElement {
     if (fits[opposite[preferred]]) return opposite[preferred]
 
     // Fall through to any that fits
-    for (const pos of ['top', 'bottom', 'left', 'right'] as Position[]) {
+    for (const pos of ['top', 'bottom', 'left', 'right'] as TooltipPosition[]) {
       if (fits[pos]) return pos
     }
 

@@ -23,7 +23,7 @@ export const CharacterCount: FC<CharacterCountProps> = ({
       class="flex-textarea"
       id={id}
       name={name}
-      maxlength={String(maxLength)}
+      maxlength={maxLength}
       required={required}
       aria-describedby={`${id}-message`}
     />
