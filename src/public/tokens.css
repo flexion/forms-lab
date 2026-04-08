@@ -4360,6 +4360,7 @@
   --flex-color-error: var(--flex-red-vivid-60);
   --flex-color-ink: var(--flex-gray-cool-50);
   --flex-color-table-header: var(--flex-gray-cool-10);
+  --flex-color-bg-subtle: var(--flex-gray-5);
   --flex-color-on-accent: var(--flex-white);
   --flex-color-info: var(--flex-cyan-vivid-30);
   --flex-color-info-lighter: var(--flex-cyan-5);
@@ -4420,6 +4421,7 @@
     --flex-color-text-muted: var(--flex-gray-50);
     --flex-color-ink: var(--flex-gray-cool-30);
     --flex-color-table-header: var(--flex-gray-70);
+    --flex-color-bg-subtle: var(--flex-gray-80);
     --flex-color-accent: var(--flex-blue-30);
     --flex-color-error: var(--flex-red-vivid-20);
     --flex-color-success: var(--flex-green-cool-vivid-20);

@@ -93,8 +93,6 @@ test.describe('flex-accordion conformance', () => {
       ...IGNORE,
       ignoreProperties: [
         ...IGNORE.ignoreProperties,
-        // Background color differs at token level
-        'background-color',
         // Border specifics differ — our button has border-bottom, USWDS uses different border approach
         'border-top-color',
         'border-right-color',
