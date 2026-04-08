@@ -72,8 +72,7 @@
 
 /* Middle buttons: no border radius, negative margins to overlap */
 .flex-button-group[data-variant="segmented"] .flex-button-group__item:where(
-    :not(:first-child):not(:last-child)
-  )
+    :not(:first-child, :last-child))
   > .flex-button {
   border-radius: 0;
   margin-right: -1px;
