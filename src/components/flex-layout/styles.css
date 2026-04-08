@@ -74,6 +74,11 @@
   padding-block: var(--flex-space-lg);
 }
 
+.catalog-layout > main {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
 .catalog-sidebar {
   font-family: var(--flex-font-sans);
   font-size: var(--flex-text-base);
