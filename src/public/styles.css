@@ -46,6 +46,10 @@
 @import "../components/flex-form/styles.css" layer(block);
 @import "../components/flex-validation/styles.css" layer(block);
 @import "../components/flex-input-prefix-suffix/styles.css" layer(block);
+@import "../components/flex-site-alert/styles.css" layer(block);
+@import "../components/flex-summary-box/styles.css" layer(block);
+@import "../components/flex-step-indicator/styles.css" layer(block);
+@import "../components/flex-process-list/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);

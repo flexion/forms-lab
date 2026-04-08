@@ -17,11 +17,15 @@ import { meta as label } from './flex-label/meta'
 import { meta as link } from './flex-link/meta'
 import { meta as list } from './flex-list/meta'
 import { meta as pagination } from './flex-pagination/meta'
+import { meta as processList } from './flex-process-list/meta'
 import { meta as prose } from './flex-prose/meta'
 import { meta as radio } from './flex-radio/meta'
 import { meta as search } from './flex-search/meta'
 import { meta as select } from './flex-select/meta'
 import { meta as sideNavigation } from './flex-side-navigation/meta'
+import { meta as siteAlert } from './flex-site-alert/meta'
+import { meta as stepIndicator } from './flex-step-indicator/meta'
+import { meta as summaryBox } from './flex-summary-box/meta'
 import { meta as table } from './flex-table/meta'
 import { meta as tag } from './flex-tag/meta'
 import { meta as textInput } from './flex-text-input/meta'
@@ -49,11 +53,15 @@ const components: ComponentMeta[] = [
   link,
   list,
   pagination,
+  processList,
   prose,
   radio,
   search,
   select,
   sideNavigation,
+  siteAlert,
+  stepIndicator,
+  summaryBox,
   table,
   tag,
   textInput,
