@@ -59,6 +59,8 @@
 @import "../components/flex-language-selector/styles.css" layer(block);
 @import "../components/flex-modal/styles.css" layer(block);
 @import "../components/flex-tooltip/styles.css" layer(block);
+@import "../components/flex-combo-box/styles.css" layer(block);
+@import "../components/flex-in-page-nav/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);

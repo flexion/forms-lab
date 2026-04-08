@@ -8,12 +8,14 @@ import { meta as card } from './flex-card/meta'
 import { meta as characterCount } from './flex-character-count/meta'
 import { meta as checkbox } from './flex-checkbox/meta'
 import { meta as collection } from './flex-collection/meta'
+import { meta as comboBox } from './flex-combo-box/meta'
 import { meta as errorMessage } from './flex-error-message/meta'
 import { meta as fileInput } from './flex-file-input/meta'
 import { meta as footer } from './flex-footer/meta'
 import { meta as form } from './flex-form/meta'
 import { meta as icon } from './flex-icon/meta'
 import { meta as identifier } from './flex-identifier/meta'
+import { meta as inPageNav } from './flex-in-page-nav/meta'
 import { meta as inputMask } from './flex-input-mask/meta'
 import { meta as inputPrefixSuffix } from './flex-input-prefix-suffix/meta'
 import { meta as label } from './flex-label/meta'
@@ -52,12 +54,14 @@ const components: ComponentMeta[] = [
   characterCount,
   checkbox,
   collection,
+  comboBox,
   errorMessage,
   fileInput,
   footer,
   form,
   icon,
   identifier,
+  inPageNav,
   inputMask,
   inputPrefixSuffix,
   label,

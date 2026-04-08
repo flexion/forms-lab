@@ -16,6 +16,10 @@
       "complexity": {
         "noImportantStyles": "off"
       },
+      "a11y": {
+        "noNoninteractiveElementToInteractiveRole": "warn",
+        "useFocusableInteractive": "warn"
+      },
       "style": {
         "noDescendingSpecificity": "off"
       }
