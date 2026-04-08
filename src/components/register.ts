@@ -3,3 +3,5 @@
 // This file is built into dist/components.js and loaded on every page.
 import './flex-accordion/client'
 import './flex-banner/client'
+import './flex-character-count/client'
+import './flex-range-slider/client'

@@ -5,6 +5,7 @@ import { meta as breadcrumb } from './flex-breadcrumb/meta'
 import { meta as button } from './flex-button/meta'
 import { meta as buttonGroup } from './flex-button-group/meta'
 import { meta as card } from './flex-card/meta'
+import { meta as characterCount } from './flex-character-count/meta'
 import { meta as checkbox } from './flex-checkbox/meta'
 import { meta as collection } from './flex-collection/meta'
 import { meta as errorMessage } from './flex-error-message/meta'
@@ -20,6 +21,7 @@ import { meta as pagination } from './flex-pagination/meta'
 import { meta as processList } from './flex-process-list/meta'
 import { meta as prose } from './flex-prose/meta'
 import { meta as radio } from './flex-radio/meta'
+import { meta as rangeSlider } from './flex-range-slider/meta'
 import { meta as search } from './flex-search/meta'
 import { meta as select } from './flex-select/meta'
 import { meta as sideNavigation } from './flex-side-navigation/meta'
@@ -41,6 +43,7 @@ const components: ComponentMeta[] = [
   button,
   buttonGroup,
   card,
+  characterCount,
   checkbox,
   collection,
   errorMessage,
@@ -56,6 +59,7 @@ const components: ComponentMeta[] = [
   processList,
   prose,
   radio,
+  rangeSlider,
   search,
   select,
   sideNavigation,
