@@ -57,6 +57,8 @@
 @import "../components/flex-range-slider/styles.css" layer(block);
 @import "../components/flex-file-input/styles.css" layer(block);
 @import "../components/flex-language-selector/styles.css" layer(block);
+@import "../components/flex-modal/styles.css" layer(block);
+@import "../components/flex-tooltip/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);

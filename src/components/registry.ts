@@ -21,6 +21,7 @@ import { meta as languageSelector } from './flex-language-selector/meta'
 import { meta as link } from './flex-link/meta'
 import { meta as list } from './flex-list/meta'
 import { meta as memorableDate } from './flex-memorable-date/meta'
+import { meta as modal } from './flex-modal/meta'
 import { meta as pagination } from './flex-pagination/meta'
 import { meta as processList } from './flex-process-list/meta'
 import { meta as prose } from './flex-prose/meta'
@@ -36,6 +37,7 @@ import { meta as table } from './flex-table/meta'
 import { meta as tag } from './flex-tag/meta'
 import { meta as textInput } from './flex-text-input/meta'
 import { meta as textarea } from './flex-textarea/meta'
+import { meta as tooltip } from './flex-tooltip/meta'
 import { meta as validation } from './flex-validation/meta'
 import type { ComponentMeta } from './types'
 
@@ -63,6 +65,7 @@ const components: ComponentMeta[] = [
   link,
   list,
   memorableDate,
+  modal,
   pagination,
   processList,
   prose,
@@ -78,6 +81,7 @@ const components: ComponentMeta[] = [
   tag,
   textInput,
   textarea,
+  tooltip,
   validation,
 ]
 
