@@ -97,4 +97,4 @@ This is a class project for LLM Class 2026 Winter Cohort. Development follows th
 
 ## License
 
-MIT
+[Apache License 2.0](LICENSE)
