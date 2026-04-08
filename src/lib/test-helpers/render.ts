@@ -51,6 +51,8 @@ function getFlexCSS(): string {
     'src/components/flex-step-indicator/styles.css',
     'src/components/flex-process-list/styles.css',
     'src/components/flex-character-count/styles.css',
+    'src/components/flex-memorable-date/styles.css',
+    'src/components/flex-input-mask/styles.css',
     'src/components/flex-range-slider/styles.css',
   ]
   let css = files.map((f) => readCSSFile(f)).join('\n')

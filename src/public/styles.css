@@ -52,6 +52,8 @@
 @import "../components/flex-step-indicator/styles.css" layer(block);
 @import "../components/flex-process-list/styles.css" layer(block);
 @import "../components/flex-character-count/styles.css" layer(block);
+@import "../components/flex-memorable-date/styles.css" layer(block);
+@import "../components/flex-input-mask/styles.css" layer(block);
 @import "../components/flex-range-slider/styles.css" layer(block);
 
 /* Utility */

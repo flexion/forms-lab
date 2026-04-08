@@ -13,10 +13,12 @@ import { meta as footer } from './flex-footer/meta'
 import { meta as form } from './flex-form/meta'
 import { meta as icon } from './flex-icon/meta'
 import { meta as identifier } from './flex-identifier/meta'
+import { meta as inputMask } from './flex-input-mask/meta'
 import { meta as inputPrefixSuffix } from './flex-input-prefix-suffix/meta'
 import { meta as label } from './flex-label/meta'
 import { meta as link } from './flex-link/meta'
 import { meta as list } from './flex-list/meta'
+import { meta as memorableDate } from './flex-memorable-date/meta'
 import { meta as pagination } from './flex-pagination/meta'
 import { meta as processList } from './flex-process-list/meta'
 import { meta as prose } from './flex-prose/meta'
@@ -51,10 +53,12 @@ const components: ComponentMeta[] = [
   form,
   icon,
   identifier,
+  inputMask,
   inputPrefixSuffix,
   label,
   link,
   list,
+  memorableDate,
   pagination,
   processList,
   prose,
