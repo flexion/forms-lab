@@ -1,8 +1,7 @@
 /* flex-select -- USWDS Select conformance
+   Extends: Form Control Base (base-classes.css#form-control)
    Variants: default, multiple
-   States: disabled, error
-   Note: Base .flex-select styles (shared with .flex-control) are in base.css.
-   This file adds select-specific styling. */
+   States: disabled, error */
 
 /* Custom chevron icon */
 .flex-select {

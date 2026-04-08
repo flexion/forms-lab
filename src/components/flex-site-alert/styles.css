@@ -1,4 +1,5 @@
 /* flex-site-alert — USWDS Site Alert conformance
+   Extends: Alert Icon Base (base-classes.css#alert-icon)
    Variants: info, emergency
    Modifiers: slim, no-icon, no-heading */
 
@@ -29,19 +30,12 @@
 }
 
 .flex-site-alert[data-variant="info"] .flex-site-alert__body::before {
-  content: "";
-  position: absolute;
   left: 1.0833rem;
   top: 0.6667rem;
   width: 2rem;
   height: 2rem;
-  background-color: var(--flex-color-text);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
 }
 
 /* --- Variant: Emergency --- */
@@ -57,8 +51,6 @@
 }
 
 .flex-site-alert[data-variant="emergency"] .flex-site-alert__body::before {
-  content: "";
-  position: absolute;
   left: 1.0833rem;
   top: 0.6667rem;
   width: 2rem;
@@ -66,10 +58,6 @@
   background-color: var(--flex-color-on-accent);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
 }
 
 .flex-site-alert[data-variant="emergency"] .flex-site-alert__heading,

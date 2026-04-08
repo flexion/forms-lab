@@ -89,6 +89,11 @@ export function getDesignSystemSidebar(currentPath?: string) {
           current: currentPath === '/catalog/design-system/typography',
         },
         {
+          label: 'Base Classes',
+          href: '/catalog/design-system/base-classes',
+          current: currentPath === '/catalog/design-system/base-classes',
+        },
+        {
           label: 'Data Visualizations',
           href: '/catalog/design-system/data-visualizations',
           current: currentPath === '/catalog/design-system/data-visualizations',

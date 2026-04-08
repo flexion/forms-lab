@@ -350,6 +350,218 @@ designSystem.get('/:slug', async (c) => {
     )
   }
 
+  if (slug === 'base-classes') {
+    const sidebarData = getDesignSystemSidebar(
+      '/catalog/design-system/base-classes',
+    )
+    const sidebar = <CatalogSidebar sections={sidebarData} />
+
+    return c.html(
+      <Layout title="Base Classes — Design System" sidebar={sidebar}>
+        <h1>Base Classes</h1>
+
+        <section class="l-stack">
+          <p>
+            Base classes extract shared CSS properties into multi-selector rules
+            in <code class="flex-mono">base-classes.css</code>. Components
+            automatically inherit these styles through their class names — no
+            markup changes needed. Component stylesheets contain only
+            component-specific overrides.
+          </p>
+        </section>
+
+        <section class="l-stack" id="form-control">
+          <h2>Form Control Base</h2>
+          <p>
+            Shared by all text-entry form controls. Use{' '}
+            <code class="flex-mono">class="flex-control"</code> on custom
+            elements to opt in.
+          </p>
+          <Table striped>
+            <thead>
+              <tr>
+                <th>Selector</th>
+                <th>Component</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-control</code>
+                </td>
+                <td>Opt-in for custom elements</td>
+              </tr>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-input</code>
+                </td>
+                <td>
+                  <a href="/catalog/design-system/flex-text-input">
+                    Text Input
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-select</code>
+                </td>
+                <td>
+                  <a href="/catalog/design-system/flex-select">Select</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-textarea</code>
+                </td>
+                <td>
+                  <a href="/catalog/design-system/flex-textarea">Textarea</a>
+                </td>
+              </tr>
+            </tbody>
+          </Table>
+          <p>
+            <strong>Properties provided:</strong> font-family, font-size,
+            line-height, color, background-color, border, border-radius,
+            appearance, display, width, max-width, padding, margin-top. Plus
+            focus-visible, disabled, error, and success state styles.
+          </p>
+        </section>
+
+        <section class="l-stack" id="typography">
+          <h2>Typography Base</h2>
+          <p>
+            Shared by text-bearing USWDS elements. Use{' '}
+            <code class="flex-mono">class="flex-prose"</code> on containers to
+            opt in.
+          </p>
+          <Table striped>
+            <thead>
+              <tr>
+                <th>Selector</th>
+                <th>Component</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-prose</code>
+                </td>
+                <td>Opt-in for containers</td>
+              </tr>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-label</code>
+                </td>
+                <td>
+                  <a href="/catalog/design-system/flex-label">Label</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-error-message</code>
+                </td>
+                <td>
+                  <a href="/catalog/design-system/flex-error-message">
+                    Error Message
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-legend</code>
+                </td>
+                <td>Legend (fieldset)</td>
+              </tr>
+            </tbody>
+          </Table>
+          <p>
+            <strong>Properties provided:</strong> font-family, font-size,
+            line-height, color.
+          </p>
+        </section>
+
+        <section class="l-stack" id="choice-input">
+          <h2>Choice Input Label</h2>
+          <p>
+            Shared by checkbox and radio label elements. Provides typography,
+            cursor, display, font-weight, and position.
+          </p>
+          <Table striped>
+            <thead>
+              <tr>
+                <th>Selector</th>
+                <th>Component</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-checkbox__label</code>
+                </td>
+                <td>
+                  <a href="/catalog/design-system/flex-checkbox">Checkbox</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-radio__label</code>
+                </td>
+                <td>
+                  <a href="/catalog/design-system/flex-radio">Radio</a>
+                </td>
+              </tr>
+            </tbody>
+          </Table>
+          <p>
+            <strong>Properties provided:</strong> font-family, font-size,
+            line-height, color, cursor, display, font-weight, position. Plus
+            focus-visible and disabled state styles.
+          </p>
+        </section>
+
+        <section class="l-stack" id="alert-icon">
+          <h2>Alert Icon Base</h2>
+          <p>
+            Shared pseudo-element styles for icon display in alert components.
+          </p>
+          <Table striped>
+            <thead>
+              <tr>
+                <th>Selector</th>
+                <th>Component</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-alert::before</code>
+                </td>
+                <td>
+                  <a href="/catalog/design-system/flex-alert">Alert</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code class="flex-mono">.flex-site-alert__body::before</code>
+                </td>
+                <td>
+                  <a href="/catalog/design-system/flex-site-alert">
+                    Site Alert
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </Table>
+          <p>
+            <strong>Properties provided:</strong> content, position,
+            background-color, mask-size, mask-repeat, -webkit-mask-size,
+            -webkit-mask-repeat.
+          </p>
+        </section>
+      </Layout>,
+    )
+  }
+
   if (slug === 'data-visualizations') {
     const sidebarData = getDesignSystemSidebar(
       '/catalog/design-system/data-visualizations',
@@ -618,14 +830,30 @@ designSystem.get('/:slug', async (c) => {
         </section>
       )}
 
-      {cssSource && (
-        <section class="l-stack">
-          <h2>Source CSS</h2>
-          <pre style="overflow-x: auto; padding: var(--flex-space-md); background: var(--flex-color-surface); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
-            <code>{cssSource}</code>
-          </pre>
-        </section>
-      )}
+      {cssSource &&
+        (() => {
+          const extendsMatch = cssSource.match(
+            /Extends:\s*(.+?)\s*\(base-classes\.css(#[\w-]+)\)/,
+          )
+          const baseClassName = extendsMatch ? extendsMatch[1] : null
+          const baseAnchor = extendsMatch ? extendsMatch[2] : null
+          return (
+            <section class="l-stack">
+              <h2>Source CSS</h2>
+              {baseClassName && (
+                <p>
+                  Base styles:{' '}
+                  <a href={`/catalog/design-system/base-classes${baseAnchor}`}>
+                    {baseClassName}
+                  </a>
+                </p>
+              )}
+              <pre style="overflow-x: auto; padding: var(--flex-space-md); background: var(--flex-color-surface); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
+                <code>{cssSource}</code>
+              </pre>
+            </section>
+          )
+        })()}
     </Layout>,
   )
 })

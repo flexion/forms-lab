@@ -1,3 +1,6 @@
+/* flex-alert — USWDS Alert conformance
+   Extends: Alert Icon Base (base-classes.css#alert-icon) */
+
 .flex-alert {
   position: relative;
   background-color: var(--flex-color-info-lighter);
@@ -8,19 +11,10 @@
 }
 
 .flex-alert::before {
-  content: "";
-  position: absolute;
   left: var(--flex-space-md);
   top: var(--flex-space-md);
   width: 1.5rem;
   height: 1.5rem;
-  background-color: var(
-    --flex-color-text
-  ); /* @uswds ink — icons are always dark, not status-colored */
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
 }
 
 /* Variant icons */
