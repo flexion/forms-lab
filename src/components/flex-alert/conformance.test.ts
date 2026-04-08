@@ -155,26 +155,16 @@ test.describe('flex-alert visual conformance', () => {
 })
 
 // --- Icon color conformance ---
-// The alert icon is rendered via ::before pseudo-element with mask-image.
-// The icon's visible color is controlled by background-color on the pseudo.
-// Each variant must have the correct status color on its icon.
+// USWDS alert icons are ALWAYS ink-colored (gray-90 / #1b1b1b), regardless
+// of variant. The status color appears only on the left border and background,
+// NOT on the icon. This matches USWDS's actual rendering — verified by
+// inspecting computed styles on .usa-alert__body::before.
 
-interface IconColorCheck {
-  variant: string
-  expectedToken: string
-}
-
-const ICON_COLOR_CHECKS: IconColorCheck[] = [
-  { variant: 'info', expectedToken: '--flex-color-info' },
-  { variant: 'success', expectedToken: '--flex-color-success' },
-  { variant: 'warning', expectedToken: '--flex-color-warning' },
-  { variant: 'error', expectedToken: '--flex-color-error' },
-  { variant: 'emergency', expectedToken: '--flex-color-error' },
-]
+const ICON_VARIANTS = ['info', 'success', 'warning', 'error', 'emergency']
 
 test.describe('flex-alert icon color conformance', () => {
-  for (const { variant, expectedToken } of ICON_COLOR_CHECKS) {
-    test(`${variant} alert icon color matches ${expectedToken}`, async ({
+  for (const variant of ICON_VARIANTS) {
+    test(`${variant} alert icon is ink-colored (not status-colored)`, async ({
       page,
     }) => {
       await renderFlexFixture(
@@ -183,7 +173,7 @@ test.describe('flex-alert icon color conformance', () => {
           <h4 class="flex-alert__heading">Test</h4>
           <p class="flex-alert__text">Test.</p>
         </div>
-        <div data-testid="reference" style="background-color: var(${expectedToken}); width: 10px; height: 10px;"></div>`,
+        <div data-testid="ink" style="background-color: var(--flex-color-text); width: 10px; height: 10px;"></div>`,
       )
 
       // Get the icon's computed background-color (the ::before pseudo-element)
@@ -194,17 +184,17 @@ test.describe('flex-alert icon color conformance', () => {
           return style.getPropertyValue('background-color')
         })
 
-      // Get the expected color from the token
-      const expectedColor = await page
-        .locator('[data-testid="reference"]')
+      // Get the ink color from our token
+      const inkColor = await page
+        .locator('[data-testid="ink"]')
         .evaluate((el) =>
           getComputedStyle(el).getPropertyValue('background-color'),
         )
 
       expect(
         iconColor,
-        `Alert variant "${variant}" icon color (${iconColor}) should match ${expectedToken} (${expectedColor}). Fix the ::before background-color in flex-alert/styles.css.`,
-      ).toBe(expectedColor)
+        `Alert variant "${variant}" icon color (${iconColor}) must be ink (${inkColor}), not status-colored. USWDS alert icons are always dark. Fix ::before background-color in flex-alert/styles.css.`,
+      ).toBe(inkColor)
     })
   }
 
