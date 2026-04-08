@@ -20,6 +20,10 @@
 @import "../components/flex-card/styles.css" layer(block);
 @import "../components/flex-prose/styles.css" layer(block);
 @import "../components/flex-button/styles.css" layer(block);
+@import "../components/flex-label/styles.css" layer(block);
+@import "../components/flex-text-input/styles.css" layer(block);
+@import "../components/flex-textarea/styles.css" layer(block);
+@import "../components/flex-error-message/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);

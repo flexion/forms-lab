@@ -17,6 +17,10 @@ function getFlexCSS(): string {
     'src/components/flex-card/styles.css',
     'src/components/flex-prose/styles.css',
     'src/components/flex-button/styles.css',
+    'src/components/flex-label/styles.css',
+    'src/components/flex-text-input/styles.css',
+    'src/components/flex-textarea/styles.css',
+    'src/components/flex-error-message/styles.css',
   ]
   return files.map((f) => readCSSFile(f)).join('\n')
 }
