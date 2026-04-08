@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { Hono } from 'hono'
 import { StatusBadge } from '../../components/flex-badge'
 import { ContentCard } from '../../components/flex-card'
@@ -5,6 +7,7 @@ import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import { Prose } from '../../components/flex-prose'
 import { TagList } from '../../components/flex-tag-list'
+import { getComponentBySlug, getComponentsByCategory } from '../../components/registry'
 import { getCatalogSidebar } from './sidebar'
 
 const designSystem = new Hono()
@@ -12,10 +15,31 @@ const designSystem = new Hono()
 designSystem.get('/', (c) => {
   const sidebarData = getCatalogSidebar('/catalog/design-system')
   const sidebar = <CatalogSidebar sections={sidebarData} />
+  const grouped = getComponentsByCategory()
 
   return c.html(
     <Layout title="Design System" sidebar={sidebar}>
       <h1>Design System</h1>
+
+      <section class="l-stack">
+        <h2>Components</h2>
+        {Object.entries(grouped).map(([category, components]) => (
+          <div class="l-stack">
+            <h3 style="text-transform: capitalize;">{category}</h3>
+            <div class="l-grid" style="--grid-min: 250px;">
+              {components.map((comp) => (
+                <ContentCard
+                  title={comp.name}
+                  href={`/catalog/design-system/${comp.slug}`}
+                  description={comp.description}
+                >
+                  <StatusBadge status={comp.category === 'action' ? 'stable' : 'working'} />
+                </ContentCard>
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
 
       <section class="l-stack">
         <h2>Tokens</h2>
@@ -77,65 +101,6 @@ designSystem.get('/', (c) => {
       </section>
 
       <section class="l-stack">
-        <h2>Components</h2>
-
-        <h3>StatusBadge</h3>
-        <p>
-          Lifecycle status display using <code>data-status</code> attribute.
-        </p>
-        <div class="l-cluster">
-          <StatusBadge status="draft" />
-          <StatusBadge status="working" />
-          <StatusBadge status="stable" />
-          <StatusBadge status="deprecated" />
-        </div>
-
-        <h3>TagList</h3>
-        <p>Tag arrays as styled badges.</p>
-        <TagList tags={['architecture', 'infrastructure', 'design-system']} />
-
-        <h3>Milestone badges</h3>
-        <div class="l-cluster">
-          <span class="badge" data-variant="milestone">
-            Slice 0: Skeleton
-          </span>
-          <span class="badge" data-variant="milestone">
-            Slice 1: Maya Signs In
-          </span>
-        </div>
-
-        <h3>State badges</h3>
-        <div class="l-cluster">
-          <span class="badge" data-state="open">
-            open
-          </span>
-          <span class="badge" data-state="closed">
-            closed
-          </span>
-        </div>
-
-        <h3>ContentCard</h3>
-        <div class="l-stack">
-          <ContentCard
-            title="Example Decision"
-            href="#"
-            description="A decision about something important."
-          >
-            <StatusBadge status="stable" />
-            <TagList tags={['architecture']} />
-          </ContentCard>
-        </div>
-
-        <h3>Prose</h3>
-        <p>Markdown rendering with typography styles. Example:</p>
-        <Prose
-          content={
-            '## Example Heading\n\nA paragraph with **bold** and *italic* text, plus a [link](#).\n\n- List item one\n- List item two\n- [ ] Unchecked task\n- [x] Checked task\n\n```\ncode block\n```'
-          }
-        />
-      </section>
-
-      <section class="l-stack">
         <h2>Compositions</h2>
         <p>
           Layout primitives from CUBE CSS. Compositions handle spatial
@@ -177,6 +142,88 @@ designSystem.get('/', (c) => {
           }
         />
       </section>
+    </Layout>,
+  )
+})
+
+designSystem.get('/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const meta = getComponentBySlug(slug)
+
+  if (!meta) {
+    return c.notFound()
+  }
+
+  const sidebarData = getCatalogSidebar('/catalog/design-system')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
+  // Dynamic import of examples
+  let exampleEntries: [string, () => any][] = []
+  try {
+    const examples = await import(`../../components/${meta.slug}/examples.tsx`)
+    exampleEntries = Object.entries(examples).filter(
+      ([key]) => key !== 'default',
+    ) as [string, () => any][]
+  } catch {
+    // No examples file for this component
+  }
+
+  // Read CSS source
+  let cssSource = ''
+  try {
+    cssSource = readFileSync(
+      join(process.cwd(), 'src', 'components', meta.slug, 'styles.css'),
+      'utf-8',
+    )
+  } catch {
+    // No styles.css for this component
+  }
+
+  return c.html(
+    <Layout title={`${meta.name} — Design System`} sidebar={sidebar}>
+      <h1>{meta.name}</h1>
+
+      <div class="l-cluster">
+        <span class="badge" data-variant="milestone">
+          {meta.category}
+        </span>
+        {meta.interactive && (
+          <span class="badge" data-state="open">interactive</span>
+        )}
+      </div>
+
+      <p>{meta.description}</p>
+
+      <p>
+        <a href={meta.uswds} target="_blank" rel="noopener noreferrer">
+          USWDS Documentation ↗
+        </a>
+      </p>
+
+      {exampleEntries.length > 0 && (
+        <section class="l-stack">
+          <h2>Examples</h2>
+          {exampleEntries.map(([name, ExampleFn]) => (
+            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+              <h3>{name}</h3>
+              <div
+                style="padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);"
+              >
+                <ExampleFn />
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {cssSource && (
+        <section class="l-stack">
+          <h2>Source CSS</h2>
+          <pre style="overflow-x: auto; padding: var(--flex-space-md); background: var(--flex-color-surface); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
+            <code>{cssSource}</code>
+          </pre>
+        </section>
+      )}
     </Layout>,
   )
 })
