@@ -33,7 +33,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           guidance={[
             {
               icon: {
-                src: '/static/sprite.svg#business',
+                src: '/static/sprite.svg#account_balance',
                 alt: 'Flexion',
                 color: 'var(--flex-color-accent)',
               },
