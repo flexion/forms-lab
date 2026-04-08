@@ -1,6 +1,11 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import hljs from 'highlight.js/lib/core'
+import css from 'highlight.js/lib/languages/css'
 import { Hono } from 'hono'
+
+hljs.registerLanguage('css', css)
+
 import type { ConformanceSpec } from '../../components/conformance-types'
 import { StatusBadge } from '../../components/flex-badge'
 import { ContentCard } from '../../components/flex-card'
@@ -15,6 +20,16 @@ import {
 import { getDesignSystemSidebar } from './sidebar'
 
 const designSystem = new Hono()
+
+// Minimal syntax highlighting theme using design tokens
+const hljsStyles = `
+.hljs { color: var(--flex-color-text); }
+.hljs-selector-class, .hljs-selector-id, .hljs-selector-tag { color: var(--flex-blue-vivid-60); }
+.hljs-attribute, .hljs-keyword, .hljs-selector-pseudo { color: var(--flex-red-warm-vivid-50); }
+.hljs-string, .hljs-number { color: var(--flex-green-cool-vivid-40); }
+.hljs-comment { color: var(--flex-color-text-muted); font-style: italic; }
+.hljs-built_in, .hljs-function { color: var(--flex-violet-vivid-70); }
+`
 
 designSystem.get('/', (c) => {
   const sidebarData = getDesignSystemSidebar('/catalog/design-system')
@@ -714,6 +729,7 @@ designSystem.get('/:slug', async (c) => {
 
   return c.html(
     <Layout title={`${meta.name} — Design System`} sidebar={sidebar}>
+      <style dangerouslySetInnerHTML={{ __html: hljsStyles }} />
       <h1>{meta.name}</h1>
 
       <div class="l-cluster">
@@ -848,8 +864,14 @@ designSystem.get('/:slug', async (c) => {
                   </a>
                 </p>
               )}
-              <pre style="overflow-x: auto; padding: var(--flex-space-md); background: var(--flex-color-surface); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
-                <code>{cssSource}</code>
+              <pre style="overflow-x: auto; padding: var(--flex-space-md); background: var(--flex-color-bg-subtle); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md); font-size: var(--flex-text-sm); line-height: 1.5;">
+                <code
+                  class="hljs"
+                  dangerouslySetInnerHTML={{
+                    __html: hljs.highlight(cssSource, { language: 'css' })
+                      .value,
+                  }}
+                />
               </pre>
             </section>
           )

@@ -23,7 +23,6 @@ export const spec: ConformanceSpec = {
   verified: ['font-family', 'font-size', 'color'],
   structuralIgnores: [
     'display',
-    'position',
     'outline',
     'padding-top',
     'padding-right',
