@@ -7,8 +7,12 @@
     "start": "bun run src/dev.ts",
     "test": "bun test",
     "test:watch": "bun test --watch",
+    "test:conformance": "bunx playwright test",
+    "test:all": "bun test && bunx playwright test",
     "cli": "bun run src/cli.ts",
     "build:css": "bun run scripts/build-css.ts",
+    "build:components": "bun run scripts/build-components.ts",
+    "build": "bun run build:css && bun run build:components",
     "lint:css": "bunx stylelint 'src/**/*.css'"
   },
   "dependencies": {
@@ -17,9 +21,12 @@
     "markdown-it-task-lists": "^2.1.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
     "@biomejs/biome": "latest",
+    "@playwright/test": "^1.59.1",
     "@types/bun": "latest",
     "@types/markdown-it": "^14.1.2",
+    "@uswds/uswds": "3.13.0",
     "stylelint": "^17.6.0",
     "stylelint-config-standard": "^40.0.0",
     "stylelint-declaration-strict-value": "^1.11.1",
