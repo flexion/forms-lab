@@ -32,22 +32,31 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           buttonText="About this project"
           guidance={[
             {
-              icon: { src: '/static/sprite.svg#github', alt: 'Open source' },
+              icon: {
+                src: '/static/sprite.svg#business',
+                alt: 'Flexion',
+                color: 'var(--flex-color-accent)',
+              },
+              heading: 'About Flexion',
+              text: (
+                <>
+                  We build digital services for federal, state, and local
+                  government agencies.{' '}
+                  <a href="https://flexion.us">Learn more</a>.
+                </>
+              ),
+            },
+            {
+              icon: {
+                src: '/static/sprite.svg#github',
+                alt: 'GitHub',
+                color: '#24292f',
+              },
               heading: 'Open source',
               text: (
                 <>
                   This project is developed in the open. View the source code on{' '}
                   <a href="https://github.com/flexion/forms-lab">GitHub</a>.
-                </>
-              ),
-            },
-            {
-              icon: { src: '/static/sprite.svg#groups', alt: 'About Flexion' },
-              heading: 'About Flexion',
-              text: (
-                <>
-                  <a href="https://flexion.us">Flexion</a> builds digital
-                  services for federal, state, and local government agencies.
                 </>
               ),
             },

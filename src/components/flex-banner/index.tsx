@@ -1,7 +1,7 @@
 import type { Child, FC } from 'hono/jsx'
 
 interface BannerGuidanceItem {
-  icon: { src: string; alt: string }
+  icon: { src: string; alt: string; color?: string }
   heading: string
   text: Child
 }
@@ -94,6 +94,9 @@ export const Banner: FC<BannerProps> = ({
                       class="flex-banner__icon-img"
                       aria-hidden="true"
                       focusable="false"
+                      style={
+                        item.icon.color ? `fill: ${item.icon.color}` : undefined
+                      }
                     >
                       <use href={item.icon.src} />
                     </svg>
