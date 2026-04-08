@@ -53,7 +53,7 @@ export const Banner: FC<BannerProps> = ({
   contentId = 'banner-content',
 }) => {
   return (
-    <flex-banner class="flex-banner" role="region" aria-label={ariaLabel}>
+    <flex-banner class="flex-banner" aria-label={ariaLabel}>
       <div class="flex-banner__header">
         <div class="flex-banner__inner">
           <div class="flex-banner__header-text">
@@ -105,7 +105,6 @@ export const Banner: FC<BannerProps> = ({
                       src={item.icon.src}
                       alt={item.icon.alt}
                       class="flex-banner__icon-img"
-                      role="img"
                     />
                   )}
                 </div>

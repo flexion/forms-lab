@@ -188,9 +188,7 @@ test.describe('flex-accordion behavior', () => {
 
 test.describe('flex-accordion hover state', () => {
   test('button hover background matches USWDS', async ({ page }) => {
-    const { renderUswdsFixture } = await import(
-      '../../lib/test-helpers/render'
-    )
+    const { renderUswdsFixture } = await import('../../lib/test-helpers/render')
 
     // Get USWDS hover background-color
     await renderUswdsFixture(
