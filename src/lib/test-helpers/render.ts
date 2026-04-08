@@ -41,6 +41,7 @@ function getFlexCSS(): string {
     'src/components/flex-select/styles.css',
     'src/components/flex-button-group/styles.css',
     'src/components/flex-footer/styles.css',
+    'src/components/flex-header/styles.css',
     'src/components/flex-banner/styles.css',
     'src/components/flex-identifier/styles.css',
     'src/components/flex-form/styles.css',

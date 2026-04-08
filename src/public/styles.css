@@ -42,6 +42,7 @@
 @import "../components/flex-select/styles.css" layer(block);
 @import "../components/flex-button-group/styles.css" layer(block);
 @import "../components/flex-footer/styles.css" layer(block);
+@import "../components/flex-header/styles.css" layer(block);
 @import "../components/flex-banner/styles.css" layer(block);
 @import "../components/flex-identifier/styles.css" layer(block);
 @import "../components/flex-form/styles.css" layer(block);

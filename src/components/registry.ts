@@ -15,6 +15,7 @@ import { meta as errorMessage } from './flex-error-message/meta'
 import { meta as fileInput } from './flex-file-input/meta'
 import { meta as footer } from './flex-footer/meta'
 import { meta as form } from './flex-form/meta'
+import { meta as header } from './flex-header/meta'
 import { meta as icon } from './flex-icon/meta'
 import { meta as identifier } from './flex-identifier/meta'
 import { meta as inPageNav } from './flex-in-page-nav/meta'
@@ -63,6 +64,7 @@ const components: ComponentMeta[] = [
   errorMessage,
   fileInput,
   footer,
+  header,
   form,
   icon,
   identifier,

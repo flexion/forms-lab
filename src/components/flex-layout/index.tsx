@@ -7,10 +7,12 @@ import {
   FooterReturnToTop,
   FooterSecondary,
 } from '../flex-footer'
+import { Header, HeaderNavItem } from '../flex-header'
 
 interface LayoutProps {
   title?: string
   sidebar?: Child
+  currentPath?: string
 }
 
 export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
@@ -62,18 +64,18 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             },
           ]}
         />
-        <header class="site-header">
-          <div class="l-center">
-            <h1>
-              <a href="/">Forms Lab</a>
-            </h1>
-            <p>LLM-Assisted Forms Platform</p>
-            <nav class="site-nav">
-              <a href="/">Home</a>
-              <a href="/catalog">Catalog</a>
-            </nav>
-          </div>
-        </header>
+        <Header>
+          <HeaderNavItem
+            href="/"
+            label="Home"
+            current={props.currentPath === '/'}
+          />
+          <HeaderNavItem
+            href="/catalog"
+            label="Catalog"
+            current={props.currentPath?.startsWith('/catalog') ?? false}
+          />
+        </Header>
         {props.sidebar ? (
           <div class="catalog-layout">
             <aside class="catalog-sidebar">{props.sidebar}</aside>
