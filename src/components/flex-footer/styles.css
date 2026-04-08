@@ -1,0 +1,209 @@
+/* flex-footer — USWDS Footer conformance
+   Variants: slim (default), medium, big */
+
+.flex-footer {
+  font-family: var(--flex-font-sans);
+  font-size: 1.06rem;
+  line-height: 1.5;
+}
+
+/* --- Return to top --- */
+
+.flex-footer__return-to-top {
+  padding-bottom: 1.25rem;
+  padding-top: 1.25rem;
+  line-height: 0.9;
+}
+
+.flex-footer__return-to-top a {
+  color: var(--flex-blue-vivid-60);
+  text-decoration: underline;
+}
+
+.flex-footer__return-to-top a:visited {
+  color: var(--flex-violet-vivid-70);
+}
+
+.flex-footer__return-to-top a:hover {
+  color: var(--flex-blue-warm-vivid-70);
+}
+
+.flex-footer__return-to-top a:active {
+  color: var(--flex-blue-warm-vivid-80);
+}
+
+.flex-footer__return-to-top a:focus {
+  outline: 0.25rem solid var(--flex-blue-vivid-40);
+  outline-offset: 0;
+}
+
+/* --- Primary section --- */
+
+.flex-footer__primary {
+  background-color: var(--flex-gray-5);
+}
+
+.flex-footer__primary-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 64rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.flex-footer__primary-content {
+  line-height: 1.1;
+}
+
+.flex-footer__primary-link {
+  padding: 1rem 0;
+  color: var(--flex-gray-90);
+  font-weight: 700;
+  display: block;
+  border: 0;
+  text-decoration: none;
+}
+
+/* --- Nav --- */
+
+.flex-footer__nav {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 64rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.flex-footer__nav > ul {
+  margin-bottom: 0;
+  margin-top: 0;
+  list-style-type: none;
+  padding-left: 0;
+}
+
+/* --- Secondary section --- */
+
+.flex-footer__secondary {
+  padding-bottom: 1.25rem;
+  padding-top: 1.25rem;
+  color: var(--flex-gray-90);
+  background-color: var(--flex-gray-cool-10);
+}
+
+.flex-footer__secondary-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 64rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-footer__secondary a {
+  color: var(--flex-gray-90);
+}
+
+/* --- Logo --- */
+
+.flex-footer__logo {
+  display: flex;
+  align-items: center;
+}
+
+.flex-footer__logo-img {
+  max-width: 3rem;
+}
+
+.flex-footer__logo-heading {
+  margin: 0;
+  font-size: 1.06rem;
+  line-height: 1.1;
+  font-family: var(--flex-font-sans);
+}
+
+/* --- Contact info --- */
+
+.flex-footer__contact-info {
+  display: inline-block;
+}
+
+.flex-footer__contact-info a {
+  color: var(--flex-gray-90);
+  text-decoration: none;
+}
+
+/* --- Secondary links --- */
+
+.flex-footer__secondary-link {
+  line-height: 1.1;
+  margin-left: 0;
+  padding: 0;
+}
+
+.flex-footer__secondary-link + .flex-footer__secondary-link {
+  padding-top: 1rem;
+}
+
+.flex-footer__secondary-link a {
+  color: var(--flex-blue-vivid-60);
+  text-decoration: underline;
+}
+
+.flex-footer__secondary-link a:visited {
+  color: var(--flex-violet-vivid-70);
+}
+
+.flex-footer__secondary-link a:hover {
+  color: var(--flex-blue-warm-vivid-70);
+}
+
+.flex-footer__secondary-link a:active {
+  color: var(--flex-blue-warm-vivid-80);
+}
+
+.flex-footer__secondary-link a:focus {
+  outline: 0.25rem solid var(--flex-blue-vivid-40);
+  outline-offset: 0;
+}
+
+/* --- Slim variant (default) --- */
+
+.flex-footer:not([data-variant]) .flex-footer__logo,
+.flex-footer[data-variant="slim"] .flex-footer__logo {
+  align-items: center;
+}
+
+.flex-footer:not([data-variant]) .flex-footer__logo-img,
+.flex-footer[data-variant="slim"] .flex-footer__logo-img {
+  max-width: 3rem;
+}
+
+.flex-footer:not([data-variant]) .flex-footer__contact-info,
+.flex-footer[data-variant="slim"] .flex-footer__contact-info {
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+  margin-top: 0;
+}
+
+/* --- Medium variant --- */
+
+.flex-footer[data-variant="medium"] .flex-footer__nav {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.flex-footer[data-variant="medium"] .flex-footer__logo {
+  align-items: center;
+}
+
+/* --- Big variant --- */
+
+.flex-footer[data-variant="big"] .flex-footer__nav {
+  border-bottom: none;
+}
+
+.flex-footer[data-variant="big"] .flex-footer__primary-content {
+  line-height: 1.1;
+}

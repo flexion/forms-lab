@@ -18,6 +18,21 @@ app.get('/static/sprite.svg', async (c) => {
   return c.body(svg)
 })
 
+// USWDS flag image for banner component
+app.get('/static/img/us_flag_small.png', async (c) => {
+  const { readFile } = await import('node:fs/promises')
+  const { resolve } = await import('node:path')
+  const png = await readFile(
+    resolve(
+      process.cwd(),
+      'node_modules/@uswds/uswds/dist/img/us_flag_small.png',
+    ),
+  )
+  c.header('Content-Type', 'image/png')
+  c.header('Cache-Control', 'public, max-age=31536000')
+  return c.body(png)
+})
+
 // Font files (self-hosted, matching USWDS)
 app.use(
   '/static/fonts/*',

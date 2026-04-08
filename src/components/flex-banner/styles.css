@@ -1,0 +1,137 @@
+/* flex-banner — USWDS Banner conformance
+   Official .gov/.mil site identity banner */
+
+.flex-banner {
+  font-family: var(--flex-font-sans);
+  font-size: 0.87rem;
+  line-height: 1.5;
+  background-color: var(--flex-gray-5);
+  padding-bottom: 0;
+}
+
+/* --- Header --- */
+
+.flex-banner__header {
+  color: var(--flex-gray-90);
+  padding: 0.5rem 0;
+  font-size: 0.8rem;
+  min-height: 0;
+}
+
+.flex-banner__inner {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 64rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+}
+
+/* --- Header text --- */
+
+.flex-banner__header-text {
+  margin-right: 0;
+}
+
+.flex-banner__header-text p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.1;
+}
+
+/* --- Flag image --- */
+
+.flex-banner__header-flag {
+  width: 1rem;
+  height: auto;
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+/* --- Button (expand/collapse) --- */
+
+.flex-banner__button {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-weight: 400;
+  text-align: left;
+  margin: 0;
+  color: var(--flex-blue-vivid-60);
+  display: block;
+  font-size: 0.8rem;
+  height: auto;
+  line-height: 1.1;
+  padding: 0;
+  text-decoration: none;
+  width: auto;
+  cursor: pointer;
+  font-family: var(--flex-font-sans);
+}
+
+.flex-banner__button:hover {
+  text-decoration: underline;
+  color: var(--flex-blue-warm-vivid-70);
+}
+
+.flex-banner__button:focus {
+  outline: 0.25rem solid var(--flex-blue-vivid-40);
+  outline-offset: 0;
+}
+
+.flex-banner__button-text {
+  text-decoration: underline;
+}
+
+/* --- Expandable content --- */
+
+.flex-banner__content {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 64rem;
+  background-color: transparent;
+  font-size: 1rem;
+  overflow: hidden;
+  padding: 0.25rem 2rem 1rem 0.5rem;
+  width: 100%;
+  color: var(--flex-gray-90);
+}
+
+/* --- Guidance sections --- */
+
+.flex-banner__guidance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.flex-banner__guidance-gov,
+.flex-banner__guidance-ssl {
+  display: flex;
+  align-items: flex-start;
+  max-width: 64ex;
+  flex: 1 1 40%;
+  min-width: 200px;
+}
+
+.flex-banner__guidance-gov p,
+.flex-banner__guidance-ssl p {
+  margin: 0 0 0.5rem;
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+/* --- Icon in guidance --- */
+
+.flex-banner__icon {
+  width: 2.5rem;
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+}

@@ -36,6 +36,9 @@
 @import "../components/flex-side-navigation/styles.css" layer(block);
 @import "../components/flex-pagination/styles.css" layer(block);
 @import "../components/flex-search/styles.css" layer(block);
+@import "../components/flex-footer/styles.css" layer(block);
+@import "../components/flex-banner/styles.css" layer(block);
+@import "../components/flex-identifier/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);
