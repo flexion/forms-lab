@@ -62,8 +62,8 @@ test.describe('flex-alert visual conformance', () => {
       page,
       `<div class="usa-alert usa-alert--info" role="alert" data-testid="target">
         <div class="usa-alert__body">
-          <h4 class="usa-alert__heading">Heading</h4>
-          <p class="usa-alert__text">Body.</p>
+          <h4 class="usa-alert__heading">Informative status</h4>
+          <p class="usa-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);" class="usa-link">consectetur adipiscing</a> elit, sed do eiusmod.</p>
         </div>
       </div>`,
     )
@@ -72,8 +72,8 @@ test.describe('flex-alert visual conformance', () => {
     await renderFlexFixture(
       page,
       `<div class="flex-alert" data-variant="info" role="alert" data-testid="target">
-        <h4 class="flex-alert__heading">Heading</h4>
-        <p class="flex-alert__text">Body.</p>
+        <h4 class="flex-alert__heading">Informative status</h4>
+        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
       </div>`,
     )
     const implementation = await extract(page, '', '[data-testid="target"]')
@@ -86,8 +86,8 @@ test.describe('flex-alert visual conformance', () => {
       page,
       `<div class="usa-alert usa-alert--error" role="alert" data-testid="target">
         <div class="usa-alert__body">
-          <h4 class="usa-alert__heading">Error</h4>
-          <p class="usa-alert__text">Error.</p>
+          <h4 class="usa-alert__heading">Error status</h4>
+          <p class="usa-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);" class="usa-link">consectetur adipiscing</a> elit, sed do eiusmod.</p>
         </div>
       </div>`,
     )
@@ -96,8 +96,8 @@ test.describe('flex-alert visual conformance', () => {
     await renderFlexFixture(
       page,
       `<div class="flex-alert" data-variant="error" role="alert" data-testid="target">
-        <h4 class="flex-alert__heading">Error</h4>
-        <p class="flex-alert__text">Error.</p>
+        <h4 class="flex-alert__heading">Error status</h4>
+        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
       </div>`,
     )
     const implementation = await extract(page, '', '[data-testid="target"]')
@@ -110,8 +110,8 @@ test.describe('flex-alert visual conformance', () => {
       page,
       `<div class="usa-alert usa-alert--success" role="alert" data-testid="target">
         <div class="usa-alert__body">
-          <h4 class="usa-alert__heading">Success</h4>
-          <p class="usa-alert__text">Success.</p>
+          <h4 class="usa-alert__heading">Success status</h4>
+          <p class="usa-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);" class="usa-link">consectetur adipiscing</a> elit, sed do eiusmod.</p>
         </div>
       </div>`,
     )
@@ -120,8 +120,8 @@ test.describe('flex-alert visual conformance', () => {
     await renderFlexFixture(
       page,
       `<div class="flex-alert" data-variant="success" role="alert" data-testid="target">
-        <h4 class="flex-alert__heading">Success</h4>
-        <p class="flex-alert__text">Success.</p>
+        <h4 class="flex-alert__heading">Success status</h4>
+        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
       </div>`,
     )
     const implementation = await extract(page, '', '[data-testid="target"]')
@@ -134,8 +134,8 @@ test.describe('flex-alert visual conformance', () => {
       page,
       `<div class="usa-alert usa-alert--warning" role="alert" data-testid="target">
         <div class="usa-alert__body">
-          <h4 class="usa-alert__heading">Warning</h4>
-          <p class="usa-alert__text">Warning.</p>
+          <h4 class="usa-alert__heading">Warning status</h4>
+          <p class="usa-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);" class="usa-link">consectetur adipiscing</a> elit, sed do eiusmod.</p>
         </div>
       </div>`,
     )
@@ -144,8 +144,8 @@ test.describe('flex-alert visual conformance', () => {
     await renderFlexFixture(
       page,
       `<div class="flex-alert" data-variant="warning" role="alert" data-testid="target">
-        <h4 class="flex-alert__heading">Warning</h4>
-        <p class="flex-alert__text">Warning.</p>
+        <h4 class="flex-alert__heading">Warning status</h4>
+        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
       </div>`,
     )
     const implementation = await extract(page, '', '[data-testid="target"]')
@@ -167,8 +167,8 @@ test.describe('flex-alert icon color conformance', () => {
       await renderFlexFixture(
         page,
         `<div class="flex-alert" data-variant="${variant}" role="alert" data-testid="target">
-          <h4 class="flex-alert__heading">Test</h4>
-          <p class="flex-alert__text">Test.</p>
+          <h4 class="flex-alert__heading">${variant.charAt(0).toUpperCase() + variant.slice(1)} status</h4>
+          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
         </div>
         <div data-testid="ink" style="background-color: var(--flex-color-text); width: 10px; height: 10px;"></div>`,
       )
@@ -198,8 +198,8 @@ test.describe('flex-alert icon color conformance', () => {
     await renderFlexFixture(
       page,
       `<div class="flex-alert" data-variant="emergency" role="alert" data-testid="target">
-        <h4 class="flex-alert__heading">Emergency</h4>
-        <p class="flex-alert__text">Emergency.</p>
+        <h4 class="flex-alert__heading">Emergency status</h4>
+        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
       </div>
       <div data-testid="white" style="background-color: var(--flex-color-on-accent); width: 10px; height: 10px;"></div>`,
     )
@@ -228,8 +228,8 @@ test.describe('flex-alert icon color conformance', () => {
     await renderFlexFixture(
       page,
       `<div class="flex-alert" data-variant="emergency" role="alert" data-testid="target">
-        <h4 class="flex-alert__heading" data-testid="heading">Emergency</h4>
-        <p class="flex-alert__text" data-testid="text">Emergency alert.</p>
+        <h4 class="flex-alert__heading" data-testid="heading">Emergency status</h4>
+        <p class="flex-alert__text" data-testid="text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);" data-testid="link">consectetur adipiscing</a> elit, sed do eiusmod.</p>
       </div>
       <div data-testid="emergency-bg" style="background-color: var(--flex-color-emergency); width: 10px; height: 10px;"></div>`,
     )
@@ -259,16 +259,27 @@ test.describe('flex-alert icon color conformance', () => {
       .locator('[data-testid="text"]')
       .evaluate((el) => getComputedStyle(el).getPropertyValue('color'))
 
-    // Both heading and text must be white
-    expect(headingColor).toBe('rgb(255, 255, 255)')
-    expect(textColor).toBe('rgb(255, 255, 255)')
+    const linkColor = await page
+      .locator('[data-testid="link"]')
+      .evaluate((el) => getComputedStyle(el).getPropertyValue('color'))
+
+    // Heading, text, and links must all be white on dark emergency background
+    expect(headingColor, 'Emergency heading must be white').toBe(
+      'rgb(255, 255, 255)',
+    )
+    expect(textColor, 'Emergency text must be white').toBe(
+      'rgb(255, 255, 255)',
+    )
+    expect(linkColor, 'Emergency link must be white').toBe(
+      'rgb(255, 255, 255)',
+    )
   })
 
   test('slim alert has no visible icon', async ({ page }) => {
     await renderFlexFixture(
       page,
       `<div class="flex-alert" data-variant="info" data-slim role="alert" data-testid="target">
-        <p class="flex-alert__text">Slim alert.</p>
+        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
       </div>`,
     )
 
@@ -285,8 +296,8 @@ test.describe('flex-alert icon color conformance', () => {
     await renderFlexFixture(
       page,
       `<div class="flex-alert" data-variant="info" data-no-icon role="alert" data-testid="target">
-        <h4 class="flex-alert__heading">No icon</h4>
-        <p class="flex-alert__text">No icon alert.</p>
+        <h4 class="flex-alert__heading">Informative status</h4>
+        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
       </div>`,
     )
 
@@ -309,24 +320,24 @@ test.describe('flex-alert accessibility', () => {
       `<main>
         <h1>Alert Test</h1>
         <div class="flex-alert" data-variant="info" role="alert">
-          <h4 class="flex-alert__heading">Info</h4>
-          <p class="flex-alert__text">Info alert.</p>
+          <h4 class="flex-alert__heading">Informative status</h4>
+          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
         </div>
         <div class="flex-alert" data-variant="warning" role="alert">
-          <h4 class="flex-alert__heading">Warning</h4>
-          <p class="flex-alert__text">Warning alert.</p>
+          <h4 class="flex-alert__heading">Warning status</h4>
+          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
         </div>
         <div class="flex-alert" data-variant="success" role="alert">
-          <h4 class="flex-alert__heading">Success</h4>
-          <p class="flex-alert__text">Success alert.</p>
+          <h4 class="flex-alert__heading">Success status</h4>
+          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
         </div>
         <div class="flex-alert" data-variant="error" role="alert">
-          <h4 class="flex-alert__heading">Error</h4>
-          <p class="flex-alert__text">Error alert.</p>
+          <h4 class="flex-alert__heading">Error status</h4>
+          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
         </div>
         <div class="flex-alert" data-variant="emergency" role="alert">
-          <h4 class="flex-alert__heading">Emergency</h4>
-          <p class="flex-alert__text">Emergency alert.</p>
+          <h4 class="flex-alert__heading">Emergency status</h4>
+          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
         </div>
       </main>`,
     )

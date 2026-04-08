@@ -80,7 +80,8 @@
 }
 
 .flex-alert[data-variant="emergency"] .flex-alert__heading,
-.flex-alert[data-variant="emergency"] .flex-alert__text {
+.flex-alert[data-variant="emergency"] .flex-alert__text,
+.flex-alert[data-variant="emergency"] a {
   color: var(--flex-color-on-accent);
 }
 
