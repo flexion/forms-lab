@@ -37,7 +37,7 @@ flex-accordion {
 }
 
 .flex-accordion__button::after {
-  content: '';
+  content: "";
   width: 1.5rem;
   height: 1.5rem;
   flex-shrink: 0;

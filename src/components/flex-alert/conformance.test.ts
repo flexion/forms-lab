@@ -264,12 +264,8 @@ test.describe('flex-alert icon color conformance', () => {
     expect(headingColor, 'Emergency heading must be white').toBe(
       'rgb(255, 255, 255)',
     )
-    expect(textColor, 'Emergency text must be white').toBe(
-      'rgb(255, 255, 255)',
-    )
-    expect(linkColor, 'Emergency link must be white').toBe(
-      'rgb(255, 255, 255)',
-    )
+    expect(textColor, 'Emergency text must be white').toBe('rgb(255, 255, 255)')
+    expect(linkColor, 'Emergency link must be white').toBe('rgb(255, 255, 255)')
   })
 
   test('slim alert has no visible icon', async ({ page }) => {

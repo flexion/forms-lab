@@ -15,10 +15,7 @@ const componentsJs = readFileSync(
 )
 
 const IGNORE = {
-  ignoreProperties: [
-    'color',
-    'outline',
-  ],
+  ignoreProperties: ['color', 'outline'],
   ignoreBoxKeys: ['width', 'height'],
 }
 

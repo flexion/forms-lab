@@ -11,9 +11,8 @@ import { Alert } from './index'
 
 const alertBody = (
   <>
-    Lorem ipsum dolor sit amet,{' '}
-    <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do
-    eiusmod.
+    Lorem ipsum dolor sit amet, <a href="/example">consectetur adipiscing</a>{' '}
+    elit, sed do eiusmod.
   </>
 )
 

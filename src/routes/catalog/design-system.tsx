@@ -10,12 +10,12 @@ import {
   getComponentBySlug,
   getComponentsByCategory,
 } from '../../components/registry'
-import { getCatalogSidebar } from './sidebar'
+import { getDesignSystemSidebar } from './sidebar'
 
 const designSystem = new Hono()
 
 designSystem.get('/', (c) => {
-  const sidebarData = getCatalogSidebar('/catalog/design-system')
+  const sidebarData = getDesignSystemSidebar('/catalog/design-system')
   const sidebar = <CatalogSidebar sections={sidebarData} />
   const grouped = getComponentsByCategory()
 
@@ -158,17 +158,18 @@ designSystem.get('/:slug', async (c) => {
     return c.notFound()
   }
 
-  const sidebarData = getCatalogSidebar('/catalog/design-system')
+  const sidebarData = getDesignSystemSidebar(`/catalog/design-system/${slug}`)
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
-  // Dynamic import of examples
-  // biome-ignore lint/suspicious/noExplicitAny: dynamic import returns unknown module shape
-  let exampleEntries: [string, () => unknown][] = []
+  // Dynamic import of examples — each export is a component function
+  // biome-ignore lint/suspicious/noExplicitAny: dynamic import module shape
+  type ExampleFn = () => any
+  let exampleEntries: [string, ExampleFn][] = []
   try {
     const examples = await import(`../../components/${meta.slug}/examples.tsx`)
     exampleEntries = Object.entries(examples).filter(
       ([key]) => key !== 'default',
-    ) as [string, () => unknown][]
+    ) as [string, ExampleFn][]
   } catch {
     // No examples file for this component
   }

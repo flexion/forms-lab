@@ -1,3 +1,5 @@
+import { getComponentsByCategory } from '../../components/registry'
+
 export function getCatalogSidebar(currentPath?: string) {
   return [
     {
@@ -41,4 +43,52 @@ export function getCatalogSidebar(currentPath?: string) {
       ],
     },
   ]
+}
+
+/**
+ * Contextual sidebar for design system pages.
+ * Shows a "← Back to Catalog" link, then component categories
+ * with individual component links under each.
+ */
+export function getDesignSystemSidebar(currentPath?: string) {
+  const grouped = getComponentsByCategory()
+
+  // Category display names (capitalized, readable)
+  const categoryLabels: Record<string, string> = {
+    form: 'Form Controls',
+    action: 'Actions',
+    feedback: 'Feedback',
+    navigation: 'Navigation',
+    layout: 'Layout',
+    process: 'Process',
+    identity: 'Identity',
+  }
+
+  const sections = [
+    {
+      title: 'Design System',
+      items: [
+        {
+          label: '← Back to Catalog',
+          href: '/catalog',
+          current: false,
+        },
+        {
+          label: 'Overview',
+          href: '/catalog/design-system',
+          current: currentPath === '/catalog/design-system',
+        },
+      ],
+    },
+    ...Object.entries(grouped).map(([category, components]) => ({
+      title: categoryLabels[category] || category,
+      items: components.map((comp) => ({
+        label: comp.name,
+        href: `/catalog/design-system/${comp.slug}`,
+        current: currentPath === `/catalog/design-system/${comp.slug}`,
+      })),
+    })),
+  ]
+
+  return sections
 }

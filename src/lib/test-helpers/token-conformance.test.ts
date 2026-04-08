@@ -257,26 +257,23 @@ const HEX_MAPPINGS: { name: string; flexToken: string; expectedRgb: string }[] =
     },
   ]
 
-test.describe(
-  'token conformance — hex verification for tokens without USWDS utility classes',
-  () => {
-    for (const mapping of HEX_MAPPINGS) {
-      test(`${mapping.name}`, async ({ page }) => {
-        await renderFlexFixture(
-          page,
-          `<div data-testid="flex" style="background-color: var(${mapping.flexToken}); width: 50px; height: 50px;"></div>`,
+test.describe('token conformance — hex verification for tokens without USWDS utility classes', () => {
+  for (const mapping of HEX_MAPPINGS) {
+    test(`${mapping.name}`, async ({ page }) => {
+      await renderFlexFixture(
+        page,
+        `<div data-testid="flex" style="background-color: var(${mapping.flexToken}); width: 50px; height: 50px;"></div>`,
+      )
+      const computed = await page
+        .locator('[data-testid="flex"]')
+        .evaluate((el) =>
+          getComputedStyle(el).getPropertyValue('background-color'),
         )
-        const computed = await page
-          .locator('[data-testid="flex"]')
-          .evaluate((el) =>
-            getComputedStyle(el).getPropertyValue('background-color'),
-          )
 
-        expect(
-          computed,
-          `Token ${mapping.flexToken} (${computed}) should be ${mapping.expectedRgb}. Fix the token in src/public/tokens.css, NOT this test.`,
-        ).toBe(mapping.expectedRgb)
-      })
-    }
-  },
-)
+      expect(
+        computed,
+        `Token ${mapping.flexToken} (${computed}) should be ${mapping.expectedRgb}. Fix the token in src/public/tokens.css, NOT this test.`,
+      ).toBe(mapping.expectedRgb)
+    })
+  }
+})

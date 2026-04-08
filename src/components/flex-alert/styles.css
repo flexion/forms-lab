@@ -8,13 +8,15 @@
 }
 
 .flex-alert::before {
-  content: '';
+  content: "";
   position: absolute;
   left: var(--flex-space-md);
   top: var(--flex-space-md);
   width: 1.5rem;
   height: 1.5rem;
-  background-color: var(--flex-color-text); /* @uswds ink — icons are always dark, not status-colored */
+  background-color: var(
+    --flex-color-text
+  ); /* @uswds ink — icons are always dark, not status-colored */
   mask-size: contain;
   mask-repeat: no-repeat;
   -webkit-mask-size: contain;

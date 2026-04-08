@@ -29,10 +29,7 @@ function getFlexCSS(): string {
   ]
   let css = files.map((f) => readCSSFile(f)).join('\n')
   // Resolve absolute font paths for Playwright's page.setContent()
-  css = css.replaceAll(
-    'url("/static/',
-    `url("${DEV_SERVER}/static/`,
-  )
+  css = css.replaceAll('url("/static/', `url("${DEV_SERVER}/static/`)
   return css
 }
 
@@ -42,10 +39,7 @@ function getTokenCSS(): string {
 
 function getUswdsCSS(): string {
   let css = readFileSync(
-    resolve(
-      process.cwd(),
-      'node_modules/@uswds/uswds/dist/css/uswds.min.css',
-    ),
+    resolve(process.cwd(), 'node_modules/@uswds/uswds/dist/css/uswds.min.css'),
     'utf-8',
   )
   // USWDS font paths are relative (../fonts/...) — resolve to absolute
