@@ -37,7 +37,7 @@
       "enabled": true
     },
     "formatter": {
-      "enabled": true
+      "enabled": false
     }
   }
 }

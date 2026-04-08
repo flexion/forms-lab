@@ -1,14 +1,41 @@
+import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
-import type { ConformanceSpec } from '../../components/conformance-types'
+import type {
+  ConformanceSpec,
+  FixtureInteraction,
+} from '../../components/conformance-types'
 import { diff, extract } from '../visual-descriptor'
 import { expectMatch } from './assertions'
 import { renderFlexFixture, renderUswdsFixture } from './render'
 
 /**
+ * Trigger an interaction on the page before extracting styles.
+ */
+async function triggerInteraction(
+  page: Page,
+  action: FixtureInteraction['action'],
+  selector: string,
+) {
+  const element = page.locator(selector)
+  switch (action) {
+    case 'hover':
+      await element.hover()
+      break
+    case 'focus':
+      await element.focus()
+      break
+    case 'click':
+      await element.click()
+      break
+  }
+}
+
+/**
  * Run visual conformance tests from a ConformanceSpec.
  *
- * For each fixture, renders both USWDS and flex HTML, extracts
- * computed styles, and diffs them. Properties in spec.structuralIgnores
+ * For each fixture, renders both USWDS and flex HTML, optionally
+ * triggers an interaction (hover/focus/click), extracts computed
+ * styles, and diffs them. Properties in spec.structuralIgnores
  * and spec.intentionalDifferences are excluded from comparison.
  */
 export function runVisualConformance(spec: ConformanceSpec) {
@@ -33,14 +60,30 @@ export function runVisualConformance(spec: ConformanceSpec) {
   test.describe(`${spec.component} visual conformance`, () => {
     for (const fixture of spec.fixtures) {
       test(`${fixture.name}`, async ({ page }) => {
+        // Render USWDS reference
         await renderUswdsFixture(page, fixture.uswds)
+        if (fixture.interaction) {
+          await triggerInteraction(
+            page,
+            fixture.interaction.action,
+            fixture.interaction.uswdsSelector,
+          )
+        }
         const reference = await extract(
           page,
           '',
           fixture.uswdsSelector ?? '[data-testid="target"]',
         )
 
+        // Render flex implementation
         await renderFlexFixture(page, fixture.flex)
+        if (fixture.interaction) {
+          await triggerInteraction(
+            page,
+            fixture.interaction.action,
+            fixture.interaction.flexSelector,
+          )
+        }
         const implementation = await extract(
           page,
           '',

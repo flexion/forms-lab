@@ -186,48 +186,7 @@ test.describe('flex-accordion behavior', () => {
   })
 })
 
-test.describe('flex-accordion hover state', () => {
-  test('button hover background matches USWDS', async ({ page }) => {
-    const { renderUswdsFixture } = await import('../../lib/test-helpers/render')
-
-    // Get USWDS hover background-color
-    await renderUswdsFixture(
-      page,
-      `<div class="usa-accordion">
-        <h3 class="usa-accordion__heading">
-          <button type="button" class="usa-accordion__button" aria-expanded="false" aria-controls="p1">Section</button>
-        </h3>
-        <div id="p1" class="usa-accordion__content usa-prose" hidden><p>Content.</p></div>
-      </div>`,
-    )
-    await page.hover('.usa-accordion__button')
-    const uswdsHoverBg = await page
-      .locator('.usa-accordion__button')
-      .evaluate((el) => getComputedStyle(el).backgroundColor)
-
-    // Get our hover background-color
-    await renderFlexFixture(
-      page,
-      `<flex-accordion>
-        <div>
-          <h3 class="flex-accordion__heading">
-            <button type="button" class="flex-accordion__button" aria-expanded="false" aria-controls="p1">Section</button>
-          </h3>
-          <div class="flex-accordion__content" id="p1" hidden><p>Content.</p></div>
-        </div>
-      </flex-accordion>`,
-    )
-    await page.hover('.flex-accordion__button')
-    const flexHoverBg = await page
-      .locator('.flex-accordion__button')
-      .evaluate((el) => getComputedStyle(el).backgroundColor)
-
-    expect(
-      flexHoverBg,
-      `Accordion hover bg (${flexHoverBg}) should match USWDS (${uswdsHoverBg}). Fix :hover background-color in flex-accordion/styles.css.`,
-    ).toBe(uswdsHoverBg)
-  })
-})
+// Hover state is now tested via the conformance spec interaction fixture
 
 test.describe('flex-accordion accessibility', () => {
   test('accessibility audit with mixed expanded/collapsed states', async ({

@@ -118,6 +118,30 @@ export const spec: ConformanceSpec = {
       uswdsSelector: '[data-testid="target"] .usa-accordion__button',
       flexSelector: '[data-testid="target"] .flex-accordion__button',
     },
+    {
+      name: 'accordion button hover state matches USWDS',
+      uswds: `<div class="usa-accordion">
+    <h3 class="usa-accordion__heading">
+      <button type="button" class="usa-accordion__button" aria-expanded="false" aria-controls="uswds-hp">Section</button>
+    </h3>
+    <div id="uswds-hp" class="usa-accordion__content usa-prose" hidden><p>Content.</p></div>
+  </div>`,
+      flex: `<flex-accordion>
+    <div>
+      <h3 class="flex-accordion__heading">
+        <button type="button" class="flex-accordion__button" aria-expanded="false" aria-controls="flex-hp">Section</button>
+      </h3>
+      <div class="flex-accordion__content" id="flex-hp" hidden><p>Content.</p></div>
+    </div>
+  </flex-accordion>`,
+      uswdsSelector: '.usa-accordion__button',
+      flexSelector: '.flex-accordion__button',
+      interaction: {
+        action: 'hover',
+        uswdsSelector: '.usa-accordion__button',
+        flexSelector: '.flex-accordion__button',
+      },
+    },
   ],
   behavior: [
     { description: 'Click button expands content', tested: true },
@@ -131,6 +155,7 @@ export const spec: ConformanceSpec = {
       tested: true,
     },
     { description: 'Keyboard Enter toggles accordion', tested: true },
+    { description: 'Hover state background matches USWDS', tested: true },
     {
       description: 'Accessibility audit passes with mixed states',
       tested: true,
