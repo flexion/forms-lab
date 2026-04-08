@@ -10,7 +10,7 @@ import {
 export const Default: FC = () => (
   <Identifier>
     <IdentifierMasthead
-      logoSrc="/static/img/logo-placeholder.png"
+      logoSrc="/static/img/logo-img.png"
       logoAlt="Agency logo"
       domain="agency.gov"
       agencyName="Agency Name"

@@ -24,7 +24,12 @@ app.get('/static/img/:name', async (c) => {
   const { resolve } = await import('node:path')
   const name = c.req.param('name')
   // Only serve known USWDS image files
-  const allowed = ['us_flag_small.png', 'icon-dot-gov.svg', 'icon-https.svg']
+  const allowed = [
+    'us_flag_small.png',
+    'icon-dot-gov.svg',
+    'icon-https.svg',
+    'logo-img.png',
+  ]
   if (!allowed.includes(name)) return c.notFound()
   const filePath = resolve(
     process.cwd(),
