@@ -1,0 +1,102 @@
+/* flex-input-prefix-suffix — USWDS Input Prefix/Suffix conformance
+   Input group wraps input + prefix/suffix into a single visual unit
+   States: error, success (from parent group) */
+
+.flex-input-group {
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-uswds);
+  line-height: 1.3;
+  appearance: none;
+  border: 1px solid var(--flex-gray-cool-60);
+  border-radius: 0;
+  color: var(--flex-color-text);
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: var(--flex-control-max-width);
+  height: var(--flex-control-height);
+  margin-top: var(--flex-control-margin-top);
+  padding: 0;
+  position: relative;
+}
+
+/* Input within group: no border, full width */
+.flex-input-group .flex-input {
+  border: 0;
+  height: 100%;
+  margin-top: 0;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+}
+
+/* Remove double focus — show on group instead */
+.flex-input-group .flex-input:focus-visible {
+  outline: none;
+}
+
+.flex-input-group:focus-within {
+  outline: var(--flex-focus-ring);
+  outline-offset: var(--flex-focus-offset-inset);
+}
+
+/* --- Prefix and Suffix shared styles --- */
+
+.flex-input-group__prefix,
+.flex-input-group__suffix {
+  color: var(--flex-color-ink);
+  line-height: 0;
+  padding: 0 0.5rem;
+  user-select: none;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+/* --- Suffix positioning --- */
+
+.flex-input-group__suffix {
+  position: absolute;
+  right: 0;
+}
+
+/* Input padding to avoid overlap with suffix */
+.flex-input-group:has(.flex-input-group__suffix) .flex-input {
+  padding-right: 2.5rem;
+}
+
+/* Input padding to avoid overlap with prefix */
+.flex-input-group:has(.flex-input-group__prefix) .flex-input {
+  padding-left: 2.5rem;
+  padding-right: 0.5rem;
+}
+
+/* --- Prefix positioning --- */
+
+.flex-input-group__prefix {
+  position: absolute;
+  left: 0;
+}
+
+/* --- State: error --- */
+
+.flex-input-group[data-state="error"] {
+  border-width: 4px;
+  border-color: var(--flex-color-error);
+}
+
+/* --- State: success --- */
+
+.flex-input-group[data-state="success"] {
+  border-width: 4px;
+  border-color: var(--flex-color-success);
+}
+
+/* --- Disabled --- */
+
+.flex-input-group:has(.flex-input:disabled) .flex-input-group__prefix,
+.flex-input-group:has(.flex-input:disabled) .flex-input-group__suffix {
+  color: var(--flex-color-disabled-dark);
+  background-color: var(--flex-color-disabled-lighter);
+  cursor: not-allowed;
+}

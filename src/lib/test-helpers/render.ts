@@ -42,6 +42,9 @@ function getFlexCSS(): string {
     'src/components/flex-footer/styles.css',
     'src/components/flex-banner/styles.css',
     'src/components/flex-identifier/styles.css',
+    'src/components/flex-form/styles.css',
+    'src/components/flex-validation/styles.css',
+    'src/components/flex-input-prefix-suffix/styles.css',
   ]
   let css = files.map((f) => readCSSFile(f)).join('\n')
   // Resolve absolute font paths for Playwright's page.setContent()

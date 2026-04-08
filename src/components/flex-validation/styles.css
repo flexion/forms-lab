@@ -1,0 +1,93 @@
+/* flex-validation — USWDS Validation conformance
+   Inline validation messages (error/success)
+   Summary validation with error links
+   Checklist pattern for validation requirements */
+
+/* --- Inline validation message --- */
+
+.flex-validation {
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-uswds);
+  line-height: 1.5;
+  margin-top: var(--flex-space-xs);
+}
+
+.flex-validation[data-state="error"] .flex-validation__message {
+  color: var(--flex-color-error);
+  font-weight: 700;
+}
+
+.flex-validation[data-state="success"] .flex-validation__message {
+  color: var(--flex-color-success);
+  font-weight: 700;
+}
+
+/* --- Validation summary --- */
+
+.flex-validation-summary {
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-uswds);
+  line-height: 1.5;
+  border-left: 0.25rem solid var(--flex-color-error);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.flex-validation-summary__heading {
+  font-size: 1.34rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--flex-color-error);
+}
+
+.flex-validation-summary__list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.flex-validation-summary__list li {
+  margin-bottom: 0.25rem;
+}
+
+.flex-validation-summary__list a {
+  color: var(--flex-color-error);
+  text-decoration: underline;
+}
+
+.flex-validation-summary__list a:hover {
+  text-decoration: none;
+}
+
+/* --- Checklist pattern --- */
+
+.flex-checklist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-uswds);
+  line-height: 1.5;
+}
+
+.flex-checklist__item {
+  text-indent: -2.5rem;
+  margin-left: 2.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.flex-checklist__item::before {
+  content: " ";
+  display: inline-block;
+  height: 1rem;
+  margin-left: -0.25rem;
+  margin-right: 0.75rem;
+  width: 2rem;
+}
+
+.flex-checklist__item[data-state="checked"]::before {
+  content: "\2713";
+  color: var(--flex-color-success);
+  font-weight: 700;
+}

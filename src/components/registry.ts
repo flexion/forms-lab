@@ -9,12 +9,15 @@ import { meta as checkbox } from './flex-checkbox/meta'
 import { meta as collection } from './flex-collection/meta'
 import { meta as errorMessage } from './flex-error-message/meta'
 import { meta as footer } from './flex-footer/meta'
+import { meta as form } from './flex-form/meta'
 import { meta as icon } from './flex-icon/meta'
 import { meta as identifier } from './flex-identifier/meta'
+import { meta as inputPrefixSuffix } from './flex-input-prefix-suffix/meta'
 import { meta as label } from './flex-label/meta'
 import { meta as link } from './flex-link/meta'
 import { meta as list } from './flex-list/meta'
 import { meta as pagination } from './flex-pagination/meta'
+import { meta as prose } from './flex-prose/meta'
 import { meta as radio } from './flex-radio/meta'
 import { meta as search } from './flex-search/meta'
 import { meta as select } from './flex-select/meta'
@@ -23,6 +26,7 @@ import { meta as table } from './flex-table/meta'
 import { meta as tag } from './flex-tag/meta'
 import { meta as textInput } from './flex-text-input/meta'
 import { meta as textarea } from './flex-textarea/meta'
+import { meta as validation } from './flex-validation/meta'
 import type { ComponentMeta } from './types'
 
 const components: ComponentMeta[] = [
@@ -37,12 +41,15 @@ const components: ComponentMeta[] = [
   collection,
   errorMessage,
   footer,
+  form,
   icon,
   identifier,
+  inputPrefixSuffix,
   label,
   link,
   list,
   pagination,
+  prose,
   radio,
   search,
   select,
@@ -51,6 +58,7 @@ const components: ComponentMeta[] = [
   tag,
   textInput,
   textarea,
+  validation,
 ]
 
 export function getComponents(): ComponentMeta[] {

@@ -43,6 +43,9 @@
 @import "../components/flex-footer/styles.css" layer(block);
 @import "../components/flex-banner/styles.css" layer(block);
 @import "../components/flex-identifier/styles.css" layer(block);
+@import "../components/flex-form/styles.css" layer(block);
+@import "../components/flex-validation/styles.css" layer(block);
+@import "../components/flex-input-prefix-suffix/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);
