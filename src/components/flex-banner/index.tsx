@@ -89,12 +89,22 @@ export const Banner: FC<BannerProps> = ({
                 key={item.heading}
               >
                 <div class="flex-banner__icon">
-                  <img
-                    src={item.icon.src}
-                    alt={item.icon.alt}
-                    class="flex-banner__icon-img"
-                    role="img"
-                  />
+                  {item.icon.src.includes('#') ? (
+                    <svg
+                      class="flex-banner__icon-img"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <use href={item.icon.src} />
+                    </svg>
+                  ) : (
+                    <img
+                      src={item.icon.src}
+                      alt={item.icon.alt}
+                      class="flex-banner__icon-img"
+                      role="img"
+                    />
+                  )}
                 </div>
                 <div class="flex-banner__guidance-text">
                   <p>

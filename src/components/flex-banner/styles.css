@@ -166,6 +166,7 @@ flex-banner {
 .flex-banner__icon-img {
   width: 2.5rem;
   height: 2.5rem;
+  fill: var(--flex-color-accent);
 }
 
 .flex-banner__guidance-text p {
