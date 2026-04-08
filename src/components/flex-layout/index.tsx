@@ -25,7 +25,37 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
         <link rel="stylesheet" href="/static/styles.css" />
       </head>
       <body>
-        <Banner />
+        <Banner
+          ariaLabel="A digital services project by Flexion"
+          headerText="A digital services project by Flexion"
+          headerImage={undefined}
+          buttonText="About this project"
+          guidance={[
+            {
+              icon: { src: '/static/img/icon-dot-gov.svg', alt: 'Open source' },
+              heading: 'Open source project',
+              text: (
+                <>
+                  This project is developed in the open. View the source on{' '}
+                  <a href="https://github.com/flexion/forms-lab">GitHub</a>.
+                </>
+              ),
+            },
+            {
+              icon: { src: '/static/img/icon-https.svg', alt: 'USWDS' },
+              heading: 'Built with USWDS',
+              text: (
+                <>
+                  This site follows the{' '}
+                  <a href="https://designsystem.digital.gov/">
+                    U.S. Web Design System
+                  </a>{' '}
+                  for accessibility and consistency.
+                </>
+              ),
+            },
+          ]}
+        />
         <header class="site-header">
           <div class="l-center">
             <h1>
