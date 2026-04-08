@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { Breadcrumb } from '../../components/flex-breadcrumb'
 import { ContentCard } from '../../components/flex-card'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
@@ -50,20 +51,28 @@ personas.get('/:id', async (c) => {
 
     return c.html(
       <Layout title={name} sidebar={sidebar}>
+        <Breadcrumb
+          items={[
+            { label: 'Catalog', href: '/catalog' },
+            { label: 'Personas', href: '/catalog/personas' },
+            { label: name },
+          ]}
+        />
         <Prose content={file.content} />
-        <p style="margin-top: var(--flex-space-lg);">
-          <a href="/catalog/personas">← Back to Personas</a>
-        </p>
       </Layout>,
     )
   } catch {
     return c.html(
       <Layout title="Not Found" sidebar={sidebar}>
+        <Breadcrumb
+          items={[
+            { label: 'Catalog', href: '/catalog' },
+            { label: 'Personas', href: '/catalog/personas' },
+            { label: 'Not Found' },
+          ]}
+        />
         <h1>Persona Not Found</h1>
         <p>The persona "{id}" does not exist.</p>
-        <p>
-          <a href="/catalog/personas">← Back to Personas</a>
-        </p>
       </Layout>,
       404,
     )

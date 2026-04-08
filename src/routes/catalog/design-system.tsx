@@ -7,6 +7,7 @@ import { ContentCard } from '../../components/flex-card'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import { Prose } from '../../components/flex-prose'
+import { Table } from '../../components/flex-table'
 import {
   getComponentBySlug,
   getComponentsByCategory,
@@ -153,6 +154,308 @@ designSystem.get('/', (c) => {
 
 designSystem.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
+
+  // Documentation-only catalog pages (not components)
+  if (slug === 'typography') {
+    const sidebarData = getDesignSystemSidebar(
+      '/catalog/design-system/typography',
+    )
+    const sidebar = <CatalogSidebar sections={sidebarData} />
+
+    return c.html(
+      <Layout title="Typography — Design System" sidebar={sidebar}>
+        <h1>Typography</h1>
+
+        <section class="l-stack">
+          <h2>Font Families</h2>
+          <p>
+            The design system uses two font families, both self-hosted for
+            performance and privacy.
+          </p>
+          <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+            <div style="padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
+              <p style="font-family: var(--flex-font-sans); font-size: 1.25rem;">
+                Source Sans Pro Web (sans)
+              </p>
+              <code class="flex-mono">--flex-font-sans</code>
+              <p style="font-family: var(--flex-font-sans); margin-top: var(--flex-space-sm);">
+                The quick brown fox jumps over the lazy dog. 0123456789
+              </p>
+            </div>
+            <div style="padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
+              <p style="font-family: var(--flex-font-mono); font-size: 1.25rem;">
+                Roboto Mono Web (mono)
+              </p>
+              <code class="flex-mono">--flex-font-mono</code>
+              <p style="font-family: var(--flex-font-mono); margin-top: var(--flex-space-sm);">
+                The quick brown fox jumps over the lazy dog. 0123456789
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="l-stack">
+          <h2>Type Scale</h2>
+          <p>
+            All font sizes use <code class="flex-mono">--flex-text-*</code>{' '}
+            tokens. Components must not use hardcoded px/rem for font sizes
+            (exception: USWDS visual conformance).
+          </p>
+          <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+            {[
+              { token: '--flex-text-xs', value: '0.7em', desc: 'Extra small' },
+              { token: '--flex-text-sm', value: '0.82em', desc: 'Small' },
+              { token: '--flex-text-base', value: '0.9em', desc: 'Base' },
+              {
+                token: '--flex-text-uswds',
+                value: '1.06rem',
+                desc: 'USWDS normalized base',
+              },
+              {
+                token: '--flex-text-tag',
+                value: '0.875rem',
+                desc: 'Tag/badge text',
+              },
+            ].map((item) => (
+              <div
+                key={item.token}
+                style="display: flex; align-items: baseline; gap: var(--flex-space-md); padding: var(--flex-space-sm) var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);"
+              >
+                <span
+                  style={`font-size: var(${item.token}); min-width: 200px;`}
+                >
+                  {item.desc}
+                </span>
+                <code class="flex-mono" style="flex-shrink: 0;">
+                  {item.token}: {item.value}
+                </code>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section class="l-stack">
+          <h2>Font Weights</h2>
+          <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+            <p style="font-weight: 300; font-size: 1.25rem;">
+              300 — Light: The quick brown fox jumps over the lazy dog.
+            </p>
+            <p style="font-weight: 400; font-size: 1.25rem;">
+              400 — Regular: The quick brown fox jumps over the lazy dog.
+            </p>
+            <p style="font-weight: 700; font-size: 1.25rem;">
+              700 — Bold: The quick brown fox jumps over the lazy dog.
+            </p>
+          </div>
+        </section>
+
+        <section class="l-stack">
+          <h2>Line Heights</h2>
+          <div class="l-stack" style="--stack-space: var(--flex-space-md);">
+            <div style="padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
+              <p>
+                <code class="flex-mono">1.15</code> — HTML default (set on{' '}
+                <code class="flex-mono">html</code>)
+              </p>
+              <p style="line-height: 1.15; background: var(--flex-color-surface); padding: var(--flex-space-sm);">
+                This paragraph uses the default HTML line-height of 1.15. It is
+                tighter and suitable for UI chrome, navigation, and short labels
+                where vertical compactness matters.
+              </p>
+            </div>
+            <div style="padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
+              <p>
+                <code class="flex-mono">1.5</code> — Prose / body text (set on{' '}
+                <code class="flex-mono">.prose</code>)
+              </p>
+              <p style="line-height: 1.5; background: var(--flex-color-surface); padding: var(--flex-space-sm);">
+                This paragraph uses the prose line-height of 1.5. It provides
+                comfortable reading for longer passages of text, matching USWDS
+                guidance for body content and form instructions.
+              </p>
+            </div>
+            <div style="padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
+              <p>
+                <code class="flex-mono">1.3</code> — Headings and controls
+              </p>
+              <p style="line-height: 1.3; background: var(--flex-color-surface); padding: var(--flex-space-sm); font-size: 1.5rem; font-weight: 700;">
+                Headings use 1.3 line-height. This keeps multi-line headings
+                visually cohesive without feeling cramped.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="l-stack">
+          <h2>Measure</h2>
+          <p>
+            Reading text is constrained to a maximum width of{' '}
+            <code class="flex-mono">68ex</code> (roughly 45-75 characters per
+            line), following USWDS measure guidance. This is applied
+            automatically in <code class="flex-mono">.prose</code> blocks via{' '}
+            <code class="flex-mono">max-width: 68ex</code>.
+          </p>
+          <div style="padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
+            <p style="max-width: 68ex; line-height: 1.5; background: var(--flex-color-surface); padding: var(--flex-space-sm);">
+              This paragraph is constrained to 68ex max-width, matching the
+              USWDS measure for comfortable reading. Research shows that line
+              lengths of 45-75 characters optimize reading speed and
+              comprehension. Longer lines cause readers to lose their place when
+              returning to the left margin.
+            </p>
+          </div>
+        </section>
+
+        <section class="l-stack">
+          <h2>Heading Hierarchy</h2>
+          <p>
+            Prose headings follow USWDS sizing. The design system uses Source
+            Sans Pro (not Merriweather) as an intentional difference from USWDS
+            defaults.
+          </p>
+          <div class="l-stack" style="--stack-space: var(--flex-space-md);">
+            <div style="padding: var(--flex-space-sm) var(--flex-space-md); border-left: 4px solid var(--flex-color-accent);">
+              <p style="font-size: 2.44rem; font-weight: 700; line-height: 1.2;">
+                h1 — 2.44rem
+              </p>
+            </div>
+            <div style="padding: var(--flex-space-sm) var(--flex-space-md); border-left: 4px solid var(--flex-color-accent);">
+              <p style="font-size: 1.95rem; font-weight: 700; line-height: 1.2;">
+                h2 — 1.95rem
+              </p>
+            </div>
+            <div style="padding: var(--flex-space-sm) var(--flex-space-md); border-left: 4px solid var(--flex-color-accent);">
+              <p style="font-size: 1.34rem; font-weight: 700; line-height: 1.2;">
+                h3 — 1.34rem
+              </p>
+            </div>
+            <div style="padding: var(--flex-space-sm) var(--flex-space-md); border-left: 4px solid var(--flex-color-accent);">
+              <p style="font-size: 0.98rem; font-weight: 700; line-height: 1.2;">
+                h4 — 0.98rem
+              </p>
+            </div>
+            <div style="padding: var(--flex-space-sm) var(--flex-space-md); border-left: 4px solid var(--flex-color-accent);">
+              <p style="font-size: 0.91rem; font-weight: 700; line-height: 1.2;">
+                h5 — 0.91rem
+              </p>
+            </div>
+            <div style="padding: var(--flex-space-sm) var(--flex-space-md); border-left: 4px solid var(--flex-color-accent);">
+              <p style="font-size: 0.87rem; font-weight: 400; line-height: 1.1; letter-spacing: 0.025em; text-transform: uppercase;">
+                h6 — 0.87rem (uppercase, regular weight)
+              </p>
+            </div>
+          </div>
+        </section>
+      </Layout>,
+    )
+  }
+
+  if (slug === 'data-visualizations') {
+    const sidebarData = getDesignSystemSidebar(
+      '/catalog/design-system/data-visualizations',
+    )
+    const sidebar = <CatalogSidebar sections={sidebarData} />
+
+    return c.html(
+      <Layout title="Data Visualizations — Design System" sidebar={sidebar}>
+        <h1>Data Visualizations</h1>
+
+        <section class="l-stack">
+          <h2>Accessibility First</h2>
+          <p>
+            Data visualizations — charts, graphs, maps, and infographics — must
+            be accessible to all users, including those using screen readers,
+            those with low vision, and those with color vision deficiencies. The
+            USWDS provides guidance for making visualizations inclusive.
+          </p>
+        </section>
+
+        <section class="l-stack">
+          <h2>Color Usage</h2>
+          <p>
+            <strong>Never rely on color alone</strong> to convey meaning. Use
+            patterns, labels, or other visual indicators alongside color to
+            distinguish data series.
+          </p>
+          <ul>
+            <li>
+              Pair colors with text labels, patterns (hatching, dots), or
+              distinct shapes
+            </li>
+            <li>
+              Use <code class="flex-mono">--flex-color-*</code> semantic tokens
+              for consistency with the design system
+            </li>
+            <li>
+              Test visualizations with a color blindness simulator to verify
+              they remain readable
+            </li>
+          </ul>
+        </section>
+
+        <section class="l-stack">
+          <h2>Alternative Text</h2>
+          <p>
+            Every chart or graph must have meaningful alternative text. The
+            approach depends on the complexity:
+          </p>
+          <ul>
+            <li>
+              <strong>Simple charts:</strong> Use a descriptive{' '}
+              <code class="flex-mono">alt</code> attribute that conveys the data
+              trend or key takeaway
+            </li>
+            <li>
+              <strong>Complex charts:</strong> Provide a data table as a visible
+              alternative or in a details/summary disclosure
+            </li>
+            <li>
+              <strong>Interactive visualizations:</strong> Ensure keyboard
+              navigation and screen reader announcements for data points
+            </li>
+          </ul>
+        </section>
+
+        <section class="l-stack">
+          <h2>Contrast Requirements</h2>
+          <p>
+            Text and meaningful graphical elements in visualizations must meet
+            WCAG contrast requirements:
+          </p>
+          <ul>
+            <li>
+              <strong>Text:</strong> 4.5:1 contrast ratio for normal text, 3:1
+              for large text
+            </li>
+            <li>
+              <strong>Graphical objects:</strong> 3:1 contrast ratio against
+              adjacent colors (axes, data points, lines)
+            </li>
+            <li>
+              <strong>Adjacent data series:</strong> 3:1 contrast ratio between
+              neighboring series where distinction matters
+            </li>
+          </ul>
+        </section>
+
+        <section class="l-stack">
+          <h2>Further Reading</h2>
+          <p>
+            For comprehensive guidance, see the{' '}
+            <a
+              href="https://designsystem.digital.gov/components/data-visualizations/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              USWDS Data Visualizations documentation
+            </a>
+            .
+          </p>
+        </section>
+      </Layout>,
+    )
+  }
+
   const meta = getComponentBySlug(slug)
 
   if (!meta) {
@@ -241,36 +544,28 @@ designSystem.get('/:slug', async (c) => {
           {conformanceSpec.mapping.length > 0 && (
             <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
               <h3>Class Mapping</h3>
-              <table style="width: 100%; border-collapse: collapse;">
+              <Table striped>
                 <thead>
-                  <tr style="border-bottom: 2px solid var(--flex-color-border);">
-                    <th style="text-align: left; padding: var(--flex-space-xs) var(--flex-space-sm);">
-                      USWDS
-                    </th>
-                    <th style="text-align: left; padding: var(--flex-space-xs) var(--flex-space-sm);">
-                      Flex
-                    </th>
-                    <th style="text-align: left; padding: var(--flex-space-xs) var(--flex-space-sm);">
-                      Notes
-                    </th>
+                  <tr>
+                    <th>USWDS</th>
+                    <th>Flex</th>
+                    <th>Notes</th>
                   </tr>
                 </thead>
                 <tbody>
                   {conformanceSpec.mapping.map((m) => (
-                    <tr style="border-bottom: 1px solid var(--flex-color-border);">
-                      <td style="padding: var(--flex-space-xs) var(--flex-space-sm);">
+                    <tr>
+                      <td>
                         <code class="flex-mono">{m.uswds}</code>
                       </td>
-                      <td style="padding: var(--flex-space-xs) var(--flex-space-sm);">
+                      <td>
                         <code class="flex-mono">{m.flex}</code>
                       </td>
-                      <td style="padding: var(--flex-space-xs) var(--flex-space-sm);">
-                        {m.notes}
-                      </td>
+                      <td>{m.notes}</td>
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </Table>
             </div>
           )}
 

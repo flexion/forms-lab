@@ -1,6 +1,7 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
 import { StatusBadge } from '../../components/flex-badge'
+import { Breadcrumb } from '../../components/flex-breadcrumb'
 import { ContentCard } from '../../components/flex-card'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
@@ -62,19 +63,27 @@ architecture.get('/:slug', async (c) => {
 
     return c.html(
       <Layout title={title} sidebar={sidebar}>
+        <Breadcrumb
+          items={[
+            { label: 'Catalog', href: '/catalog' },
+            { label: 'Architecture', href: '/catalog/architecture' },
+            { label: title },
+          ]}
+        />
         <Prose content={file.content} />
-        <p style="margin-top: var(--flex-space-lg);">
-          <a href="/catalog/architecture">← Back to Architecture</a>
-        </p>
       </Layout>,
     )
   } catch {
     return c.html(
       <Layout title="Not Found" sidebar={sidebar}>
+        <Breadcrumb
+          items={[
+            { label: 'Catalog', href: '/catalog' },
+            { label: 'Architecture', href: '/catalog/architecture' },
+            { label: 'Not Found' },
+          ]}
+        />
         <h1>Document Not Found</h1>
-        <p>
-          <a href="/catalog/architecture">← Back to Architecture</a>
-        </p>
       </Layout>,
       404,
     )

@@ -1,4 +1,12 @@
 import type { Child, FC, PropsWithChildren } from 'hono/jsx'
+import { Banner } from '../flex-banner'
+import {
+  Footer,
+  FooterNav,
+  FooterPrimary,
+  FooterReturnToTop,
+  FooterSecondary,
+} from '../flex-footer'
 
 interface LayoutProps {
   title?: string
@@ -17,6 +25,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
         <link rel="stylesheet" href="/static/styles.css" />
       </head>
       <body>
+        <Banner />
         <header class="site-header">
           <div class="l-center">
             <h1>
@@ -41,11 +50,38 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             <div class="l-stack">{props.children}</div>
           </main>
         )}
-        <footer class="site-footer">
-          <div class="l-center">
-            <p>Forms Lab — LLM-Assisted Forms Platform</p>
-          </div>
-        </footer>
+        <Footer variant="slim">
+          <FooterReturnToTop />
+          <FooterPrimary>
+            <FooterNav>
+              <ul>
+                <li>
+                  <a class="flex-footer__primary-link" href="/">
+                    Home
+                  </a>
+                </li>
+                <li>
+                  <a class="flex-footer__primary-link" href="/catalog">
+                    Catalog
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="flex-footer__primary-link"
+                    href="/catalog/design-system"
+                  >
+                    Design System
+                  </a>
+                </li>
+              </ul>
+            </FooterNav>
+          </FooterPrimary>
+          <FooterSecondary>
+            <p style="font-size: var(--flex-text-sm); color: var(--flex-color-text-muted);">
+              Forms Lab — LLM-Assisted Forms Platform
+            </p>
+          </FooterSecondary>
+        </Footer>
         <script type="module" src="/static/components.js"></script>
       </body>
     </html>

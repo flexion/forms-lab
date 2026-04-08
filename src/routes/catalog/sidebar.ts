@@ -80,6 +80,21 @@ export function getDesignSystemSidebar(currentPath?: string) {
         },
       ],
     },
+    {
+      title: 'Foundations',
+      items: [
+        {
+          label: 'Typography',
+          href: '/catalog/design-system/typography',
+          current: currentPath === '/catalog/design-system/typography',
+        },
+        {
+          label: 'Data Visualizations',
+          href: '/catalog/design-system/data-visualizations',
+          current: currentPath === '/catalog/design-system/data-visualizations',
+        },
+      ],
+    },
     ...Object.entries(grouped).map(([category, components]) => ({
       title: categoryLabels[category] || category,
       items: components.map((comp) => ({

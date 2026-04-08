@@ -1,4 +1,10 @@
 import type { FC } from 'hono/jsx'
+import {
+  SideNav,
+  SideNavItem,
+  SideNavNested,
+  SideNavSubItem,
+} from '../flex-side-navigation'
 
 interface SidebarSection {
   title: string
@@ -10,27 +16,51 @@ interface CatalogSidebarProps {
 }
 
 export const CatalogSidebar: FC<CatalogSidebarProps> = ({ sections }) => {
-  return (
-    <nav aria-label="Catalog navigation">
-      <div class="l-stack" style="--stack-space: var(--flex-space-lg);">
-        {sections.map((section) => (
-          <div key={section.title}>
-            <h2>{section.title}</h2>
-            <ul>
-              {section.items.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    aria-current={item.current ? 'page' : undefined}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+  // If there's only one section, render items directly
+  if (sections.length === 1) {
+    const section = sections[0]
+    return (
+      <SideNav label="Catalog navigation">
+        {section.items.map((item) => (
+          <SideNavItem key={item.href} href={item.href} current={item.current}>
+            {item.label}
+          </SideNavItem>
         ))}
-      </div>
-    </nav>
+      </SideNav>
+    )
+  }
+
+  // Multiple sections: first section's items are top-level, remaining sections are nested groups
+  const [firstSection, ...restSections] = sections
+
+  return (
+    <SideNav label="Catalog navigation">
+      {firstSection.items.map((item) => (
+        <SideNavItem key={item.href} href={item.href} current={item.current}>
+          {item.label}
+        </SideNavItem>
+      ))}
+      {restSections.map((section) => {
+        const sectionHasCurrentItem = section.items.some((item) => item.current)
+        return (
+          <SideNavNested
+            key={section.title}
+            href="#"
+            label={section.title}
+            current={sectionHasCurrentItem}
+          >
+            {section.items.map((item) => (
+              <SideNavSubItem
+                key={item.href}
+                href={item.href}
+                current={item.current}
+              >
+                {item.label}
+              </SideNavSubItem>
+            ))}
+          </SideNavNested>
+        )
+      })}
+    </SideNav>
   )
 }

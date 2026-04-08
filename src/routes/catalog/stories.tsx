@@ -1,6 +1,7 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
 import { StatusBadge } from '../../components/flex-badge'
+import { Breadcrumb } from '../../components/flex-breadcrumb'
 import { ContentCard } from '../../components/flex-card'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
@@ -115,6 +116,13 @@ stories.get('/:slug', async (c) => {
 
     return c.html(
       <Layout title={story.title} sidebar={sidebar}>
+        <Breadcrumb
+          items={[
+            { label: 'Catalog', href: '/catalog' },
+            { label: 'Stories', href: '/catalog/stories' },
+            { label: story.title },
+          ]}
+        />
         <div class="l-cluster">
           <StatusBadge status={story.state} />
           {story.milestone && (
@@ -133,18 +141,19 @@ stories.get('/:slug', async (c) => {
           )}
         </div>
         <Prose content={story.content} />
-        <p style="margin-top: var(--flex-space-lg);">
-          <a href="/catalog/stories">← Back to Stories</a>
-        </p>
       </Layout>,
     )
   } catch {
     return c.html(
       <Layout title="Not Found" sidebar={sidebar}>
+        <Breadcrumb
+          items={[
+            { label: 'Catalog', href: '/catalog' },
+            { label: 'Stories', href: '/catalog/stories' },
+            { label: 'Not Found' },
+          ]}
+        />
         <h1>Story Not Found</h1>
-        <p>
-          <a href="/catalog/stories">← Back to Stories</a>
-        </p>
       </Layout>,
       404,
     )
