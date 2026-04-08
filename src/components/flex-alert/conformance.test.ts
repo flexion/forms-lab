@@ -1,160 +1,18 @@
-import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
-import { expectMatch } from '../../lib/test-helpers/assertions'
 import {
-  renderFlexFixture,
-  renderUswdsFixture,
-} from '../../lib/test-helpers/render'
-import { diff, extract } from '../../lib/visual-descriptor'
+  runAccessibilityAudit,
+  runVisualConformance,
+} from '../../lib/test-helpers/conformance-runner'
+import { renderFlexFixture } from '../../lib/test-helpers/render'
+import { spec } from './conformance-spec'
 
-/**
- * Alert conformance tests verify:
- * 1. Visual match against USWDS for background-color and border-left-color
- * 2. Icon color matches the variant's status color (via ::before pseudo-element)
- * 3. All 5 variants have correct icon colors
- * 4. Accessibility audit passes
- */
+// Spec-driven visual conformance and accessibility
+runVisualConformance(spec)
+runAccessibilityAudit(spec)
 
-const STRUCTURAL_IGNORE = {
-  // Our alert has a flatter structure than USWDS (no __body wrapper),
-  // so we compare the outer element's visual properties directly
-  ignoreProperties: [
-    'display',
-    'position',
-    'outline',
-    // Padding differs due to our icon approach (CSS ::before vs USWDS bg image)
-    'padding-top',
-    'padding-right',
-    'padding-bottom',
-    'padding-left',
-    // Non-left borders are transparent in both, but computed values differ
-    'border-top-color',
-    'border-right-color',
-    'border-bottom-color',
-    'border-top-width',
-    'border-right-width',
-    'border-bottom-width',
-    'border-top-style',
-    'border-right-style',
-    'border-bottom-style',
-  ],
-  ignoreBoxKeys: [
-    'width',
-    'height',
-    'paddingTop',
-    'paddingRight',
-    'paddingBottom',
-    'paddingLeft',
-  ] as string[],
-  ignorePseudos: true,
-  ignoreChildren: true,
-  ignoreAttributes: ['class', 'data-testid', 'data-variant'],
-}
-
-// --- Visual conformance: background and border colors ---
-
-test.describe('flex-alert visual conformance', () => {
-  test('info alert background and border match USWDS', async ({ page }) => {
-    await renderUswdsFixture(
-      page,
-      `<div class="usa-alert usa-alert--info" role="alert" data-testid="target">
-        <div class="usa-alert__body">
-          <h4 class="usa-alert__heading">Informative status</h4>
-          <p class="usa-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);" class="usa-link">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-        </div>
-      </div>`,
-    )
-    const reference = await extract(page, '', '[data-testid="target"]')
-
-    await renderFlexFixture(
-      page,
-      `<div class="flex-alert" data-variant="info" role="alert" data-testid="target">
-        <h4 class="flex-alert__heading">Informative status</h4>
-        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-      </div>`,
-    )
-    const implementation = await extract(page, '', '[data-testid="target"]')
-
-    expectMatch(diff(reference, implementation, '', STRUCTURAL_IGNORE))
-  })
-
-  test('error alert background and border match USWDS', async ({ page }) => {
-    await renderUswdsFixture(
-      page,
-      `<div class="usa-alert usa-alert--error" role="alert" data-testid="target">
-        <div class="usa-alert__body">
-          <h4 class="usa-alert__heading">Error status</h4>
-          <p class="usa-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);" class="usa-link">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-        </div>
-      </div>`,
-    )
-    const reference = await extract(page, '', '[data-testid="target"]')
-
-    await renderFlexFixture(
-      page,
-      `<div class="flex-alert" data-variant="error" role="alert" data-testid="target">
-        <h4 class="flex-alert__heading">Error status</h4>
-        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-      </div>`,
-    )
-    const implementation = await extract(page, '', '[data-testid="target"]')
-
-    expectMatch(diff(reference, implementation, '', STRUCTURAL_IGNORE))
-  })
-
-  test('success alert background and border match USWDS', async ({ page }) => {
-    await renderUswdsFixture(
-      page,
-      `<div class="usa-alert usa-alert--success" role="alert" data-testid="target">
-        <div class="usa-alert__body">
-          <h4 class="usa-alert__heading">Success status</h4>
-          <p class="usa-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);" class="usa-link">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-        </div>
-      </div>`,
-    )
-    const reference = await extract(page, '', '[data-testid="target"]')
-
-    await renderFlexFixture(
-      page,
-      `<div class="flex-alert" data-variant="success" role="alert" data-testid="target">
-        <h4 class="flex-alert__heading">Success status</h4>
-        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-      </div>`,
-    )
-    const implementation = await extract(page, '', '[data-testid="target"]')
-
-    expectMatch(diff(reference, implementation, '', STRUCTURAL_IGNORE))
-  })
-
-  test('warning alert background and border match USWDS', async ({ page }) => {
-    await renderUswdsFixture(
-      page,
-      `<div class="usa-alert usa-alert--warning" role="alert" data-testid="target">
-        <div class="usa-alert__body">
-          <h4 class="usa-alert__heading">Warning status</h4>
-          <p class="usa-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);" class="usa-link">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-        </div>
-      </div>`,
-    )
-    const reference = await extract(page, '', '[data-testid="target"]')
-
-    await renderFlexFixture(
-      page,
-      `<div class="flex-alert" data-variant="warning" role="alert" data-testid="target">
-        <h4 class="flex-alert__heading">Warning status</h4>
-        <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-      </div>`,
-    )
-    const implementation = await extract(page, '', '[data-testid="target"]')
-
-    expectMatch(diff(reference, implementation, '', STRUCTURAL_IGNORE))
-  })
-})
-
-// --- Icon color conformance ---
-// USWDS alert icons are ink-colored (gray-90) for standard variants,
-// but WHITE for emergency (which has a dark background). Verified by
-// inspecting USWDS's computed .usa-alert__body::before background-color.
+// --- Custom tests: icon colors, emergency, slim/no-icon ---
+// These test CSS pseudo-elements and computed token colors that the
+// generic runner can't handle.
 
 const INK_ICON_VARIANTS = ['info', 'success', 'warning', 'error']
 
@@ -301,47 +159,5 @@ test.describe('flex-alert icon color conformance', () => {
       })
 
     expect(display).toBe('none')
-  })
-})
-
-// --- Accessibility ---
-
-test.describe('flex-alert accessibility', () => {
-  test('all variants pass axe audit', async ({ page }) => {
-    await renderFlexFixture(
-      page,
-      `<main>
-        <h1>Alert Test</h1>
-        <div class="flex-alert" data-variant="info" role="alert">
-          <h4 class="flex-alert__heading">Informative status</h4>
-          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-        </div>
-        <div class="flex-alert" data-variant="warning" role="alert">
-          <h4 class="flex-alert__heading">Warning status</h4>
-          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-        </div>
-        <div class="flex-alert" data-variant="success" role="alert">
-          <h4 class="flex-alert__heading">Success status</h4>
-          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-        </div>
-        <div class="flex-alert" data-variant="error" role="alert">
-          <h4 class="flex-alert__heading">Error status</h4>
-          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-        </div>
-        <div class="flex-alert" data-variant="emergency" role="alert">
-          <h4 class="flex-alert__heading">Emergency status</h4>
-          <p class="flex-alert__text">Lorem ipsum dolor sit amet, <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do eiusmod.</p>
-        </div>
-      </main>`,
-    )
-
-    await page.evaluate(() => {
-      document.title = 'Alert Conformance Test'
-    })
-
-    const results = await new AxeBuilder({ page })
-      .disableRules(['heading-order'])
-      .analyze()
-    expect(results.violations).toEqual([])
   })
 })

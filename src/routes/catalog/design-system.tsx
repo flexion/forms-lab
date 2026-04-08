@@ -6,6 +6,7 @@ import { ContentCard } from '../../components/flex-card'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import { Prose } from '../../components/flex-prose'
+import type { ConformanceSpec } from '../../components/conformance-types'
 import {
   getComponentBySlug,
   getComponentsByCategory,
@@ -185,6 +186,17 @@ designSystem.get('/:slug', async (c) => {
     // No styles.css for this component
   }
 
+  // Load conformance spec
+  let conformanceSpec: ConformanceSpec | null = null
+  try {
+    const specModule = await import(
+      `../../components/${meta.slug}/conformance-spec.ts`
+    )
+    conformanceSpec = specModule.spec
+  } catch {
+    // No conformance spec for this component
+  }
+
   return c.html(
     <Layout title={`${meta.name} — Design System`} sidebar={sidebar}>
       <h1>{meta.name}</h1>
@@ -219,6 +231,95 @@ designSystem.get('/:slug', async (c) => {
               </div>
             </div>
           ))}
+        </section>
+      )}
+
+      {conformanceSpec && (
+        <section class="l-stack">
+          <h2>Conformance</h2>
+
+          {conformanceSpec.mapping.length > 0 && (
+            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+              <h3>Class Mapping</h3>
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 2px solid var(--flex-color-border);">
+                    <th style="text-align: left; padding: var(--flex-space-xs) var(--flex-space-sm);">
+                      USWDS
+                    </th>
+                    <th style="text-align: left; padding: var(--flex-space-xs) var(--flex-space-sm);">
+                      Flex
+                    </th>
+                    <th style="text-align: left; padding: var(--flex-space-xs) var(--flex-space-sm);">
+                      Notes
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {conformanceSpec.mapping.map((m) => (
+                    <tr style="border-bottom: 1px solid var(--flex-color-border);">
+                      <td style="padding: var(--flex-space-xs) var(--flex-space-sm);">
+                        <code class="flex-mono">{m.uswds}</code>
+                      </td>
+                      <td style="padding: var(--flex-space-xs) var(--flex-space-sm);">
+                        <code class="flex-mono">{m.flex}</code>
+                      </td>
+                      <td style="padding: var(--flex-space-xs) var(--flex-space-sm);">
+                        {m.notes}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {conformanceSpec.verified.length > 0 && (
+            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+              <h3>Verified Properties</h3>
+              <div class="l-cluster">
+                {conformanceSpec.verified.map((prop) => (
+                  <code
+                    class="flex-mono"
+                    style="padding: 2px var(--flex-space-xs); background: var(--flex-color-success-lighter); border-radius: var(--flex-radius-sm);"
+                  >
+                    {prop}
+                  </code>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {conformanceSpec.intentionalDifferences.length > 0 && (
+            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+              <h3>Intentional Differences</h3>
+              {conformanceSpec.intentionalDifferences.map((d) => (
+                <div style="padding: var(--flex-space-sm); background: var(--flex-color-warning-lighter); border-radius: var(--flex-radius-md);">
+                  <p>
+                    <strong>
+                      <code class="flex-mono">{d.property}</code>
+                    </strong>
+                    : ours = <code class="flex-mono">{d.ours}</code>, USWDS ={' '}
+                    <code class="flex-mono">{d.uswds}</code>
+                  </p>
+                  <p>{d.reason}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {conformanceSpec.behavior.length > 0 && (
+            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+              <h3>Behavior</h3>
+              <ul>
+                {conformanceSpec.behavior.map((b) => (
+                  <li>
+                    {b.tested ? '✓' : '○'} {b.description}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
       )}
 
