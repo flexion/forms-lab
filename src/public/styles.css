@@ -19,6 +19,7 @@
 @import "../components/flex-badge/styles.css" layer(block);
 @import "../components/flex-card/styles.css" layer(block);
 @import "../components/flex-prose/styles.css" layer(block);
+@import "../components/flex-button/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);

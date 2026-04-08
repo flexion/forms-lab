@@ -16,6 +16,7 @@ function getFlexCSS(): string {
     'src/components/flex-badge/styles.css',
     'src/components/flex-card/styles.css',
     'src/components/flex-prose/styles.css',
+    'src/components/flex-button/styles.css',
   ]
   return files.map((f) => readCSSFile(f)).join('\n')
 }

@@ -1,6 +1,8 @@
 import type { ComponentMeta } from './types'
 
-const components: ComponentMeta[] = []
+import { meta as button } from './flex-button/meta'
+
+const components: ComponentMeta[] = [button]
 
 export function getComponents(): ComponentMeta[] {
   return components
