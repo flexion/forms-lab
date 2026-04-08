@@ -12,7 +12,7 @@ flex-accordion {
   justify-content: space-between;
   width: 100%;
   padding: var(--flex-space-md);
-  background-color: var(--flex-color-bg);
+  background-color: var(--flex-color-table-header);
   border: none;
   border-bottom: 1px solid var(--flex-color-border);
   font-family: var(--flex-font-sans);
