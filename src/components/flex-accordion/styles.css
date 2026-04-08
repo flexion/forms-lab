@@ -23,7 +23,6 @@ flex-accordion {
   color: var(--flex-color-text);
   cursor: pointer;
   text-align: left;
-  line-height: 1.5;
 }
 
 .flex-accordion__button:hover {

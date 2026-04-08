@@ -18,7 +18,16 @@ app.get('/static/sprite.svg', async (c) => {
   return c.body(svg)
 })
 
-// Static assets (CSS build output)
+// Font files (self-hosted, matching USWDS)
+app.use(
+  '/static/fonts/*',
+  serveStatic({
+    root: './src/public',
+    rewriteRequestPath: (path) => path.replace('/static/', ''),
+  }),
+)
+
+// Static assets (CSS + JS build output)
 app.use(
   '/static/*',
   serveStatic({

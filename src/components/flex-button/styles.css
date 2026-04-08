@@ -218,7 +218,7 @@
 
 .flex-button[data-size="big"] {
   padding: 16px 24px;
-  font-size: var(--flex-text-lg);
+  font-size: 1.46rem; /* @uswds big button font-size */
 }
 
 /* --- Size: Small --- */

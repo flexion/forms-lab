@@ -10,6 +10,7 @@ await Bun.build({
   outdir: './dist',
   naming: 'styles.css',
   minify: false,
+  external: ['/static/*'],
 })
 
 // Build component client scripts on startup

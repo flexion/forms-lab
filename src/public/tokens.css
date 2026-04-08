@@ -4386,14 +4386,12 @@
   --flex-radius-sm: 4px;
   --flex-radius-md: 8px;
   --flex-radius-bubble: 14px;
-  --flex-font-sans:
-    "Source Sans Pro Normalized", system-ui, -apple-system, sans-serif;
-  --flex-font-mono:
-    ui-monospace, "Cascadia Code", "Source Code Pro", menlo, monospace;
+  --flex-font-sans: "Source Sans Pro Web", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif; /* @uswds font-sans */
+  --flex-font-mono: "Roboto Mono Web", "Bitstream Vera Sans Mono", "Consolas", "Courier", monospace; /* @uswds font-mono */
   --flex-text-xs: 0.7em;
   --flex-text-sm: 0.82em;
   --flex-text-base: 0.9em;
-  --flex-text-uswds: 1rem;
+  --flex-text-uswds: 1.06rem; /* @uswds normalized base font-size (cap-height adjustment for Source Sans Pro) */
   --flex-text-tag: 0.875rem;
 
   /* Focus tokens */

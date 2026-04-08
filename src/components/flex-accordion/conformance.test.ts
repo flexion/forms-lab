@@ -16,9 +16,6 @@ const componentsJs = readFileSync(
 
 const IGNORE = {
   ignoreProperties: [
-    'font-family',
-    'font-size',
-    'line-height',
     'color',
     'outline',
   ],

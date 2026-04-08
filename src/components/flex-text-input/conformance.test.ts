@@ -9,9 +9,6 @@ import { diff, extract } from '../../lib/visual-descriptor'
 
 const IGNORE_FONT = {
   ignoreProperties: [
-    'font-family',
-    'font-size',
-    'line-height',
     'display',
     // Border color differs at token level (--flex-color-ink vs USWDS ink)
     'border-top-color',

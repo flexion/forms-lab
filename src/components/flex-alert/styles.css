@@ -1,15 +1,10 @@
 .flex-alert {
   position: relative;
-  padding-left: 3.5rem;
   background-color: var(--flex-color-info-lighter);
   border-left: var(--flex-space-sm) solid var(--flex-color-info);
-  padding-top: var(--flex-space-md);
-  padding-right: var(--flex-space-lg);
-  padding-bottom: var(--flex-space-md);
-  font-family: var(--flex-font-sans);
-  font-size: var(--flex-text-uswds);
   color: var(--flex-color-text);
-  line-height: 1.5;
+  /* Padding matches USWDS .usa-alert__body — we don't use a body wrapper */
+  padding: 1rem 1.25rem 1rem 3.5rem;
 }
 
 .flex-alert::before {

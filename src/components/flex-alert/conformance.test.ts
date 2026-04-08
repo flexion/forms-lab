@@ -19,9 +19,6 @@ const STRUCTURAL_IGNORE = {
   // Our alert has a flatter structure than USWDS (no __body wrapper),
   // so we compare the outer element's visual properties directly
   ignoreProperties: [
-    'font-family',
-    'font-size',
-    'line-height',
     'display',
     'position',
     'outline',

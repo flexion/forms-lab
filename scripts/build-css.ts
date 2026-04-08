@@ -11,6 +11,8 @@ const result = await Bun.build({
   outdir,
   naming: 'styles.css',
   minify: false,
+  // Don't resolve absolute URL paths (fonts served separately)
+  external: ['/static/*'],
 })
 
 if (!result.success) {

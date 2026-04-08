@@ -8,7 +8,7 @@ import {
 import { diff, extract } from '../../lib/visual-descriptor'
 
 const IGNORE_FONT = {
-  ignoreProperties: ['font-family', 'font-size', 'line-height', 'display'],
+  ignoreProperties: ['display'],
   ignoreBoxKeys: ['width', 'height'],
 }
 

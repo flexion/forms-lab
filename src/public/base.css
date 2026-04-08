@@ -2,12 +2,16 @@
   color-scheme: light dark;
 }
 
+html {
+  font-family: var(--flex-font-sans);
+  font-size: 100%;
+  line-height: 1.15; /* @uswds html line-height */
+}
+
 body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  font-family: var(--flex-font-sans);
-  font-size: var(--flex-text-uswds);
   color: var(--flex-color-text);
   background: var(--flex-color-bg);
 }

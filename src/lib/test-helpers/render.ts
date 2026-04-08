@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Page } from '@playwright/test'
 
+const DEV_SERVER = 'http://localhost:3000'
+
 function readCSSFile(path: string): string {
   return readFileSync(resolve(process.cwd(), path), 'utf-8')
 }
@@ -25,7 +27,13 @@ function getFlexCSS(): string {
     'src/components/flex-textarea/styles.css',
     'src/components/flex-error-message/styles.css',
   ]
-  return files.map((f) => readCSSFile(f)).join('\n')
+  let css = files.map((f) => readCSSFile(f)).join('\n')
+  // Resolve absolute font paths for Playwright's page.setContent()
+  css = css.replaceAll(
+    'url("/static/',
+    `url("${DEV_SERVER}/static/`,
+  )
+  return css
 }
 
 function getTokenCSS(): string {
@@ -33,10 +41,31 @@ function getTokenCSS(): string {
 }
 
 function getUswdsCSS(): string {
-  return readFileSync(
-    resolve(process.cwd(), 'node_modules/@uswds/uswds/dist/css/uswds.min.css'),
+  let css = readFileSync(
+    resolve(
+      process.cwd(),
+      'node_modules/@uswds/uswds/dist/css/uswds.min.css',
+    ),
     'utf-8',
   )
+  // USWDS font paths are relative (../fonts/...) — resolve to absolute
+  // by pointing to the USWDS dist directory served by the dev server
+  // We can't serve USWDS fonts from our server, so use data URI font-face
+  // replacements. Actually — USWDS CSS references ../fonts/ relative to
+  // the CSS file location. When injected via setContent, there's no base URL.
+  // Fix: rewrite to absolute localhost URLs pointing to our copies of the
+  // same font files.
+  css = css.replaceAll(
+    'url(../fonts/source-sans-pro/',
+    `url(${DEV_SERVER}/static/fonts/source-sans-pro/`,
+  )
+  css = css.replaceAll(
+    'url(../fonts/roboto-mono/',
+    `url(${DEV_SERVER}/static/fonts/roboto-mono/`,
+  )
+  // USWDS also references merriweather and public-sans — we don't serve those
+  // but they're fallback fonts not used in default theme components
+  return css
 }
 
 export async function renderFlexFixture(
@@ -48,7 +77,7 @@ export async function renderFlexFixture(
     <!DOCTYPE html>
     <html lang="en">
     <head><style>${css}</style></head>
-    <body style="margin: 0; padding: 16px; font-family: system-ui;">
+    <body style="margin: 0; padding: 16px;">
       ${html}
     </body>
     </html>
@@ -65,7 +94,7 @@ export async function renderUswdsFixture(
     <!DOCTYPE html>
     <html lang="en">
     <head><style>${css}</style></head>
-    <body style="margin: 0; padding: 16px; font-family: system-ui;">
+    <body style="margin: 0; padding: 16px;">
       ${html}
     </body>
     </html>
