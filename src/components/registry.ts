@@ -1,11 +1,14 @@
 import { meta as accordion } from './flex-accordion/meta'
 import { meta as alert } from './flex-alert/meta'
 import { meta as button } from './flex-button/meta'
+import { meta as card } from './flex-card/meta'
+import { meta as collection } from './flex-collection/meta'
 import { meta as errorMessage } from './flex-error-message/meta'
 import { meta as icon } from './flex-icon/meta'
 import { meta as label } from './flex-label/meta'
 import { meta as link } from './flex-link/meta'
 import { meta as list } from './flex-list/meta'
+import { meta as table } from './flex-table/meta'
 import { meta as tag } from './flex-tag/meta'
 import { meta as textInput } from './flex-text-input/meta'
 import { meta as textarea } from './flex-textarea/meta'
@@ -15,11 +18,14 @@ const components: ComponentMeta[] = [
   accordion,
   alert,
   button,
+  card,
+  collection,
   errorMessage,
   icon,
   label,
   link,
   list,
+  table,
   tag,
   textInput,
   textarea,

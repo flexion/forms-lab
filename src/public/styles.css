@@ -30,6 +30,8 @@
 @import "../components/flex-tag/styles.css" layer(block);
 @import "../components/flex-link/styles.css" layer(block);
 @import "../components/flex-list/styles.css" layer(block);
+@import "../components/flex-collection/styles.css" layer(block);
+@import "../components/flex-table/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);
