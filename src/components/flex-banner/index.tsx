@@ -6,8 +6,9 @@ interface BannerProps {
 
 export const Banner: FC<BannerProps> = ({ contentId = 'banner-content' }) => {
   return (
-    <section
+    <flex-banner
       class="flex-banner"
+      role="region"
       aria-label="Official website of the United States government"
     >
       <div class="flex-banner__header">
@@ -93,6 +94,6 @@ export const Banner: FC<BannerProps> = ({ contentId = 'banner-content' }) => {
           </div>
         </div>
       </div>
-    </section>
+    </flex-banner>
   )
 }

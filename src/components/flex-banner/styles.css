@@ -1,6 +1,10 @@
 /* flex-banner — USWDS Banner conformance
    Official .gov/.mil site identity banner */
 
+flex-banner {
+  display: block;
+}
+
 .flex-banner {
   font-family: var(--flex-font-sans);
   font-size: 0.87rem;
