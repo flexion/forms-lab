@@ -1,12 +1,13 @@
 import type { ComponentMeta } from './types'
 
+import { meta as alert } from './flex-alert/meta'
 import { meta as button } from './flex-button/meta'
 import { meta as errorMessage } from './flex-error-message/meta'
 import { meta as label } from './flex-label/meta'
 import { meta as textInput } from './flex-text-input/meta'
 import { meta as textarea } from './flex-textarea/meta'
 
-const components: ComponentMeta[] = [button, errorMessage, label, textInput, textarea]
+const components: ComponentMeta[] = [alert, button, errorMessage, label, textInput, textarea]
 
 export function getComponents(): ComponentMeta[] {
   return components

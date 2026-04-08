@@ -12,6 +12,7 @@ function getFlexCSS(): string {
     'src/public/font-normalize.css',
     'src/public/base.css',
     'src/public/utilities.css',
+    'src/components/flex-alert/styles.css',
     'src/components/flex-layout/styles.css',
     'src/components/flex-badge/styles.css',
     'src/components/flex-card/styles.css',

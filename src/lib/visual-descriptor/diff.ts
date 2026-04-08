@@ -43,6 +43,8 @@ export interface DiffOptions {
   ignoreBoxKeys?: string[]
   /** Skip pseudo-element comparison (for components that intentionally omit USWDS pseudo icons). */
   ignorePseudos?: boolean
+  /** Skip children comparison (for components with intentionally different internal structure). */
+  ignoreChildren?: boolean
 }
 
 /**
@@ -128,6 +130,9 @@ export function diff(
   }
 
   // Compare children count
+  if (options.ignoreChildren) {
+    return differences
+  }
   if (reference.children.length !== implementation.children.length) {
     differences.push({
       path: currentPath,
