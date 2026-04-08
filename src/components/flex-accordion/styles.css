@@ -26,7 +26,7 @@ flex-accordion {
 }
 
 .flex-accordion__button:hover {
-  background-color: var(--flex-color-surface);
+  background-color: var(--flex-color-border); /* @uswds base-lighter (#dfe1e2) */
 }
 
 .flex-accordion__button:focus-visible {
