@@ -18,19 +18,33 @@ app.get('/static/sprite.svg', async (c) => {
   return c.body(svg)
 })
 
-// USWDS flag image for banner component
-app.get('/static/img/us_flag_small.png', async (c) => {
+// USWDS images (flag, banner icons, etc.)
+app.get('/static/img/:name', async (c) => {
   const { readFile } = await import('node:fs/promises')
   const { resolve } = await import('node:path')
-  const png = await readFile(
-    resolve(
-      process.cwd(),
-      'node_modules/@uswds/uswds/dist/img/us_flag_small.png',
-    ),
+  const name = c.req.param('name')
+  // Only serve known USWDS image files
+  const allowed = ['us_flag_small.png', 'icon-dot-gov.svg', 'icon-https.svg']
+  if (!allowed.includes(name)) return c.notFound()
+  const filePath = resolve(
+    process.cwd(),
+    `node_modules/@uswds/uswds/dist/img/${name}`,
   )
-  c.header('Content-Type', 'image/png')
-  c.header('Cache-Control', 'public, max-age=31536000')
-  return c.body(png)
+  try {
+    const data = await readFile(filePath)
+    const ext = name.split('.').pop()
+    const contentType =
+      ext === 'svg'
+        ? 'image/svg+xml'
+        : ext === 'png'
+          ? 'image/png'
+          : 'application/octet-stream'
+    c.header('Content-Type', contentType)
+    c.header('Cache-Control', 'public, max-age=31536000')
+    return c.body(data)
+  } catch {
+    return c.notFound()
+  }
 })
 
 // Font files (self-hosted, matching USWDS)

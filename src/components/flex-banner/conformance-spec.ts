@@ -91,11 +91,16 @@ export const spec: ConformanceSpec = {
   behavior: [
     {
       description: 'Button toggles hidden attribute on content panel',
-      tested: false,
+      tested: true,
     },
     {
       description: 'Button toggles aria-expanded between true and false',
-      tested: false,
+      tested: true,
+    },
+    {
+      description:
+        'Guidance icons (dot-gov and HTTPS) render as visible images',
+      tested: true,
     },
   ],
 }

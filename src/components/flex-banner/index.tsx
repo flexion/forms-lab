@@ -37,17 +37,14 @@ export const Banner: FC<BannerProps> = ({ contentId = 'banner-content' }) => {
         <div class="flex-banner__guidance">
           <div class="flex-banner__guidance-gov">
             <div class="flex-banner__icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 64 64"
+              <img
+                src="/static/img/icon-dot-gov.svg"
+                alt="Dot gov"
+                class="flex-banner__icon-img"
                 role="img"
-                aria-labelledby="banner-icon-gov"
-              >
-                <title id="banner-icon-gov">Dot gov</title>
-                <circle cx="32" cy="32" r="26" fill="#2378c3" />
-              </svg>
+              />
             </div>
-            <div>
+            <div class="flex-banner__guidance-text">
               <p>
                 <strong>Official websites use .gov</strong>
               </p>
@@ -59,30 +56,14 @@ export const Banner: FC<BannerProps> = ({ contentId = 'banner-content' }) => {
           </div>
           <div class="flex-banner__guidance-ssl">
             <div class="flex-banner__icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 64 64"
+              <img
+                src="/static/img/icon-https.svg"
+                alt="HTTPS"
+                class="flex-banner__icon-img"
                 role="img"
-                aria-labelledby="banner-icon-ssl"
-              >
-                <title id="banner-icon-ssl">HTTPS</title>
-                <rect
-                  x="18"
-                  y="28"
-                  width="28"
-                  height="24"
-                  rx="2"
-                  fill="#538200"
-                />
-                <path
-                  d="M24 28V20a8 8 0 0 1 16 0v8"
-                  fill="none"
-                  stroke="#538200"
-                  stroke-width="4"
-                />
-              </svg>
+              />
             </div>
-            <div>
+            <div class="flex-banner__guidance-text">
               <p>
                 <strong>Secure .gov websites use HTTPS</strong>
               </p>
