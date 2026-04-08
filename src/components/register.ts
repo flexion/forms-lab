@@ -4,6 +4,8 @@
 import './flex-accordion/client'
 import './flex-banner/client'
 import './flex-character-count/client'
+import './flex-file-input/client'
 import './flex-input-mask/client'
+import './flex-language-selector/client'
 import './flex-memorable-date/client'
 import './flex-range-slider/client'

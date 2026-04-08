@@ -9,6 +9,7 @@ import { meta as characterCount } from './flex-character-count/meta'
 import { meta as checkbox } from './flex-checkbox/meta'
 import { meta as collection } from './flex-collection/meta'
 import { meta as errorMessage } from './flex-error-message/meta'
+import { meta as fileInput } from './flex-file-input/meta'
 import { meta as footer } from './flex-footer/meta'
 import { meta as form } from './flex-form/meta'
 import { meta as icon } from './flex-icon/meta'
@@ -16,6 +17,7 @@ import { meta as identifier } from './flex-identifier/meta'
 import { meta as inputMask } from './flex-input-mask/meta'
 import { meta as inputPrefixSuffix } from './flex-input-prefix-suffix/meta'
 import { meta as label } from './flex-label/meta'
+import { meta as languageSelector } from './flex-language-selector/meta'
 import { meta as link } from './flex-link/meta'
 import { meta as list } from './flex-list/meta'
 import { meta as memorableDate } from './flex-memorable-date/meta'
@@ -49,6 +51,7 @@ const components: ComponentMeta[] = [
   checkbox,
   collection,
   errorMessage,
+  fileInput,
   footer,
   form,
   icon,
@@ -56,6 +59,7 @@ const components: ComponentMeta[] = [
   inputMask,
   inputPrefixSuffix,
   label,
+  languageSelector,
   link,
   list,
   memorableDate,
