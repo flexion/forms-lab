@@ -1,0 +1,27 @@
+/* flex-date-range-picker -- USWDS Date Range Picker conformance
+   Extends: flex-date-picker
+   Features: paired start/end date pickers with coordinated constraints */
+
+flex-date-range-picker {
+  display: block;
+  max-width: calc(var(--flex-control-max-width) * 2 + 2rem);
+}
+
+.flex-date-range-picker__range-start,
+.flex-date-range-picker__range-end {
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 40em) {
+  flex-date-range-picker {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
+  .flex-date-range-picker__range-start,
+  .flex-date-range-picker__range-end {
+    flex: 1;
+    margin-bottom: 0;
+  }
+}

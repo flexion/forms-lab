@@ -9,6 +9,8 @@ import { meta as characterCount } from './flex-character-count/meta'
 import { meta as checkbox } from './flex-checkbox/meta'
 import { meta as collection } from './flex-collection/meta'
 import { meta as comboBox } from './flex-combo-box/meta'
+import { meta as datePicker } from './flex-date-picker/meta'
+import { meta as dateRangePicker } from './flex-date-range-picker/meta'
 import { meta as errorMessage } from './flex-error-message/meta'
 import { meta as fileInput } from './flex-file-input/meta'
 import { meta as footer } from './flex-footer/meta'
@@ -39,6 +41,7 @@ import { meta as table } from './flex-table/meta'
 import { meta as tag } from './flex-tag/meta'
 import { meta as textInput } from './flex-text-input/meta'
 import { meta as textarea } from './flex-textarea/meta'
+import { meta as timePicker } from './flex-time-picker/meta'
 import { meta as tooltip } from './flex-tooltip/meta'
 import { meta as validation } from './flex-validation/meta'
 import type { ComponentMeta } from './types'
@@ -55,6 +58,8 @@ const components: ComponentMeta[] = [
   checkbox,
   collection,
   comboBox,
+  datePicker,
+  dateRangePicker,
   errorMessage,
   fileInput,
   footer,
@@ -84,6 +89,7 @@ const components: ComponentMeta[] = [
   table,
   tag,
   textInput,
+  timePicker,
   textarea,
   tooltip,
   validation,

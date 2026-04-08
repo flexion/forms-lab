@@ -59,6 +59,9 @@ function getFlexCSS(): string {
     'src/components/flex-modal/styles.css',
     'src/components/flex-tooltip/styles.css',
     'src/components/flex-combo-box/styles.css',
+    'src/components/flex-date-picker/styles.css',
+    'src/components/flex-date-range-picker/styles.css',
+    'src/components/flex-time-picker/styles.css',
     'src/components/flex-in-page-nav/styles.css',
   ]
   let css = files.map((f) => readCSSFile(f)).join('\n')
