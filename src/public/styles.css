@@ -36,6 +36,10 @@
 @import "../components/flex-side-navigation/styles.css" layer(block);
 @import "../components/flex-pagination/styles.css" layer(block);
 @import "../components/flex-search/styles.css" layer(block);
+@import "../components/flex-checkbox/styles.css" layer(block);
+@import "../components/flex-radio/styles.css" layer(block);
+@import "../components/flex-select/styles.css" layer(block);
+@import "../components/flex-button-group/styles.css" layer(block);
 @import "../components/flex-footer/styles.css" layer(block);
 @import "../components/flex-banner/styles.css" layer(block);
 @import "../components/flex-identifier/styles.css" layer(block);
