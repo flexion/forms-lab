@@ -4350,24 +4350,29 @@
      ============================================================================ */
 
   /* Color tokens */
-  --flex-color-bg: var(--flex-gray-cool-2);
-  --flex-color-surface: var(--flex-white);
-  --flex-color-border: var(--flex-gray-cool-20);
-  --flex-color-text: var(--flex-gray-90);
-  --flex-color-text-muted: var(--flex-gray-60);
-  --flex-color-accent: var(--flex-blue-vivid-60);
-  --flex-color-success: var(--flex-green-cool-vivid-60);
-  --flex-color-error: var(--flex-red-vivid-60);
-  --flex-color-ink: var(--flex-gray-cool-50);
-  --flex-color-table-header: var(--flex-gray-cool-10);
-  --flex-color-bg-subtle: var(--flex-gray-5);
-  --flex-color-on-accent: var(--flex-white);
-  --flex-color-info: var(--flex-cyan-vivid-30);
-  --flex-color-info-lighter: var(--flex-cyan-5);
-  --flex-color-warning: var(--flex-yellow-vivid-20);
-  --flex-color-warning-lighter: var(--flex-yellow-5);
-  --flex-color-error-lighter: var(--flex-red-warm-10);
-  --flex-color-success-lighter: var(--flex-mint-cool-5);
+  /* Semantic color tokens — mapped to USWDS 3.13 default theme */
+  --flex-color-bg: var(--flex-white);                     /* @uswds white — page background */
+  --flex-color-bg-subtle: var(--flex-gray-5);             /* @uswds base-lightest */
+  --flex-color-surface: var(--flex-white);                /* white */
+  --flex-color-border: var(--flex-gray-cool-10);          /* @uswds base-lighter */
+  --flex-color-text: var(--flex-gray-90);                 /* @uswds ink / base-darkest */
+  --flex-color-text-muted: var(--flex-gray-cool-60);      /* @uswds base-dark */
+  --flex-color-ink: var(--flex-gray-cool-50);             /* @uswds base */
+  --flex-color-table-header: var(--flex-gray-cool-10);    /* @uswds base-lighter */
+  --flex-color-on-accent: var(--flex-white);              /* white */
+  --flex-color-accent: var(--flex-blue-vivid-60);         /* @uswds primary (blue-60v) */
+  --flex-color-info: var(--flex-cyan-vivid-30);           /* @uswds info (cyan-30v) */
+  --flex-color-info-lighter: var(--flex-cyan-5);          /* @uswds info-lighter */
+  --flex-color-success: var(--flex-green-cool-vivid-40);  /* @uswds success (green-cool-40v) */
+  --flex-color-success-lighter: var(--flex-green-cool-5); /* @uswds success-lighter */
+  --flex-color-warning: var(--flex-gold-vivid-20);        /* @uswds warning (gold-20v) */
+  --flex-color-warning-lighter: var(--flex-yellow-5);     /* @uswds warning-lighter */
+  --flex-color-error: var(--flex-red-warm-vivid-50);      /* @uswds error (red-warm-50v) */
+  --flex-color-error-lighter: var(--flex-red-warm-10);    /* @uswds error-lighter */
+  --flex-color-disabled: var(--flex-gray-50);             /* @uswds disabled */
+  --flex-color-disabled-light: var(--flex-gray-40);      /* @uswds disabled-light */
+  --flex-color-disabled-lighter: var(--flex-gray-20);    /* @uswds disabled-lighter */
+  --flex-color-disabled-dark: var(--flex-gray-70);       /* @uswds disabled-dark */
 
   /* Spacing tokens */
   --flex-space-xs: 4px;
@@ -4430,6 +4435,6 @@
     --flex-color-warning: var(--flex-yellow-vivid-30);
     --flex-color-warning-lighter: var(--flex-yellow-80);
     --flex-color-error-lighter: var(--flex-red-warm-80);
-    --flex-color-success-lighter: var(--flex-mint-cool-80);
+    --flex-color-success-lighter: var(--flex-green-cool-80);
   }
 }

@@ -39,8 +39,8 @@
 }
 
 .flex-button:disabled {
-  background-color: #c9c9c9;
-  color: #454545;
+  background-color: var(--flex-color-disabled-lighter);
+  color: var(--flex-color-disabled-dark);
   cursor: not-allowed;
 }
 
@@ -61,8 +61,8 @@
 }
 
 .flex-button[data-variant="secondary"]:disabled {
-  background-color: #c9c9c9;
-  color: #454545;
+  background-color: var(--flex-color-disabled-lighter);
+  color: var(--flex-color-disabled-dark);
   box-shadow: none;
 }
 
@@ -82,8 +82,8 @@
 }
 
 .flex-button[data-variant="accent-cool"]:disabled {
-  background-color: #c9c9c9;
-  color: #454545;
+  background-color: var(--flex-color-disabled-lighter);
+  color: var(--flex-color-disabled-dark);
 }
 
 /* --- Accent Warm variant --- */
@@ -102,8 +102,8 @@
 }
 
 .flex-button[data-variant="accent-warm"]:disabled {
-  background-color: #c9c9c9;
-  color: #454545;
+  background-color: var(--flex-color-disabled-lighter);
+  color: var(--flex-color-disabled-dark);
 }
 
 /* --- Base variant --- */
@@ -122,8 +122,8 @@
 }
 
 .flex-button[data-variant="base"]:disabled {
-  background-color: #c9c9c9;
-  color: #454545;
+  background-color: var(--flex-color-disabled-lighter);
+  color: var(--flex-color-disabled-dark);
 }
 
 /* --- Outline variant --- */
@@ -152,8 +152,8 @@
 
 .flex-button[data-variant="outline"]:disabled {
   background-color: transparent;
-  color: #454545;
-  box-shadow: inset 0 0 0 2px #c9c9c9;
+  color: var(--flex-color-disabled-dark);
+  box-shadow: inset 0 0 0 2px var(--flex-color-disabled-lighter);
 }
 
 /* --- Inverse variant --- */
@@ -181,8 +181,8 @@
 }
 
 .flex-button[data-variant="inverse"]:disabled {
-  color: #454545;
-  box-shadow: inset 0 0 0 2px #c9c9c9;
+  color: var(--flex-color-disabled-dark);
+  box-shadow: inset 0 0 0 2px var(--flex-color-disabled-lighter);
 }
 
 /* --- Unstyled variant --- */
@@ -211,7 +211,7 @@
 
 .flex-button[data-variant="unstyled"]:disabled {
   background-color: transparent;
-  color: #454545;
+  color: var(--flex-color-disabled-dark);
 }
 
 /* --- Size: Big --- */
