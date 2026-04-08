@@ -27,6 +27,9 @@
 @import "../components/flex-text-input/styles.css" layer(block);
 @import "../components/flex-textarea/styles.css" layer(block);
 @import "../components/flex-error-message/styles.css" layer(block);
+@import "../components/flex-tag/styles.css" layer(block);
+@import "../components/flex-link/styles.css" layer(block);
+@import "../components/flex-list/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);

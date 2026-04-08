@@ -4,6 +4,9 @@ import { meta as button } from './flex-button/meta'
 import { meta as errorMessage } from './flex-error-message/meta'
 import { meta as icon } from './flex-icon/meta'
 import { meta as label } from './flex-label/meta'
+import { meta as link } from './flex-link/meta'
+import { meta as list } from './flex-list/meta'
+import { meta as tag } from './flex-tag/meta'
 import { meta as textInput } from './flex-text-input/meta'
 import { meta as textarea } from './flex-textarea/meta'
 import type { ComponentMeta } from './types'
@@ -15,6 +18,9 @@ const components: ComponentMeta[] = [
   errorMessage,
   icon,
   label,
+  link,
+  list,
+  tag,
   textInput,
   textarea,
 ]

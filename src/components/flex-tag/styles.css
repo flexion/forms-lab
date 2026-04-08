@@ -1,0 +1,27 @@
+/* flex-tag — USWDS Tag conformance
+   Sizes: default, big */
+
+.flex-tag {
+  font-family: var(--flex-font-sans);
+  font-size: 0.93rem;
+  color: var(--flex-white);
+  text-transform: uppercase;
+  background-color: var(--flex-gray-cool-60);
+  border-radius: 2px;
+  margin-right: 0.25rem;
+  padding: 1px 0.5rem;
+  display: inline;
+}
+
+.flex-tag:only-of-type {
+  margin-right: 0;
+}
+
+/* --- Size: Big --- */
+
+.flex-tag[data-size="big"] {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-uswds);
+}
