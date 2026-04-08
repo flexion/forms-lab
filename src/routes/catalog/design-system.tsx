@@ -36,15 +36,81 @@ designSystem.get('/', (c) => {
   const sidebar = <CatalogSidebar sections={sidebarData} />
   const grouped = getComponentsByCategory()
 
+  // Category display names
+  const categoryLabels: Record<string, string> = {
+    form: 'Form Controls',
+    action: 'Actions',
+    feedback: 'Feedback',
+    navigation: 'Navigation',
+    layout: 'Layout',
+    process: 'Process',
+    identity: 'Identity',
+  }
+
+  const foundations = [
+    {
+      title: 'Tokens',
+      href: '/catalog/design-system/tokens',
+      description:
+        'Two-tier token architecture: USWDS palette tokens and semantic role-based tokens.',
+    },
+    {
+      title: 'Typography',
+      href: '/catalog/design-system/typography',
+      description:
+        'Font families, type scale, weights, line heights, measure, and heading hierarchy.',
+    },
+    {
+      title: 'Compositions',
+      href: '/catalog/design-system/compositions',
+      description:
+        'Layout primitives from CUBE CSS: stack, cluster, center, sidebar, grid.',
+    },
+    {
+      title: 'Base Classes',
+      href: '/catalog/design-system/base-classes',
+      description: 'Shared CSS properties extracted into multi-selector rules.',
+    },
+    {
+      title: 'Rules',
+      href: '/catalog/design-system/rules',
+      description:
+        'Token rules, component rules, and accessibility invariants.',
+    },
+    {
+      title: 'Data Visualizations',
+      href: '/catalog/design-system/data-visualizations',
+      description:
+        'Accessibility-first guidance for charts, graphs, maps, and infographics.',
+    },
+  ]
+
   return c.html(
     <Layout title="Design System" sidebar={sidebar}>
       <h1>Design System</h1>
+      <p>
+        A USWDS-aligned design system built with CUBE CSS methodology. Semantic
+        tokens, layout compositions, and accessible components.
+      </p>
+
+      <section class="l-stack">
+        <h2>Foundations</h2>
+        <div class="l-grid" style="--grid-min: 250px;">
+          {foundations.map((item) => (
+            <ContentCard
+              title={item.title}
+              href={item.href}
+              description={item.description}
+            />
+          ))}
+        </div>
+      </section>
 
       <section class="l-stack">
         <h2>Components</h2>
         {Object.entries(grouped).map(([category, components]) => (
           <div class="l-stack">
-            <h3 style="text-transform: capitalize;">{category}</h3>
+            <h3>{categoryLabels[category] || category}</h3>
             <div class="l-grid" style="--grid-min: 250px;">
               {components.map((comp) => (
                 <ContentCard
@@ -60,108 +126,6 @@ designSystem.get('/', (c) => {
             </div>
           </div>
         ))}
-      </section>
-
-      <section class="l-stack">
-        <h2>Tokens</h2>
-        <p>
-          Two-tier token architecture: immutable USWDS 3.13 palette tokens (
-          <code>--flex-blue-60</code>) and semantic role-based tokens (
-          <code>--flex-color-accent</code>). Components use semantic tokens
-          only. Retheme by remapping semantic tokens.
-        </p>
-
-        <h3>Colors</h3>
-        <div class="l-grid" style="--grid-min: 150px;">
-          <div style="padding: var(--flex-space-md); background: var(--flex-color-bg); border: 1px solid var(--flex-color-border);">
-            <code class="flex-mono">--flex-color-bg</code>
-          </div>
-          <div style="padding: var(--flex-space-md); background: var(--flex-color-surface); border: 1px solid var(--flex-color-border);">
-            <code class="flex-mono">--flex-color-surface</code>
-          </div>
-          <div style="padding: var(--flex-space-md); background: var(--flex-color-accent); color: var(--flex-color-on-accent);">
-            <code class="flex-mono">--flex-color-accent</code>
-          </div>
-          <div style="padding: var(--flex-space-md); background: var(--flex-color-success-lighter);">
-            <code class="flex-mono">--flex-color-success</code>
-          </div>
-          <div style="padding: var(--flex-space-md); background: var(--flex-color-error-lighter);">
-            <code class="flex-mono">--flex-color-error</code>
-          </div>
-          <div style="padding: var(--flex-space-md); background: var(--flex-color-warning-lighter);">
-            <code class="flex-mono">--flex-color-warning</code>
-          </div>
-          <div style="padding: var(--flex-space-md); background: var(--flex-color-info-lighter);">
-            <code class="flex-mono">--flex-color-info</code>
-          </div>
-        </div>
-
-        <h3>Spacing</h3>
-        <div class="l-stack" style="--stack-space: var(--flex-space-xs);">
-          <div class="l-cluster">
-            <code class="flex-mono">--flex-space-xs (4px)</code>
-            <div style="width: var(--flex-space-xs); height: var(--flex-space-md); background: var(--flex-color-accent);"></div>
-          </div>
-          <div class="l-cluster">
-            <code class="flex-mono">--flex-space-sm (8px)</code>
-            <div style="width: var(--flex-space-sm); height: var(--flex-space-md); background: var(--flex-color-accent);"></div>
-          </div>
-          <div class="l-cluster">
-            <code class="flex-mono">--flex-space-md (16px)</code>
-            <div style="width: var(--flex-space-md); height: var(--flex-space-md); background: var(--flex-color-accent);"></div>
-          </div>
-          <div class="l-cluster">
-            <code class="flex-mono">--flex-space-lg (24px)</code>
-            <div style="width: var(--flex-space-lg); height: var(--flex-space-md); background: var(--flex-color-accent);"></div>
-          </div>
-          <div class="l-cluster">
-            <code class="flex-mono">--flex-space-xl (32px)</code>
-            <div style="width: var(--flex-space-xl); height: var(--flex-space-md); background: var(--flex-color-accent);"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="l-stack">
-        <h2>Compositions</h2>
-        <p>
-          Layout primitives from CUBE CSS. Compositions handle spatial
-          relationships only — no colors, typography, or borders.
-        </p>
-
-        <h3>l-stack</h3>
-        <p>
-          Vertical flow with consistent spacing. Customizable via{' '}
-          <code>--stack-space</code>.
-        </p>
-
-        <h3>l-cluster</h3>
-        <p>
-          Horizontal wrapping group with gap. Customizable via{' '}
-          <code>--cluster-space</code>.
-        </p>
-
-        <h3>l-center</h3>
-        <p>Centered content column, max-width 960px.</p>
-
-        <h3>l-sidebar</h3>
-        <p>
-          Two-column layout: sidebar + main content. Used for the catalog
-          navigation.
-        </p>
-
-        <h3>l-grid</h3>
-        <p>
-          Auto-fill responsive grid. Customizable via <code>--grid-min</code>.
-        </p>
-      </section>
-
-      <section class="l-stack">
-        <h2>Rules</h2>
-        <Prose
-          content={
-            '### Token Rules\n\n- All colors must use `--flex-color-*` tokens (no hardcoded hex)\n- Spacing must use `--flex-space-*` tokens\n- Font families must use `--flex-font-sans` or `--flex-font-mono`\n- Font sizes must use `--flex-text-*` tokens\n- Border radii must use `--flex-radius-*` tokens\n- Exception: USWDS components may use hardcoded rem/px for visual conformance\n\n### Component Rules\n\n- One CSS file per component, co-located with its TSX\n- Block CSS handles appearance (color, typography, borders), not layout between siblings\n- Use `data-` attributes for state/variants (`data-status`, `data-variant`, `data-size`)\n- Every interactive component must have `:focus-visible` and `:disabled` styles\n\n### Accessibility\n\n- 44px minimum touch target\n- Form fields must have associated `<label>`\n- Error states need color + text (not color alone)\n- Respect `prefers-reduced-motion`\n- Support `prefers-contrast`'
-          }
-        />
       </section>
     </Layout>,
   )
@@ -360,6 +324,140 @@ designSystem.get('/:slug', async (c) => {
               </p>
             </div>
           </div>
+        </section>
+      </Layout>,
+    )
+  }
+
+  if (slug === 'tokens') {
+    const sidebarData = getDesignSystemSidebar('/catalog/design-system/tokens')
+    const sidebar = <CatalogSidebar sections={sidebarData} />
+
+    return c.html(
+      <Layout title="Tokens — Design System" sidebar={sidebar}>
+        <h1>Tokens</h1>
+
+        <section class="l-stack">
+          <p>
+            Two-tier token architecture: immutable USWDS 3.13 palette tokens (
+            <code>--flex-blue-60</code>) and semantic role-based tokens (
+            <code>--flex-color-accent</code>). Components use semantic tokens
+            only. Retheme by remapping semantic tokens.
+          </p>
+
+          <h2>Colors</h2>
+          <div class="l-grid" style="--grid-min: 150px;">
+            <div style="padding: var(--flex-space-md); background: var(--flex-color-bg); border: 1px solid var(--flex-color-border);">
+              <code class="flex-mono">--flex-color-bg</code>
+            </div>
+            <div style="padding: var(--flex-space-md); background: var(--flex-color-surface); border: 1px solid var(--flex-color-border);">
+              <code class="flex-mono">--flex-color-surface</code>
+            </div>
+            <div style="padding: var(--flex-space-md); background: var(--flex-color-accent); color: var(--flex-color-on-accent);">
+              <code class="flex-mono">--flex-color-accent</code>
+            </div>
+            <div style="padding: var(--flex-space-md); background: var(--flex-color-success-lighter);">
+              <code class="flex-mono">--flex-color-success</code>
+            </div>
+            <div style="padding: var(--flex-space-md); background: var(--flex-color-error-lighter);">
+              <code class="flex-mono">--flex-color-error</code>
+            </div>
+            <div style="padding: var(--flex-space-md); background: var(--flex-color-warning-lighter);">
+              <code class="flex-mono">--flex-color-warning</code>
+            </div>
+            <div style="padding: var(--flex-space-md); background: var(--flex-color-info-lighter);">
+              <code class="flex-mono">--flex-color-info</code>
+            </div>
+          </div>
+
+          <h2>Spacing</h2>
+          <div class="l-stack" style="--stack-space: var(--flex-space-xs);">
+            <div class="l-cluster">
+              <code class="flex-mono">--flex-space-xs (4px)</code>
+              <div style="width: var(--flex-space-xs); height: var(--flex-space-md); background: var(--flex-color-accent);"></div>
+            </div>
+            <div class="l-cluster">
+              <code class="flex-mono">--flex-space-sm (8px)</code>
+              <div style="width: var(--flex-space-sm); height: var(--flex-space-md); background: var(--flex-color-accent);"></div>
+            </div>
+            <div class="l-cluster">
+              <code class="flex-mono">--flex-space-md (16px)</code>
+              <div style="width: var(--flex-space-md); height: var(--flex-space-md); background: var(--flex-color-accent);"></div>
+            </div>
+            <div class="l-cluster">
+              <code class="flex-mono">--flex-space-lg (24px)</code>
+              <div style="width: var(--flex-space-lg); height: var(--flex-space-md); background: var(--flex-color-accent);"></div>
+            </div>
+            <div class="l-cluster">
+              <code class="flex-mono">--flex-space-xl (32px)</code>
+              <div style="width: var(--flex-space-xl); height: var(--flex-space-md); background: var(--flex-color-accent);"></div>
+            </div>
+          </div>
+        </section>
+      </Layout>,
+    )
+  }
+
+  if (slug === 'compositions') {
+    const sidebarData = getDesignSystemSidebar(
+      '/catalog/design-system/compositions',
+    )
+    const sidebar = <CatalogSidebar sections={sidebarData} />
+
+    return c.html(
+      <Layout title="Compositions — Design System" sidebar={sidebar}>
+        <h1>Compositions</h1>
+
+        <section class="l-stack">
+          <p>
+            Layout primitives from CUBE CSS. Compositions handle spatial
+            relationships only — no colors, typography, or borders.
+          </p>
+
+          <h2>l-stack</h2>
+          <p>
+            Vertical flow with consistent spacing. Customizable via{' '}
+            <code>--stack-space</code>.
+          </p>
+
+          <h2>l-cluster</h2>
+          <p>
+            Horizontal wrapping group with gap. Customizable via{' '}
+            <code>--cluster-space</code>.
+          </p>
+
+          <h2>l-center</h2>
+          <p>Centered content column, max-width 960px.</p>
+
+          <h2>l-sidebar</h2>
+          <p>
+            Two-column layout: sidebar + main content. Used for the catalog
+            navigation.
+          </p>
+
+          <h2>l-grid</h2>
+          <p>
+            Auto-fill responsive grid. Customizable via <code>--grid-min</code>.
+          </p>
+        </section>
+      </Layout>,
+    )
+  }
+
+  if (slug === 'rules') {
+    const sidebarData = getDesignSystemSidebar('/catalog/design-system/rules')
+    const sidebar = <CatalogSidebar sections={sidebarData} />
+
+    return c.html(
+      <Layout title="Rules — Design System" sidebar={sidebar}>
+        <h1>Rules</h1>
+
+        <section class="l-stack">
+          <Prose
+            content={
+              '### Token Rules\n\n- All colors must use `--flex-color-*` tokens (no hardcoded hex)\n- Spacing must use `--flex-space-*` tokens\n- Font families must use `--flex-font-sans` or `--flex-font-mono`\n- Font sizes must use `--flex-text-*` tokens\n- Border radii must use `--flex-radius-*` tokens\n- Exception: USWDS components may use hardcoded rem/px for visual conformance\n\n### Component Rules\n\n- One CSS file per component, co-located with its TSX\n- Block CSS handles appearance (color, typography, borders), not layout between siblings\n- Use `data-` attributes for state/variants (`data-status`, `data-variant`, `data-size`)\n- Every interactive component must have `:focus-visible` and `:disabled` styles\n\n### Accessibility\n\n- 44px minimum touch target\n- Form fields must have associated `<label>`\n- Error states need color + text (not color alone)\n- Respect `prefers-reduced-motion`\n- Support `prefers-contrast`'
+            }
+          />
         </section>
       </Layout>,
     )

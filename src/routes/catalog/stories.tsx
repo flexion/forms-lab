@@ -9,7 +9,7 @@ import { Prose } from '../../components/flex-prose'
 import { TagList } from '../../components/flex-tag-list'
 import { parseMarkdown, readMarkdownDir } from '../../lib/markdown'
 import type { Story } from '../../types/models'
-import { getCatalogSidebar } from './sidebar'
+import { getStoriesSidebar } from './sidebar'
 
 const stories = new Hono()
 
@@ -55,7 +55,7 @@ stories.get('/', async (c) => {
     byMilestone[key].push(story)
   }
 
-  const sidebarData = getCatalogSidebar('/catalog/stories')
+  const sidebarData = getStoriesSidebar(byMilestone, '/catalog/stories')
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
@@ -107,7 +107,23 @@ stories.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
   const filePath = join(process.cwd(), 'catalog', 'stories', `${slug}.md`)
 
-  const sidebarData = getCatalogSidebar('/catalog/stories')
+  // Load all stories for sidebar
+  const storiesDir = join(process.cwd(), 'catalog', 'stories')
+  let allFiles: Awaited<ReturnType<typeof readMarkdownDir>> = []
+  try {
+    allFiles = await readMarkdownDir(storiesDir)
+  } catch {
+    // directory may not exist
+  }
+  const allStories = allFiles.map(parseStory)
+  const byMilestone: Record<string, Story[]> = {}
+  for (const s of allStories) {
+    const key = s.milestone || 'Unassigned'
+    if (!byMilestone[key]) byMilestone[key] = []
+    byMilestone[key].push(s)
+  }
+
+  const sidebarData = getStoriesSidebar(byMilestone, `/catalog/stories/${slug}`)
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   try {

@@ -10,7 +10,7 @@ import { Prose } from '../../components/flex-prose'
 import { TagList } from '../../components/flex-tag-list'
 import { parseMarkdown, readMarkdownDir } from '../../lib/markdown'
 import type { Decision } from '../../types/models'
-import { getCatalogSidebar } from './sidebar'
+import { getDecisionsSidebar } from './sidebar'
 
 const decisions = new Hono()
 
@@ -47,7 +47,7 @@ async function loadDecisions(): Promise<Record<string, Decision[]>> {
 decisions.get('/', async (c) => {
   const groups = await loadDecisions()
 
-  const sidebarData = getCatalogSidebar('/catalog/decisions')
+  const sidebarData = getDecisionsSidebar(groups, '/catalog/decisions')
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
@@ -90,7 +90,9 @@ decisions.get('/:group/:slug', async (c) => {
     `${slug}.md`,
   )
 
-  const sidebarData = getCatalogSidebar('/catalog/decisions')
+  const groups = await loadDecisions()
+  const currentPath = `/catalog/decisions/${group}/${slug}`
+  const sidebarData = getDecisionsSidebar(groups, currentPath)
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   try {
