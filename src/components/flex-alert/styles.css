@@ -71,10 +71,21 @@
   border-left-color: var(--flex-color-error);
 }
 
+/* Emergency: dark background, white text/icon — distinct from error */
 .flex-alert[data-variant="emergency"] {
-  background-color: var(--flex-color-error-lighter);
-  border-left-color: var(--flex-color-error);
+  background-color: var(--flex-color-emergency);
+  border-left-color: var(--flex-color-emergency);
   border-left-width: var(--flex-space-md);
+  color: var(--flex-color-on-accent);
+}
+
+.flex-alert[data-variant="emergency"] .flex-alert__heading,
+.flex-alert[data-variant="emergency"] .flex-alert__text {
+  color: var(--flex-color-on-accent);
+}
+
+.flex-alert[data-variant="emergency"]::before {
+  background-color: var(--flex-color-on-accent);
 }
 
 /* Slim modifier */

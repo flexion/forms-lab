@@ -155,18 +155,15 @@ test.describe('flex-alert visual conformance', () => {
 })
 
 // --- Icon color conformance ---
-// USWDS alert icons are ALWAYS ink-colored (gray-90 / #1b1b1b), regardless
-// of variant. The status color appears only on the left border and background,
-// NOT on the icon. This matches USWDS's actual rendering — verified by
-// inspecting computed styles on .usa-alert__body::before.
+// USWDS alert icons are ink-colored (gray-90) for standard variants,
+// but WHITE for emergency (which has a dark background). Verified by
+// inspecting USWDS's computed .usa-alert__body::before background-color.
 
-const ICON_VARIANTS = ['info', 'success', 'warning', 'error', 'emergency']
+const INK_ICON_VARIANTS = ['info', 'success', 'warning', 'error']
 
 test.describe('flex-alert icon color conformance', () => {
-  for (const variant of ICON_VARIANTS) {
-    test(`${variant} alert icon is ink-colored (not status-colored)`, async ({
-      page,
-    }) => {
+  for (const variant of INK_ICON_VARIANTS) {
+    test(`${variant} alert icon is ink-colored`, async ({ page }) => {
       await renderFlexFixture(
         page,
         `<div class="flex-alert" data-variant="${variant}" role="alert" data-testid="target">
@@ -176,15 +173,12 @@ test.describe('flex-alert icon color conformance', () => {
         <div data-testid="ink" style="background-color: var(--flex-color-text); width: 10px; height: 10px;"></div>`,
       )
 
-      // Get the icon's computed background-color (the ::before pseudo-element)
       const iconColor = await page
         .locator('[data-testid="target"]')
-        .evaluate((el) => {
-          const style = getComputedStyle(el, '::before')
-          return style.getPropertyValue('background-color')
-        })
+        .evaluate((el) =>
+          getComputedStyle(el, '::before').getPropertyValue('background-color'),
+        )
 
-      // Get the ink color from our token
       const inkColor = await page
         .locator('[data-testid="ink"]')
         .evaluate((el) =>
@@ -193,10 +187,82 @@ test.describe('flex-alert icon color conformance', () => {
 
       expect(
         iconColor,
-        `Alert variant "${variant}" icon color (${iconColor}) must be ink (${inkColor}), not status-colored. USWDS alert icons are always dark. Fix ::before background-color in flex-alert/styles.css.`,
+        `Alert "${variant}" icon (${iconColor}) must be ink (${inkColor}). Fix ::before background-color in flex-alert/styles.css.`,
       ).toBe(inkColor)
     })
   }
+
+  test('emergency alert icon is white (inverted for dark background)', async ({
+    page,
+  }) => {
+    await renderFlexFixture(
+      page,
+      `<div class="flex-alert" data-variant="emergency" role="alert" data-testid="target">
+        <h4 class="flex-alert__heading">Emergency</h4>
+        <p class="flex-alert__text">Emergency.</p>
+      </div>
+      <div data-testid="white" style="background-color: var(--flex-color-on-accent); width: 10px; height: 10px;"></div>`,
+    )
+
+    const iconColor = await page
+      .locator('[data-testid="target"]')
+      .evaluate((el) =>
+        getComputedStyle(el, '::before').getPropertyValue('background-color'),
+      )
+
+    const whiteColor = await page
+      .locator('[data-testid="white"]')
+      .evaluate((el) =>
+        getComputedStyle(el).getPropertyValue('background-color'),
+      )
+
+    expect(
+      iconColor,
+      `Emergency icon (${iconColor}) must be white (${whiteColor}). Emergency has dark bg, icon must be inverted. Fix in flex-alert/styles.css.`,
+    ).toBe(whiteColor)
+  })
+
+  test('emergency alert has dark background and white text', async ({
+    page,
+  }) => {
+    await renderFlexFixture(
+      page,
+      `<div class="flex-alert" data-variant="emergency" role="alert" data-testid="target">
+        <h4 class="flex-alert__heading" data-testid="heading">Emergency</h4>
+        <p class="flex-alert__text" data-testid="text">Emergency alert.</p>
+      </div>
+      <div data-testid="emergency-bg" style="background-color: var(--flex-color-emergency); width: 10px; height: 10px;"></div>`,
+    )
+
+    const bg = await page
+      .locator('[data-testid="target"]')
+      .evaluate((el) =>
+        getComputedStyle(el).getPropertyValue('background-color'),
+      )
+
+    const expectedBg = await page
+      .locator('[data-testid="emergency-bg"]')
+      .evaluate((el) =>
+        getComputedStyle(el).getPropertyValue('background-color'),
+      )
+
+    expect(
+      bg,
+      `Emergency background (${bg}) must match --flex-color-emergency (${expectedBg}).`,
+    ).toBe(expectedBg)
+
+    const headingColor = await page
+      .locator('[data-testid="heading"]')
+      .evaluate((el) => getComputedStyle(el).getPropertyValue('color'))
+
+    const textColor = await page
+      .locator('[data-testid="text"]')
+      .evaluate((el) => getComputedStyle(el).getPropertyValue('color'))
+
+    // Both heading and text must be white
+    expect(headingColor).toBe('rgb(255, 255, 255)')
+    expect(textColor).toBe('rgb(255, 255, 255)')
+  })
 
   test('slim alert has no visible icon', async ({ page }) => {
     await renderFlexFixture(

@@ -150,11 +150,17 @@ const TOKEN_MAPPINGS: TokenMapping[] = [
     property: 'background-color',
   },
 
-  // --- Status: error ---
+  // --- Status: error / emergency ---
   {
     name: 'error = error (red-warm-50v)',
     flexToken: '--flex-color-error',
     uswdsClass: 'bg-error',
+    property: 'background-color',
+  },
+  {
+    name: 'emergency = emergency (red-warm-60v)',
+    flexToken: '--flex-color-emergency',
+    uswdsClass: 'bg-emergency',
     property: 'background-color',
   },
   {

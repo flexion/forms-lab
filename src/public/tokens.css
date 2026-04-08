@@ -4369,6 +4369,7 @@
   --flex-color-warning-lighter: var(--flex-yellow-5);     /* @uswds warning-lighter */
   --flex-color-error: var(--flex-red-warm-vivid-50);      /* @uswds error (red-warm-50v) */
   --flex-color-error-lighter: var(--flex-red-warm-10);    /* @uswds error-lighter */
+  --flex-color-emergency: var(--flex-red-warm-vivid-60);  /* @uswds emergency (red-warm-60v) — dark bg, white text */
   --flex-color-disabled: var(--flex-gray-50);             /* @uswds disabled */
   --flex-color-disabled-light: var(--flex-gray-40);      /* @uswds disabled-light */
   --flex-color-disabled-lighter: var(--flex-gray-20);    /* @uswds disabled-lighter */
