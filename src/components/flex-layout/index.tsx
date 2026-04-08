@@ -46,6 +46,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             <p>Forms Lab — LLM-Assisted Forms Platform</p>
           </div>
         </footer>
+        <script type="module" src="/static/components.js"></script>
       </body>
     </html>
   )

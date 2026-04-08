@@ -1,5 +1,5 @@
 /**
- * Dev server entry point — builds CSS on startup and exports
+ * Dev server entry point — builds CSS and components on startup and exports
  * a Bun server config for --watch hot reload compatibility.
  */
 import app from './server'
@@ -12,10 +12,18 @@ await Bun.build({
   minify: false,
 })
 
+// Build component client scripts on startup
+await Bun.build({
+  entrypoints: ['./src/components/register.ts'],
+  outdir: './dist',
+  naming: 'components.js',
+  target: 'browser',
+  minify: false,
+})
+
 const port = process.env.PORT || 3000
 console.log(`Server running on http://localhost:${port}`)
 
-// Export server config for Bun's native --watch reload
 export default {
   port,
   fetch: app.fetch,
