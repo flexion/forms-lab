@@ -164,6 +164,9 @@ export const spec: ConformanceSpec = {
     },
     { description: 'Slim variant hides icon', tested: true },
     { description: 'No-icon variant hides icon', tested: true },
-    { description: 'Accessibility audit passes for all variants', tested: true },
+    {
+      description: 'Accessibility audit passes for all variants',
+      tested: true,
+    },
   ],
 }

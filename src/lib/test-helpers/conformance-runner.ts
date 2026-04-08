@@ -17,11 +17,7 @@ export function runVisualConformance(spec: ConformanceSpec) {
     ...spec.intentionalDifferences.map((d) => d.property),
   ]
 
-  const ignoreBoxKeys = [
-    'width',
-    'height',
-    ...(spec.extraIgnoreBoxKeys ?? []),
-  ]
+  const ignoreBoxKeys = ['width', 'height', ...(spec.extraIgnoreBoxKeys ?? [])]
 
   const ignoreAttributes = [
     'class',

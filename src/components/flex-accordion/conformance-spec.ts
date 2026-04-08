@@ -115,10 +115,8 @@ export const spec: ConformanceSpec = {
       </div>
     </div>
   </flex-accordion>`,
-      uswdsSelector:
-        '[data-testid="target"] .usa-accordion__button',
-      flexSelector:
-        '[data-testid="target"] .flex-accordion__button',
+      uswdsSelector: '[data-testid="target"] .usa-accordion__button',
+      flexSelector: '[data-testid="target"] .flex-accordion__button',
     },
   ],
   behavior: [

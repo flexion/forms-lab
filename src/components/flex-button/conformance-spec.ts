@@ -78,8 +78,7 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'default button matches usa-button',
-      uswds:
-        '<button class="usa-button" data-testid="target">Default</button>',
+      uswds: '<button class="usa-button" data-testid="target">Default</button>',
       flex: '<button class="flex-button" data-testid="target">Default</button>',
     },
     {

@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import type { ConformanceSpec } from '../../components/conformance-types'
 import { StatusBadge } from '../../components/flex-badge'
 import { ContentCard } from '../../components/flex-card'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import { Prose } from '../../components/flex-prose'
-import type { ConformanceSpec } from '../../components/conformance-types'
 import {
   getComponentBySlug,
   getComponentsByCategory,

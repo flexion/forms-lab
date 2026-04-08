@@ -2,9 +2,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
-import {
-  runVisualConformance,
-} from '../../lib/test-helpers/conformance-runner'
+import { runVisualConformance } from '../../lib/test-helpers/conformance-runner'
 import { renderFlexFixture } from '../../lib/test-helpers/render'
 import { spec } from './conformance-spec'
 
