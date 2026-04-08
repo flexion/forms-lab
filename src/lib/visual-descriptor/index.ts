@@ -1,5 +1,10 @@
-export { extract } from './extract'
-export { diff } from './diff'
-export type { VisualDescriptor, VisualNode, VisualDifference, PseudoElement } from './types'
 export type { DiffOptions } from './diff'
+export { diff } from './diff'
+export { extract } from './extract'
 export { DEFAULT_PROPERTIES, TRACKED_ATTRIBUTES } from './schema'
+export type {
+  PseudoElement,
+  VisualDescriptor,
+  VisualDifference,
+  VisualNode,
+} from './types'

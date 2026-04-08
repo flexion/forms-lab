@@ -3,11 +3,17 @@ import { Button } from './index'
 
 export const Default: FC = () => <Button>Default</Button>
 
-export const Secondary: FC = () => <Button variant="secondary">Secondary</Button>
+export const Secondary: FC = () => (
+  <Button variant="secondary">Secondary</Button>
+)
 
-export const AccentCool: FC = () => <Button variant="accent-cool">Accent Cool</Button>
+export const AccentCool: FC = () => (
+  <Button variant="accent-cool">Accent Cool</Button>
+)
 
-export const AccentWarm: FC = () => <Button variant="accent-warm">Accent Warm</Button>
+export const AccentWarm: FC = () => (
+  <Button variant="accent-warm">Accent Warm</Button>
+)
 
 export const Base: FC = () => <Button variant="base">Base</Button>
 
@@ -23,15 +29,31 @@ export const Small: FC = () => <Button size="small">Small Button</Button>
 
 export const DisabledDefault: FC = () => <Button disabled>Disabled</Button>
 
-export const DisabledSecondary: FC = () => <Button variant="secondary" disabled>Disabled Secondary</Button>
+export const DisabledSecondary: FC = () => (
+  <Button variant="secondary" disabled>
+    Disabled Secondary
+  </Button>
+)
 
-export const DisabledOutline: FC = () => <Button variant="outline" disabled>Disabled Outline</Button>
+export const DisabledOutline: FC = () => (
+  <Button variant="outline" disabled>
+    Disabled Outline
+  </Button>
+)
 
 export const AsLink: FC = () => <Button href="/example">Link Button</Button>
 
-export const BigSecondary: FC = () => <Button variant="secondary" size="big">Big Secondary</Button>
+export const BigSecondary: FC = () => (
+  <Button variant="secondary" size="big">
+    Big Secondary
+  </Button>
+)
 
-export const SmallOutline: FC = () => <Button variant="outline" size="small">Small Outline</Button>
+export const SmallOutline: FC = () => (
+  <Button variant="outline" size="small">
+    Small Outline
+  </Button>
+)
 
 export const AllVariants: FC = () => (
   <div style="display: flex; flex-direction: column; gap: 24px;">

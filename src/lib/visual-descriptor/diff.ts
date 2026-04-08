@@ -1,4 +1,4 @@
-import type { VisualNode, VisualDifference, PseudoElement } from './types'
+import type { PseudoElement, VisualDifference, VisualNode } from './types'
 
 function diffPseudo(
   refPseudo: PseudoElement | null,
@@ -10,24 +10,44 @@ function diffPseudo(
   const pseudoPath = `${path}::${pseudoName}`
 
   if (refPseudo && !implPseudo) {
-    differences.push({ path: pseudoPath, property: 'exists', expected: 'yes', actual: 'no' })
+    differences.push({
+      path: pseudoPath,
+      property: 'exists',
+      expected: 'yes',
+      actual: 'no',
+    })
     return differences
   }
   if (!refPseudo && implPseudo) {
-    differences.push({ path: pseudoPath, property: 'exists', expected: 'no', actual: 'yes' })
+    differences.push({
+      path: pseudoPath,
+      property: 'exists',
+      expected: 'no',
+      actual: 'yes',
+    })
     return differences
   }
   if (!refPseudo || !implPseudo) return differences
 
   if (refPseudo.content !== implPseudo.content) {
-    differences.push({ path: pseudoPath, property: 'content', expected: refPseudo.content, actual: implPseudo.content })
+    differences.push({
+      path: pseudoPath,
+      property: 'content',
+      expected: refPseudo.content,
+      actual: implPseudo.content,
+    })
   }
 
   for (const prop of Object.keys(refPseudo.styles)) {
     const expected = refPseudo.styles[prop]
     const actual = implPseudo.styles[prop]
     if (expected !== actual) {
-      differences.push({ path: pseudoPath, property: prop, expected, actual: actual ?? '(missing)' })
+      differences.push({
+        path: pseudoPath,
+        property: prop,
+        expected,
+        actual: actual ?? '(missing)',
+      })
     }
   }
 
@@ -58,7 +78,10 @@ export function diff(
   options: DiffOptions = {},
 ): VisualDifference[] {
   const differences: VisualDifference[] = []
-  const currentPath = path || reference.tag + (reference.classes.length ? '.' + reference.classes.join('.') : '')
+  const currentPath =
+    path ||
+    reference.tag +
+      (reference.classes.length ? `.${reference.classes.join('.')}` : '')
 
   // Structural check
   if (reference.tag !== implementation.tag) {
@@ -73,7 +96,10 @@ export function diff(
 
   // Compare attributes
   const ignoreAttrs = new Set(options.ignoreAttributes ?? [])
-  const allAttrKeys = new Set([...Object.keys(reference.attributes), ...Object.keys(implementation.attributes)])
+  const allAttrKeys = new Set([
+    ...Object.keys(reference.attributes),
+    ...Object.keys(implementation.attributes),
+  ])
   for (const attr of allAttrKeys) {
     if (ignoreAttrs.has(attr)) continue
     const expected = reference.attributes[attr]
@@ -95,7 +121,12 @@ export function diff(
     const expected = reference.styles[prop]
     const actual = implementation.styles[prop]
     if (expected !== actual) {
-      differences.push({ path: currentPath, property: prop, expected, actual: actual ?? '(missing)' })
+      differences.push({
+        path: currentPath,
+        property: prop,
+        expected,
+        actual: actual ?? '(missing)',
+      })
     }
   }
 
@@ -103,7 +134,12 @@ export function diff(
   for (const prop of Object.keys(implementation.styles)) {
     if (ignoreProps.has(prop)) continue
     if (!(prop in reference.styles)) {
-      differences.push({ path: currentPath, property: prop, expected: '(not set)', actual: implementation.styles[prop] })
+      differences.push({
+        path: currentPath,
+        property: prop,
+        expected: '(not set)',
+        actual: implementation.styles[prop],
+      })
     }
   }
 
@@ -125,8 +161,22 @@ export function diff(
 
   // Compare pseudo-elements
   if (!options.ignorePseudos) {
-    differences.push(...diffPseudo(reference.before, implementation.before, currentPath, 'before'))
-    differences.push(...diffPseudo(reference.after, implementation.after, currentPath, 'after'))
+    differences.push(
+      ...diffPseudo(
+        reference.before,
+        implementation.before,
+        currentPath,
+        'before',
+      ),
+    )
+    differences.push(
+      ...diffPseudo(
+        reference.after,
+        implementation.after,
+        currentPath,
+        'after',
+      ),
+    )
   }
 
   // Compare children count
@@ -147,8 +197,11 @@ export function diff(
   for (let i = 0; i < reference.children.length; i++) {
     const refChild = reference.children[i]
     const implChild = implementation.children[i]
-    const childPath = currentPath + ' > ' + refChild.tag +
-      (refChild.classes.length ? '.' + refChild.classes.join('.') : '') +
+    const childPath =
+      currentPath +
+      ' > ' +
+      refChild.tag +
+      (refChild.classes.length ? `.${refChild.classes.join('.')}` : '') +
       (reference.children.length > 1 ? `:nth-child(${i + 1})` : '')
     differences.push(...diff(refChild, implChild, childPath, options))
   }

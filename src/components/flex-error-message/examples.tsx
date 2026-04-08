@@ -7,7 +7,7 @@ export const Default: FC = () => (
 
 export const LongMessage: FC = () => (
   <ErrorMessage>
-    Please enter a valid email address in the format name@example.com. The email you provided does not match the
-    expected pattern.
+    Please enter a valid email address in the format name@example.com. The email
+    you provided does not match the expected pattern.
   </ErrorMessage>
 )

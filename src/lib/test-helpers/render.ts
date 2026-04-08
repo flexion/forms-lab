@@ -38,8 +38,11 @@ function getUswdsCSS(): string {
   )
 }
 
-export async function renderFlexFixture(page: Page, html: string): Promise<void> {
-  const css = getTokenCSS() + '\n' + getFlexCSS()
+export async function renderFlexFixture(
+  page: Page,
+  html: string,
+): Promise<void> {
+  const css = `${getTokenCSS()}\n${getFlexCSS()}`
   await page.setContent(`
     <!DOCTYPE html>
     <html lang="en">
@@ -52,7 +55,10 @@ export async function renderFlexFixture(page: Page, html: string): Promise<void>
   await page.waitForLoadState('networkidle')
 }
 
-export async function renderUswdsFixture(page: Page, html: string): Promise<void> {
+export async function renderUswdsFixture(
+  page: Page,
+  html: string,
+): Promise<void> {
   const css = getUswdsCSS()
   await page.setContent(`
     <!DOCTYPE html>

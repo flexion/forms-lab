@@ -12,6 +12,11 @@ export const Default: FC = () => (
 export const WithError: FC = () => (
   <div>
     <Label htmlFor="textarea-error">Description</Label>
-    <Textarea id="textarea-error" name="description" state="error" ariaDescribedby="textarea-error-msg" />
+    <Textarea
+      id="textarea-error"
+      name="description"
+      state="error"
+      ariaDescribedby="textarea-error-msg"
+    />
   </div>
 )

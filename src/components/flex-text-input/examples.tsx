@@ -1,7 +1,7 @@
 import type { FC } from 'hono/jsx'
+import { ErrorMessage } from '../flex-error-message/index'
 import { Label } from '../flex-label/index'
 import { TextInput } from './index'
-import { ErrorMessage } from '../flex-error-message/index'
 
 export const Default: FC = () => (
   <div>
@@ -13,8 +13,16 @@ export const Default: FC = () => (
 export const WithError: FC = () => (
   <div>
     <Label htmlFor="input-error">Email</Label>
-    <TextInput id="input-error" name="email" type="email" state="error" ariaDescribedby="error-msg" />
-    <ErrorMessage id="error-msg">Please enter a valid email address.</ErrorMessage>
+    <TextInput
+      id="input-error"
+      name="email"
+      type="email"
+      state="error"
+      ariaDescribedby="error-msg"
+    />
+    <ErrorMessage id="error-msg">
+      Please enter a valid email address.
+    </ErrorMessage>
   </div>
 )
 

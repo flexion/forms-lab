@@ -1,8 +1,11 @@
-import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
-import { renderFlexFixture, renderUswdsFixture } from '../../lib/test-helpers/render'
+import { expect, test } from '@playwright/test'
 import { expectMatch } from '../../lib/test-helpers/assertions'
-import { extract, diff } from '../../lib/visual-descriptor'
+import {
+  renderFlexFixture,
+  renderUswdsFixture,
+} from '../../lib/test-helpers/render'
+import { diff, extract } from '../../lib/visual-descriptor'
 
 const IGNORE_FONT = {
   ignoreProperties: [

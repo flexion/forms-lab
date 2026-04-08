@@ -6,8 +6,10 @@ import { ContentCard } from '../../components/flex-card'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import { Prose } from '../../components/flex-prose'
-import { TagList } from '../../components/flex-tag-list'
-import { getComponentBySlug, getComponentsByCategory } from '../../components/registry'
+import {
+  getComponentBySlug,
+  getComponentsByCategory,
+} from '../../components/registry'
 import { getCatalogSidebar } from './sidebar'
 
 const designSystem = new Hono()
@@ -33,7 +35,9 @@ designSystem.get('/', (c) => {
                   href={`/catalog/design-system/${comp.slug}`}
                   description={comp.description}
                 >
-                  <StatusBadge status={comp.category === 'action' ? 'stable' : 'working'} />
+                  <StatusBadge
+                    status={comp.category === 'action' ? 'stable' : 'working'}
+                  />
                 </ContentCard>
               ))}
             </div>
@@ -158,12 +162,13 @@ designSystem.get('/:slug', async (c) => {
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   // Dynamic import of examples
-  let exampleEntries: [string, () => any][] = []
+  // biome-ignore lint/suspicious/noExplicitAny: dynamic import returns unknown module shape
+  let exampleEntries: [string, () => unknown][] = []
   try {
     const examples = await import(`../../components/${meta.slug}/examples.tsx`)
     exampleEntries = Object.entries(examples).filter(
       ([key]) => key !== 'default',
-    ) as [string, () => any][]
+    ) as [string, () => unknown][]
   } catch {
     // No examples file for this component
   }
@@ -188,7 +193,9 @@ designSystem.get('/:slug', async (c) => {
           {meta.category}
         </span>
         {meta.interactive && (
-          <span class="badge" data-state="open">interactive</span>
+          <span class="badge" data-state="open">
+            interactive
+          </span>
         )}
       </div>
 
@@ -206,9 +213,7 @@ designSystem.get('/:slug', async (c) => {
           {exampleEntries.map(([name, ExampleFn]) => (
             <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
               <h3>{name}</h3>
-              <div
-                style="padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);"
-              >
+              <div style="padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
                 <ExampleFn />
               </div>
             </div>

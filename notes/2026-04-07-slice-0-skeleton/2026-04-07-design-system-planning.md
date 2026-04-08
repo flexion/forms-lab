@@ -36,6 +36,19 @@ Each spec follows the brainstorm → plan → implement cycle. Spec 1 validates 
 
 **Process/Identity (4):** Step Indicator, Process List, Banner, Identifier
 
+## Spec 1 implementation complete
+
+Implemented:
+- Visual-descriptor library (extract + diff) ported from class repo
+- Conformance test helpers (render fixtures, assertions)
+- Component types, registry, register.ts, build pipeline
+- Playwright configuration and CI integration
+- 7 components: flex-button, flex-text-input, flex-label, flex-textarea, flex-error-message, flex-alert, flex-accordion
+- Catalog design system pages with per-component views and live examples
+- 28 unit tests + 18 conformance tests (Playwright) all passing
+
+The pattern is validated — ready for Specs 2-5 (remaining 41 components).
+
 ## Sources
 
 - [USWDS Components](https://designsystem.digital.gov/components/overview/)

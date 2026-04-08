@@ -135,11 +135,19 @@
 }
 
 .flex-button[data-variant="outline"]:hover {
-  background-color: color-mix(in srgb, var(--flex-color-accent) 8%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--flex-color-accent) 8%,
+    transparent
+  );
 }
 
 .flex-button[data-variant="outline"]:active {
-  background-color: color-mix(in srgb, var(--flex-color-accent) 16%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--flex-color-accent) 16%,
+    transparent
+  );
 }
 
 .flex-button[data-variant="outline"]:disabled {
@@ -157,11 +165,19 @@
 }
 
 .flex-button[data-variant="inverse"]:hover {
-  background-color: color-mix(in srgb, var(--flex-color-on-accent) 16%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--flex-color-on-accent) 16%,
+    transparent
+  );
 }
 
 .flex-button[data-variant="inverse"]:active {
-  background-color: color-mix(in srgb, var(--flex-color-on-accent) 24%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--flex-color-on-accent) 24%,
+    transparent
+  );
 }
 
 .flex-button[data-variant="inverse"]:disabled {

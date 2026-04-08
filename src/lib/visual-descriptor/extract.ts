@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test'
-import type { VisualDescriptor } from './types'
 import { DEFAULT_PROPERTIES, TRACKED_ATTRIBUTES } from './schema'
+import type { VisualDescriptor } from './types'
 
 /**
  * Extract a VisualDescriptor from a rendered component.
@@ -20,10 +20,12 @@ export async function extract(
 
   return page.evaluate(
     ({ selector, properties, trackedAttributes }) => {
+      // biome-ignore lint/suspicious/noExplicitAny: Playwright evaluate serialization boundary
       function extractPseudo(el: Element, pseudo: '::before' | '::after'): any {
         const cs = getComputedStyle(el, pseudo)
         const content = cs.getPropertyValue('content')
-        if (content === 'none' || content === 'normal' || content === '') return null
+        if (content === 'none' || content === 'normal' || content === '')
+          return null
 
         const styles: Record<string, string> = {}
         for (const prop of properties) {
@@ -32,6 +34,7 @@ export async function extract(
         return { content, styles }
       }
 
+      // biome-ignore lint/suspicious/noExplicitAny: Playwright evaluate serialization boundary
       function extractNode(el: Element): any {
         const cs = getComputedStyle(el)
         const rect = el.getBoundingClientRect()
@@ -54,10 +57,13 @@ export async function extract(
         for (const child of el.childNodes) {
           if (child.nodeType === Node.TEXT_NODE) {
             const t = child.textContent?.trim()
-            if (t) { text = text ? text + ' ' + t : t }
+            if (t) {
+              text = text ? `${text} ${t}` : t
+            }
           }
         }
 
+        // biome-ignore lint/suspicious/noExplicitAny: Playwright evaluate serialization boundary
         const children: any[] = []
         for (const child of el.children) {
           children.push(extractNode(child))

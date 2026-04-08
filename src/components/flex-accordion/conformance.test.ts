@@ -1,12 +1,18 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
-import { renderFlexFixture, renderUswdsFixture } from '../../lib/test-helpers/render'
+import { expect, test } from '@playwright/test'
 import { expectMatch } from '../../lib/test-helpers/assertions'
-import { extract, diff } from '../../lib/visual-descriptor'
+import {
+  renderFlexFixture,
+  renderUswdsFixture,
+} from '../../lib/test-helpers/render'
+import { diff, extract } from '../../lib/visual-descriptor'
 
-const componentsJs = readFileSync(resolve(process.cwd(), 'dist/components.js'), 'utf-8')
+const componentsJs = readFileSync(
+  resolve(process.cwd(), 'dist/components.js'),
+  'utf-8',
+)
 
 const IGNORE = {
   ignoreProperties: [
@@ -66,12 +72,22 @@ const uswdsAccordionCollapsedHtml = `
 `
 
 test.describe('flex-accordion conformance', () => {
-  test('collapsed accordion matches usa-accordion collapsed state', async ({ page }) => {
+  test('collapsed accordion matches usa-accordion collapsed state', async ({
+    page,
+  }) => {
     await renderUswdsFixture(page, uswdsAccordionCollapsedHtml)
-    const reference = await extract(page, '', '[data-testid="target"] .usa-accordion__button')
+    const reference = await extract(
+      page,
+      '',
+      '[data-testid="target"] .usa-accordion__button',
+    )
 
     await renderFlexFixture(page, flexAccordionCollapsedHtml)
-    const implementation = await extract(page, '', '[data-testid="target"] .flex-accordion__button')
+    const implementation = await extract(
+      page,
+      '',
+      '[data-testid="target"] .flex-accordion__button',
+    )
 
     const differences = diff(reference, implementation, '', {
       ...IGNORE,
@@ -111,14 +127,21 @@ test.describe('flex-accordion conformance', () => {
 })
 
 test.describe('flex-accordion behavior', () => {
-  async function renderWithJs(page: import('@playwright/test').Page, html: string) {
+  async function renderWithJs(
+    page: import('@playwright/test').Page,
+    html: string,
+  ) {
     await renderFlexFixture(page, `${html}<script>${componentsJs}</script>`)
     // Wait for custom element to be defined
     await page.waitForFunction(() => customElements.get('flex-accordion'))
   }
 
-  test('click button expands content and updates aria-expanded', async ({ page }) => {
-    await renderWithJs(page, `
+  test('click button expands content and updates aria-expanded', async ({
+    page,
+  }) => {
+    await renderWithJs(
+      page,
+      `
       <flex-accordion>
         <div>
           <h3 class="flex-accordion__heading">
@@ -127,7 +150,8 @@ test.describe('flex-accordion behavior', () => {
           <div class="flex-accordion__content" id="panel-1" hidden><p>Content</p></div>
         </div>
       </flex-accordion>
-    `)
+    `,
+    )
 
     const button = page.locator('.flex-accordion__button')
     const content = page.locator('#panel-1')
@@ -142,7 +166,9 @@ test.describe('flex-accordion behavior', () => {
   })
 
   test('click again collapses content', async ({ page }) => {
-    await renderWithJs(page, `
+    await renderWithJs(
+      page,
+      `
       <flex-accordion>
         <div>
           <h3 class="flex-accordion__heading">
@@ -151,7 +177,8 @@ test.describe('flex-accordion behavior', () => {
           <div class="flex-accordion__content" id="panel-1"><p>Content</p></div>
         </div>
       </flex-accordion>
-    `)
+    `,
+    )
 
     const button = page.locator('.flex-accordion__button')
     const content = page.locator('#panel-1')
@@ -166,7 +193,9 @@ test.describe('flex-accordion behavior', () => {
   })
 
   test('default mode: opening one closes others', async ({ page }) => {
-    await renderWithJs(page, `
+    await renderWithJs(
+      page,
+      `
       <flex-accordion>
         <div>
           <h3 class="flex-accordion__heading">
@@ -181,7 +210,8 @@ test.describe('flex-accordion behavior', () => {
           <div class="flex-accordion__content" id="panel-b" hidden><p>B content</p></div>
         </div>
       </flex-accordion>
-    `)
+    `,
+    )
 
     const buttonA = page.locator('.flex-accordion__button', { hasText: 'A' })
     const buttonB = page.locator('.flex-accordion__button', { hasText: 'B' })
@@ -200,7 +230,9 @@ test.describe('flex-accordion behavior', () => {
   })
 
   test('multiselectable: multiple can be open', async ({ page }) => {
-    await renderWithJs(page, `
+    await renderWithJs(
+      page,
+      `
       <flex-accordion data-multiselectable>
         <div>
           <h3 class="flex-accordion__heading">
@@ -215,7 +247,8 @@ test.describe('flex-accordion behavior', () => {
           <div class="flex-accordion__content" id="panel-b" hidden><p>B content</p></div>
         </div>
       </flex-accordion>
-    `)
+    `,
+    )
 
     const buttonA = page.locator('.flex-accordion__button', { hasText: 'A' })
     const buttonB = page.locator('.flex-accordion__button', { hasText: 'B' })
@@ -231,7 +264,9 @@ test.describe('flex-accordion behavior', () => {
   })
 
   test('keyboard Enter toggles accordion', async ({ page }) => {
-    await renderWithJs(page, `
+    await renderWithJs(
+      page,
+      `
       <flex-accordion>
         <div>
           <h3 class="flex-accordion__heading">
@@ -240,7 +275,8 @@ test.describe('flex-accordion behavior', () => {
           <div class="flex-accordion__content" id="panel-1" hidden><p>Content</p></div>
         </div>
       </flex-accordion>
-    `)
+    `,
+    )
 
     const button = page.locator('.flex-accordion__button')
     const content = page.locator('#panel-1')
@@ -259,8 +295,12 @@ test.describe('flex-accordion behavior', () => {
 })
 
 test.describe('flex-accordion accessibility', () => {
-  test('accessibility audit with mixed expanded/collapsed states', async ({ page }) => {
-    await renderFlexFixture(page, `
+  test('accessibility audit with mixed expanded/collapsed states', async ({
+    page,
+  }) => {
+    await renderFlexFixture(
+      page,
+      `
       <main>
         <h1>Accordion Test</h1>
         <flex-accordion>
@@ -284,7 +324,8 @@ test.describe('flex-accordion accessibility', () => {
           </div>
         </flex-accordion>
       </main>
-    `)
+    `,
+    )
 
     await page.evaluate(() => {
       document.title = 'Accordion Conformance Test'

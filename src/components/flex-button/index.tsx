@@ -1,7 +1,14 @@
 import type { Child, FC } from 'hono/jsx'
 
 interface ButtonProps {
-  variant?: 'secondary' | 'accent-cool' | 'accent-warm' | 'base' | 'outline' | 'inverse' | 'unstyled'
+  variant?:
+    | 'secondary'
+    | 'accent-cool'
+    | 'accent-warm'
+    | 'base'
+    | 'outline'
+    | 'inverse'
+    | 'unstyled'
   size?: 'big' | 'small'
   disabled?: boolean
   type?: 'button' | 'submit' | 'reset'
@@ -19,14 +26,25 @@ export const Button: FC<ButtonProps> = ({
 }) => {
   if (href && !disabled) {
     return (
-      <a class="flex-button" data-variant={variant} data-size={size} href={href}>
+      <a
+        class="flex-button"
+        data-variant={variant}
+        data-size={size}
+        href={href}
+      >
         {children}
       </a>
     )
   }
 
   return (
-    <button class="flex-button" data-variant={variant} data-size={size} type={type} disabled={disabled}>
+    <button
+      class="flex-button"
+      data-variant={variant}
+      data-size={size}
+      type={type}
+      disabled={disabled}
+    >
       {children}
     </button>
   )

@@ -36,15 +36,15 @@ flex-accordion {
 }
 
 .flex-accordion__button::after {
-  content: '+';
+  content: "+";
   font-size: 1.25em;
   font-weight: 300;
   flex-shrink: 0;
   margin-left: var(--flex-space-md);
 }
 
-.flex-accordion__button[aria-expanded='true']::after {
-  content: '\2212';
+.flex-accordion__button[aria-expanded="true"]::after {
+  content: "\2212";
 }
 
 .flex-accordion__content {
@@ -61,12 +61,12 @@ flex-accordion {
 }
 
 /* Bordered variant */
-flex-accordion[data-variant='bordered'] .flex-accordion__button {
+flex-accordion[data-variant="bordered"] .flex-accordion__button {
   border-left: 1px solid var(--flex-color-border);
   border-right: 1px solid var(--flex-color-border);
 }
 
-flex-accordion[data-variant='bordered'] .flex-accordion__content {
+flex-accordion[data-variant="bordered"] .flex-accordion__content {
   border-left: 1px solid var(--flex-color-border);
   border-right: 1px solid var(--flex-color-border);
 }

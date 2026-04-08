@@ -1,4 +1,4 @@
-import type { ComponentMeta } from './types'
+import { meta as accordion } from './flex-accordion/meta'
 
 import { meta as alert } from './flex-alert/meta'
 import { meta as button } from './flex-button/meta'
@@ -6,9 +6,17 @@ import { meta as errorMessage } from './flex-error-message/meta'
 import { meta as label } from './flex-label/meta'
 import { meta as textInput } from './flex-text-input/meta'
 import { meta as textarea } from './flex-textarea/meta'
-import { meta as accordion } from './flex-accordion/meta'
+import type { ComponentMeta } from './types'
 
-const components: ComponentMeta[] = [accordion, alert, button, errorMessage, label, textInput, textarea]
+const components: ComponentMeta[] = [
+  accordion,
+  alert,
+  button,
+  errorMessage,
+  label,
+  textInput,
+  textarea,
+]
 
 export function getComponents(): ComponentMeta[] {
   return components
