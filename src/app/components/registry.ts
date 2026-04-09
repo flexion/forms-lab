@@ -39,6 +39,7 @@ import { meta as siteAlert } from './flex-site-alert/meta'
 import { meta as stepIndicator } from './flex-step-indicator/meta'
 import { meta as summaryBox } from './flex-summary-box/meta'
 import { meta as table } from './flex-table/meta'
+import { meta as tabGroup } from './flex-tab-group/meta'
 import { meta as tag } from './flex-tag/meta'
 import { meta as textInput } from './flex-text-input/meta'
 import { meta as textarea } from './flex-textarea/meta'
@@ -89,6 +90,7 @@ const components: ComponentMeta[] = [
   stepIndicator,
   summaryBox,
   table,
+  tabGroup,
   tag,
   textInput,
   timePicker,
