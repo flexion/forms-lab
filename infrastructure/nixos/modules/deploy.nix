@@ -65,9 +65,9 @@ let
     BASE_PATH=/$UNIT_NAME/
     ENVEOF
 
-    # Start or restart the service (needs sudo since forms-lab user doesn't have systemctl permissions)
-    sudo ${pkgs.systemd}/bin/systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
-      sudo ${pkgs.systemd}/bin/systemctl start "forms-lab-app@$UNIT_NAME.service"
+    # Start or restart the service (use full path to sudo wrapper with setuid bit)
+    /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
+      /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl start "forms-lab-app@$UNIT_NAME.service"
 
     # Write Caddy route snippet to persistent config directory
     CADDY_DIR="$DEPLOY_ROOT/caddy.d"
@@ -80,7 +80,7 @@ let
     CADDYEOF
 
     # Reload Caddy to pick up the new route
-    sudo ${pkgs.systemd}/bin/systemctl reload caddy.service
+    /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl reload caddy.service
 
     echo "Deployed $BRANCH at port $PORT (/$UNIT_NAME/)"
   '';

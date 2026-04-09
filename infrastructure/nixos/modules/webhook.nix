@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   systemd.services.forms-lab-webhook = {
@@ -6,7 +6,7 @@
     wantedBy = [ "multi-user.target" ];
     after = [ "network.target" ];
 
-    path = with pkgs; [ git openssh bun sudo ];
+    path = with pkgs; [ git openssh bun ];
 
     serviceConfig = {
       Type = "simple";
