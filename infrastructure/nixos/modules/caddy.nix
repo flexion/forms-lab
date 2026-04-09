@@ -3,8 +3,8 @@
 {
   services.caddy = {
     enable = true;
-    # Global config — auto-HTTPS using the EC2 public hostname
-    # The hostname is determined at deploy time and written to /srv/forms-lab/hostname
+    # Global config — disable automatic HTTP→HTTPS redirects to use manual redirect below
+    # Caddy will still provision TLS certs using the EC2 public hostname
     globalConfig = ''
       auto_https disable_redirects
     '';
@@ -14,6 +14,11 @@
     # via Caddy's admin API
     extraConfig = ''
       :443 {
+        # Webhook listener on port 9000
+        handle /.webhook* {
+          reverse_proxy localhost:9000
+        }
+
         # The deploy script configures route blocks via admin API
         # This is the fallback
         respond "Forms Lab — no branch deployed at this path" 404
