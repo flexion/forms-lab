@@ -910,6 +910,7 @@ designSystem.get('/:slug', async (c) => {
         <section class="l-stack">
           <h2>Examples</h2>
           {exampleEntries.map(([name, ExampleFn]) => {
+            const title = name.replace(/([a-z])([A-Z])/g, '$1 $2')
             const rendered = (<ExampleFn />).toString()
             const formatted = formatHtml(rendered)
             const highlighted = hljs.highlight(formatted, {
@@ -917,8 +918,8 @@ designSystem.get('/:slug', async (c) => {
             }).value
             return (
               <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-                <h3>{name}</h3>
-                <TabGroup label={`${name} example`}>
+                <h3>{title}</h3>
+                <TabGroup label={`${title} example`}>
                   <Tab title="Preview">
                     <div dangerouslySetInnerHTML={{ __html: rendered }} />
                   </Tab>
