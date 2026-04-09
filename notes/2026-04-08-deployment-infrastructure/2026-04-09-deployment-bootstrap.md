@@ -118,11 +118,12 @@ Successfully applied NixOS configuration to server using IP address (34.197.222.
   - Application built and service restarted
   - Confirmed via git reflog: `reset: moving to FETCH_HEAD`
 
-**Known Issues**
-- Caddy routes added via admin API don't persist across Caddy reloads
-  - Routes work until Caddy is reloaded from config file
-  - Workaround: Don't reload Caddy, or re-add routes after reload
-  - Future: Store routes in persistent config or database
+**Route Persistence Solution**
+- ✅ FIXED: Switched from Caddy admin API to persistent config file approach
+- Deploy script writes Caddyfile snippets to /srv/forms-lab/caddy.d/
+- Caddy config imports all .caddy files from that directory
+- Routes now survive Caddy reloads and restarts
+- Tested: Route persists across multiple Caddy reloads
 
 **Commits**
 - 25b05fb: Configure Caddy with self-signed TLS for EC2 hostname
@@ -132,6 +133,9 @@ Successfully applied NixOS configuration to server using IP address (34.197.222.
 - 19520b6: Fetch in worktree to avoid checked-out branch conflicts
 - 1617786: Allow forms-lab user to manage app services via sudo
 - 2fd6706: Update Caddy admin API path for branch routes
+- 4d2af4b: Persist Caddy routes via config file imports (fixes route persistence)
+- 7cbfe92: Add sudo to webhook service PATH
+- acb7761: Use full path to sudo wrapper in deploy script
 
 ### Session Complete
 
