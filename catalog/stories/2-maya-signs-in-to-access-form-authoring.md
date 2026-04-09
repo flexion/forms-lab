@@ -4,7 +4,7 @@ title: Maya signs in to access form authoring
 milestone: "Final Project"
 labels: [user-story]
 state: open
-synced_at: 2026-04-09T02:23:21.175Z
+synced_at: 2026-04-09T14:40:12.309Z
 ---
 
 ## User Story:
@@ -42,6 +42,8 @@ As a **form creator (Maya)**, in order to **securely access form authoring tools
 ## Definition of Done:
 
 - [ ] Acceptance criteria met
+- [ ] Threat model updated -- any new trust boundaries, data flows, or attack surfaces are reflected in `catalog/architecture/threat-model.md`
+- [ ] Technical documentation updated -- architecture docs and decisions are current
 - [ ] Tests pass including auth middleware tests
 - [ ] Type checking passes
 - [ ] CI pipeline green
