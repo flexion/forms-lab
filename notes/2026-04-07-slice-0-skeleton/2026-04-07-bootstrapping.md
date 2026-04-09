@@ -29,6 +29,19 @@ Session log for the initial forms-lab repository setup. Decisions made during th
 - [CSS build and delivery](../catalog/decisions/design-system/css-build-and-delivery.md)
 - [Markdown rendering](../catalog/decisions/design-system/markdown-rendering.md)
 
+## Final deliverables (2026-04-09)
+
+- **51 flex-* USWDS components** with full visual, behavioral, and accessibility conformance
+- **270 Playwright conformance tests** + 28 unit tests (298 total)
+- **Token-level conformance** (22 semantic color tokens verified against USWDS)
+- **Self-hosted USWDS fonts** (Source Sans Pro Web, Roboto Mono Web) — pixel-identical rendering
+- **Conformance specs as JSX** — fixtures use Hono JSX .toString(), content defined once
+- **Base-classes.css** — shared CSS extracted from component files (DRY)
+- **Catalog** with contextual navigation for Design System, Decisions, Stories
+- **Dogfooded components**: Banner, Header, Footer, Breadcrumbs, Side Navigation, Card, Tag, Table
+- **Dark mode support** via data-theme attribute with semantic token overrides
+- **Apache 2.0 license**
+
 ## Sources
 
 - [Design spec](https://github.com/flexion/llm-class-2026-winter-cohort/blob/main/notes/final-project/2026-04-07-design.md)
