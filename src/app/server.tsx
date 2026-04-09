@@ -14,9 +14,9 @@ import auth from './routes/auth/index'
 import catalog from './routes/catalog/index'
 import { createProjectRoutes } from './routes/projects/index'
 import { createFormRouter } from './routes/forms/index'
-import { InMemoryFormSessionGateway } from './services/form-session'
-import { InMemorySubmissionGateway } from './services/submission'
-import { testDataSpec, testFormSpec } from '../test/forms/fixtures'
+import { InMemoryFormSessionGateway } from '../services/form-session'
+import { InMemorySubmissionGateway } from '../services/submission'
+import { testDataSpec, testFormSpec } from '../../test/forms/fixtures'
 
 const basePath = getBasePath()
 const app = new Hono().basePath(basePath)

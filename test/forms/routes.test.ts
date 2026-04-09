@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import app from '../../src/server'
+import app from '../../src/app/server'
 
 describe('Form routes', () => {
   it('GET /forms/benefits-app returns landing page', async () => {

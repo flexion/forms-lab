@@ -1,5 +1,5 @@
 import type { FC } from 'hono/jsx'
-import type { Submission } from '../../types/models'
+import type { Submission } from '../../../types/models'
 
 interface FormConfirmationProps {
   submission: Submission
