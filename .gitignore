@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+infrastructure/pulumi/node_modules/
 
 # Build outputs
 dist/
@@ -21,6 +22,9 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+# Worktrees
+.worktrees/
 
 # Nix
 .direnv/

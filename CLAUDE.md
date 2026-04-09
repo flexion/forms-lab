@@ -15,6 +15,38 @@ bunx @biomejs/biome check --write .     # Lint + format fix
 bun run lint:css                        # Stylelint CSS token enforcement
 ```
 
+## Deployment
+
+The deployment system consists of two parts:
+1. **Homepage Service** — Deployment dashboard at root (`/`), runs from `/srv/forms-lab/main`
+2. **Branch Apps** — Each branch deployed to `/<branch>/` via GitHub webhook
+
+```bash
+# Infrastructure management
+bun run cli infra bootstrap     # Create S3 bucket for Pulumi state (one-time)
+bun run cli infra up            # Provision/update EC2 via Pulumi
+bun run cli infra outputs       # Show hostname, IP, SSH command
+bun run cli infra ssh           # SSH into EC2 instance
+
+# NixOS configuration
+bun run cli nixos apply         # Push NixOS config to EC2
+bun run cli nixos status        # Check running services
+
+# GitHub webhook
+bun run cli webhook setup       # GitHub webhook configuration guide
+
+# Manual deployment
+bun run cli deploy homepage     # Update homepage service (dashboard)
+```
+
+### Deployment Architecture
+
+- **Webhook**: GitHub push events trigger branch deployments via `/srv/forms-lab/deploy.sh`
+- **Homepage**: Separate service at port 3000, reverse-proxied to `/` by Caddy
+- **Branch Apps**: Git worktrees at `/srv/forms-lab/<branch>`, each with assigned port
+- **Routing**: Caddy routes `/<branch>/*` to branch apps, `/` to homepage
+- **Auto-update**: Pushing to `main` triggers both branch deployment and homepage restart
+
 ## Conventions
 
 - **Code is canonical** — when in doubt, follow existing patterns
@@ -46,8 +78,14 @@ Follows [meta-knowledge-base](https://github.com/danielnaab/meta-knowledge-base)
 
 ## Project Structure
 
-- `src/` — Application code (routes, services, components, types, lib)
-- `src/public/` — Design system CSS source files
+- `src/app/` — Web application (server, routes, components, public assets)
+- `src/webhook/` — GitHub webhook listener service
+- `src/lib/` — Shared utilities (markdown, base-path, test-helpers)
+- `src/services/` — Shared services (GitHub API client)
+- `src/types/` — Shared type definitions
+- `src/commands/` — CLI commands (sync-stories, infra, nixos, webhook)
+- `infrastructure/pulumi/` — EC2 provisioning (Pulumi TypeScript)
+- `infrastructure/nixos/` — Server configuration (NixOS flake)
 - `catalog/` — Catalog content (personas, stories, decisions, architecture, experiments)
 - `projects/` — Form project directories (specs + assets)
 - `test/` — Test files

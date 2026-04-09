@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "bun run --watch src/dev.ts",
-    "start": "bun run src/dev.ts",
+    "dev": "bun run --watch src/app/main.ts",
+    "start": "bun run src/app/main.ts",
+    "webhook": "bun run src/webhook/main.ts",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "test:conformance": "bunx playwright test",

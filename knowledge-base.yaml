@@ -16,7 +16,7 @@ rules:
   provenance:
     requiredFor: ["decisions", "architecture"]
   writes:
-    allow: ["catalog/**", "src/**", "test/**", "notes/**", "scripts/**"]
+    allow: ["catalog/**", "src/**", "test/**", "notes/**", "scripts/**", "infrastructure/**"]
     deny: ["infrastructure/secrets/**"]
 
 metadata:
