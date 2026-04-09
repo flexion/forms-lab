@@ -2,19 +2,13 @@
  * Core data model types for the Forms Lab platform
  */
 
-/**
- * DataCollectionSpec - Business domain model
- *
- * Describes what data to collect: fields, types, constraints, conditions,
- * sensitivity, help text. Semantic, not presentational. Portable across
- * delivery modes.
- */
+// --- Data Collection Layer (what to collect) ---
+
 export interface DataCollectionSpec {
   id: string
   title: string
   description: string
   groups: RequirementGroup[]
-  version?: string
 }
 
 export interface RequirementGroup {
@@ -22,6 +16,7 @@ export interface RequirementGroup {
   title: string
   description?: string
   requirements: DataRequirement[]
+  condition?: FieldCondition
 }
 
 export interface DataRequirement {
@@ -31,9 +26,9 @@ export interface DataRequirement {
   fieldType: FieldType
   required: boolean
   helpText?: string
+  choices?: string[]
   validation?: ValidationRule[]
-  condition?: Condition
-  sensitivity?: SensitivityLevel
+  condition?: FieldCondition
 }
 
 export type FieldType =
@@ -54,57 +49,80 @@ export interface ValidationRule {
   message?: string
 }
 
-export interface Condition {
+export interface FieldCondition {
   field: string
   operator: 'equals' | 'notEquals' | 'contains'
   value: string | number | boolean
 }
 
-export type SensitivityLevel = 'low' | 'medium' | 'high' | 'pii'
+// --- Form Spec Layer (how to present) ---
 
-/**
- * FormSpec - UX/delivery layer
- *
- * Describes how to present a DataCollectionSpec as a form experience:
- * page flow, section ordering, progressive disclosure, delivery mode per
- * section, layout hints, help text strategy.
- */
 export interface FormSpec {
   id: string
-  specId: string // References DataCollectionSpec
+  specId: string
   title: string
+  description?: string
   pages: FormPage[]
-  createdAt: string
-  updatedAt: string
 }
 
 export interface FormPage {
   id: string
   title: string
   description?: string
-  groups: string[] // References RequirementGroup ids
-  deliveryMode: DeliveryMode
+  groups: string[]
+  condition?: FieldCondition
 }
 
-export type DeliveryMode = 'static' | 'conversational' | 'hybrid'
+// --- Resolution Layer ---
 
-/**
- * Submission - Immutable collected data
- *
- * Validated data collected against a specific DataCollectionSpec version
- * (identified by git SHA). Lives outside spec repo. Links back to exact
- * spec state at collection time.
- */
+export interface ResolvedForm {
+  formSpec: FormSpec
+  dataSpec: DataCollectionSpec
+  pages: ResolvedPage[]
+}
+
+export interface ResolvedPage {
+  page: FormPage
+  groups: RequirementGroup[]
+}
+
+// --- Session & Submission ---
+
+export interface FormSession {
+  id: string
+  specId: string
+  formSpecId: string
+  fields: Record<string, FieldEntry>
+  status: 'active' | 'submitted'
+  createdAt: string
+}
+
+export interface FieldEntry {
+  value: string | number | boolean | null
+  errors?: string[]
+}
+
 export interface Submission {
   id: string
   specId: string
-  specVersion: string // git SHA
+  formSpecId: string
   data: Record<string, unknown>
   submittedAt: string
-  status: SubmissionStatus
 }
 
-export type SubmissionStatus = 'draft' | 'submitted' | 'processed'
+// --- Persistence Gateways ---
+
+export interface FormSessionGateway {
+  createSession(specId: string, formSpecId: string): FormSession
+  getSession(id: string): FormSession | null
+  writeFields(sessionId: string, fields: Record<string, FieldEntry>): void
+  submit(sessionId: string): Submission
+}
+
+export interface SubmissionGateway {
+  save(submission: Submission): void
+  getSubmission(id: string): Submission | null
+}
 
 /**
  * FormProject - Directory in git containing specs and assets
