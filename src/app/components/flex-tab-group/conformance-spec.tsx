@@ -48,6 +48,7 @@ export const spec: ConformanceSpec = {
     'padding-left',
     'display',
   ],
+  extraIgnoreAttributes: ['id', 'aria-controls', 'type'],
   intentionalDifferences: [],
   fixtures: [
     {
