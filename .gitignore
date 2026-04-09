@@ -22,6 +22,9 @@ Thumbs.db
 logs/
 *.log
 
+# Worktrees
+.worktrees/
+
 # Nix
 .direnv/
 result
