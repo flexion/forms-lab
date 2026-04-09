@@ -9,9 +9,13 @@
     };
   };
 
-  outputs = { self, nixpkgs, sops-nix }: {
+  outputs = { self, nixpkgs, sops-nix }:
+  let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+  in {
     nixosConfigurations.forms-lab = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
+      inherit system;
       modules = [
         sops-nix.nixosModules.sops
         ./hardware-configuration.nix
@@ -23,6 +27,10 @@
         ./modules/deploy.nix
         ./modules/homepage.nix
       ];
+    };
+
+    devShells.${system}.default = pkgs.mkShell {
+      packages = [ pkgs.sops ];
     };
   };
 }
