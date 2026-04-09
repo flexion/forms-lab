@@ -48,20 +48,3 @@ export const ThreeLevels: FC = () => (
     </SideNavNested>
   </SideNav>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px; max-width: 300px;">
-    <div>
-      <h3>Default Side Navigation</h3>
-      <Default />
-    </div>
-    <div>
-      <h3>With Sub-navigation</h3>
-      <WithSubnav />
-    </div>
-    <div>
-      <h3>Three Levels Deep</h3>
-      <ThreeLevels />
-    </div>
-  </div>
-)

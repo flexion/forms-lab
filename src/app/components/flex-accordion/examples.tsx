@@ -72,20 +72,3 @@ export const MultiselectableAccordion: FC = () => (
     ]}
   />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default (borderless)</h3>
-      <DefaultAccordion />
-    </div>
-    <div>
-      <h3>Bordered</h3>
-      <BorderedAccordion />
-    </div>
-    <div>
-      <h3>Multiselectable</h3>
-      <MultiselectableAccordion />
-    </div>
-  </div>
-)

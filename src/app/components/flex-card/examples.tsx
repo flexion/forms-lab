@@ -68,24 +68,3 @@ export const FlagMediaRight: FC = () => (
     </CardBody>
   </Card>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px; max-width: 640px;">
-    <div>
-      <h3>Default Card</h3>
-      <Default />
-    </div>
-    <div>
-      <h3>Header First</h3>
-      <HeaderFirst />
-    </div>
-    <div>
-      <h3>Flag Layout</h3>
-      <Flag />
-    </div>
-    <div>
-      <h3>Flag Media Right</h3>
-      <FlagMediaRight />
-    </div>
-  </div>
-)

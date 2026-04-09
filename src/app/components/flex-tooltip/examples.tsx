@@ -32,24 +32,3 @@ export const RightTooltip: FC = () => (
     </Tooltip>
   </div>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 60px; padding: 80px;">
-    <div style="text-align: center;">
-      <h3>Top (default)</h3>
-      <TopTooltip />
-    </div>
-    <div style="text-align: center;">
-      <h3>Bottom</h3>
-      <BottomTooltip />
-    </div>
-    <div style="text-align: center;">
-      <h3>Left</h3>
-      <LeftTooltip />
-    </div>
-    <div style="text-align: center;">
-      <h3>Right</h3>
-      <RightTooltip />
-    </div>
-  </div>
-)

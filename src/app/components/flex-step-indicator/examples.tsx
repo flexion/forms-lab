@@ -50,18 +50,3 @@ export const Centered: FC = () => (
     variant="centered"
   />
 )
-
-export const AllVariants: FC = () => (
-  <div class="l-stack">
-    <h3>Default (with labels)</h3>
-    <Default />
-    <h3>No Labels</h3>
-    <NoLabels />
-    <h3>Counters</h3>
-    <Counters />
-    <h3>Small Counters</h3>
-    <SmallCounters />
-    <h3>Centered</h3>
-    <Centered />
-  </div>
-)

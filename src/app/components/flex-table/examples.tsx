@@ -140,28 +140,3 @@ export const Scrollable: FC = () => (
     </Table>
   </ScrollableTable>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default Table</h3>
-      <Default />
-    </div>
-    <div>
-      <h3>Borderless Table</h3>
-      <Borderless />
-    </div>
-    <div>
-      <h3>Striped Table</h3>
-      <Striped />
-    </div>
-    <div>
-      <h3>Compact Table</h3>
-      <Compact />
-    </div>
-    <div>
-      <h3>Scrollable Table</h3>
-      <Scrollable />
-    </div>
-  </div>
-)

@@ -111,20 +111,3 @@ export const Big: FC = () => (
     </FooterSecondary>
   </Footer>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 48px;">
-    <div>
-      <h3>Slim Footer (default)</h3>
-      <Slim />
-    </div>
-    <div>
-      <h3>Medium Footer</h3>
-      <Medium />
-    </div>
-    <div>
-      <h3>Big Footer</h3>
-      <Big />
-    </div>
-  </div>
-)

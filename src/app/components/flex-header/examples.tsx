@@ -14,16 +14,3 @@ export const WithCurrentPage: FC = () => (
     <HeaderNavItem href="/catalog/design-system" label="Design System" />
   </Header>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default Header</h3>
-      <Default />
-    </div>
-    <div>
-      <h3>With Current Page</h3>
-      <WithCurrentPage />
-    </div>
-  </div>
-)

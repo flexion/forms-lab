@@ -62,20 +62,3 @@ export const ForcedActionModal: FC = () => (
     </Modal>
   </div>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default modal</h3>
-      <DefaultModal />
-    </div>
-    <div>
-      <h3>Large modal</h3>
-      <LargeModal />
-    </div>
-    <div>
-      <h3>Forced action modal</h3>
-      <ForcedActionModal />
-    </div>
-  </div>
-)

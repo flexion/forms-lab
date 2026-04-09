@@ -25,12 +25,3 @@ export const Default: FC = () => (
     <IdentifierUsagov />
   </Identifier>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default Identifier</h3>
-      <Default />
-    </div>
-  </div>
-)

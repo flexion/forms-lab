@@ -2,10 +2,15 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import hljs from 'highlight.js/lib/core'
 import css from 'highlight.js/lib/languages/css'
+import xml from 'highlight.js/lib/languages/xml'
 import { Hono } from 'hono'
 import { resolveUrl } from '../../../lib/base-path'
+import { formatHtml } from '../../../lib/format-html'
+import { Accordion } from '../../components/flex-accordion'
+import { Tab, TabGroup } from '../../components/flex-tab-group'
 
 hljs.registerLanguage('css', css)
+hljs.registerLanguage('xml', xml)
 
 import type { ConformanceSpec } from '../../components/conformance-types'
 import { StatusBadge } from '../../components/flex-badge'
@@ -30,6 +35,9 @@ const hljsStyles = `
 .hljs-string, .hljs-number { color: var(--flex-green-cool-vivid-40); }
 .hljs-comment { color: var(--flex-color-text-muted); font-style: italic; }
 .hljs-built_in, .hljs-function { color: var(--flex-violet-vivid-70); }
+.hljs-tag { color: var(--flex-blue-vivid-60); }
+.hljs-name { color: var(--flex-blue-vivid-60); }
+.hljs-attr { color: var(--flex-red-warm-vivid-50); }
 `
 
 designSystem.get('/', (c) => {
@@ -901,14 +909,32 @@ designSystem.get('/:slug', async (c) => {
       {exampleEntries.length > 0 && (
         <section class="l-stack">
           <h2>Examples</h2>
-          {exampleEntries.map(([name, ExampleFn]) => (
-            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-              <h3>{name}</h3>
-              <div style="padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md);">
-                <ExampleFn />
+          {exampleEntries.map(([name, ExampleFn]) => {
+            const title = name.replace(/([a-z])([A-Z])/g, '$1 $2')
+            const rendered = (<ExampleFn />).toString()
+            const formatted = formatHtml(rendered)
+            const highlighted = hljs.highlight(formatted, {
+              language: 'xml',
+            }).value
+            return (
+              <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+                <h3>{title}</h3>
+                <TabGroup label={`${title} example`}>
+                  <Tab title="Preview">
+                    <div dangerouslySetInnerHTML={{ __html: rendered }} />
+                  </Tab>
+                  <Tab title="Code">
+                    <pre style="margin: 0; overflow-x: auto; font-size: var(--flex-text-sm); line-height: 1.5;">
+                      <code
+                        class="hljs"
+                        dangerouslySetInnerHTML={{ __html: highlighted }}
+                      />
+                    </pre>
+                  </Tab>
+                </TabGroup>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </section>
       )}
 
@@ -1015,15 +1041,26 @@ designSystem.get('/:slug', async (c) => {
                   </a>
                 </p>
               )}
-              <pre style="overflow-x: auto; padding: var(--flex-space-md); background: var(--flex-color-bg-subtle); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md); font-size: var(--flex-text-sm); line-height: 1.5;">
-                <code
-                  class="hljs"
-                  dangerouslySetInnerHTML={{
-                    __html: hljs.highlight(cssSource, { language: 'css' })
-                      .value,
-                  }}
-                />
-              </pre>
+              <Accordion
+                items={[
+                  {
+                    id: `${meta.slug}-css`,
+                    title: 'View stylesheet',
+                    content: (
+                      <pre style="overflow-x: auto; margin: 0; font-size: var(--flex-text-sm); line-height: 1.5;">
+                        <code
+                          class="hljs"
+                          dangerouslySetInnerHTML={{
+                            __html: hljs.highlight(cssSource, {
+                              language: 'css',
+                            }).value,
+                          }}
+                        />
+                      </pre>
+                    ),
+                  },
+                ]}
+              />
             </section>
           )
         })()}

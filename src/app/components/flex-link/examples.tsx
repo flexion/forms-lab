@@ -8,16 +8,3 @@ export const External: FC = () => (
     An external link
   </Link>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default Link</h3>
-      <Default />
-    </div>
-    <div>
-      <h3>External Link</h3>
-      <External />
-    </div>
-  </div>
-)

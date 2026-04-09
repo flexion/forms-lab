@@ -16,16 +16,3 @@ export const CustomRangeSlider: FC = () => (
     step={5}
   />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default (0-100, step 1)</h3>
-      <DefaultRangeSlider />
-    </div>
-    <div>
-      <h3>Custom range (0-200, step 5)</h3>
-      <CustomRangeSlider />
-    </div>
-  </div>
-)

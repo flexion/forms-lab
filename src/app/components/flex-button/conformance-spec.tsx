@@ -10,6 +10,7 @@ function buttonFixture(
     name,
     uswds: (
       <button
+        type="button"
         class={[
           'usa-button',
           opts?.variant && `usa-button--${opts.variant}`,
@@ -25,6 +26,7 @@ function buttonFixture(
     ).toString(),
     flex: (
       <button
+        type="button"
         class="flex-button"
         data-variant={opts?.variant}
         data-size={opts?.size}

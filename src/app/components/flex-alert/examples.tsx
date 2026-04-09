@@ -57,21 +57,3 @@ export const NoIconAlert: FC = () => (
     {alertBody}
   </Alert>
 )
-
-export const AllVariants: FC = () => (
-  <div class="l-stack">
-    <h3>Variants</h3>
-    <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-      <InfoAlert />
-      <WarningAlert />
-      <SuccessAlert />
-      <ErrorAlert />
-      <EmergencyAlert />
-    </div>
-    <h3>Modifiers</h3>
-    <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-      <SlimAlert />
-      <NoIconAlert />
-    </div>
-  </div>
-)

@@ -26,20 +26,3 @@ export const TimePickerFineGrained: FC = () => (
     step={15}
   />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default (all day, 30-min steps)</h3>
-      <DefaultTimePicker />
-    </div>
-    <div>
-      <h3>Business hours (9am-5pm)</h3>
-      <TimePickerBusinessHours />
-    </div>
-    <div>
-      <h3>Fine-grained (15-min steps)</h3>
-      <TimePickerFineGrained />
-    </div>
-  </div>
-)

@@ -18,10 +18,3 @@ const defaultItems = [
 ]
 
 export const Default: FC = () => <ProcessList items={defaultItems} />
-
-export const AllVariants: FC = () => (
-  <div class="l-stack">
-    <h3>Default Process List</h3>
-    <Default />
-  </div>
-)

@@ -23,20 +23,3 @@ export const SSNInputMask: FC = () => (
 export const ZipInputMask: FC = () => (
   <InputMask id="zip" name="zip" label="ZIP code + 4" mask={masks.zip} />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Phone</h3>
-      <PhoneInputMask />
-    </div>
-    <div>
-      <h3>SSN</h3>
-      <SSNInputMask />
-    </div>
-    <div>
-      <h3>ZIP+4</h3>
-      <ZipInputMask />
-    </div>
-  </div>
-)
