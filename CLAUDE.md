@@ -48,6 +48,34 @@ bun run cli deploy homepage     # Update homepage service (dashboard)
 - **Routing**: Caddy routes `/<branch>/*` to branch apps, `/` to homepage
 - **Auto-update**: Pushing to `main` triggers both branch deployment and homepage restart
 
+## Setup
+
+### GitHub OAuth
+
+To enable authentication:
+
+1. Create a GitHub OAuth app:
+   ```bash
+   bun run cli setup-oauth
+   ```
+   
+   Or manually at https://github.com/settings/developers:
+   - Application name: Forms Lab (dev)
+   - Homepage URL: http://localhost:3000
+   - Authorization callback URL: http://localhost:3000/auth/callback
+
+2. Copy `.env.example` to `.env` and fill in credentials:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Start the dev server:
+   ```bash
+   bun run dev
+   ```
+
+4. Visit http://localhost:3000 and click "Sign in"
+
 ## Conventions
 
 - **Code is canonical** — when in doubt, follow existing patterns
