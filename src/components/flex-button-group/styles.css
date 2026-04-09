@@ -1,0 +1,108 @@
+/* flex-button-group -- USWDS Button Group conformance
+   Variants: default, segmented
+   Layout: horizontal flex with proper spacing */
+
+.flex-button-group {
+  margin-bottom: 0;
+  margin-top: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  flex-direction: row;
+  list-style-type: none;
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
+  padding-left: 0;
+}
+
+.flex-button-group__item {
+  margin: 0.25rem;
+}
+
+.flex-button-group__item:last-child {
+  margin-right: 0;
+}
+
+.flex-button-group__item .flex-button {
+  height: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* --- Segmented variant --- */
+
+.flex-button-group[data-variant="segmented"] {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.flex-button-group[data-variant="segmented"] .flex-button-group__item {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.flex-button-group[data-variant="segmented"] .flex-button {
+  position: relative;
+  border-radius: 0;
+}
+
+/* First button: rounded left corners */
+.flex-button-group[data-variant="segmented"] .flex-button-group__item:first-child
+  > .flex-button {
+  border-top-left-radius: var(--flex-radius-sm);
+  border-bottom-left-radius: var(--flex-radius-sm);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-right: -1px;
+}
+
+/* Last button: rounded right corners */
+.flex-button-group[data-variant="segmented"] .flex-button-group__item:last-child
+  > .flex-button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: var(--flex-radius-sm);
+  border-bottom-right-radius: var(--flex-radius-sm);
+  margin-left: -1px;
+  margin-right: 0;
+}
+
+/* Middle buttons: no border radius, negative margins to overlap */
+.flex-button-group[data-variant="segmented"] .flex-button-group__item:where(
+    :not(:first-child, :last-child))
+  > .flex-button {
+  border-radius: 0;
+  margin-right: -1px;
+  margin-left: -1px;
+}
+
+/* Segmented button z-index for hover/active/focus */
+.flex-button-group[data-variant="segmented"] .flex-button:hover,
+.flex-button-group[data-variant="segmented"] .flex-button:active {
+  z-index: 2;
+}
+
+.flex-button-group[data-variant="segmented"] .flex-button:focus {
+  z-index: 3;
+}
+
+/* Separator line between segmented buttons */
+.flex-button-group[data-variant="segmented"] .flex-button-group__item:where(
+    :not(:last-child)
+  )
+  .flex-button::before {
+  border-right: 1px solid
+    color-mix(in srgb, var(--flex-color-accent) 70%, black);
+  bottom: 0;
+  content: "";
+  display: block;
+  height: 100%;
+  position: absolute;
+  right: 1px;
+  top: 0;
+  width: 1px;
+  z-index: 3;
+}

@@ -1,0 +1,109 @@
+/* flex-modal — USWDS Modal conformance
+   Dialog overlay with focus trapping, backdrop, and keyboard management */
+
+flex-modal {
+  display: none;
+}
+
+flex-modal:not([hidden]) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99999;
+}
+
+.flex-modal__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(0 0 0 / 70%);
+}
+
+.flex-modal__content {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column-reverse;
+  background: var(--flex-color-surface);
+  border-radius: 0.5rem;
+  max-width: 30rem;
+  width: 100%;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  z-index: 1;
+  padding-top: 2rem;
+  margin: 1.25rem auto;
+}
+
+.flex-modal__main {
+  margin: 0 auto;
+  padding: 0.5rem 2rem 2rem;
+}
+
+.flex-modal__heading {
+  font-family: var(--flex-font-serif, Georgia, 'Times New Roman', serif);
+  font-size: 1.34rem;
+  line-height: 1.4;
+  margin-top: 0;
+}
+
+.flex-modal__body {
+  font-family: var(--flex-font-sans);
+  font-size: 1.06rem;
+  line-height: 1.5;
+  color: var(--flex-color-text);
+}
+
+.flex-modal__footer {
+  margin-top: 1.5rem;
+}
+
+.flex-modal__close {
+  display: flex;
+  align-items: center;
+  align-self: flex-end;
+  flex-shrink: 0;
+  background-color: transparent;
+  border: 0;
+  color: var(--flex-color-text-muted);
+  font-size: 0.93rem;
+  margin: -2rem 0 0 auto;
+  padding: 0.25rem;
+  width: auto;
+  cursor: pointer;
+}
+
+.flex-modal__close:hover,
+.flex-modal__close:active {
+  background-color: transparent;
+  color: var(--flex-color-text);
+}
+
+.flex-modal__close:focus {
+  outline: 0.25rem solid var(--flex-color-focus);
+  outline-offset: 0;
+}
+
+.flex-modal__close .flex-icon {
+  height: 2rem;
+  width: 2rem;
+  margin: 2px 2px 0 0;
+}
+
+/* Large variant */
+flex-modal[data-size="large"] .flex-modal__content {
+  max-width: 55rem;
+}
+
+flex-modal[data-size="large"] .flex-modal__main {
+  padding-bottom: 4rem;
+  padding-top: 1.25rem;
+  width: 100%;
+  max-width: 40rem;
+}

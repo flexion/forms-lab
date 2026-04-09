@@ -1,0 +1,62 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "ignoreFiles": ["src/public/font-normalize.css", "dist/**"],
+  "plugins": ["stylelint-declaration-strict-value"],
+  "rules": {
+    "scale-unlimited/declaration-strict-value": [
+      [
+        "/color$/",
+        "background",
+        "background-color",
+        "border-color",
+        "outline-color",
+        "font-family",
+        "font-size"
+      ],
+      {
+        "ignoreValues": [
+          "inherit",
+          "initial",
+          "transparent",
+          "currentColor",
+          "currentcolor",
+          "none",
+          "white",
+          "/^var\\(/",
+          "/^color-mix\\(/",
+          "/^url\\(/",
+          "0",
+          "50%",
+          "/^\\d+(\\.\\d+)?(em|rem|px)$/",
+          "/^local\\(/",
+          "/^\\d+(\\.\\d+)?%$/",
+          "/^#[0-9a-fA-F]+$/"
+        ],
+        "disableFix": true,
+        "message": "Use a design token (--flex-*, --font-*, --text-*) instead of a hard-coded value"
+      }
+    ],
+    "at-rule-no-unknown": [true, {
+      "ignoreAtRules": ["layer", "property"]
+    }],
+    "import-notation": null,
+    "no-descending-specificity": null,
+    "custom-property-no-missing-var-function": true,
+    "selector-class-pattern": null,
+    "value-keyword-case": ["lower", {
+      "ignoreKeywords": ["Helvetica", "Roboto", "Arial", "currentColor"]
+    }],
+    "property-no-vendor-prefix": [true, {
+      "ignoreProperties": [
+        "-webkit-mask-image",
+        "-webkit-mask-size",
+        "-webkit-mask-repeat",
+        "-webkit-mask-position"
+      ]
+    }],
+    "comment-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "media-feature-range-notation": null
+  }
+}

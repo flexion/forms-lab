@@ -1,0 +1,59 @@
+/* flex-link — USWDS Link conformance
+   Variants: default, external */
+
+.flex-link {
+  color: var(--flex-color-link);
+  text-decoration: underline;
+  display: inline;
+}
+
+.flex-link:visited {
+  color: var(--flex-color-link-visited);
+}
+
+.flex-link:hover {
+  color: var(--flex-color-link-hover);
+}
+
+.flex-link:active {
+  color: var(--flex-color-link-active);
+}
+
+.flex-link:focus {
+  outline: 0.25rem solid var(--flex-color-focus);
+  outline-offset: 0;
+}
+
+/* --- External variant --- */
+
+.flex-link--external {
+  display: inline;
+}
+
+.flex-link--external::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 1.75ex 1.75ex;
+  height: 1.75ex;
+  width: 1.75ex;
+  content: "";
+  display: inline;
+  margin-top: 0.7ex;
+  margin-left: 2px;
+  padding-left: 1.75ex;
+  vertical-align: middle;
+}
+
+@supports (mask: url("")) {
+  .flex-link--external::after {
+    background: none;
+    background-color: currentColor;
+    mask-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/%3E%3C/svg%3E"),
+      linear-gradient(transparent, transparent);
+    mask-position: center center;
+    mask-repeat: no-repeat;
+    mask-size: 1.75ex 1.75ex;
+  }
+}

@@ -1,0 +1,76 @@
+/* flex-in-page-nav -- USWDS In-Page Navigation conformance
+   Features: sticky sidebar TOC, scroll spy, active link indicator */
+
+flex-in-page-nav {
+  display: block;
+}
+
+.flex-in-page-nav__nav {
+  position: sticky;
+  top: 1rem;
+  border-left: 1px solid var(--flex-color-border);
+  padding: 0;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+.flex-in-page-nav__heading {
+  font-family: var(--flex-font-sans);
+  font-size: 0.87rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--flex-color-text);
+  margin: 0;
+  padding: 0.5rem 1rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.flex-in-page-nav__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.flex-in-page-nav__item {
+  margin: 0;
+}
+
+.flex-in-page-nav__item--sub {
+  padding-left: 1rem;
+}
+
+.flex-in-page-nav__link {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-family: var(--flex-font-sans);
+  font-size: 1rem;
+  line-height: 1.15;
+  color: var(--flex-color-accent);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  margin-left: -1px;
+}
+
+.flex-in-page-nav__link:hover {
+  color: var(--flex-color-accent);
+  text-decoration: none;
+}
+
+.flex-in-page-nav__link:focus-visible {
+  outline: var(--flex-focus-ring);
+  outline-offset: 0;
+}
+
+/* Active/current link */
+.flex-in-page-nav__link--current,
+.flex-in-page-nav__link[aria-current="true"] {
+  color: var(--flex-color-accent);
+  font-weight: 700;
+  border-left-color: var(--flex-color-accent);
+}
+
+/* Visited links should look muted, not visited-purple */
+.flex-in-page-nav__link:visited:not(.flex-in-page-nav__link--current) {
+  color: var(--flex-color-ink);
+}

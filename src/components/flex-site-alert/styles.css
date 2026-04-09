@@ -1,0 +1,105 @@
+/* flex-site-alert — USWDS Site Alert conformance
+   Extends: Alert Icon Base (base-classes.css#alert-icon)
+   Variants: info, emergency
+   Modifiers: slim, no-icon, no-heading */
+
+.flex-site-alert {
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-uswds);
+  line-height: 1.5;
+  color: var(--flex-color-text);
+}
+
+.flex-site-alert__body {
+  position: relative;
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem 1.75rem;
+}
+
+/* --- Variant: Info --- */
+
+.flex-site-alert[data-variant="info"] {
+  background-color: var(--flex-color-info-lighter);
+  border-left: 0.5rem solid var(--flex-color-info);
+}
+
+.flex-site-alert[data-variant="info"] .flex-site-alert__body {
+  padding-left: 4.25rem;
+}
+
+.flex-site-alert[data-variant="info"] .flex-site-alert__body::before {
+  left: 1.0833rem;
+  top: 0.6667rem;
+  width: 2rem;
+  height: 2rem;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
+}
+
+/* --- Variant: Emergency --- */
+
+.flex-site-alert[data-variant="emergency"] {
+  background-color: var(--flex-color-emergency);
+  border-left: 0.5rem solid var(--flex-color-emergency);
+  color: var(--flex-color-on-accent);
+}
+
+.flex-site-alert[data-variant="emergency"] .flex-site-alert__body {
+  padding-left: 4.25rem;
+}
+
+.flex-site-alert[data-variant="emergency"] .flex-site-alert__body::before {
+  left: 1.0833rem;
+  top: 0.6667rem;
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--flex-color-on-accent);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
+}
+
+.flex-site-alert[data-variant="emergency"] .flex-site-alert__heading,
+.flex-site-alert[data-variant="emergency"] .flex-site-alert__text,
+.flex-site-alert[data-variant="emergency"] a {
+  color: var(--flex-color-on-accent);
+}
+
+/* --- Modifier: Slim --- */
+
+.flex-site-alert[data-slim] .flex-site-alert__body {
+  padding-left: 1.75rem;
+}
+
+.flex-site-alert[data-slim] .flex-site-alert__body::before {
+  display: none;
+}
+
+/* --- Modifier: No Icon --- */
+
+.flex-site-alert[data-no-icon] .flex-site-alert__body {
+  padding-left: 1.75rem;
+}
+
+.flex-site-alert[data-no-icon] .flex-site-alert__body::before {
+  display: none;
+}
+
+/* --- Internal elements --- */
+
+.flex-site-alert__heading {
+  font-family: var(--flex-font-sans);
+  font-size: 1.46rem;
+  font-weight: 700;
+  line-height: 0.9;
+  margin: 0 0 0.5rem;
+}
+
+.flex-site-alert__text {
+  font-weight: 400;
+  margin: 0;
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-uswds);
+  line-height: 1.5;
+}

@@ -1,0 +1,119 @@
+/* flex-language-selector — USWDS Language Selector conformance
+   Language switcher: two-language toggle or multi-language dropdown */
+
+flex-language-selector {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  font-family: var(--flex-font-sans);
+}
+
+/* --- Two-language variant (just a link) --- */
+
+flex-language-selector[data-variant="two"] {
+  display: inline-flex;
+}
+
+/* --- Multi-language button --- */
+
+.flex-language-selector__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: transparent;
+  border: 0;
+  color: var(--flex-blue-vivid-60);
+  font-family: var(--flex-font-sans);
+  font-size: 0.87rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  min-width: 3rem;
+  height: 2rem;
+  text-decoration: none;
+}
+
+.flex-language-selector__button:hover {
+  text-decoration: underline;
+  color: var(--flex-blue-warm-vivid-70);
+}
+
+.flex-language-selector__button:focus {
+  outline: 0.25rem solid var(--flex-blue-vivid-40);
+  outline-offset: 0;
+}
+
+.flex-language-selector__button::after {
+  content: "";
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: currentColor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E");
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  transition: transform 0.15s ease;
+}
+
+.flex-language-selector__button[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+/* --- Dropdown menu --- */
+
+.flex-language-selector__menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 400;
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+  background-color: var(--flex-color-surface);
+  border: 1px solid var(--flex-gray-cool-10);
+  box-shadow: 0 0.25rem 0.5rem rgb(0 0 0 / 10%);
+  min-width: 10rem;
+}
+
+.flex-language-selector__menu li {
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Language links --- */
+
+.flex-language-selector__link {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--flex-blue-vivid-60);
+  text-decoration: none;
+  font-size: 0.93rem;
+  white-space: nowrap;
+  font-family: var(--flex-font-sans);
+}
+
+.flex-language-selector__link:hover {
+  text-decoration: underline;
+  color: var(--flex-blue-warm-vivid-70);
+  background-color: var(--flex-gray-5);
+}
+
+.flex-language-selector__link:focus {
+  outline: 0.25rem solid var(--flex-blue-vivid-40);
+  outline-offset: -0.25rem;
+}
+
+.flex-language-selector__link:visited {
+  color: var(--flex-violet-vivid-70);
+}
+
+/* Two-language variant: the link is standalone */
+flex-language-selector[data-variant="two"] .flex-language-selector__link {
+  padding: 0.25rem 0.5rem;
+  font-weight: 700;
+  font-size: 0.87rem;
+}

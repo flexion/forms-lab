@@ -1,0 +1,229 @@
+/* flex-button — USWDS Button conformance
+   Variants: default, secondary, accent-cool, accent-warm, base, outline, inverse, unstyled
+   Sizes: default, big, small
+   States: hover, active, focus-visible, disabled */
+
+.flex-button {
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-uswds);
+  font-weight: 700;
+  line-height: 0.9;
+  color: var(--flex-color-on-accent);
+  background-color: var(--flex-color-accent);
+  border: 0 none;
+  border-radius: var(--flex-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: var(--flex-space-sm);
+  padding: 12px 20px;
+  margin-right: var(--flex-space-sm);
+  cursor: pointer;
+  text-decoration: none;
+  appearance: none;
+}
+
+/* --- Default variant states --- */
+
+.flex-button:hover {
+  background-color: color-mix(in srgb, var(--flex-color-accent) 85%, black);
+}
+
+.flex-button:active {
+  background-color: color-mix(in srgb, var(--flex-color-accent) 70%, black);
+}
+
+.flex-button:focus-visible {
+  outline: var(--flex-focus-ring);
+  outline-offset: 2px;
+}
+
+.flex-button:disabled {
+  background-color: var(--flex-color-disabled-lighter);
+  color: var(--flex-color-disabled-dark);
+  cursor: not-allowed;
+}
+
+/* --- Secondary variant --- */
+
+.flex-button[data-variant="secondary"] {
+  background-color: var(--flex-red-60);
+  color: var(--flex-color-on-accent);
+  box-shadow: none;
+}
+
+.flex-button[data-variant="secondary"]:hover {
+  background-color: color-mix(in srgb, var(--flex-red-60) 85%, black);
+}
+
+.flex-button[data-variant="secondary"]:active {
+  background-color: color-mix(in srgb, var(--flex-red-60) 70%, black);
+}
+
+.flex-button[data-variant="secondary"]:disabled {
+  background-color: var(--flex-color-disabled-lighter);
+  color: var(--flex-color-disabled-dark);
+  box-shadow: none;
+}
+
+/* --- Accent Cool variant --- */
+
+.flex-button[data-variant="accent-cool"] {
+  background-color: var(--flex-cyan-vivid-30);
+  color: var(--flex-gray-90);
+}
+
+.flex-button[data-variant="accent-cool"]:hover {
+  background-color: color-mix(in srgb, var(--flex-cyan-vivid-30) 85%, black);
+}
+
+.flex-button[data-variant="accent-cool"]:active {
+  background-color: color-mix(in srgb, var(--flex-cyan-vivid-30) 70%, black);
+}
+
+.flex-button[data-variant="accent-cool"]:disabled {
+  background-color: var(--flex-color-disabled-lighter);
+  color: var(--flex-color-disabled-dark);
+}
+
+/* --- Accent Warm variant --- */
+
+.flex-button[data-variant="accent-warm"] {
+  background-color: var(--flex-orange-vivid-30);
+  color: var(--flex-gray-90);
+}
+
+.flex-button[data-variant="accent-warm"]:hover {
+  background-color: color-mix(in srgb, var(--flex-orange-vivid-30) 85%, black);
+}
+
+.flex-button[data-variant="accent-warm"]:active {
+  background-color: color-mix(in srgb, var(--flex-orange-vivid-30) 70%, black);
+}
+
+.flex-button[data-variant="accent-warm"]:disabled {
+  background-color: var(--flex-color-disabled-lighter);
+  color: var(--flex-color-disabled-dark);
+}
+
+/* --- Base variant --- */
+
+.flex-button[data-variant="base"] {
+  background-color: var(--flex-gray-90);
+  color: var(--flex-color-on-accent);
+}
+
+.flex-button[data-variant="base"]:hover {
+  background-color: color-mix(in srgb, var(--flex-gray-90) 85%, black);
+}
+
+.flex-button[data-variant="base"]:active {
+  background-color: color-mix(in srgb, var(--flex-gray-90) 70%, black);
+}
+
+.flex-button[data-variant="base"]:disabled {
+  background-color: var(--flex-color-disabled-lighter);
+  color: var(--flex-color-disabled-dark);
+}
+
+/* --- Outline variant --- */
+
+.flex-button[data-variant="outline"] {
+  background-color: transparent;
+  color: var(--flex-color-accent);
+  box-shadow: inset 0 0 0 2px var(--flex-color-accent);
+}
+
+.flex-button[data-variant="outline"]:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--flex-color-accent) 8%,
+    transparent
+  );
+}
+
+.flex-button[data-variant="outline"]:active {
+  background-color: color-mix(
+    in srgb,
+    var(--flex-color-accent) 16%,
+    transparent
+  );
+}
+
+.flex-button[data-variant="outline"]:disabled {
+  background-color: transparent;
+  color: var(--flex-color-disabled-dark);
+  box-shadow: inset 0 0 0 2px var(--flex-color-disabled-lighter);
+}
+
+/* --- Inverse variant --- */
+
+.flex-button[data-variant="inverse"] {
+  background-color: transparent;
+  color: var(--flex-color-on-accent);
+  box-shadow: inset 0 0 0 2px var(--flex-color-on-accent);
+}
+
+.flex-button[data-variant="inverse"]:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--flex-color-on-accent) 16%,
+    transparent
+  );
+}
+
+.flex-button[data-variant="inverse"]:active {
+  background-color: color-mix(
+    in srgb,
+    var(--flex-color-on-accent) 24%,
+    transparent
+  );
+}
+
+.flex-button[data-variant="inverse"]:disabled {
+  color: var(--flex-color-disabled-dark);
+  box-shadow: inset 0 0 0 2px var(--flex-color-disabled-lighter);
+}
+
+/* --- Unstyled variant --- */
+
+.flex-button[data-variant="unstyled"] {
+  background-color: transparent;
+  color: var(--flex-color-accent);
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin-right: 0;
+  font-weight: 400;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.flex-button[data-variant="unstyled"]:hover {
+  background-color: transparent;
+  color: color-mix(in srgb, var(--flex-color-accent) 85%, black);
+}
+
+.flex-button[data-variant="unstyled"]:active {
+  background-color: transparent;
+  color: color-mix(in srgb, var(--flex-color-accent) 70%, black);
+}
+
+.flex-button[data-variant="unstyled"]:disabled {
+  background-color: transparent;
+  color: var(--flex-color-disabled-dark);
+}
+
+/* --- Size: Big --- */
+
+.flex-button[data-size="big"] {
+  padding: 16px 24px;
+  font-size: 1.46rem; /* @uswds big button font-size */
+}
+
+/* --- Size: Small --- */
+
+.flex-button[data-size="small"] {
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  font-size: var(--flex-text-xs);
+}

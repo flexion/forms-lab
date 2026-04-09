@@ -1,0 +1,40 @@
+/* flex-input-mask — USWDS Input Mask conformance
+   Formatted input overlay showing the expected pattern.
+   Extends: Form Control Base (base-classes.css#form-control) for input */
+
+flex-input-mask {
+  display: block;
+}
+
+.flex-input-mask__wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: var(--flex-control-max-width);
+}
+
+.flex-input-mask__input {
+  /* Transparent background so overlay shows through */
+  background-color: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+.flex-input-mask__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Match the input's padding so mask characters align with typed text */
+  padding: var(--flex-control-padding);
+  margin-top: var(--flex-control-margin-top);
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-uswds);
+  line-height: 1.3;
+  height: var(--flex-control-height);
+  display: flex;
+  align-items: center;
+  color: var(--flex-color-text-muted);
+  pointer-events: none;
+  white-space: pre;
+  z-index: 0;
+}

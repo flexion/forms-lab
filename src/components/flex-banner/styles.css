@@ -1,0 +1,180 @@
+/* flex-banner — USWDS Banner conformance
+   Official .gov/.mil site identity banner */
+
+flex-banner {
+  display: block;
+}
+
+.flex-banner {
+  font-family: var(--flex-font-sans);
+  font-size: 0.87rem;
+  line-height: 1.5;
+  background-color: var(--flex-color-bg-subtle);
+  padding-bottom: 0;
+}
+
+/* --- Header --- */
+
+.flex-banner__header {
+  color: var(--flex-color-text);
+  padding: 0.5rem 0;
+  font-size: 0.8rem;
+  min-height: 0;
+}
+
+.flex-banner__inner {
+  margin-inline: auto;
+  max-width: 960px;
+  padding-inline: var(--flex-space-md);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+}
+
+/* --- Header text --- */
+
+.flex-banner__header-text {
+  margin-right: 0.5rem;
+}
+
+.flex-banner__header-text p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.1;
+}
+
+/* --- Flag image --- */
+
+.flex-banner__header-flag {
+  width: 1rem;
+  height: auto;
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+/* --- Button (expand/collapse) --- */
+
+.flex-banner__button {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-weight: 400;
+  text-align: left;
+  margin: 0;
+  color: var(--flex-color-link);
+  display: block;
+  font-size: 0.8rem;
+  height: auto;
+  line-height: 1.1;
+  padding: 0;
+  text-decoration: none;
+  width: auto;
+  cursor: pointer;
+  font-family: var(--flex-font-sans);
+}
+
+.flex-banner__button:hover {
+  text-decoration: underline;
+  color: var(--flex-color-link-hover);
+}
+
+.flex-banner__button:focus {
+  outline: 0.25rem solid var(--flex-color-focus);
+  outline-offset: 0;
+}
+
+.flex-banner__button-text {
+  text-decoration: underline;
+}
+
+.flex-banner__button::after {
+  content: "";
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+  background-color: var(--flex-color-link);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E");
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  transition: transform 0.15s ease;
+}
+
+.flex-banner__button[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+/* --- Expandable content --- */
+
+.flex-banner__content {
+  margin-inline: auto;
+  max-width: 960px;
+  padding-inline: var(--flex-space-md);
+  padding-block: 0.25rem 1rem;
+  background-color: transparent;
+  font-size: 0.87rem;
+  overflow: hidden;
+  color: var(--flex-color-text);
+}
+
+/* --- Guidance sections --- */
+
+.flex-banner__guidance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.flex-banner__guidance-gov,
+.flex-banner__guidance-ssl {
+  display: flex;
+  align-items: flex-start;
+  max-width: 64ex;
+  flex: 1 1 40%;
+  min-width: 200px;
+}
+
+.flex-banner__guidance-gov p,
+.flex-banner__guidance-ssl p {
+  margin: 0 0 0.25rem;
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+.flex-banner__guidance-gov p:last-child,
+.flex-banner__guidance-ssl p:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Icon in guidance --- */
+
+.flex-banner__icon {
+  width: 2.5rem;
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+}
+
+.flex-banner__icon-img {
+  width: 2.5rem;
+  height: 2.5rem;
+  fill: var(--flex-color-accent);
+}
+
+.flex-banner__guidance-text p {
+  margin: 0 0 0.25rem;
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+.flex-banner__guidance-text p:last-child {
+  margin-bottom: 0;
+}

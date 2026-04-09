@@ -1,0 +1,22 @@
+/* flex-textarea — USWDS Textarea conformance
+   Extends: Form Control Base (base-classes.css#form-control)
+   States: error, success, disabled */
+
+.flex-textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+/* --- State: error --- */
+
+.flex-textarea[data-state="error"] {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* --- State: success --- */
+
+.flex-textarea[data-state="success"] {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}

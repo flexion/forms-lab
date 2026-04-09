@@ -1,0 +1,49 @@
+/* flex-memorable-date — USWDS Memorable Date conformance
+   Three separate inputs (month, day, year) for date entry.
+   Extends: Form Control Base (base-classes.css#form-control) for inputs
+   Extends: Typography Base (base-classes.css#typography) for labels/legend */
+
+flex-memorable-date {
+  display: block;
+}
+
+.flex-fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.flex-legend {
+  font-weight: 700;
+  font-size: 1.34rem;
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+.flex-memorable-date__fields {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.flex-memorable-date__field {
+  flex: 0 1 auto;
+  margin-right: 1rem;
+  margin-top: 1rem;
+  width: fit-content;
+}
+
+/* Month and day inputs: narrow (USWDS usa-form-group--month/day: 3rem) */
+.flex-memorable-date__field--month input,
+.flex-memorable-date__field--day input {
+  width: 3rem;
+}
+
+/* Year input: wider (USWDS usa-form-group--year: 4.5rem) */
+.flex-memorable-date__field--year input {
+  width: 4.5rem;
+}
+
+/* Labels within memorable-date fields should not add extra top margin */
+.flex-memorable-date__field .flex-label {
+  margin-top: 0;
+}

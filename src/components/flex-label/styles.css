@@ -1,0 +1,14 @@
+/* flex-label — USWDS Label conformance
+   Extends: Typography Base (base-classes.css#typography) */
+.flex-label {
+  font-weight: normal;
+  display: block;
+  margin-top: 1.5rem;
+  max-width: var(--flex-control-max-width);
+}
+
+.flex-label__required {
+  color: var(--flex-color-error);
+  text-decoration: none;
+  font-style: normal;
+}
