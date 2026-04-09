@@ -16,6 +16,7 @@ function buttonGroupFixture(
         {buttons.map((b) => (
           <li class="usa-button-group__item">
             <button
+              type="button"
               class={`usa-button${b.variant ? ` usa-button--${b.variant}` : ''}`}
             >
               {b.label}

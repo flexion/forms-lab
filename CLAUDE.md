@@ -5,6 +5,7 @@ LLM-Assisted Forms Platform for government forms.
 ## Quick Reference
 
 ```bash
+bun run check                           # Lint + type check + tests (run before pushing)
 bun test                                # Run tests
 bun run dev                             # Dev server with watch
 bun run build:css                       # Build CSS bundle
@@ -51,6 +52,7 @@ bun run cli deploy homepage     # Update homepage service (dashboard)
 
 - **Code is canonical** — when in doubt, follow existing patterns
 - **Tests required** — new functionality needs tests in `test/`
+- **Verify before pushing** — always run `bun run check` before `git push`. This runs lint, type check, and tests. A Claude Code hook enforces this automatically, but manual pushes must also pass.
 - **Server-rendered JSX** — Hono JSX components return HTML strings, no client runtime
 - **TDD** — write failing test first, then implementation
 - **Vertical slicing** — each story delivers complete user value through all layers
