@@ -62,9 +62,9 @@ let
     # Write per-branch env file
     # All branches serve at /<branch>/
     cat > "$BRANCH_DIR/.env" <<ENVEOF
-    PORT=$PORT
-    BASE_PATH=/$UNIT_NAME/
-    ENVEOF
+PORT=$PORT
+BASE_PATH=/$UNIT_NAME/
+ENVEOF
 
     # Start or restart the service (use full path to sudo wrapper with setuid bit)
     /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
@@ -76,11 +76,11 @@ let
 
     # All branches handle /<branch>/*
     cat > "$CADDY_DIR/branch-$UNIT_NAME.caddy" <<CADDYEOF
-    # Route for branch: $BRANCH (port $PORT)
-    handle /$UNIT_NAME* {
-      reverse_proxy localhost:$PORT
-    }
-    CADDYEOF
+# Route for branch: $BRANCH (port $PORT)
+handle /$UNIT_NAME* {
+  reverse_proxy localhost:$PORT
+}
+CADDYEOF
 
     # Reload Caddy to pick up the new route
     /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl reload caddy.service

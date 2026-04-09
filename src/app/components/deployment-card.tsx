@@ -252,13 +252,13 @@ export function DeploymentCard({ deployment }: DeploymentCardProps) {
       >
         <div>
           {service.uptime && (
-            <span title="Service uptime">⏱️ {service.uptime}</span>
+            <span title="Service uptime">Uptime: {service.uptime}</span>
           )}
         </div>
         <div>
           {health.responseTime && (
             <span title="Health check response time">
-              🏥 {health.responseTime}ms
+              Response: {health.responseTime}ms
             </span>
           )}
         </div>

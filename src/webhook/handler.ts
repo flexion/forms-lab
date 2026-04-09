@@ -1,3 +1,5 @@
+import { timingSafeEqual } from 'node:crypto'
+
 export interface PushEvent {
   branch: string
   sha: string
@@ -15,11 +17,7 @@ export async function verifySignature(
   const computed = hmac.digest('hex')
   // Constant-time comparison
   if (expected.length !== computed.length) return false
-  let result = 0
-  for (let i = 0; i < expected.length; i++) {
-    result |= expected.charCodeAt(i) ^ computed.charCodeAt(i)
-  }
-  return result === 0
+  return timingSafeEqual(Buffer.from(expected), Buffer.from(computed))
 }
 
 export interface PushPayload {
