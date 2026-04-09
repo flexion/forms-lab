@@ -18,7 +18,7 @@ personas.get('/', async (c) => {
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
-    <Layout title="Personas" sidebar={sidebar}>
+    <Layout title="Personas" sidebar={sidebar} currentPath="/catalog">
       <h1>Personas</h1>
       <p>
         Five personas span the full lifecycle of the Forms Lab platform: create
@@ -50,7 +50,7 @@ personas.get('/:id', async (c) => {
     const name = file.frontmatter.name || id
 
     return c.html(
-      <Layout title={name} sidebar={sidebar}>
+      <Layout title={name} sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
             { label: 'Catalog', href: '/catalog' },
@@ -63,7 +63,7 @@ personas.get('/:id', async (c) => {
     )
   } catch {
     return c.html(
-      <Layout title="Not Found" sidebar={sidebar}>
+      <Layout title="Not Found" sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
             { label: 'Catalog', href: '/catalog' },

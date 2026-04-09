@@ -62,8 +62,8 @@ test.describe('flex-banner guidance icons', () => {
     await expect(govIcon).toBeVisible()
     const govBox = await govIcon.boundingBox()
     expect(govBox).not.toBeNull()
-    expect(govBox!.width).toBeGreaterThan(0)
-    expect(govBox!.height).toBeGreaterThan(0)
+    expect(govBox?.width).toBeGreaterThan(0)
+    expect(govBox?.height).toBeGreaterThan(0)
 
     const sslIcon = page.locator(
       '.flex-banner__guidance-ssl .flex-banner__icon-img',
@@ -71,8 +71,8 @@ test.describe('flex-banner guidance icons', () => {
     await expect(sslIcon).toBeVisible()
     const sslBox = await sslIcon.boundingBox()
     expect(sslBox).not.toBeNull()
-    expect(sslBox!.width).toBeGreaterThan(0)
-    expect(sslBox!.height).toBeGreaterThan(0)
+    expect(sslBox?.width).toBeGreaterThan(0)
+    expect(sslBox?.height).toBeGreaterThan(0)
   })
 })
 

@@ -54,7 +54,7 @@ catalog.get('/', async (c) => {
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
-    <Layout title="Catalog" sidebar={sidebar}>
+    <Layout title="Catalog" sidebar={sidebar} currentPath="/catalog">
       <h1>Catalog</h1>
       <p>
         The catalog is the system's self-documentation: personas, stories,

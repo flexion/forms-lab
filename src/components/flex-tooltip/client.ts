@@ -77,7 +77,10 @@ class FlexTooltipElement extends HTMLElement {
     }
   }
 
-  private resolveTooltipPosition(triggerRect: DOMRect, bodyRect: DOMRect): TooltipPosition {
+  private resolveTooltipPosition(
+    triggerRect: DOMRect,
+    bodyRect: DOMRect,
+  ): TooltipPosition {
     const preferred = this.position
     const gap = 8
 

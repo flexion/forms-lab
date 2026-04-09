@@ -18,7 +18,8 @@
       },
       "a11y": {
         "noNoninteractiveElementToInteractiveRole": "warn",
-        "useFocusableInteractive": "warn"
+        "useFocusableInteractive": "warn",
+        "useAriaPropsSupportedByRole": "warn"
       },
       "style": {
         "noDescendingSpecificity": "off"

@@ -86,7 +86,7 @@ designSystem.get('/', (c) => {
   ]
 
   return c.html(
-    <Layout title="Design System" sidebar={sidebar}>
+    <Layout title="Design System" sidebar={sidebar} currentPath="/catalog">
       <h1>Design System</h1>
       <p>
         A USWDS-aligned design system built with CUBE CSS methodology. Semantic
@@ -142,7 +142,11 @@ designSystem.get('/:slug', async (c) => {
     const sidebar = <CatalogSidebar sections={sidebarData} />
 
     return c.html(
-      <Layout title="Typography — Design System" sidebar={sidebar}>
+      <Layout
+        title="Typography — Design System"
+        sidebar={sidebar}
+        currentPath="/catalog"
+      >
         <h1>Typography</h1>
 
         <section class="l-stack">
@@ -334,7 +338,11 @@ designSystem.get('/:slug', async (c) => {
     const sidebar = <CatalogSidebar sections={sidebarData} />
 
     return c.html(
-      <Layout title="Tokens — Design System" sidebar={sidebar}>
+      <Layout
+        title="Tokens — Design System"
+        sidebar={sidebar}
+        currentPath="/catalog"
+      >
         <h1>Tokens</h1>
 
         <section class="l-stack">
@@ -405,7 +413,11 @@ designSystem.get('/:slug', async (c) => {
     const sidebar = <CatalogSidebar sections={sidebarData} />
 
     return c.html(
-      <Layout title="Compositions — Design System" sidebar={sidebar}>
+      <Layout
+        title="Compositions — Design System"
+        sidebar={sidebar}
+        currentPath="/catalog"
+      >
         <h1>Compositions</h1>
 
         <section class="l-stack">
@@ -449,7 +461,11 @@ designSystem.get('/:slug', async (c) => {
     const sidebar = <CatalogSidebar sections={sidebarData} />
 
     return c.html(
-      <Layout title="Rules — Design System" sidebar={sidebar}>
+      <Layout
+        title="Rules — Design System"
+        sidebar={sidebar}
+        currentPath="/catalog"
+      >
         <h1>Rules</h1>
 
         <section class="l-stack">
@@ -470,7 +486,11 @@ designSystem.get('/:slug', async (c) => {
     const sidebar = <CatalogSidebar sections={sidebarData} />
 
     return c.html(
-      <Layout title="Base Classes — Design System" sidebar={sidebar}>
+      <Layout
+        title="Base Classes — Design System"
+        sidebar={sidebar}
+        currentPath="/catalog"
+      >
         <h1>Base Classes</h1>
 
         <section class="l-stack">
@@ -682,7 +702,11 @@ designSystem.get('/:slug', async (c) => {
     const sidebar = <CatalogSidebar sections={sidebarData} />
 
     return c.html(
-      <Layout title="Data Visualizations — Design System" sidebar={sidebar}>
+      <Layout
+        title="Data Visualizations — Design System"
+        sidebar={sidebar}
+        currentPath="/catalog"
+      >
         <h1>Data Visualizations</h1>
 
         <section class="l-stack">
@@ -826,7 +850,11 @@ designSystem.get('/:slug', async (c) => {
   }
 
   return c.html(
-    <Layout title={`${meta.name} — Design System`} sidebar={sidebar}>
+    <Layout
+      title={`${meta.name} — Design System`}
+      sidebar={sidebar}
+      currentPath="/catalog"
+    >
       <style dangerouslySetInnerHTML={{ __html: hljsStyles }} />
       <h1>{meta.name}</h1>
 

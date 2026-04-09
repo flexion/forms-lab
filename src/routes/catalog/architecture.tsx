@@ -24,7 +24,7 @@ architecture.get('/', async (c) => {
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
-    <Layout title="Architecture" sidebar={sidebar}>
+    <Layout title="Architecture" sidebar={sidebar} currentPath="/catalog">
       <h1>Architecture</h1>
       <p>System documentation describing how Forms Lab works.</p>
       <div class="l-stack">
@@ -62,7 +62,7 @@ architecture.get('/:slug', async (c) => {
     const title = file.content.split('\n')[0]?.replace(/^#\s+/, '') || slug
 
     return c.html(
-      <Layout title={title} sidebar={sidebar}>
+      <Layout title={title} sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
             { label: 'Catalog', href: '/catalog' },
@@ -75,7 +75,7 @@ architecture.get('/:slug', async (c) => {
     )
   } catch {
     return c.html(
-      <Layout title="Not Found" sidebar={sidebar}>
+      <Layout title="Not Found" sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
             { label: 'Catalog', href: '/catalog' },

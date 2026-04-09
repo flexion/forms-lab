@@ -4414,7 +4414,6 @@
   --flex-radius-sm: 4px;
   --flex-radius-md: 8px;
   --flex-radius-bubble: 14px;
-  /* biome-ignore lint: font names must preserve USWDS capitalization */
   --flex-font-sans:
     "Source Sans Pro Web", "Helvetica Neue", Helvetica, Roboto, Arial,
     sans-serif; /* @uswds font-sans */

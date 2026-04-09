@@ -84,7 +84,7 @@ app.get('/health', (c) => {
 // Root page
 app.get('/', (c) => {
   return c.html(
-    <Layout>
+    <Layout currentPath="/">
       <h1>Forms Lab</h1>
       <p>
         Upload a government PDF form, extract structured specs, deliver form

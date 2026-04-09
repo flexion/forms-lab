@@ -69,7 +69,6 @@ export const TimePicker: FC<TimePickerProps> = ({
               <li
                 key={opt.value}
                 class="flex-combo-box__option"
-                role="option"
                 tabindex={-1}
                 data-value={opt.value}
                 id={`${id}-opt-${opt.value.replace(':', '')}`}
