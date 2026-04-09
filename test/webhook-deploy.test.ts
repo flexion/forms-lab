@@ -1,8 +1,8 @@
-import { describe, expect, it, beforeEach } from 'bun:test'
-import { triggerDeploy, DeployResult } from '../src/webhook/deploy'
+import { beforeEach, describe, expect, it } from 'bun:test'
+import { triggerDeploy } from '../src/webhook/deploy'
 
 describe('triggerDeploy', () => {
-  const originalEnv = process.env.DEPLOY_SCRIPT
+  const _originalEnv = process.env.DEPLOY_SCRIPT
 
   beforeEach(() => {
     process.env.DEPLOY_SCRIPT = 'echo'
@@ -57,6 +57,8 @@ describe('triggerDeploy', () => {
     // Should fail with the default path (unless /srv/forms-lab/deploy.sh exists)
     // We're just verifying the function handles the default gracefully
     expect(typeof result.success).toBe('boolean')
-    expect(typeof result.error === 'string' || result.error === undefined).toBe(true)
+    expect(typeof result.error === 'string' || result.error === undefined).toBe(
+      true,
+    )
   })
 })

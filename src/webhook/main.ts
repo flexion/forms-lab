@@ -28,7 +28,13 @@ app.post('/', async (c) => {
     return c.json({ ignored: true, reason: `Event type: ${event}` }, 200)
   }
 
-  const payload = JSON.parse(body)
+  let payload
+  try {
+    payload = JSON.parse(body)
+  } catch (err) {
+    console.error('Invalid JSON in webhook payload:', err)
+    return c.json({ error: 'Invalid JSON' }, 400)
+  }
   const push = parsePushEvent(payload)
   if (!push) {
     return c.json({ ignored: true, reason: 'Deleted branch or tag push' }, 200)
