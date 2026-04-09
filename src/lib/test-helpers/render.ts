@@ -13,10 +13,7 @@ function getFlexCSS(): string {
   if (cachedFlexCSS) return cachedFlexCSS
   // Use the pre-built CSS bundle (includes tokens + all component styles)
   // instead of reading 50+ individual files.
-  let css = readFileSync(
-    resolve(process.cwd(), 'dist/styles.css'),
-    'utf-8',
-  )
+  let css = readFileSync(resolve(process.cwd(), 'dist/styles.css'), 'utf-8')
   css = css.replaceAll('url("/static/', `url("${DEV_SERVER}/static/`)
   cachedFlexCSS = css
   return css

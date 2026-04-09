@@ -54,7 +54,12 @@ export const spec: ConformanceSpec = {
     'position',
   ],
   extraIgnoreAttributes: ['id', 'aria-controls', 'type'],
-  extraIgnoreBoxKeys: ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'],
+  extraIgnoreBoxKeys: [
+    'paddingTop',
+    'paddingRight',
+    'paddingBottom',
+    'paddingLeft',
+  ],
   intentionalDifferences: [],
   fixtures: [
     {
