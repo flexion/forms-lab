@@ -24,7 +24,12 @@ experiments.get('/', async (c) => {
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
-    <Layout title="Experiments" sidebar={sidebar} currentPath="/catalog">
+    <Layout
+      title="Experiments"
+      sidebar={sidebar}
+      currentPath="/catalog"
+      user={c.get('user')}
+    >
       <h1>Experiments</h1>
       <p>
         LLM experiments comparing baseline and alternative approaches with
@@ -67,7 +72,12 @@ experiments.get('/:slug', async (c) => {
     const title = file.content.split('\n')[0]?.replace(/^#\s+/, '') || slug
 
     return c.html(
-      <Layout title={title} sidebar={sidebar} currentPath="/catalog">
+      <Layout
+        title={title}
+        sidebar={sidebar}
+        currentPath="/catalog"
+        user={c.get('user')}
+      >
         <Prose content={file.content} />
         <p style="margin-top: var(--flex-space-lg);">
           <a href={resolveUrl('/catalog/experiments')}>← Back to Experiments</a>
@@ -76,7 +86,12 @@ experiments.get('/:slug', async (c) => {
     )
   } catch {
     return c.html(
-      <Layout title="Not Found" sidebar={sidebar} currentPath="/catalog">
+      <Layout
+        title="Not Found"
+        sidebar={sidebar}
+        currentPath="/catalog"
+        user={c.get('user')}
+      >
         <h1>Experiment Not Found</h1>
         <p>
           <a href={resolveUrl('/catalog/experiments')}>← Back to Experiments</a>

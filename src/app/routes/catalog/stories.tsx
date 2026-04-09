@@ -52,7 +52,12 @@ stories.get('/', async (c) => {
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
-    <Layout title="Stories" sidebar={sidebar} currentPath="/catalog">
+    <Layout
+      title="Stories"
+      sidebar={sidebar}
+      currentPath="/catalog"
+      user={c.get('user')}
+    >
       <h1>User Stories</h1>
       <p>
         Stories are synced from{' '}
@@ -105,7 +110,12 @@ stories.get('/:slug', async (c) => {
     const story = parseStory({ ...file, filename: slug })
 
     return c.html(
-      <Layout title={story.title} sidebar={sidebar} currentPath="/catalog">
+      <Layout
+        title={story.title}
+        sidebar={sidebar}
+        currentPath="/catalog"
+        user={c.get('user')}
+      >
         <Breadcrumb
           items={[
             { label: 'Catalog', href: resolveUrl('/catalog') },
@@ -135,7 +145,12 @@ stories.get('/:slug', async (c) => {
     )
   } catch {
     return c.html(
-      <Layout title="Not Found" sidebar={sidebar} currentPath="/catalog">
+      <Layout
+        title="Not Found"
+        sidebar={sidebar}
+        currentPath="/catalog"
+        user={c.get('user')}
+      >
         <Breadcrumb
           items={[
             { label: 'Catalog', href: resolveUrl('/catalog') },

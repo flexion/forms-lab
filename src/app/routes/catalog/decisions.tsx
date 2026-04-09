@@ -52,7 +52,12 @@ decisions.get('/', async (c) => {
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
-    <Layout title="Decisions" sidebar={sidebar} currentPath="/catalog">
+    <Layout
+      title="Decisions"
+      sidebar={sidebar}
+      currentPath="/catalog"
+      user={c.get('user')}
+    >
       <h1>Architectural Decisions</h1>
       <p>
         Decisions document what we chose, why, and what alternatives we
@@ -109,7 +114,12 @@ decisions.get('/:group/:slug', async (c) => {
     const decided = file.frontmatter.decided || ''
 
     return c.html(
-      <Layout title={title} sidebar={sidebar} currentPath="/catalog">
+      <Layout
+        title={title}
+        sidebar={sidebar}
+        currentPath="/catalog"
+        user={c.get('user')}
+      >
         <Breadcrumb
           items={[
             { label: 'Catalog', href: resolveUrl('/catalog') },
@@ -127,7 +137,12 @@ decisions.get('/:group/:slug', async (c) => {
     )
   } catch {
     return c.html(
-      <Layout title="Not Found" sidebar={sidebar} currentPath="/catalog">
+      <Layout
+        title="Not Found"
+        sidebar={sidebar}
+        currentPath="/catalog"
+        user={c.get('user')}
+      >
         <Breadcrumb
           items={[
             { label: 'Catalog', href: resolveUrl('/catalog') },

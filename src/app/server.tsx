@@ -2,10 +2,16 @@ import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { getBasePath, resolveUrl } from '../lib/base-path'
 import { Layout } from './components/flex-layout'
+import { requireAuth, sessionReader } from './middleware/auth'
+import auth from './routes/auth/index'
 import catalog from './routes/catalog/index'
+import projects from './routes/projects/index'
 
 const basePath = getBasePath()
 const app = new Hono().basePath(basePath)
+
+// Apply session reader globally
+app.use('*', sessionReader())
 
 // USWDS icon sprite
 app.get('/static/sprite.svg', async (c) => {
@@ -97,6 +103,13 @@ app.use(
   }),
 )
 
+// Mount auth routes
+app.route('/auth', auth)
+
+// Mount projects routes with auth guard
+app.use('/projects/*', requireAuth())
+app.route('/projects', projects)
+
 // Mount catalog routes
 app.route('/catalog', catalog)
 
@@ -111,7 +124,7 @@ app.get('/health', (c) => {
 // Root page
 app.get('/', (c) => {
   return c.html(
-    <Layout currentPath="/">
+    <Layout currentPath="/" user={c.get('user')}>
       <h1>Forms Lab</h1>
       <p>
         Upload a government PDF form, extract structured specs, deliver form

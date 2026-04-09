@@ -155,6 +155,7 @@ designSystem.get('/:slug', async (c) => {
         title="Typography — Design System"
         sidebar={sidebar}
         currentPath="/catalog"
+        user={c.get('user')}
       >
         <h1>Typography</h1>
 
@@ -351,6 +352,7 @@ designSystem.get('/:slug', async (c) => {
         title="Tokens — Design System"
         sidebar={sidebar}
         currentPath="/catalog"
+        user={c.get('user')}
       >
         <h1>Tokens</h1>
 
@@ -426,6 +428,7 @@ designSystem.get('/:slug', async (c) => {
         title="Compositions — Design System"
         sidebar={sidebar}
         currentPath="/catalog"
+        user={c.get('user')}
       >
         <h1>Compositions</h1>
 
@@ -474,6 +477,7 @@ designSystem.get('/:slug', async (c) => {
         title="Rules — Design System"
         sidebar={sidebar}
         currentPath="/catalog"
+        user={c.get('user')}
       >
         <h1>Rules</h1>
 
@@ -499,6 +503,7 @@ designSystem.get('/:slug', async (c) => {
         title="Base Classes — Design System"
         sidebar={sidebar}
         currentPath="/catalog"
+        user={c.get('user')}
       >
         <h1>Base Classes</h1>
 
@@ -735,6 +740,7 @@ designSystem.get('/:slug', async (c) => {
         title="Data Visualizations — Design System"
         sidebar={sidebar}
         currentPath="/catalog"
+        user={c.get('user')}
       >
         <h1>Data Visualizations</h1>
 

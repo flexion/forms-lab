@@ -1,5 +1,6 @@
 import type { Child, FC, PropsWithChildren } from 'hono/jsx'
 import { resolveUrl } from '../../../lib/base-path'
+import type { SessionUser } from '../../../lib/session'
 import { Banner } from '../flex-banner'
 import {
   Footer,
@@ -14,6 +15,7 @@ interface LayoutProps {
   title?: string
   sidebar?: Child
   currentPath?: string
+  user?: SessionUser | null
 }
 
 export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
@@ -81,6 +83,34 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             label="Catalog"
             current={props.currentPath?.startsWith('/catalog') ?? false}
           />
+          {props.user ? (
+            <>
+              <li class="flex-header__nav-item">
+                <span class="flex-header__nav-link flex-header__user-info">
+                  <img
+                    src={props.user.avatarUrl}
+                    alt=""
+                    width="24"
+                    height="24"
+                    class="flex-header__avatar"
+                  />
+                  {props.user.name}
+                </span>
+              </li>
+              <li class="flex-header__nav-item">
+                <form method="post" action={resolveUrl('/auth/signout')}>
+                  <button
+                    type="submit"
+                    class="flex-header__nav-link flex-header__signout-btn"
+                  >
+                    Sign out
+                  </button>
+                </form>
+              </li>
+            </>
+          ) : (
+            <HeaderNavItem href={resolveUrl('/auth/signin')} label="Sign in" />
+          )}
         </Header>
         {props.sidebar ? (
           <div class="catalog-layout">
