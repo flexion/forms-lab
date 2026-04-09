@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { resolveUrl } from '../../../lib/base-path'
 import { FormConfirmation } from '../../components/flex-form-confirmation'
 import { FormLanding } from '../../components/flex-form-landing'
 import { FormPageView } from '../../components/flex-form-page'
@@ -34,7 +35,7 @@ export function createFormRouter(deps: FormRouterDeps) {
       <Layout title={specs.formSpec.title} currentPath="/forms">
         <FormLanding
           formSpec={specs.formSpec}
-          startUrl={`/forms/${specs.dataSpec.id}/sessions`}
+          startUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions`)}
         />
       </Layout>,
     )
@@ -49,7 +50,7 @@ export function createFormRouter(deps: FormRouterDeps) {
       specs.formSpec.id,
     )
     return c.redirect(
-      `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/0`,
+      resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/0`),
     )
   })
 
@@ -65,14 +66,14 @@ export function createFormRouter(deps: FormRouterDeps) {
     const prev = findPrevPage(resolved, pageIndex, session.fields)
     const prevUrl =
       prev !== null
-        ? `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`
+        ? resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`)
         : null
     return c.html(
       <Layout title={resolved.pages[pageIndex].page.title} currentPath="/forms">
         <FormPageView
           resolvedPage={resolved.pages[pageIndex]}
           pageIndex={pageIndex}
-          actionUrl={`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`}
+          actionUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`)}
           fields={session.fields}
           prevUrl={prevUrl}
         />
@@ -109,14 +110,14 @@ export function createFormRouter(deps: FormRouterDeps) {
       const prev = findPrevPage(resolved, pageIndex, mergedFields)
       const prevUrl =
         prev !== null
-          ? `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`
+          ? resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`)
           : null
       return c.html(
         <Layout title={resolvedPage.page.title} currentPath="/forms">
           <FormPageView
             resolvedPage={resolvedPage}
             pageIndex={pageIndex}
-            actionUrl={`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`}
+            actionUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`)}
             fields={mergedFields}
             prevUrl={prevUrl}
           />
@@ -130,11 +131,11 @@ export function createFormRouter(deps: FormRouterDeps) {
     const next = findNextPage(resolved, pageIndex, updatedSession.fields)
     if (next !== null) {
       return c.redirect(
-        `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${next}`,
+        resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${next}`),
       )
     }
     return c.redirect(
-      `/forms/${specs.dataSpec.id}/sessions/${session.id}/review`,
+      resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/review`),
     )
   })
 
@@ -150,8 +151,8 @@ export function createFormRouter(deps: FormRouterDeps) {
         <FormReview
           resolved={resolved}
           fields={session.fields}
-          submitUrl={`/forms/${specs.dataSpec.id}/sessions/${session.id}/submit`}
-          editBaseUrl={`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages`}
+          submitUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/submit`)}
+          editBaseUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages`)}
         />
       </Layout>,
     )
@@ -166,7 +167,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const submission = sessionGateway.submit(session.id)
     submissionGateway.save(submission)
     return c.redirect(
-      `/forms/${specs.dataSpec.id}/sessions/${session.id}/confirmation?submissionId=${submission.id}`,
+      resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/confirmation?submissionId=${submission.id}`),
     )
   })
 
