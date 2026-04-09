@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import type { FieldEntry } from '../../src/types/models'
-import { resolveFormSpec } from '../../src/services/form-resolver'
 import { FormReview } from '../../src/app/components/flex-form-review'
+import { resolveFormSpec } from '../../src/services/form-resolver'
+import type { FieldEntry } from '../../src/types/models'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 describe('FormReview', () => {
@@ -19,12 +19,14 @@ describe('FormReview', () => {
 
   function render(): string {
     return (
-      <FormReview
-        resolved={resolved}
-        fields={fields}
-        submitUrl="/forms/benefits-app/sessions/s1/submit"
-        editBaseUrl="/forms/benefits-app/sessions/s1/pages"
-      /> as any
+      (
+        <FormReview
+          resolved={resolved}
+          fields={fields}
+          submitUrl="/forms/benefits-app/sessions/s1/submit"
+          editBaseUrl="/forms/benefits-app/sessions/s1/pages"
+        />
+      ) as any
     ).toString()
   }
 
