@@ -1,0 +1,5 @@
+name: forms-lab
+runtime: nodejs
+description: Forms Lab EC2 infrastructure
+backend:
+  url: s3://forms-lab-pulumi-state
