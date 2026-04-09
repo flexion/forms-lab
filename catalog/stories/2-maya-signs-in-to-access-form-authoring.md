@@ -1,10 +1,10 @@
 ---
 issue: 2
 title: Maya signs in to access form authoring
-milestone: "Slice 1: Maya Signs In"
+milestone: "Final Project"
 labels: [user-story]
 state: open
-synced_at: 2026-04-07T21:53:40.698Z
+synced_at: 2026-04-09T02:23:21.175Z
 ---
 
 ## User Story:

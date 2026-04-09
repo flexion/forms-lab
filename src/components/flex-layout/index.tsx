@@ -19,11 +19,16 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
   const title = props.title ? `${props.title} | Forms Lab` : 'Forms Lab'
 
   return (
-    <html lang="en">
+    <html lang="en" data-theme="auto">
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{title}</title>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('theme');if(t==='light'||t==='dark'||t==='auto')document.documentElement.setAttribute('data-theme',t)})()`,
+          }}
+        />
         <link rel="stylesheet" href="/static/styles.css" />
       </head>
       <body>

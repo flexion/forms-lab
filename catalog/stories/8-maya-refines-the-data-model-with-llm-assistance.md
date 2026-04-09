@@ -1,10 +1,10 @@
 ---
 issue: 8
 title: Maya refines the data model with LLM assistance
-milestone: "Slice 7: Maya Refines Data Model"
+milestone: "Final Project"
 labels: [user-story, llm-integration]
 state: open
-synced_at: 2026-04-07T21:53:40.698Z
+synced_at: 2026-04-09T02:23:21.175Z
 ---
 
 ## User Story:

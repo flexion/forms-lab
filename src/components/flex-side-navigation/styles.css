@@ -29,30 +29,30 @@
   display: block;
   padding: 0.5rem 1rem;
   text-decoration: none;
-  color: #565c65;
+  color: var(--flex-color-text-muted);
 }
 
 .flex-sidenav__link:hover {
-  background-color: #f0f0f0;
+  background-color: var(--flex-color-bg-subtle);
   text-decoration: none;
-  color: #005ea2;
+  color: var(--flex-color-link);
 }
 
 .flex-sidenav__link:focus {
   outline-offset: 0;
-  outline: 0.25rem solid #2491ff;
+  outline: 0.25rem solid var(--flex-color-focus);
 }
 
 /* --- Current page indicator --- */
 
 .flex-sidenav__link--current {
   position: relative;
-  color: #005ea2;
+  color: var(--flex-color-link);
   font-weight: 700;
 }
 
 .flex-sidenav__link--current::after {
-  background-color: #005ea2;
+  background-color: var(--flex-color-link);
   border-radius: 99rem;
   content: "";
   display: block;

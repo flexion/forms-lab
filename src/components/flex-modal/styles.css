@@ -30,7 +30,7 @@ flex-modal:not([hidden]) {
   position: relative;
   display: inline-flex;
   flex-direction: column-reverse;
-  background: #fff;
+  background: var(--flex-color-surface);
   border-radius: 0.5rem;
   max-width: 30rem;
   width: 100%;
@@ -57,7 +57,7 @@ flex-modal:not([hidden]) {
   font-family: var(--flex-font-sans);
   font-size: 1.06rem;
   line-height: 1.5;
-  color: var(--flex-gray-90);
+  color: var(--flex-color-text);
 }
 
 .flex-modal__footer {
@@ -71,7 +71,7 @@ flex-modal:not([hidden]) {
   flex-shrink: 0;
   background-color: transparent;
   border: 0;
-  color: #71767a;
+  color: var(--flex-color-text-muted);
   font-size: 0.93rem;
   margin: -2rem 0 0 auto;
   padding: 0.25rem;
@@ -82,11 +82,11 @@ flex-modal:not([hidden]) {
 .flex-modal__close:hover,
 .flex-modal__close:active {
   background-color: transparent;
-  color: var(--flex-gray-90);
+  color: var(--flex-color-text);
 }
 
 .flex-modal__close:focus {
-  outline: 0.25rem solid var(--flex-blue-vivid-40);
+  outline: 0.25rem solid var(--flex-color-focus);
   outline-offset: 0;
 }
 

@@ -4365,6 +4365,18 @@
     --flex-blue-vivid-60
   ); /* @uswds primary (blue-60v) */
 
+  /* Link tokens */
+  --flex-color-link: var(--flex-blue-vivid-60); /* @uswds primary */
+  --flex-color-link-visited: var(--flex-violet-vivid-70); /* @uswds visited */
+  --flex-color-link-hover: var(--flex-blue-warm-vivid-70); /* @uswds primary-dark */
+  --flex-color-link-active: var(--flex-blue-warm-vivid-80); /* @uswds primary-darker */
+
+  /* Focus token */
+  --flex-color-focus: var(--flex-blue-vivid-40); /* @uswds focus */
+
+  /* Tooltip tokens — inverted by design */
+  --flex-color-tooltip-bg: var(--flex-gray-90); /* dark bg */
+  --flex-color-tooltip-text: var(--flex-gray-5); /* light text */
   --flex-color-info: var(--flex-cyan-vivid-30); /* @uswds info (cyan-30v) */
   --flex-color-info-lighter: var(--flex-cyan-5); /* @uswds info-lighter */
   --flex-color-success: var(
@@ -4438,7 +4450,7 @@
   --flex-control-height: 2.5rem;
   --flex-control-padding: 0.5rem;
   --flex-control-margin-top: 0.5rem;
-  --flex-control-border: 1px solid var(--flex-color-ink);
+  --flex-control-border: 1px solid var(--flex-color-text-muted); /* @uswds base-dark (#565c65) */
 
   /* Breakpoints — CSS can't consume these in @media, so they're documentation.
      Use these values directly in @media rules. */
@@ -4448,19 +4460,58 @@
 
 /* ============================================================================
    DARK MODE: Semantic Token Overrides
+   Activated by [data-theme="dark"] (explicit) or [data-theme="auto"] + OS pref.
    ============================================================================ */
 
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --flex-color-bg: var(--flex-gray-90);
+  --flex-color-surface: var(--flex-gray-80);
+  --flex-color-border: var(--flex-gray-70);
+  --flex-color-text: var(--flex-gray-5);
+  --flex-color-text-muted: var(--flex-gray-cool-30);
+  --flex-color-ink: var(--flex-gray-cool-30);
+  --flex-color-table-header: var(--flex-gray-70);
+  --flex-color-bg-subtle: var(--flex-gray-80);
+  --flex-color-accent: var(--flex-blue-30);
+  --flex-color-link: var(--flex-blue-vivid-30);
+  --flex-color-link-visited: var(--flex-violet-vivid-30);
+  --flex-color-link-hover: var(--flex-blue-vivid-20);
+  --flex-color-link-active: var(--flex-blue-vivid-10);
+  --flex-color-focus: var(--flex-blue-vivid-30);
+  --flex-color-tooltip-bg: var(--flex-gray-5);
+  --flex-color-tooltip-text: var(--flex-gray-90);
+  --flex-color-error: var(--flex-red-vivid-20);
+  --flex-color-success: var(--flex-green-cool-vivid-20);
+  --flex-color-info: var(--flex-cyan-vivid-20);
+  --flex-color-info-lighter: var(--flex-cyan-80);
+  --flex-color-warning: var(--flex-yellow-vivid-30);
+  --flex-color-warning-lighter: var(--flex-yellow-80);
+  --flex-color-error-lighter: var(--flex-red-warm-80);
+  --flex-color-success-lighter: var(--flex-green-cool-80);
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+
     --flex-color-bg: var(--flex-gray-90);
     --flex-color-surface: var(--flex-gray-80);
     --flex-color-border: var(--flex-gray-70);
     --flex-color-text: var(--flex-gray-5);
-    --flex-color-text-muted: var(--flex-gray-50);
+    --flex-color-text-muted: var(--flex-gray-cool-30);
     --flex-color-ink: var(--flex-gray-cool-30);
     --flex-color-table-header: var(--flex-gray-70);
     --flex-color-bg-subtle: var(--flex-gray-80);
     --flex-color-accent: var(--flex-blue-30);
+    --flex-color-link: var(--flex-blue-vivid-30);
+    --flex-color-link-visited: var(--flex-violet-vivid-30);
+    --flex-color-link-hover: var(--flex-blue-vivid-20);
+    --flex-color-link-active: var(--flex-blue-vivid-10);
+    --flex-color-focus: var(--flex-blue-vivid-30);
+    --flex-color-tooltip-bg: var(--flex-gray-5);
+    --flex-color-tooltip-text: var(--flex-gray-90);
     --flex-color-error: var(--flex-red-vivid-20);
     --flex-color-success: var(--flex-green-cool-vivid-20);
     --flex-color-info: var(--flex-cyan-vivid-20);
@@ -4470,4 +4521,8 @@
     --flex-color-error-lighter: var(--flex-red-warm-80);
     --flex-color-success-lighter: var(--flex-green-cool-80);
   }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }

@@ -43,12 +43,12 @@
 
 /* Complete segment — dark navy bar */
 .flex-step-indicator__segment[data-state="complete"]::after {
-  background-color: #162e51;
+  background-color: var(--flex-color-text);
 }
 
 .flex-step-indicator__segment[data-state="complete"]
   .flex-step-indicator__segment-label {
-  color: #162e51;
+  color: var(--flex-color-text);
 }
 
 /* Current segment — accent blue bar */
@@ -173,7 +173,7 @@
   .flex-step-indicator__segment[data-state="complete"]::before,
 .flex-step-indicator[data-variant="small-counters"]
   .flex-step-indicator__segment[data-state="complete"]::before {
-  background-color: #162e51;
+  background-color: var(--flex-color-text);
   box-shadow: 0 0 0 0.25rem var(--flex-color-bg);
   color: var(--flex-color-on-accent);
 }

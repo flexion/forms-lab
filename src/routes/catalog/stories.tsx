@@ -45,17 +45,9 @@ stories.get('/', async (c) => {
     // directory may not exist or be empty
   }
 
-  const allStories = files.map(parseStory)
+  const allStories = files.map(parseStory).sort((a, b) => a.issue - b.issue)
 
-  // Group by milestone
-  const byMilestone: Record<string, Story[]> = {}
-  for (const story of allStories) {
-    const key = story.milestone || 'Unassigned'
-    if (!byMilestone[key]) byMilestone[key] = []
-    byMilestone[key].push(story)
-  }
-
-  const sidebarData = getStoriesSidebar(byMilestone, '/catalog/stories')
+  const sidebarData = getStoriesSidebar(allStories, '/catalog/stories')
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
@@ -68,29 +60,18 @@ stories.get('/', async (c) => {
         </a>
         . Run <code>bun run cli sync-stories</code> to update.
       </p>
-      <div class="l-stack">
-        {Object.entries(byMilestone).map(([milestone, items]) => (
-          <div key={milestone}>
-            <h2>
-              <span class="badge" data-variant="milestone">
-                {milestone}
-              </span>
-            </h2>
-            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-              {items.map((story) => (
-                <ContentCard
-                  key={story.slug}
-                  title={`#${story.issue} ${story.title}`}
-                  href={`/catalog/stories/${story.slug}`}
-                >
-                  <StatusBadge status={story.state} />
-                  <TagList
-                    tags={story.labels.filter((l) => l !== 'user-story')}
-                  />
-                </ContentCard>
-              ))}
-            </div>
-          </div>
+      <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+        {allStories.map((story) => (
+          <ContentCard
+            key={story.slug}
+            title={`#${story.issue} ${story.title}`}
+            href={`/catalog/stories/${story.slug}`}
+          >
+            <StatusBadge status={story.state} />
+            <TagList
+              tags={story.labels.filter((l) => l !== 'user-story')}
+            />
+          </ContentCard>
         ))}
         {allStories.length === 0 && (
           <p class="flex-empty">
@@ -115,15 +96,9 @@ stories.get('/:slug', async (c) => {
   } catch {
     // directory may not exist
   }
-  const allStories = allFiles.map(parseStory)
-  const byMilestone: Record<string, Story[]> = {}
-  for (const s of allStories) {
-    const key = s.milestone || 'Unassigned'
-    if (!byMilestone[key]) byMilestone[key] = []
-    byMilestone[key].push(s)
-  }
+  const allStories = allFiles.map(parseStory).sort((a, b) => a.issue - b.issue)
 
-  const sidebarData = getStoriesSidebar(byMilestone, `/catalog/stories/${slug}`)
+  const sidebarData = getStoriesSidebar(allStories, `/catalog/stories/${slug}`)
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   try {

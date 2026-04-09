@@ -103,3 +103,36 @@ class FlexHeaderElement extends HTMLElement {
 if (!customElements.get('flex-header')) {
   customElements.define('flex-header', FlexHeaderElement)
 }
+
+// --- Theme toggle ---
+
+function initThemeToggle() {
+  const toggle = document.querySelector('[data-theme-toggle]')
+  if (!toggle) return
+
+  const inputs = toggle.querySelectorAll<HTMLInputElement>(
+    '.flex-theme-toggle__input',
+  )
+  const stored = localStorage.getItem('theme')
+  const current = stored === 'light' || stored === 'dark' ? stored : 'auto'
+
+  // Sync radio to current state
+  for (const input of inputs) {
+    input.checked = input.value === current
+  }
+
+  // Listen for changes
+  for (const input of inputs) {
+    input.addEventListener('change', () => {
+      const value = input.value as 'light' | 'dark' | 'auto'
+      document.documentElement.setAttribute('data-theme', value)
+      localStorage.setItem('theme', value)
+    })
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initThemeToggle)
+} else {
+  initThemeToggle()
+}

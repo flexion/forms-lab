@@ -1,10 +1,10 @@
 ---
 issue: 5
 title: Maya reviews her proposed changes before publishing
-milestone: "Slice 4: Maya Reviews Changes"
+milestone: "Final Project"
 labels: [user-story]
 state: open
-synced_at: 2026-04-07T21:53:40.698Z
+synced_at: 2026-04-09T02:23:21.175Z
 ---
 
 ## User Story:

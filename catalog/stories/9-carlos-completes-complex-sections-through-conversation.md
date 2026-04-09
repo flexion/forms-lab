@@ -1,10 +1,10 @@
 ---
 issue: 9
 title: Carlos completes complex sections through conversation
-milestone: "Slice 8: Carlos Converses"
+milestone: "Final Project"
 labels: [user-story, llm-integration]
 state: open
-synced_at: 2026-04-07T21:53:40.697Z
+synced_at: 2026-04-09T02:23:21.174Z
 ---
 
 ## User Story:

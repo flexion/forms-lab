@@ -177,13 +177,12 @@ export function getDecisionsSidebar(
 
 /**
  * Contextual sidebar for stories pages.
- * Shows stories grouped by milestone.
  */
 export function getStoriesSidebar(
-  byMilestone: Record<string, Story[]>,
+  stories: Story[],
   currentPath?: string,
 ) {
-  const sections = [
+  return [
     {
       title: 'Stories',
       items: [
@@ -197,17 +196,12 @@ export function getStoriesSidebar(
           href: '/catalog/stories',
           current: currentPath === '/catalog/stories',
         },
+        ...stories.map((s) => ({
+          label: `#${s.issue} ${s.title}`,
+          href: `/catalog/stories/${s.slug}`,
+          current: currentPath === `/catalog/stories/${s.slug}`,
+        })),
       ],
     },
-    ...Object.entries(byMilestone).map(([milestone, stories]) => ({
-      title: milestone,
-      items: stories.map((s) => ({
-        label: `#${s.issue} ${s.title}`,
-        href: `/catalog/stories/${s.slug}`,
-        current: currentPath === `/catalog/stories/${s.slug}`,
-      })),
-    })),
   ]
-
-  return sections
 }

@@ -19,31 +19,31 @@
 }
 
 .flex-footer__return-to-top a {
-  color: var(--flex-blue-vivid-60);
+  color: var(--flex-color-link);
   text-decoration: underline;
 }
 
 .flex-footer__return-to-top a:visited {
-  color: var(--flex-violet-vivid-70);
+  color: var(--flex-color-link-visited);
 }
 
 .flex-footer__return-to-top a:hover {
-  color: var(--flex-blue-warm-vivid-70);
+  color: var(--flex-color-link-hover);
 }
 
 .flex-footer__return-to-top a:active {
-  color: var(--flex-blue-warm-vivid-80);
+  color: var(--flex-color-link-active);
 }
 
 .flex-footer__return-to-top a:focus {
-  outline: 0.25rem solid var(--flex-blue-vivid-40);
+  outline: 0.25rem solid var(--flex-color-focus);
   outline-offset: 0;
 }
 
 /* --- Primary section --- */
 
 .flex-footer__primary {
-  background-color: var(--flex-gray-5);
+  background-color: var(--flex-color-bg-subtle);
 }
 
 .flex-footer__primary-container {
@@ -58,7 +58,7 @@
 
 .flex-footer__primary-link {
   padding: 0.75rem 0;
-  color: var(--flex-gray-90);
+  color: var(--flex-color-text);
   font-weight: 700;
   display: inline-block;
   border: 0;
@@ -93,8 +93,8 @@
 .flex-footer__secondary {
   padding-bottom: 1.25rem;
   padding-top: 1.25rem;
-  color: var(--flex-gray-90);
-  background-color: var(--flex-gray-cool-10);
+  color: var(--flex-color-text);
+  background-color: var(--flex-color-border); /* @uswds base-lighter (#dfe1e2) */
 }
 
 .flex-footer__secondary-container {
@@ -107,7 +107,7 @@
 }
 
 .flex-footer__secondary a {
-  color: var(--flex-gray-90);
+  color: var(--flex-color-text);
 }
 
 /* --- Logo --- */
@@ -135,7 +135,7 @@
 }
 
 .flex-footer__contact-info a {
-  color: var(--flex-gray-90);
+  color: var(--flex-color-text);
   text-decoration: none;
 }
 
@@ -152,24 +152,24 @@
 }
 
 .flex-footer__secondary-link a {
-  color: var(--flex-blue-vivid-60);
+  color: var(--flex-color-link);
   text-decoration: underline;
 }
 
 .flex-footer__secondary-link a:visited {
-  color: var(--flex-violet-vivid-70);
+  color: var(--flex-color-link-visited);
 }
 
 .flex-footer__secondary-link a:hover {
-  color: var(--flex-blue-warm-vivid-70);
+  color: var(--flex-color-link-hover);
 }
 
 .flex-footer__secondary-link a:active {
-  color: var(--flex-blue-warm-vivid-80);
+  color: var(--flex-color-link-active);
 }
 
 .flex-footer__secondary-link a:focus {
-  outline: 0.25rem solid var(--flex-blue-vivid-40);
+  outline: 0.25rem solid var(--flex-color-focus);
   outline-offset: 0;
 }
 

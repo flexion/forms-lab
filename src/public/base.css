@@ -1,5 +1,5 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: light dark; /* overridden per-theme in tokens.css */
 }
 
 html {

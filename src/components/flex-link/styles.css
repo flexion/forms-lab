@@ -2,25 +2,25 @@
    Variants: default, external */
 
 .flex-link {
-  color: #005ea2;
+  color: var(--flex-color-link);
   text-decoration: underline;
   display: inline;
 }
 
 .flex-link:visited {
-  color: #54278f;
+  color: var(--flex-color-link-visited);
 }
 
 .flex-link:hover {
-  color: #1a4480;
+  color: var(--flex-color-link-hover);
 }
 
 .flex-link:active {
-  color: #162e51;
+  color: var(--flex-color-link-active);
 }
 
 .flex-link:focus {
-  outline: 0.25rem solid #2491ff;
+  outline: 0.25rem solid var(--flex-color-focus);
   outline-offset: 0;
 }
 

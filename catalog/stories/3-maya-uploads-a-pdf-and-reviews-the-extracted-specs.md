@@ -1,10 +1,10 @@
 ---
 issue: 3
 title: Maya uploads a PDF and reviews the extracted specs
-milestone: "Slice 2: Maya Uploads PDF"
+milestone: "Final Project"
 labels: [user-story, llm-integration]
 state: open
-synced_at: 2026-04-07T21:53:40.698Z
+synced_at: 2026-04-09T02:23:21.175Z
 ---
 
 ## User Story:
