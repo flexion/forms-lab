@@ -52,4 +52,19 @@
       owner = "forms-lab";
     };
   };
+
+  # Allow forms-lab user to manage its own services
+  security.sudo.extraRules = [{
+    users = [ "forms-lab" ];
+    commands = [{
+      command = "${pkgs.systemd}/bin/systemctl restart forms-lab-app@*";
+      options = [ "NOPASSWD" ];
+    } {
+      command = "${pkgs.systemd}/bin/systemctl start forms-lab-app@*";
+      options = [ "NOPASSWD" ];
+    } {
+      command = "${pkgs.systemd}/bin/systemctl stop forms-lab-app@*";
+      options = [ "NOPASSWD" ];
+    }];
+  }];
 }

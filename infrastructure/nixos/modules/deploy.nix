@@ -8,7 +8,9 @@ let
     SHA="$2"
     REPO_DIR="/srv/forms-lab/repo.git"
     DEPLOY_ROOT="/srv/forms-lab"
-    BRANCH_DIR="$DEPLOY_ROOT/$BRANCH"
+    # Sanitize branch name for filesystem (replace / with -)
+    SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
+    BRANCH_DIR="$DEPLOY_ROOT/$SAFE_BRANCH"
     PORT_FILE="$DEPLOY_ROOT/ports.json"
 
     echo "Deploying $BRANCH at $SHA..."
@@ -44,8 +46,8 @@ let
       echo '{}' > "$PORT_FILE"
     fi
 
-    # Sanitize branch name for systemd (replace / with -)
-    UNIT_NAME=$(echo "$BRANCH" | tr '/' '-')
+    # Use sanitized branch name for systemd unit
+    UNIT_NAME="$SAFE_BRANCH"
 
     PORT=$(${pkgs.jq}/bin/jq -r ".[\"$BRANCH\"] // empty" "$PORT_FILE")
     if [ -z "$PORT" ]; then
@@ -63,9 +65,9 @@ let
     BASE_PATH=/$UNIT_NAME/
     ENVEOF
 
-    # Start or restart the service
-    systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
-      systemctl start "forms-lab-app@$UNIT_NAME.service"
+    # Start or restart the service (needs sudo since forms-lab user doesn't have systemctl permissions)
+    sudo systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
+      sudo systemctl start "forms-lab-app@$UNIT_NAME.service"
 
     # Update Caddy config via admin API
     ${pkgs.curl}/bin/curl -s -X POST http://localhost:2019/config/apps/http/servers/srv0/routes \
