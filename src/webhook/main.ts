@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { triggerDeploy } from './deploy'
+import type { PushPayload } from './handler'
 import { parsePushEvent, verifySignature } from './handler'
 
 const app = new Hono()
@@ -28,9 +29,9 @@ app.post('/', async (c) => {
     return c.json({ ignored: true, reason: `Event type: ${event}` }, 200)
   }
 
-  let payload: unknown
+  let payload: PushPayload
   try {
-    payload = JSON.parse(body)
+    payload = JSON.parse(body) as PushPayload
   } catch (err) {
     console.error('Invalid JSON in webhook payload:', err)
     return c.json({ error: 'Invalid JSON' }, 400)

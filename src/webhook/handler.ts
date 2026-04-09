@@ -22,7 +22,7 @@ export async function verifySignature(
   return result === 0
 }
 
-interface PushPayload {
+export interface PushPayload {
   ref: string
   after: string
   deleted: boolean
