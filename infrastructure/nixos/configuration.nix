@@ -10,6 +10,7 @@
     bun
     curl
     jq
+    sops
   ];
 
   # Firewall
@@ -55,6 +56,15 @@
       owner = "forms-lab";
     };
     secrets.github-token = {
+      owner = "forms-lab";
+    };
+    secrets.github-client-id = {
+      owner = "forms-lab";
+    };
+    secrets.github-client-secret = {
+      owner = "forms-lab";
+    };
+    secrets.session-secret = {
       owner = "forms-lab";
     };
   };

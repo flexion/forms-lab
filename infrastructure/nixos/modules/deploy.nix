@@ -26,11 +26,15 @@ let
     # Create or update worktree
     if [ ! -d "$BRANCH_DIR" ]; then
       echo "Creating worktree for $BRANCH..."
+      # Fetch into the bare repo's branch ref so worktree add gets the latest
+      # (--force handles force pushes where the local ref is stale)
+      ${pkgs.git}/bin/git -C "$REPO_DIR" fetch origin "$BRANCH:$BRANCH" --force
       ${pkgs.git}/bin/git -C "$REPO_DIR" worktree add "$BRANCH_DIR" "$BRANCH"
     else
       echo "Updating worktree for $BRANCH..."
       cd "$BRANCH_DIR"
-      # Fetch directly in the worktree to avoid the "refusing to fetch into checked out branch" error
+      # Fetch directly in the worktree — can't update the bare repo ref while
+      # the branch is checked out, so use FETCH_HEAD + reset instead
       ${pkgs.git}/bin/git fetch origin "$BRANCH"
       ${pkgs.git}/bin/git reset --hard FETCH_HEAD
     fi
@@ -61,9 +65,14 @@ let
 
     # Write per-branch env file
     # All branches serve at /<branch>/
+    # OAuth secrets are read from sops-nix managed files in /run/secrets/
     cat > "$BRANCH_DIR/.env" <<ENVEOF
 PORT=$PORT
 BASE_PATH=/$UNIT_NAME/
+GITHUB_CLIENT_ID=$(cat /run/secrets/github-client-id 2>/dev/null || echo "")
+GITHUB_CLIENT_SECRET=$(cat /run/secrets/github-client-secret 2>/dev/null || echo "")
+SESSION_SECRET=$(cat /run/secrets/session-secret 2>/dev/null || echo "")
+GITHUB_AUTHZ_REPO=flexion/forms-lab
 ENVEOF
 
     # Start or restart the service (use full path to sudo wrapper with setuid bit)
