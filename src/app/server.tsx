@@ -3,6 +3,10 @@ import { serveStatic } from 'hono/bun'
 import { getBasePath, resolveUrl } from '../lib/base-path'
 import { Layout } from './components/flex-layout'
 import catalog from './routes/catalog/index'
+import { createFormRouter } from './routes/forms/index'
+import { InMemoryFormSessionGateway } from './services/form-session'
+import { InMemorySubmissionGateway } from './services/submission'
+import { testDataSpec, testFormSpec } from '../test/forms/fixtures'
 
 const basePath = getBasePath()
 const app = new Hono().basePath(basePath)
@@ -96,6 +100,22 @@ app.use(
     },
   }),
 )
+
+// Form delivery routes (in-memory, using test fixtures for now)
+const sessionGateway = new InMemoryFormSessionGateway()
+const submissionGateway = new InMemorySubmissionGateway()
+
+const specRegistry = new Map([
+  [testDataSpec.id, { dataSpec: testDataSpec, formSpec: testFormSpec }],
+])
+
+const forms = createFormRouter({
+  sessionGateway,
+  submissionGateway,
+  getSpecs: (specId) => specRegistry.get(specId) ?? null,
+})
+
+app.route('/forms', forms)
 
 // Mount catalog routes
 app.route('/catalog', catalog)
