@@ -10,14 +10,14 @@ const app = new Hono()
 app.use(
   '/static/sprite.svg',
   serveStatic({
-    path: '../node_modules/@uswds/uswds/dist/img/sprite.svg',
+    path: './node_modules/@uswds/uswds/dist/img/sprite.svg',
   }),
 )
 
 app.use(
   '/static/img/:name',
   serveStatic({
-    root: '../node_modules/@uswds/uswds/dist/img',
+    root: './node_modules/@uswds/uswds/dist/img',
     rewriteRequestPath: (path) => path.replace('/static/img', ''),
   }),
 )
@@ -25,7 +25,7 @@ app.use(
 app.use(
   '/static/fonts/*',
   serveStatic({
-    root: '../app/public',
+    root: './src/app/public',
     rewriteRequestPath: (path) => path.replace('/static/', ''),
   }),
 )
@@ -33,7 +33,7 @@ app.use(
 app.use(
   '/static/*',
   serveStatic({
-    root: '../dist',
+    root: './dist',
     rewriteRequestPath: (path) => path.replace('/static', ''),
   }),
 )
