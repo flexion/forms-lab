@@ -66,11 +66,13 @@ let
     ENVEOF
 
     # Start or restart the service (needs sudo since forms-lab user doesn't have systemctl permissions)
-    sudo systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
-      sudo systemctl start "forms-lab-app@$UNIT_NAME.service"
+    sudo ${pkgs.systemd}/bin/systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
+      sudo ${pkgs.systemd}/bin/systemctl start "forms-lab-app@$UNIT_NAME.service"
 
     # Update Caddy config via admin API
-    ${pkgs.curl}/bin/curl -s -X POST http://localhost:2019/config/apps/http/servers/srv0/routes \
+    # Routes need to be added inside the host block at routes/0/handle/0/routes
+    # Insert before the last route (fallback 404)
+    ${pkgs.curl}/bin/curl -s -X POST http://localhost:2019/config/apps/http/servers/srv0/routes/0/handle/0/routes/@before:-1 \
       -H "Content-Type: application/json" \
       -d "{
         \"@id\": \"branch-$UNIT_NAME\",
