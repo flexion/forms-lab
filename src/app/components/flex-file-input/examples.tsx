@@ -25,20 +25,3 @@ export const MultipleFiles: FC = () => (
     hint="Select one or more PDF or Word documents"
   />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default</h3>
-      <DefaultFileInput />
-    </div>
-    <div>
-      <h3>Image only</h3>
-      <ImageOnly />
-    </div>
-    <div>
-      <h3>Multiple files</h3>
-      <MultipleFiles />
-    </div>
-  </div>
-)

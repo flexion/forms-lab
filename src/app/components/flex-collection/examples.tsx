@@ -62,16 +62,3 @@ export const Condensed: FC = () => (
     </CollectionItem>
   </Collection>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default Collection</h3>
-      <Default />
-    </div>
-    <div>
-      <h3>Condensed Collection</h3>
-      <Condensed />
-    </div>
-  </div>
-)

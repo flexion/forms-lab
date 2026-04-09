@@ -14,16 +14,3 @@ export const RequiredCharacterCount: FC = () => (
     required
   />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default</h3>
-      <DefaultCharacterCount />
-    </div>
-    <div>
-      <h3>Required</h3>
-      <RequiredCharacterCount />
-    </div>
-  </div>
-)

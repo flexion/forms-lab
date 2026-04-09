@@ -47,16 +47,3 @@ export const ComboBoxWithDefault: FC = () => (
     ]}
   />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default</h3>
-      <DefaultComboBox />
-    </div>
-    <div>
-      <h3>With default value</h3>
-      <ComboBoxWithDefault />
-    </div>
-  </div>
-)

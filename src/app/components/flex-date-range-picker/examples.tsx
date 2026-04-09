@@ -24,16 +24,3 @@ export const DateRangePickerWithConstraints: FC = () => (
     maxDate="2030-12-31"
   />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default</h3>
-      <DefaultDateRangePicker />
-    </div>
-    <div>
-      <h3>With date constraints</h3>
-      <DateRangePickerWithConstraints />
-    </div>
-  </div>
-)

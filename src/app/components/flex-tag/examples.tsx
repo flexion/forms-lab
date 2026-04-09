@@ -12,20 +12,3 @@ export const MultipleTags: FC = () => (
     <Tag>Pending</Tag>
   </div>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default Tag</h3>
-      <Default />
-    </div>
-    <div>
-      <h3>Big Tag</h3>
-      <Big />
-    </div>
-    <div>
-      <h3>Multiple Tags</h3>
-      <MultipleTags />
-    </div>
-  </div>
-)

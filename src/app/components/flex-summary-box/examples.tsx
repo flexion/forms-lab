@@ -21,12 +21,3 @@ export const WithParagraph: FC = () => (
     </p>
   </SummaryBox>
 )
-
-export const AllVariants: FC = () => (
-  <div class="l-stack">
-    <h3>Default Summary Box</h3>
-    <Default />
-    <h3>With Paragraph Content</h3>
-    <WithParagraph />
-  </div>
-)

@@ -8,16 +8,3 @@ export const DefaultMemorableDate: FC = () => (
 export const RequiredMemorableDate: FC = () => (
   <MemorableDate id="start-date" legend="Start date" required />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default</h3>
-      <DefaultMemorableDate />
-    </div>
-    <div>
-      <h3>Required</h3>
-      <RequiredMemorableDate />
-    </div>
-  </div>
-)

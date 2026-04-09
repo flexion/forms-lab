@@ -43,16 +43,3 @@ export const CustomHeadingLevels: FC = () => (
     </aside>
   </div>
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 48px;">
-    <div>
-      <h3>Default (h2, h3)</h3>
-      <DefaultInPageNav />
-    </div>
-    <div>
-      <h3>Custom heading levels (h2 only)</h3>
-      <CustomHeadingLevels />
-    </div>
-  </div>
-)

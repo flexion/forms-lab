@@ -37,19 +37,3 @@ export const NoHeadingSiteAlert: FC = () => (
     {alertBody}
   </SiteAlert>
 )
-
-export const AllVariants: FC = () => (
-  <div class="l-stack">
-    <h3>Variants</h3>
-    <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-      <InfoSiteAlert />
-      <EmergencySiteAlert />
-    </div>
-    <h3>Modifiers</h3>
-    <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-      <SlimSiteAlert />
-      <NoIconSiteAlert />
-      <NoHeadingSiteAlert />
-    </div>
-  </div>
-)

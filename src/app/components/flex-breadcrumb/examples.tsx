@@ -32,20 +32,3 @@ export const TwoLevels: FC = () => (
     items={[{ label: 'Home', href: '/' }, { label: 'Current Page' }]}
   />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default Breadcrumb</h3>
-      <Default />
-    </div>
-    <div>
-      <h3>Wrap Variant</h3>
-      <Wrap />
-    </div>
-    <div>
-      <h3>Two Levels</h3>
-      <TwoLevels />
-    </div>
-  </div>
-)

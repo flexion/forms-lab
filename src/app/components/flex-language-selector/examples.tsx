@@ -15,16 +15,3 @@ export const MultiLanguage: FC = () => (
     ]}
   />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Two-language toggle</h3>
-      <TwoLanguage />
-    </div>
-    <div>
-      <h3>Multi-language dropdown</h3>
-      <MultiLanguage />
-    </div>
-  </div>
-)

@@ -23,20 +23,3 @@ export const DatePickerWithDefault: FC = () => (
     defaultValue="1990-06-15"
   />
 )
-
-export const AllVariants: FC = () => (
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <div>
-      <h3>Default</h3>
-      <DefaultDatePicker />
-    </div>
-    <div>
-      <h3>With date constraints</h3>
-      <DatePickerWithConstraints />
-    </div>
-    <div>
-      <h3>With default value</h3>
-      <DatePickerWithDefault />
-    </div>
-  </div>
-)
