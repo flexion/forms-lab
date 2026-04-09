@@ -150,17 +150,26 @@ async function getHealthStatus(url: string): Promise<DeploymentInfo['health']> {
     })
 
     const responseTime = Date.now() - startTime
-    const status: HealthStatus = response.ok ? 'healthy' : 'unhealthy'
+
+    if (response.ok) {
+      return {
+        status: 'healthy',
+        responseTime,
+        lastCheck: new Date().toISOString(),
+      }
+    }
 
     return {
-      status,
+      status: 'unhealthy',
       responseTime,
       lastCheck: new Date().toISOString(),
+      error: `HTTP ${response.status} ${response.statusText}`,
     }
-  } catch {
+  } catch (error) {
     return {
       status: 'unknown',
       lastCheck: new Date().toISOString(),
+      error: error instanceof Error ? error.message : 'Connection failed',
     }
   }
 }

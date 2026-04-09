@@ -29,6 +29,7 @@ export interface DeploymentInfo {
     status: HealthStatus
     responseTime?: number
     lastCheck: string
+    error?: string
   }
 
   // GitHub PR info (optional)

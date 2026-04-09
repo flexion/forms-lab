@@ -142,6 +142,22 @@ export function DeploymentCard({ deployment }: DeploymentCardProps) {
         </div>
       </div>
 
+      {/* Health error message */}
+      {health.error && health.status !== 'healthy' && (
+        <div
+          style={{
+            fontSize: 'var(--flex-text-sm)',
+            padding: 'var(--flex-space-2)',
+            backgroundColor: 'var(--flex-color-warning-lightest)',
+            borderRadius: 'var(--flex-radius-md)',
+            borderLeft: '3px solid var(--flex-color-warning)',
+            color: 'var(--flex-color-text)',
+          }}
+        >
+          <strong>Health check error:</strong> {health.error}
+        </div>
+      )}
+
       {/* Pull Request info */}
       {pullRequest && (
         <div

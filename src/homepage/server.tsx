@@ -61,10 +61,10 @@ app.get('/', async (c) => {
 
         {/* Summary statistics */}
         <div
+          class="l-grid"
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 'var(--flex-space-2)',
+            '--grid-min': '200px',
+            '--grid-space': 'var(--flex-space-2)',
             marginTop: 'var(--flex-space-4)',
             marginBottom: 'var(--flex-space-4)',
           }}
