@@ -6,6 +6,8 @@
     wantedBy = [ "multi-user.target" ];
     after = [ "network.target" ];
 
+    path = with pkgs; [ git openssh bun ];
+
     serviceConfig = {
       Type = "simple";
       User = "forms-lab";
