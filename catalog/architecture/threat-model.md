@@ -27,11 +27,11 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 - **DDoS** -- volumetric attacks against the public endpoint.
 
 **Mitigations:**
-- Caddy auto-provisions TLS certificates via Let's Encrypt with secure defaults (TLS 1.2+, strong ciphers).
+- Caddy terminates TLS using a self-signed certificate (`tls internal`) because the current hostname is an AWS compute domain that Let's Encrypt will not issue certificates for. Traffic is encrypted in transit, but clients cannot verify the server's identity through a trusted CA chain.
 - Caddy's HTTP parser rejects malformed requests.
 - No DDoS mitigation currently; single EC2 instance is the only target.
 
-**Residual risk:** DDoS against a single instance with no upstream protection. Acceptable for a class project; a production deployment would add rate limiting or a CDN.
+**Residual risk:** Self-signed TLS means browsers will show certificate warnings and users must manually trust the connection. A MITM attacker could present their own self-signed certificate. Acceptable for a class project with known users; a production deployment would use a custom domain with CA-issued certificates. DDoS against a single instance with no upstream protection is also unmitigated.
 
 ### Caddy to Hono application
 
@@ -42,11 +42,11 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 - **Path traversal** -- subpath routing (`/main/`, `/slice-1/`) maps to branch-specific processes. Malformed paths could route to unintended processes.
 
 **Mitigations:**
-- Caddy strips and re-sets forwarded headers, preventing client spoofing.
-- Subpath routing uses exact prefix matching in Caddy config; paths are validated before proxying.
+- Caddy's default `reverse_proxy` behavior sets `X-Forwarded-For` and related headers. No explicit header stripping or `trusted_proxies` directives are configured.
+- Subpath routing uses prefix matching in Caddy config; branch-specific routes are loaded from `/srv/forms-lab/caddy.d/branch-*.caddy` files.
 - Communication is localhost-only; not exposed to the network.
 
-**Residual risk:** Low. Internal-only communication with Caddy handling header sanitization.
+**Residual risk:** Low. Internal-only communication. The application does not currently rely on forwarded headers for security decisions, so header spoofing is not exploitable in the current architecture.
 
 ### Hono application to git filesystem
 
@@ -94,9 +94,10 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 - **Information disclosure** -- webhook payloads contain repository metadata; the listener endpoint reveals that the deploy system exists.
 
 **Mitigations:**
-- HMAC-SHA256 signature validation using `X-Hub-Signature-256` header. Webhook secret managed via sops-nix.
+- HMAC-SHA256 signature validation using `X-Hub-Signature-256` header with constant-time comparison (`timingSafeEqual`). Webhook secret managed via sops-nix.
 - The webhook listener validates the signature before processing any payload.
-- Listener runs on a dedicated port (9000), separate from the application.
+- Listener binds to localhost:9000 and is accessed via Caddy's `/.webhook` reverse proxy path, not as a separate public endpoint. This means webhook traffic also benefits from Caddy's TLS termination and HTTP parsing.
+- Only ports 22, 80, and 443 are open in the firewall; port 9000 is not directly accessible.
 
 **Residual risk:** No replay protection (GitHub webhooks don't include nonce or timestamp validation). An attacker with a captured valid payload could replay it, but the effect is re-deploying the same commit -- not deploying arbitrary code. Acceptable for this project.
 
@@ -106,16 +107,17 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 
 **Threats:**
 - **Command injection** -- branch names or commit SHAs injected into shell commands could execute arbitrary code.
+- **Caddy config injection** -- branch names are written directly into Caddy config files (`branch-$UNIT_NAME.caddy`). A branch name containing Caddy syntax characters could inject arbitrary directives.
 - **Unauthorized code execution** -- the deploy script pulls and runs code from the repository; a compromised repository means compromised deploys.
 - **Resource exhaustion** -- rapid successive deploys could exhaust system resources.
 
 **Mitigations:**
-- Deploy script validates branch names against an allowlist of expected patterns.
-- Git operations use `git fetch` + `git checkout` with explicit refs, not shell interpolation of untrusted input.
-- Deploy scripts are Nix-packaged with pinned dependencies; the deploy process itself is declarative.
-- Systemd service units provide process isolation and resource limits.
+- HMAC signature verification constrains deploy triggers to GitHub, so branch names come from a trusted source.
+- Branch names are sanitized with `tr '/' '-'` for filesystem and systemd unit names. Shell variables are double-quoted.
+- Deploy script tooling is Nix-packaged (`writeShellScriptBin` with absolute paths to `git`, `bun`, `jq`). Application dependencies are resolved at deploy time from the lockfile via `bun install`.
+- Services run under a dedicated `forms-lab` user with passwordless sudo limited to restarting app services and reloading Caddy. No systemd sandboxing or resource limits are configured.
 
-**Residual risk:** Repository compromise leads to code execution on the server. Mitigated by GitHub branch protection rules and required reviews, but a compromised GitHub account with push access could deploy malicious code.
+**Residual risk:** No branch name validation beyond `tr '/' '-'` -- special characters in branch names could affect Caddy config or shell behavior. The risk is constrained by HMAC verification (only GitHub can trigger deploys) but a compromised repository could exploit this. Repository compromise also leads to arbitrary code execution on the server, mitigated by GitHub branch protection rules and required reviews.
 
 ### Browser to Hono application (authentication)
 
@@ -149,9 +151,9 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 
 **Threat:** Unauthorized SSH access to the EC2 instance.
 
-**Mitigations:** SSH key-based authentication only (no password auth). Security group restricts SSH to known IPs. NixOS declarative configuration means the server state is reproducible and auditable.
+**Mitigations:** SSH key-based authentication only (no password auth, root login prohibited except by key). NixOS declarative configuration means the server state is reproducible and auditable.
 
-**Residual risk:** A compromised SSH key grants full server access. Key rotation and access review are manual processes.
+**Residual risk:** The AWS security group allows SSH from all IPs (`0.0.0.0/0`), so the SSH port is exposed to the internet. Key-based auth prevents brute-force password attacks, but a compromised SSH key grants full server access from any network. Key rotation and access review are manual processes. Restricting the security group to known IPs would reduce exposure.
 
 ### Secrets management
 
@@ -165,6 +167,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 
 | Threat | Boundary | Likelihood | Impact | Mitigation | Status |
 |--------|----------|-----------|--------|------------|--------|
+| Self-signed TLS | Browser-Caddy | Certain | Medium | TLS encryption in transit, but no CA chain | Accepted |
 | DDoS against public endpoint | Browser-Caddy | Medium | High | None | Accepted |
 | Path traversal via user input | Hono-Filesystem | Low | High | Slug generation, path validation | Mitigated |
 | API key exposure in logs | Hono-Claude API | Low | High | Env vars, sops-nix | Mitigated |
@@ -172,11 +175,12 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | Prompt injection via PDF content | Hono-Claude API | Medium | Medium | Output validation, type checking | Partially mitigated |
 | Webhook forgery | GitHub-Webhook | Low | High | HMAC-SHA256 validation | Mitigated |
 | Webhook replay | GitHub-Webhook | Low | Low | Re-deploys same commit | Accepted |
-| Command injection in deploy | Webhook-Deploy | Low | Critical | Input validation, Nix packaging | Mitigated |
+| Caddy config injection via branch name | Webhook-Deploy | Low | High | HMAC verification, `tr` sanitization | Partially mitigated |
+| Command injection in deploy | Webhook-Deploy | Low | Critical | HMAC verification, quoted variables, Nix packaging | Partially mitigated |
 | Repository compromise | Webhook-Deploy | Low | Critical | Branch protection, required reviews | Partially mitigated |
 | Session hijacking | Browser-Hono Auth | Medium | High | Secure cookie attributes (planned) | Planned |
 | Dependency supply chain | N/A | Low | High | Lock file, small dependency tree | Partially mitigated |
-| SSH key compromise | Infrastructure | Low | Critical | Key auth only, security groups | Partially mitigated |
+| SSH open to all IPs | Infrastructure | Medium | Critical | Key-based auth only, no password | Partially mitigated |
 | Secrets exposure on host | Infrastructure | Low | Critical | sops-nix encryption | Partially mitigated |
 
 ## Change log
@@ -184,11 +188,13 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | Date | Story/PR | Change |
 |------|----------|--------|
 | 2026-04-09 | #14 | Initial threat model covering Slice 0 architecture |
+| 2026-04-09 | #14 | Corrected mitigations to match actual infrastructure after deploy PR #12 merge |
 
 ## Sources
 
 - [System overview](system-overview.md)
 - [Data model](data-model.md)
+- [Deployment architecture](deployment.md)
 - [Deployment design](../../notes/2026-04-08-deployment-infrastructure/2026-04-08-deployment-design.md)
 - [Caddy reverse proxy decision](../decisions/infrastructure/caddy-reverse-proxy.md)
 - [GitHub webhook deploys decision](../decisions/infrastructure/github-webhook-deploys.md)
