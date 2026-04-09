@@ -91,13 +91,16 @@ describe('GitHub OAuth', () => {
   })
 
   describe('checkRepoPermission', () => {
-    it('returns true for users with write permission', async () => {
+    it('returns true for users with admin permission', async () => {
       global.fetch = mock(
         () =>
           Promise.resolve(
-            new Response(JSON.stringify({ permission: 'admin' }), {
-              status: 200,
-            }),
+            new Response(
+              JSON.stringify({
+                permissions: { admin: true, push: true, pull: true },
+              }),
+              { status: 200 },
+            ),
           ),
         // biome-ignore lint/suspicious/noExplicitAny: Mock type doesn't match global.fetch signature
       ) as any
@@ -110,13 +113,16 @@ describe('GitHub OAuth', () => {
       expect(hasPermission).toBe(true)
     })
 
-    it('returns true for write permission', async () => {
+    it('returns true for users with push permission', async () => {
       global.fetch = mock(
         () =>
           Promise.resolve(
-            new Response(JSON.stringify({ permission: 'write' }), {
-              status: 200,
-            }),
+            new Response(
+              JSON.stringify({
+                permissions: { admin: false, push: true, pull: true },
+              }),
+              { status: 200 },
+            ),
           ),
         // biome-ignore lint/suspicious/noExplicitAny: Mock type doesn't match global.fetch signature
       ) as any
@@ -129,13 +135,16 @@ describe('GitHub OAuth', () => {
       expect(hasPermission).toBe(true)
     })
 
-    it('returns false for users with only read permission', async () => {
+    it('returns false for users with only pull permission', async () => {
       global.fetch = mock(
         () =>
           Promise.resolve(
-            new Response(JSON.stringify({ permission: 'read' }), {
-              status: 200,
-            }),
+            new Response(
+              JSON.stringify({
+                permissions: { admin: false, push: false, pull: true },
+              }),
+              { status: 200 },
+            ),
           ),
         // biome-ignore lint/suspicious/noExplicitAny: Mock type doesn't match global.fetch signature
       ) as any
@@ -148,7 +157,7 @@ describe('GitHub OAuth', () => {
       expect(hasPermission).toBe(false)
     })
 
-    it('returns false for non-collaborators', async () => {
+    it('returns false when repo is not accessible', async () => {
       global.fetch = mock(
         () => Promise.resolve(new Response('', { status: 404 })),
         // biome-ignore lint/suspicious/noExplicitAny: Mock type doesn't match global.fetch signature

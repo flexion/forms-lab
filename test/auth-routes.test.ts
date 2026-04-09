@@ -93,10 +93,13 @@ describe('Auth Routes', () => {
         ) {
           return new Response(JSON.stringify(mockUser), { status: 200 })
         }
-        if (url.toString().includes('/collaborators/')) {
-          return new Response(JSON.stringify({ permission: 'write' }), {
-            status: 200,
-          })
+        if (url.toString().includes('/repos/flexion/forms-lab')) {
+          return new Response(
+            JSON.stringify({
+              permissions: { admin: false, push: true, pull: true },
+            }),
+            { status: 200 },
+          )
         }
         return new Response('', { status: 404 })
       })
@@ -146,10 +149,13 @@ describe('Auth Routes', () => {
         ) {
           return new Response(JSON.stringify(mockUser), { status: 200 })
         }
-        if (url.toString().includes('/collaborators/')) {
-          return new Response(JSON.stringify({ permission: 'read' }), {
-            status: 200,
-          })
+        if (url.toString().includes('/repos/flexion/forms-lab')) {
+          return new Response(
+            JSON.stringify({
+              permissions: { admin: false, push: false, pull: true },
+            }),
+            { status: 200 },
+          )
         }
         return new Response('', { status: 404 })
       })
@@ -197,10 +203,13 @@ describe('Auth Routes', () => {
         ) {
           return new Response(JSON.stringify(mockUser), { status: 200 })
         }
-        if (url.toString().includes('/collaborators/')) {
-          return new Response(JSON.stringify({ permission: 'admin' }), {
-            status: 200,
-          })
+        if (url.toString().includes('/repos/flexion/forms-lab')) {
+          return new Response(
+            JSON.stringify({
+              permissions: { admin: true, push: true, pull: true },
+            }),
+            { status: 200 },
+          )
         }
         return new Response('', { status: 404 })
       })

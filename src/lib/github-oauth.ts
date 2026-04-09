@@ -58,32 +58,27 @@ export async function fetchUserProfile(token: string): Promise<GitHubUser> {
 
 export async function checkRepoPermission(
   token: string,
-  username: string,
+  _username: string,
   repo: string,
 ): Promise<boolean> {
-  const response = await fetch(
-    `https://api.github.com/repos/${repo}/collaborators/${username}/permission`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github.v3+json',
-      },
+  // Use the repo endpoint which returns the authenticated user's permissions
+  // directly. The collaborator endpoint requires admin access on org repos.
+  const response = await fetch(`https://api.github.com/repos/${repo}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github.v3+json',
     },
-  )
+  })
 
   if (!response.ok) {
     console.error(
-      `Permission check failed for ${username} on ${repo}: HTTP ${response.status}`,
+      `Permission check failed for ${repo}: HTTP ${response.status}`,
     )
     return false
   }
 
   const data = await response.json()
-  const permission = data.permission
+  const permissions = data.permissions
 
-  return (
-    permission === 'admin' ||
-    permission === 'write' ||
-    permission === 'maintain'
-  )
+  return permissions?.push === true || permissions?.admin === true
 }
