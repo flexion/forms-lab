@@ -18,18 +18,18 @@ let
       ${pkgs.git}/bin/git clone --bare https://github.com/flexion/forms-lab.git "$REPO_DIR"
     fi
 
-    # Fetch latest
-    ${pkgs.git}/bin/git -C "$REPO_DIR" fetch origin
+    # Fetch latest (fetch all refs since this is a bare repo)
+    ${pkgs.git}/bin/git -C "$REPO_DIR" fetch origin "+refs/heads/*:refs/heads/*"
 
     # Create or update worktree
     if [ ! -d "$BRANCH_DIR" ]; then
       echo "Creating worktree for $BRANCH..."
-      ${pkgs.git}/bin/git -C "$REPO_DIR" worktree add "$BRANCH_DIR" "origin/$BRANCH"
+      ${pkgs.git}/bin/git -C "$REPO_DIR" worktree add "$BRANCH_DIR" "$BRANCH"
     else
       echo "Updating worktree for $BRANCH..."
       cd "$BRANCH_DIR"
-      ${pkgs.git}/bin/git fetch origin
-      ${pkgs.git}/bin/git reset --hard "origin/$BRANCH"
+      ${pkgs.git}/bin/git fetch origin "+refs/heads/$BRANCH:refs/heads/$BRANCH"
+      ${pkgs.git}/bin/git reset --hard "$BRANCH"
     fi
 
     cd "$BRANCH_DIR"
