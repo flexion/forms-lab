@@ -35,10 +35,7 @@ describe('getBasePath', () => {
 
   it('normalizes multiple slashes', () => {
     process.env.BASE_PATH = '///main///'
-    // After normalization, should have leading and trailing slash only
-    const result = getBasePath()
-    expect(result).toStartWith('/')
-    expect(result).toEndWith('/')
+    expect(getBasePath()).toBe('/main/')
   })
 })
 

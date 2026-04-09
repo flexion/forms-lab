@@ -14,19 +14,14 @@
  */
 export function getBasePath(): string {
   const raw = process.env.BASE_PATH || '/'
-  let path = raw
 
-  // Ensure leading slash
-  if (!path.startsWith('/')) {
-    path = `/${path}`
-  }
+  if (raw === '/') return '/'
 
-  // Ensure trailing slash
-  if (!path.endsWith('/')) {
-    path = `${path}/`
-  }
+  // Remove all leading and trailing slashes, then normalize internal ones
+  const clean = raw.replace(/^\/+|\/+$/g, '').replace(/\/+/g, '/')
 
-  return path
+  // Return with single leading and trailing slashes
+  return `/${clean}/`
 }
 
 /**
