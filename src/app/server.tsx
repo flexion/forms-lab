@@ -62,7 +62,12 @@ app.use(
   '/static/fonts/*',
   serveStatic({
     root: './src/app/public',
-    rewriteRequestPath: (path) => path.replace('/static/', ''),
+    rewriteRequestPath: (path) => {
+      console.log('[serveStatic fonts] original path:', path)
+      const rewritten = path.replace('/static/', '')
+      console.log('[serveStatic fonts] rewritten path:', rewritten)
+      return rewritten
+    },
   }),
 )
 
@@ -71,7 +76,12 @@ app.use(
   '/static/*',
   serveStatic({
     root: './dist',
-    rewriteRequestPath: (path) => path.replace('/static', ''),
+    rewriteRequestPath: (path) => {
+      console.log('[serveStatic dist] original path:', path)
+      const rewritten = path.replace('/static', '')
+      console.log('[serveStatic dist] rewritten path:', rewritten)
+      return rewritten
+    },
   }),
 )
 
