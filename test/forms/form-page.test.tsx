@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import type { FieldEntry, ResolvedPage } from '../../src/types/models'
 import { resolveFormSpec } from '../../src/services/form-resolver'
-import { FormPageView } from '../../src/components/flex-form-page'
+import { FormPageView } from '../../src/app/components/flex-form-page'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 describe('FormPageView', () => {
