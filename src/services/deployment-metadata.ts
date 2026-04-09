@@ -6,9 +6,9 @@ import type {
 } from '../types/deployment'
 import { createGitHubClient, getGitHubToken } from './github'
 
-const DEPLOY_ROOT = '/srv/forms-lab'
+const DEPLOY_ROOT = process.env.DEPLOY_ROOT || '/srv/forms-lab'
 const PORTS_FILE = `${DEPLOY_ROOT}/ports.json`
-const GIT_BIN = '/run/current-system/sw/bin/git'
+const GIT_BIN = process.env.GIT_BIN || '/run/current-system/sw/bin/git'
 
 // PR cache with TTL (5 minutes)
 const PR_CACHE_TTL = 5 * 60 * 1000
@@ -17,6 +17,19 @@ interface PRCacheEntry {
   timestamp: number
 }
 const prCache = new Map<string, PRCacheEntry>()
+
+/**
+ * Check if we're in production deployment environment
+ */
+async function isProductionEnvironment(): Promise<boolean> {
+  try {
+    const { access } = await import('node:fs/promises')
+    await access(PORTS_FILE)
+    return true
+  } catch {
+    return false
+  }
+}
 
 interface PortsConfig {
   [branch: string]: number
@@ -256,9 +269,49 @@ export async function getDeploymentInfo(
 }
 
 /**
+ * Get mock deployment data for development environment
+ */
+async function getMockDeploymentSummary(): Promise<DeploymentSummary> {
+  const now = new Date().toISOString()
+  const mockDeployment: DeploymentInfo = {
+    branch: 'main',
+    port: 3000,
+    url: '/',
+    commit: {
+      sha: 'abc123def456',
+      shortSha: 'abc123d',
+      message: 'Development mode - no real deployment data',
+      author: 'Developer',
+      date: now,
+      githubUrl: 'https://github.com/flexion/forms-lab',
+    },
+    service: {
+      status: 'inactive',
+    },
+    health: {
+      status: 'unknown',
+      lastCheck: now,
+      error: 'Development mode - deployment infrastructure not available',
+    },
+  }
+
+  return {
+    totalDeployments: 1,
+    healthyDeployments: 0,
+    failedDeployments: 0,
+    deployments: [mockDeployment],
+  }
+}
+
+/**
  * Get all deployment info with summary statistics
  */
 export async function getDeploymentSummary(): Promise<DeploymentSummary> {
+  // In development, return mock data
+  if (!(await isProductionEnvironment())) {
+    return getMockDeploymentSummary()
+  }
+
   const ports = await readPorts()
   const branches = Object.entries(ports)
 
