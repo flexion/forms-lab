@@ -8,9 +8,11 @@ export function validateFields(
 ): Record<string, FieldEntry> {
   const result: Record<string, FieldEntry> = {}
 
-  for (const req of requirements) {
-    if (!evaluateCondition(req.condition, sessionFields)) continue
+  // Build a temporary combined state for condition evaluation
+  // This allows conditions to reference fields from the current form submission
+  const combinedFields: Record<string, FieldEntry> = { ...sessionFields }
 
+  for (const req of requirements) {
     const rawValue = formData[req.fieldName] ?? ''
     const errors: string[] = []
     let value: string | number | boolean | null
@@ -32,6 +34,11 @@ export function validateFields(
     } else {
       value = rawValue || null
     }
+
+    // Add this field to combinedFields for subsequent condition checks
+    combinedFields[req.fieldName] = { value, errors }
+
+    if (!evaluateCondition(req.condition, combinedFields)) continue
 
     if (req.required) {
       if (
