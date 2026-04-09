@@ -5,10 +5,10 @@ const headingText = 'Heading'
 const descriptionText = 'Description text'
 
 function collectionItem(prefix: string, opts?: { targetOn?: string }) {
-  const headingAttrs: Record<string, any> = {
+  const headingAttrs: Record<string, string> = {
     class: `${prefix}-collection__heading`,
   }
-  const itemAttrs: Record<string, any> = {
+  const itemAttrs: Record<string, string> = {
     class: `${prefix}-collection__item`,
   }
   if (opts?.targetOn === 'heading') headingAttrs['data-testid'] = 'target'
@@ -18,7 +18,7 @@ function collectionItem(prefix: string, opts?: { targetOn?: string }) {
     <li {...itemAttrs}>
       <div class={`${prefix}-collection__body`}>
         <h3 {...headingAttrs}>
-          <a href="#">{headingText}</a>
+          <a href="/example">{headingText}</a>
         </h3>
         {opts?.targetOn !== 'heading' && (
           <p class={`${prefix}-collection__description`}>
@@ -152,13 +152,13 @@ export const spec: ConformanceSpec = {
     <ul class="flex-collection">
       <li class="flex-collection__item">
         <div class="flex-collection__body">
-          <h3 class="flex-collection__heading"><a href="#">First Item</a></h3>
+          <h3 class="flex-collection__heading"><a href="/example">First Item</a></h3>
           <p class="flex-collection__description">Description of the first item.</p>
         </div>
       </li>
       <li class="flex-collection__item">
         <div class="flex-collection__body">
-          <h3 class="flex-collection__heading"><a href="#">Second Item</a></h3>
+          <h3 class="flex-collection__heading"><a href="/example">Second Item</a></h3>
           <p class="flex-collection__description">Description of the second item.</p>
         </div>
       </li>

@@ -33,11 +33,7 @@ function checkboxFixture(
           name="test"
           value={opts.id === 'cb1' ? '1' : '2'}
         />
-        <label
-          class="flex-checkbox__label"
-          for={opts.id}
-          data-testid="target"
-        >
+        <label class="flex-checkbox__label" for={opts.id} data-testid="target">
           {opts.label}
         </label>
       </div>

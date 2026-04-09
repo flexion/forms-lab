@@ -130,7 +130,7 @@ export const spec: ConformanceSpec = {
               >
                 <li class="usa-identifier__required-links-item">
                   <a
-                    href="#"
+                    href="/example"
                     class="usa-identifier__required-link usa-link"
                   >
                     {aboutLinkText}
@@ -150,7 +150,7 @@ export const spec: ConformanceSpec = {
                 data-testid="target"
               >
                 <li class="flex-identifier__required-links-list-item">
-                  <a href="#" class="flex-identifier__required-link">
+                  <a href="/example" class="flex-identifier__required-link">
                     {aboutLinkText}
                   </a>
                 </li>
@@ -179,10 +179,10 @@ export const spec: ConformanceSpec = {
       <div class="flex-identifier__container">
         <ul class="flex-identifier__required-links-list">
           <li class="flex-identifier__required-links-list-item">
-            <a href="#" class="flex-identifier__required-link">About</a>
+            <a href="/example" class="flex-identifier__required-link">About</a>
           </li>
           <li class="flex-identifier__required-links-list-item">
-            <a href="#" class="flex-identifier__required-link">Accessibility</a>
+            <a href="/example" class="flex-identifier__required-link">Accessibility</a>
           </li>
         </ul>
       </div>

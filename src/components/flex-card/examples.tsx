@@ -13,10 +13,7 @@ export const Default: FC = () => (
     <CardHeader>
       <CardHeading>Card Title</CardHeading>
     </CardHeader>
-    <CardMedia
-      src="/static/img/hero.jpg"
-      alt="Placeholder"
-    />
+    <CardMedia src="/static/img/hero.jpg" alt="Placeholder" />
     <CardBody>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
@@ -36,10 +33,7 @@ export const HeaderFirst: FC = () => (
     <CardHeader>
       <CardHeading>Header First</CardHeading>
     </CardHeader>
-    <CardMedia
-      src="/static/img/hero.jpg"
-      alt="Placeholder"
-    />
+    <CardMedia src="/static/img/hero.jpg" alt="Placeholder" />
     <CardBody>
       <p>The header appears above the media in this variant.</p>
     </CardBody>
@@ -56,10 +50,7 @@ export const Flag: FC = () => (
     <CardHeader>
       <CardHeading>Flag Layout</CardHeading>
     </CardHeader>
-    <CardMedia
-      src="/static/img/hero.jpg"
-      alt="Placeholder"
-    />
+    <CardMedia src="/static/img/hero.jpg" alt="Placeholder" />
     <CardBody>
       <p>Horizontal layout with image on the left.</p>
     </CardBody>
@@ -71,10 +62,7 @@ export const FlagMediaRight: FC = () => (
     <CardHeader>
       <CardHeading>Flag Media Right</CardHeading>
     </CardHeader>
-    <CardMedia
-      src="/static/img/hero.jpg"
-      alt="Placeholder"
-    />
+    <CardMedia src="/static/img/hero.jpg" alt="Placeholder" />
     <CardBody>
       <p>Horizontal layout with image on the right.</p>
     </CardBody>

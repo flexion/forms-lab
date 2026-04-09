@@ -37,11 +37,7 @@ function paginationPageItems(items: PageItem[], prefix: string) {
   })
 }
 
-const pages: PageItem[] = [
-  { page: 1 },
-  { page: 2, current: true },
-  { page: 3 },
-]
+const pages: PageItem[] = [{ page: 1 }, { page: 2, current: true }, { page: 3 }]
 
 export const spec: ConformanceSpec = {
   component: 'flex-pagination',

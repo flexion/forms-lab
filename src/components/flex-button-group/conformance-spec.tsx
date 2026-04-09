@@ -32,7 +32,7 @@ function buttonGroupFixture(
       >
         {buttons.map((b) => (
           <li class="flex-button-group__item">
-            <button class="flex-button" data-variant={b.variant}>
+            <button type="button" class="flex-button" data-variant={b.variant}>
               {b.label}
             </button>
           </li>
@@ -74,13 +74,10 @@ export const spec: ConformanceSpec = {
   structuralIgnores: ['margin-left', 'margin-right'],
   intentionalDifferences: [],
   fixtures: [
-    buttonGroupFixture(
-      'default button group matches usa-button-group',
-      [
-        { label: 'Primary' },
-        { label: 'Secondary', variant: 'outline' },
-      ],
-    ),
+    buttonGroupFixture('default button group matches usa-button-group', [
+      { label: 'Primary' },
+      { label: 'Secondary', variant: 'outline' },
+    ]),
     buttonGroupFixture(
       'segmented button group',
       [{ label: 'First' }, { label: 'Last' }],
@@ -91,21 +88,21 @@ export const spec: ConformanceSpec = {
     <h1>Button Group Test</h1>
     <ul class="flex-button-group" data-testid="target">
       <li class="flex-button-group__item">
-        <button class="flex-button">Primary</button>
+        <button type="button" class="flex-button">Primary</button>
       </li>
       <li class="flex-button-group__item">
-        <button class="flex-button" data-variant="outline">Secondary</button>
+        <button type="button" class="flex-button" data-variant="outline">Secondary</button>
       </li>
     </ul>
     <ul class="flex-button-group" data-variant="segmented">
       <li class="flex-button-group__item">
-        <button class="flex-button">First</button>
+        <button type="button" class="flex-button">First</button>
       </li>
       <li class="flex-button-group__item">
-        <button class="flex-button">Middle</button>
+        <button type="button" class="flex-button">Middle</button>
       </li>
       <li class="flex-button-group__item">
-        <button class="flex-button">Last</button>
+        <button type="button" class="flex-button">Last</button>
       </li>
     </ul>
   </main>`,

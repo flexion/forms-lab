@@ -84,10 +84,11 @@ export const spec: ConformanceSpec = {
       id: 'r1',
       label: labelText,
     }),
-    radioFixture(
-      'tile variant label matches usa-radio__input--tile label',
-      { id: 'r2', label: tileLabelText, tile: true },
-    ),
+    radioFixture('tile variant label matches usa-radio__input--tile label', {
+      id: 'r2',
+      label: tileLabelText,
+      tile: true,
+    }),
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Radio Test</h1>

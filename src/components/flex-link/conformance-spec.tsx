@@ -53,11 +53,7 @@ export const spec: ConformanceSpec = {
   structuralIgnores: [],
   intentionalDifferences: [],
   fixtures: [
-    linkFixture(
-      'default link matches usa-link',
-      'An example link',
-      '/example',
-    ),
+    linkFixture('default link matches usa-link', 'An example link', '/example'),
     linkFixture(
       'external link matches usa-link--external',
       'An external link',

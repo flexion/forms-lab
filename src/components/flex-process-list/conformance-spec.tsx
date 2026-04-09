@@ -12,7 +12,7 @@ const steps: ProcessStep[] = [
 ]
 
 function processListFixture(
-  name: string,
+  _name: string,
   items: ProcessStep[],
   prefix: string,
 ) {

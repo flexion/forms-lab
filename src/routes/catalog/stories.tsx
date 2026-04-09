@@ -68,9 +68,7 @@ stories.get('/', async (c) => {
             href={`/catalog/stories/${story.slug}`}
           >
             <StatusBadge status={story.state} />
-            <TagList
-              tags={story.labels.filter((l) => l !== 'user-story')}
-            />
+            <TagList tags={story.labels.filter((l) => l !== 'user-story')} />
           </ContentCard>
         ))}
         {allStories.length === 0 && (

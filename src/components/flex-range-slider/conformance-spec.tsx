@@ -12,10 +12,8 @@ function rangeFixture(
 ) {
   const uswdsInputId = `uswds-range${suffix}`
   const flexInputId = `flex-range${suffix}`
-  const inputTestId =
-    targetPart === 'input' ? ' data-testid="target"' : ''
-  const valueTestId =
-    targetPart === 'value' ? ' data-testid="target"' : ''
+  const inputTestId = targetPart === 'input' ? ' data-testid="target"' : ''
+  const valueTestId = targetPart === 'value' ? ' data-testid="target"' : ''
 
   return {
     name,

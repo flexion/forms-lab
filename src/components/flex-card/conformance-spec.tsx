@@ -164,7 +164,7 @@ export const spec: ConformanceSpec = {
               <p>Body</p>
             </div>
             <div class="usa-card__footer" data-testid="target">
-              <a class="usa-button" href="#">
+              <a class="usa-button" href="/example">
                 Visit
               </a>
             </div>
@@ -181,7 +181,7 @@ export const spec: ConformanceSpec = {
               <p>Body</p>
             </div>
             <div class="flex-card__footer" data-testid="target">
-              <a class="flex-button" href="#">
+              <a class="flex-button" href="/example">
                 Visit
               </a>
             </div>
@@ -196,7 +196,7 @@ export const spec: ConformanceSpec = {
       <div class="flex-card__container">
         <div class="flex-card__header"><h2 class="flex-card__heading">Card Title</h2></div>
         <div class="flex-card__body"><p>Card body content.</p></div>
-        <div class="flex-card__footer"><a href="#">Action</a></div>
+        <div class="flex-card__footer"><a href="/example">Action</a></div>
       </div>
     </div>
   </main>`,

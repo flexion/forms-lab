@@ -25,7 +25,7 @@ const navItems: BreadcrumbItem[] = [
   { label: 'Current Page', current: true },
 ]
 
-const linkItems: BreadcrumbItem[] = [
+const _linkItems: BreadcrumbItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Current', current: true },
 ]
@@ -108,11 +108,7 @@ export const spec: ConformanceSpec = {
         <nav class="usa-breadcrumb" aria-label="Breadcrumbs">
           <ol class="usa-breadcrumb__list">
             <li class="usa-breadcrumb__list-item">
-              <a
-                class="usa-breadcrumb__link"
-                href="/"
-                data-testid="target"
-              >
+              <a class="usa-breadcrumb__link" href="/" data-testid="target">
                 Home
               </a>
             </li>
@@ -126,11 +122,7 @@ export const spec: ConformanceSpec = {
         <nav class="flex-breadcrumb" aria-label="Breadcrumbs">
           <ol class="flex-breadcrumb__list">
             <li class="flex-breadcrumb__list-item">
-              <a
-                class="flex-breadcrumb__link"
-                href="/"
-                data-testid="target"
-              >
+              <a class="flex-breadcrumb__link" href="/" data-testid="target">
                 Home
               </a>
             </li>

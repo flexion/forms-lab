@@ -54,15 +54,15 @@ function tableFixture(
     uswdsClass: string
     flexClass: string
     flexAttrs?: Record<string, string | boolean>
-    headers: any
-    body: any
+    headers: unknown
+    body: unknown
     targetOnTable?: boolean
     thTarget?: boolean
     wrapper?: boolean
   },
 ) {
-  const uswdsAttrs: Record<string, any> = { class: opts.uswdsClass }
-  const flexAttrs: Record<string, any> = { class: opts.flexClass }
+  const uswdsAttrs: Record<string, string> = { class: opts.uswdsClass }
+  const flexAttrs: Record<string, string> = { class: opts.flexClass }
   if (opts.flexAttrs) Object.assign(flexAttrs, opts.flexAttrs)
   if (opts.targetOnTable) {
     uswdsAttrs['data-testid'] = 'target'

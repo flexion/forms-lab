@@ -178,10 +178,7 @@ export function getDecisionsSidebar(
 /**
  * Contextual sidebar for stories pages.
  */
-export function getStoriesSidebar(
-  stories: Story[],
-  currentPath?: string,
-) {
+export function getStoriesSidebar(stories: Story[], currentPath?: string) {
   return [
     {
       title: 'Stories',

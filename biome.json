@@ -19,7 +19,10 @@
       "a11y": {
         "noNoninteractiveElementToInteractiveRole": "warn",
         "useFocusableInteractive": "warn",
-        "useAriaPropsSupportedByRole": "warn"
+        "useAriaPropsSupportedByRole": "warn",
+        "useButtonType": "warn",
+        "useValidAnchor": "warn",
+        "useSemanticElements": "warn"
       },
       "style": {
         "noDescendingSpecificity": "off"

@@ -52,7 +52,7 @@ export const spec: ConformanceSpec = {
         <li>List item one</li>
         <li>List item two</li>
       </ul>
-      <a href="#">A link within prose</a>
+      <a href="/example">A link within prose</a>
     </div>
   </main>`,
   behavior: [],

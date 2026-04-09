@@ -22,7 +22,7 @@ function alertFixture(variant: string) {
           <h4 class="usa-alert__heading">{heading}</h4>
           <p class="usa-alert__text">
             Lorem ipsum dolor sit amet,{' '}
-            <a href="javascript:void(0);" class="usa-link">
+            <a href="/example" class="usa-link">
               consectetur adipiscing
             </a>{' '}
             elit, sed do eiusmod.
@@ -40,8 +40,7 @@ function alertFixture(variant: string) {
         <h4 class="flex-alert__heading">{heading}</h4>
         <p class="flex-alert__text">
           Lorem ipsum dolor sit amet,{' '}
-          <a href="javascript:void(0);">consectetur adipiscing</a> elit, sed do
-          eiusmod.
+          <a href="/example">consectetur adipiscing</a> elit, sed do eiusmod.
         </p>
       </div>
     ).toString(),

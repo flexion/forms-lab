@@ -12,9 +12,7 @@ const steps: Array<{ label: string; state: StepState }> = [
 const headerContent = (prefix: string) => (
   <div class={`${prefix}-step-indicator__header`}>
     <h4 class={`${prefix}-step-indicator__heading`}>
-      <span class={`${prefix}-step-indicator__current-step`}>
-        Step 2 of 3
-      </span>
+      <span class={`${prefix}-step-indicator__current-step`}>Step 2 of 3</span>
       <span class={`${prefix}-step-indicator__heading-text`}>Step title</span>
     </h4>
   </div>

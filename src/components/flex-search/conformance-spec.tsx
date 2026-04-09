@@ -8,11 +8,11 @@ function searchFormFixture(
   name: string,
   opts: { uswdsId: string; flexId: string; targetOn: 'form' | 'input' },
 ) {
-  const uswdsFormAttrs: Record<string, any> = {
+  const uswdsFormAttrs: Record<string, string> = {
     class: 'usa-search',
     role: 'search',
   }
-  const flexFormAttrs: Record<string, any> = {
+  const flexFormAttrs: Record<string, string> = {
     class: 'flex-search',
     role: 'search',
   }
@@ -22,13 +22,13 @@ function searchFormFixture(
     flexFormAttrs['data-testid'] = 'target'
   }
 
-  const uswdsInputAttrs: Record<string, any> = {
+  const uswdsInputAttrs: Record<string, string> = {
     class: 'usa-input',
     id: opts.uswdsId,
     type: 'search',
     name: 'search',
   }
-  const flexInputAttrs: Record<string, any> = {
+  const flexInputAttrs: Record<string, string> = {
     class: 'flex-search__input',
     id: opts.flexId,
     type: 'search',
@@ -74,14 +74,16 @@ function searchFormFixture(
 
   return {
     name,
-    uswds: (opts.targetOn === 'form'
-      ? (<div>{uswdsForm}</div>)
-      : uswdsForm
-    ).toString(),
-    flex: (opts.targetOn === 'form'
-      ? (<div>{flexForm}</div>)
-      : flexForm
-    ).toString(),
+    uswds: (opts.targetOn === 'form' ? (
+      <div>{uswdsForm}</div>
+    ) : (
+      uswdsForm
+    )).toString(),
+    flex: (opts.targetOn === 'form' ? (
+      <div>{flexForm}</div>
+    ) : (
+      flexForm
+    )).toString(),
   }
 }
 

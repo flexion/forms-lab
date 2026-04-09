@@ -122,13 +122,13 @@ export const spec: ConformanceSpec = {
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Button Test</h1>
-    <button class="flex-button" data-testid="target">Default</button>
-    <button class="flex-button" data-variant="secondary">Secondary</button>
-    <button class="flex-button" data-variant="outline">Outline</button>
-    <button class="flex-button" data-variant="base">Base</button>
-    <button class="flex-button" data-variant="accent-cool">Accent Cool</button>
-    <button class="flex-button" data-variant="accent-warm">Accent Warm</button>
-    <button class="flex-button" disabled>Disabled</button>
+    <button type="button" class="flex-button" data-testid="target">Default</button>
+    <button type="button" class="flex-button" data-variant="secondary">Secondary</button>
+    <button type="button" class="flex-button" data-variant="outline">Outline</button>
+    <button type="button" class="flex-button" data-variant="base">Base</button>
+    <button type="button" class="flex-button" data-variant="accent-cool">Accent Cool</button>
+    <button type="button" class="flex-button" data-variant="accent-warm">Accent Warm</button>
+    <button type="button" class="flex-button" disabled>Disabled</button>
   </main>`,
   behavior: [
     { description: 'Focus ring visible on keyboard focus', tested: false },

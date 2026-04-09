@@ -82,7 +82,7 @@ export const spec: ConformanceSpec = {
         <footer class="usa-footer usa-footer--slim">
           <div class="usa-footer__primary-section" data-testid="target">
             <div class="usa-footer__primary-container">
-              <a class="usa-footer__primary-link" href="#">
+              <a class="usa-footer__primary-link" href="/example">
                 {primaryLinkText}
               </a>
             </div>
@@ -93,7 +93,7 @@ export const spec: ConformanceSpec = {
         <footer class="flex-footer">
           <div class="flex-footer__primary" data-testid="target">
             <div class="flex-footer__primary-container">
-              <a class="flex-footer__primary-link" href="#">
+              <a class="flex-footer__primary-link" href="/example">
                 {primaryLinkText}
               </a>
             </div>
@@ -129,12 +129,12 @@ export const spec: ConformanceSpec = {
   </main>
   <footer class="flex-footer">
     <div class="flex-footer__return-to-top">
-      <a href="#">Return to top</a>
+      <a href="/example">Return to top</a>
     </div>
     <div class="flex-footer__primary">
       <nav class="flex-footer__nav" aria-label="Footer navigation">
         <ul>
-          <li><a class="flex-footer__primary-link" href="#">Link</a></li>
+          <li><a class="flex-footer__primary-link" href="/example">Link</a></li>
         </ul>
       </nav>
     </div>

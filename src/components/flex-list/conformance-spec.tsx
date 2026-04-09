@@ -75,7 +75,10 @@ export const spec: ConformanceSpec = {
         </ol>
       ).toString(),
     },
-    unorderedListFixture('unstyled list matches usa-list--unstyled', 'unstyled'),
+    unorderedListFixture(
+      'unstyled list matches usa-list--unstyled',
+      'unstyled',
+    ),
   ],
   accessibilityFixtureHtml: `<main>
     <h1>List Test</h1>
