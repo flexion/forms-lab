@@ -4,7 +4,7 @@ title: Maya reviews her proposed changes before publishing
 milestone: "Final Project"
 labels: [user-story]
 state: open
-synced_at: 2026-04-09T02:23:21.175Z
+synced_at: 2026-04-09T14:40:12.308Z
 ---
 
 ## User Story:
@@ -41,6 +41,8 @@ As a **form creator (Maya)**, in order to **understand the impact of my changes 
 ## Definition of Done:
 
 - [ ] Acceptance criteria met
+- [ ] Threat model updated -- any new trust boundaries, data flows, or attack surfaces are reflected in `catalog/architecture/threat-model.md`
+- [ ] Technical documentation updated -- architecture docs and decisions are current
 - [ ] Comparison protocol works for DataCollectionSpec and FormSpec
 - [ ] Tests pass
 - [ ] Type checking passes

@@ -4,7 +4,7 @@ title: Maya uploads a PDF and reviews the extracted specs
 milestone: "Final Project"
 labels: [user-story, llm-integration]
 state: open
-synced_at: 2026-04-09T02:23:21.175Z
+synced_at: 2026-04-09T14:40:12.308Z
 ---
 
 ## User Story:
@@ -44,6 +44,8 @@ As a **form creator (Maya)**, in order to **digitize a paper form without techni
 ## Definition of Done:
 
 - [ ] Acceptance criteria met
+- [ ] Threat model updated -- any new trust boundaries, data flows, or attack surfaces are reflected in `catalog/architecture/threat-model.md`
+- [ ] Technical documentation updated -- architecture docs and decisions are current
 - [ ] LLM extraction service has interface abstraction (swappable implementations)
 - [ ] At least one test PDF with ground truth for evaluation
 - [ ] Tests pass

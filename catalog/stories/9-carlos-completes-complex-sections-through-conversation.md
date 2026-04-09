@@ -4,7 +4,7 @@ title: Carlos completes complex sections through conversation
 milestone: "Final Project"
 labels: [user-story, llm-integration]
 state: open
-synced_at: 2026-04-09T02:23:21.174Z
+synced_at: 2026-04-09T14:40:12.308Z
 ---
 
 ## User Story:
@@ -43,6 +43,8 @@ As a **form filler (Carlos)**, in order to **navigate complex conditional sectio
 ## Definition of Done:
 
 - [ ] Acceptance criteria met
+- [ ] Threat model updated -- any new trust boundaries, data flows, or attack surfaces are reflected in `catalog/architecture/threat-model.md`
+- [ ] Technical documentation updated -- architecture docs and decisions are current
 - [ ] Filling agent has interface abstraction (swappable implementations)
 - [ ] Tests pass
 - [ ] Type checking passes
