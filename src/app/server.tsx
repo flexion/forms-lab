@@ -119,8 +119,8 @@ app.get('/', async (c) => {
       const branches = Object.entries(ports).map(([branch, port]) => ({
         branch,
         port,
-        // Sanitize branch name for URL (replace / with -)
-        path: branch.replace(/\//g, '-'),
+        // Main branch deploys to root, others to /<branch>/
+        url: branch === 'main' ? '/' : `/${branch.replace(/\//g, '-')}/`,
       }))
 
       return c.html(
@@ -134,9 +134,9 @@ app.get('/', async (c) => {
             <div class="l-stack">
               <h2>Active Deployments</h2>
               <ul>
-                {branches.map(({ branch, path }) => (
+                {branches.map(({ branch, url }) => (
                   <li key={branch}>
-                    <a href={`/${path}/`}>{branch}</a>
+                    <a href={url}>{branch}</a>
                   </li>
                 ))}
               </ul>
