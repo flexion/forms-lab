@@ -39,6 +39,13 @@ describe('formatHtml', () => {
     expect(output).toBe('<p>Hello <strong>world</strong></p>')
   })
 
+  it('keeps element-only inline children on one line when text is present', () => {
+    // <span> is inline; "word" is the text node that qualifies this as inline-keepable
+    const input = '<p><span>word</span></p>'
+    const output = formatHtml(input)
+    expect(output).toBe('<p><span>word</span></p>')
+  })
+
   it('handles empty input', () => {
     expect(formatHtml('')).toBe('')
   })

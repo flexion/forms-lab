@@ -1,6 +1,9 @@
 /**
  * Lightweight HTML pretty-printer for component example output.
  * Handles simple tag indentation — not a full parser.
+ *
+ * Limitation: the regex tokenizer splits on the first `>`, so `>` inside
+ * attribute values (e.g. `data-value="a>b"`) will produce incorrect tokens.
  */
 
 const VOID_ELEMENTS = new Set([
@@ -78,10 +81,9 @@ function findInlineSpan(
     } else if (t.startsWith('<')) {
       const tag = getTagName(t)
       const selfClosing = t.endsWith('/>') || VOID_ELEMENTS.has(tag)
-      if (!INLINE_ELEMENTS.has(tag) && !selfClosing) return -1
-      // Void elements in mixed content are fine, but element-only content
-      // with void elements should still break onto separate lines
-      if (selfClosing && !INLINE_ELEMENTS.has(tag)) return -1
+      // Any non-inline element (block or void) forces a line break — void
+      // elements like <input> or <hr> signal form/block structure, not inline flow.
+      if (!INLINE_ELEMENTS.has(tag)) return -1
       if (!selfClosing) depth++
     } else {
       hasText = true
