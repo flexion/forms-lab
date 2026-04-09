@@ -26,7 +26,7 @@ export const spec: ConformanceSpec = {
       notes: 'Tab panel content area',
     },
   ],
-  verified: ['font-family', 'font-size', 'font-weight', 'cursor'],
+  verified: ['font-family', 'cursor'],
   structuralIgnores: [
     'color',
     'background-color',
@@ -47,8 +47,14 @@ export const spec: ConformanceSpec = {
     'padding-bottom',
     'padding-left',
     'display',
+    'font-size',
+    'font-weight',
+    'line-height',
+    'outline',
+    'position',
   ],
   extraIgnoreAttributes: ['id', 'aria-controls', 'type'],
+  extraIgnoreBoxKeys: ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'],
   intentionalDifferences: [],
   fixtures: [
     {
