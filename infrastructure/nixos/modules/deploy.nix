@@ -16,10 +16,10 @@ let
     # Initialize bare repo if needed
     if [ ! -d "$REPO_DIR" ]; then
       ${pkgs.git}/bin/git clone --bare https://github.com/flexion/forms-lab.git "$REPO_DIR"
+      # Configure the bare repo to fetch all branches
+      ${pkgs.git}/bin/git -C "$REPO_DIR" config remote.origin.fetch "+refs/heads/*:refs/heads/*"
+      ${pkgs.git}/bin/git -C "$REPO_DIR" fetch origin
     fi
-
-    # Fetch latest (fetch specific branch to avoid conflicts with checked-out worktrees)
-    ${pkgs.git}/bin/git -C "$REPO_DIR" fetch origin "+refs/heads/$BRANCH:refs/heads/$BRANCH"
 
     # Create or update worktree
     if [ ! -d "$BRANCH_DIR" ]; then
@@ -28,8 +28,9 @@ let
     else
       echo "Updating worktree for $BRANCH..."
       cd "$BRANCH_DIR"
-      ${pkgs.git}/bin/git fetch origin "+refs/heads/$BRANCH:refs/heads/$BRANCH"
-      ${pkgs.git}/bin/git reset --hard "$BRANCH"
+      # Fetch directly in the worktree to avoid the "refusing to fetch into checked out branch" error
+      ${pkgs.git}/bin/git fetch origin "$BRANCH"
+      ${pkgs.git}/bin/git reset --hard FETCH_HEAD
     fi
 
     cd "$BRANCH_DIR"
