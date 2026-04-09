@@ -86,6 +86,13 @@ let
     /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl reload caddy.service
 
     echo "Deployed $BRANCH at port $PORT (/$UNIT_NAME/)"
+
+    # If deploying main branch, also update the homepage service
+    if [ "$BRANCH" = "main" ]; then
+      echo "Updating homepage service..."
+      /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl restart forms-lab-homepage.service
+      echo "Homepage service restarted"
+    fi
   '';
 in
 {

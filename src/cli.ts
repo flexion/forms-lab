@@ -1,3 +1,4 @@
+import { deploy } from './commands/deploy'
 import { infra } from './commands/infra'
 import { nixos } from './commands/nixos'
 import { syncStories } from './commands/sync-stories'
@@ -34,6 +35,11 @@ const commands: Command[] = [
     name: 'webhook',
     description: 'GitHub webhook configuration',
     run: webhook,
+  },
+  {
+    name: 'deploy',
+    description: 'Manual deployment commands',
+    run: deploy,
   },
 ]
 
