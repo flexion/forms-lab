@@ -106,13 +106,41 @@ Successfully applied NixOS configuration to server using IP address (34.197.222.
 - Updated Caddy configuration with hostname and self-signed TLS
 - Added URI prefix stripping for webhook routes
 
-### Next Steps
+### Deployment Infrastructure Complete
 
-1. ✅ Verify webhook receives events - COMPLETE (ping events working)
-2. Test automatic deployment by pushing to a branch
-3. Verify app instances start correctly via deploy script
-4. Test accessing deployed branches via HTTPS
-5. Update PR with infrastructure changes and merge
+**Automatic Deployments Working**
+- Push events triggering webhook successfully
+- Deploy script fetching and building code automatically
+- Services restarting after deployment
+- Example: Pushed commit 2fd6706 to slice-0/deploy branch
+  - Webhook received event at 07:20:15
+  - Deploy script updated worktree to latest commit  
+  - Application built and service restarted
+  - Confirmed via git reflog: `reset: moving to FETCH_HEAD`
+
+**Known Issues**
+- Caddy routes added via admin API don't persist across Caddy reloads
+  - Routes work until Caddy is reloaded from config file
+  - Workaround: Don't reload Caddy, or re-add routes after reload
+  - Future: Store routes in persistent config or database
+
+**Commits**
+- 25b05fb: Configure Caddy with self-signed TLS for EC2 hostname
+- 1f7bf01: Add git and ssh to webhook service PATH
+- c9ea801: Correct git fetch and branch references in deploy script
+- e33633a: Fetch only specific branch to avoid worktree conflicts
+- 19520b6: Fetch in worktree to avoid checked-out branch conflicts
+- 1617786: Allow forms-lab user to manage app services via sudo
+- 2fd6706: Update Caddy admin API path for branch routes
+
+### Session Complete
+
+All deployment infrastructure goals achieved:
+1. ✅ EC2 instance provisioned with NixOS
+2. ✅ sops-nix secrets configured for webhook
+3. ✅ NixOS configuration applied to server
+4. ✅ GitHub webhook set up and working
+5. ✅ End-to-end deployment flow tested and operational
 
 ## Issues Encountered
 
