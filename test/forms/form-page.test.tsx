@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import type { FieldEntry, ResolvedPage } from '../../src/types/models'
-import { resolveFormSpec } from '../../src/services/form-resolver'
 import { FormPageView } from '../../src/app/components/flex-form-page'
+import { resolveFormSpec } from '../../src/services/form-resolver'
+import type { FieldEntry, ResolvedPage } from '../../src/types/models'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 describe('FormPageView', () => {
@@ -17,13 +17,15 @@ describe('FormPageView', () => {
     },
   ): string {
     return (
-      <FormPageView
-        resolvedPage={resolvedPage}
-        pageIndex={props.pageIndex}
-        actionUrl={props.actionUrl}
-        fields={props.fields ?? {}}
-        prevUrl={props.prevUrl ?? null}
-      /> as any
+      (
+        <FormPageView
+          resolvedPage={resolvedPage}
+          pageIndex={props.pageIndex}
+          actionUrl={props.actionUrl}
+          fields={props.fields ?? {}}
+          prevUrl={props.prevUrl ?? null}
+        />
+      ) as any
     ).toString()
   }
 
@@ -50,18 +52,29 @@ describe('FormPageView', () => {
   })
 
   it('renders previous link when prevUrl is provided', () => {
-    const html = render(resolved.pages[1], { pageIndex: 1, actionUrl: '/test', prevUrl: '/prev' })
+    const html = render(resolved.pages[1], {
+      pageIndex: 1,
+      actionUrl: '/test',
+      prevUrl: '/prev',
+    })
     expect(html).toContain('href="/prev"')
     expect(html).toContain('Previous')
   })
 
   it('does not render previous link on first page', () => {
-    const html = render(resolved.pages[0], { pageIndex: 0, actionUrl: '/test', prevUrl: null })
+    const html = render(resolved.pages[0], {
+      pageIndex: 0,
+      actionUrl: '/test',
+      prevUrl: null,
+    })
     expect(html).not.toContain('Previous')
   })
 
   it('renders form with POST method and action URL', () => {
-    const html = render(resolved.pages[0], { pageIndex: 0, actionUrl: '/submit-here' })
+    const html = render(resolved.pages[0], {
+      pageIndex: 0,
+      actionUrl: '/submit-here',
+    })
     expect(html).toContain('method="post"')
     expect(html).toContain('action="/submit-here"')
   })
