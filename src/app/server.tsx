@@ -80,11 +80,20 @@ app.use(
     root: './dist',
     rewriteRequestPath: (path) => {
       // Strip basePath if present, then strip /static
+      console.log(
+        '[serveStatic dist] original path:',
+        path,
+        'basePath:',
+        basePath,
+      )
       let normalized = path
       if (basePath && path.startsWith(basePath)) {
         normalized = path.slice(basePath.length)
+        console.log('[serveStatic dist] after basePath strip:', normalized)
       }
-      return normalized.replace('/static', '')
+      const final = normalized.replace('/static', '')
+      console.log('[serveStatic dist] final path:', final)
+      return final
     },
   }),
 )
