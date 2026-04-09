@@ -76,18 +76,50 @@ Successfully applied NixOS configuration to server using IP address (34.197.222.
 - Hardware configuration added
 - Flake.nix updated with hardware module
 
+### GitHub Webhook Configuration Complete
+
+**Webhook Created**
+- Webhook ID: 605252395
+- Payload URL: https://ec2-34-197-222-16.compute-1.amazonaws.com/.webhook
+- Content type: application/json
+- Secret: (encrypted in secrets.yaml)
+- Events: push only
+- insecure_ssl: enabled (required - EC2 hostname can't get Let's Encrypt certs)
+
+**TLS Issue Resolution**
+- Initial problem: Caddy listening on :443 without TLS configuration
+- Let's Encrypt won't issue certificates for .compute.amazonaws.com hostnames
+- Solution: 
+  - Added `tls internal` to Caddy config for self-signed certificates
+  - Configured Caddy with explicit hostname (ec2-34-197-222-16.compute-1.amazonaws.com)
+  - Added `uri strip_prefix /.webhook` to properly route webhook requests
+- Updated webhook to allow insecure SSL (development/testing acceptable)
+- HTTPS now working, webhook responding correctly to GitHub ping events
+
+**Webhook Testing**
+- Sent test ping events from GitHub
+- Webhook correctly received and processed events
+- Response: `{"ignored":true,"reason":"Event type: ping"}` (expected - only processes push events)
+- Connection successful with 200 status
+
+**Commits**
+- Updated Caddy configuration with hostname and self-signed TLS
+- Added URI prefix stripping for webhook routes
+
 ### Next Steps
 
-1. Test manual deploy of main branch to initialize repository
-2. Start webhook service after first deploy
-3. Configure GitHub webhook 
-4. Test automatic deployment via webhook
+1. ✅ Verify webhook receives events - COMPLETE (ping events working)
+2. Test automatic deployment by pushing to a branch
+3. Verify app instances start correctly via deploy script
+4. Test accessing deployed branches via HTTPS
+5. Update PR with infrastructure changes and merge
 
 ## Issues Encountered
 
 - AWS IAM role lacks S3 bucket creation permission - resolved by using Pulumi Cloud
 - AWS IAM role lacks ec2:DescribeImages permission - resolved by hardcoding AMI ID from public source
 - NixOS 24.11 AMIs not available in us-east-1 - resolved by using 25.11
+- Caddy TLS not working with EC2 hostname - Let's Encrypt won't issue certs for .compute.amazonaws.com, resolved by using self-signed certs (`tls internal`) and enabling webhook `insecure_ssl`
 
 ## Next Session
 
