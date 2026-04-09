@@ -1,4 +1,9 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const MONTH_LABEL = 'Month'
+const DAY_LABEL = 'Day'
+const YEAR_LABEL = 'Year'
 
 export const spec: ConformanceSpec = {
   component: 'flex-memorable-date',
@@ -86,15 +91,15 @@ export const spec: ConformanceSpec = {
       name: 'memorable date fields layout matches usa-memorable-date',
       uswds: `<div class="usa-memorable-date" data-testid="target">
     <div class="usa-form-group usa-form-group--month">
-      <label class="usa-label" for="uswds-month">Month</label>
+      <label class="usa-label" for="uswds-month">${MONTH_LABEL}</label>
       <input class="usa-input" id="uswds-month" name="month" type="text" maxlength="2" pattern="[0-9]*" inputmode="numeric">
     </div>
     <div class="usa-form-group usa-form-group--day">
-      <label class="usa-label" for="uswds-day">Day</label>
+      <label class="usa-label" for="uswds-day">${DAY_LABEL}</label>
       <input class="usa-input" id="uswds-day" name="day" type="text" maxlength="2" pattern="[0-9]*" inputmode="numeric">
     </div>
     <div class="usa-form-group usa-form-group--year">
-      <label class="usa-label" for="uswds-year">Year</label>
+      <label class="usa-label" for="uswds-year">${YEAR_LABEL}</label>
       <input class="usa-input" id="uswds-year" name="year" type="text" maxlength="4" pattern="[0-9]*" inputmode="numeric">
     </div>
   </div>`,
@@ -103,15 +108,15 @@ export const spec: ConformanceSpec = {
       <legend class="flex-legend">Date of birth</legend>
       <div class="flex-memorable-date__fields" data-testid="target">
         <div class="flex-memorable-date__field flex-memorable-date__field--month">
-          <label class="flex-label" for="flex-month">Month</label>
+          <label class="flex-label" for="flex-month">${MONTH_LABEL}</label>
           <input class="flex-input" id="flex-month" name="month" type="text" maxlength="2" pattern="[0-9]*" inputmode="numeric">
         </div>
         <div class="flex-memorable-date__field flex-memorable-date__field--day">
-          <label class="flex-label" for="flex-day">Day</label>
+          <label class="flex-label" for="flex-day">${DAY_LABEL}</label>
           <input class="flex-input" id="flex-day" name="day" type="text" maxlength="2" pattern="[0-9]*" inputmode="numeric">
         </div>
         <div class="flex-memorable-date__field flex-memorable-date__field--year">
-          <label class="flex-label" for="flex-year">Year</label>
+          <label class="flex-label" for="flex-year">${YEAR_LABEL}</label>
           <input class="flex-input" id="flex-year" name="year" type="text" maxlength="4" pattern="[0-9]*" inputmode="numeric">
         </div>
       </div>

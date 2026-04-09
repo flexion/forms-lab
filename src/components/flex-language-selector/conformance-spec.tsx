@@ -1,4 +1,9 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const LANGUAGE_TEXT = 'Espa\u00f1ol'
+const LANGUAGE_HREF = '/es'
+const LANGUAGE_LANG = 'es'
 
 export const spec: ConformanceSpec = {
   component: 'flex-language-selector',
@@ -95,12 +100,12 @@ export const spec: ConformanceSpec = {
       uswds: `<div class="usa-language-container">
     <ul class="usa-language__primary">
       <li class="usa-language__primary-item">
-        <a href="/es" lang="es" class="usa-language__link" data-testid="target">Espa\u00f1ol</a>
+        <a href="${LANGUAGE_HREF}" lang="${LANGUAGE_LANG}" class="usa-language__link" data-testid="target">${LANGUAGE_TEXT}</a>
       </li>
     </ul>
   </div>`,
       flex: `<flex-language-selector data-variant="two">
-    <a href="/es" class="flex-language-selector__link" lang="es" data-testid="target">Espa\u00f1ol</a>
+    <a href="${LANGUAGE_HREF}" class="flex-language-selector__link" lang="${LANGUAGE_LANG}" data-testid="target">${LANGUAGE_TEXT}</a>
   </flex-language-selector>`,
       uswdsSelector: '[data-testid="target"]',
       flexSelector: '[data-testid="target"]',

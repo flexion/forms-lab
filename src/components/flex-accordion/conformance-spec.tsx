@@ -1,4 +1,12 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const FIRST_TITLE = 'First Amendment'
+const FIRST_CONTENT = 'Congress shall make no law...'
+const SECOND_TITLE = 'Second Amendment'
+const SECOND_CONTENT = 'A well regulated Militia...'
+const HOVER_TITLE = 'Section'
+const HOVER_CONTENT = 'Content.'
 
 export const spec: ConformanceSpec = {
   component: 'flex-accordion',
@@ -78,40 +86,40 @@ export const spec: ConformanceSpec = {
       uswds: `<div class="usa-accordion" data-testid="target">
     <h3 class="usa-accordion__heading">
       <button type="button" class="usa-accordion__button" aria-expanded="false" aria-controls="uswds-panel-1">
-        First Amendment
+        ${FIRST_TITLE}
       </button>
     </h3>
     <div id="uswds-panel-1" class="usa-accordion__content usa-prose" hidden>
-      <p>Congress shall make no law...</p>
+      <p>${FIRST_CONTENT}</p>
     </div>
     <h3 class="usa-accordion__heading">
       <button type="button" class="usa-accordion__button" aria-expanded="false" aria-controls="uswds-panel-2">
-        Second Amendment
+        ${SECOND_TITLE}
       </button>
     </h3>
     <div id="uswds-panel-2" class="usa-accordion__content usa-prose" hidden>
-      <p>A well regulated Militia...</p>
+      <p>${SECOND_CONTENT}</p>
     </div>
   </div>`,
       flex: `<flex-accordion data-testid="target">
     <div>
       <h3 class="flex-accordion__heading">
         <button class="flex-accordion__button" aria-expanded="false" aria-controls="accordion-panel-1">
-          First Amendment
+          ${FIRST_TITLE}
         </button>
       </h3>
       <div class="flex-accordion__content" id="accordion-panel-1" hidden>
-        <p>Congress shall make no law...</p>
+        <p>${FIRST_CONTENT}</p>
       </div>
     </div>
     <div>
       <h3 class="flex-accordion__heading">
         <button class="flex-accordion__button" aria-expanded="false" aria-controls="accordion-panel-2">
-          Second Amendment
+          ${SECOND_TITLE}
         </button>
       </h3>
       <div class="flex-accordion__content" id="accordion-panel-2" hidden>
-        <p>A well regulated Militia...</p>
+        <p>${SECOND_CONTENT}</p>
       </div>
     </div>
   </flex-accordion>`,
@@ -122,16 +130,16 @@ export const spec: ConformanceSpec = {
       name: 'accordion button hover state matches USWDS',
       uswds: `<div class="usa-accordion">
     <h3 class="usa-accordion__heading">
-      <button type="button" class="usa-accordion__button" aria-expanded="false" aria-controls="uswds-hp">Section</button>
+      <button type="button" class="usa-accordion__button" aria-expanded="false" aria-controls="uswds-hp">${HOVER_TITLE}</button>
     </h3>
-    <div id="uswds-hp" class="usa-accordion__content usa-prose" hidden><p>Content.</p></div>
+    <div id="uswds-hp" class="usa-accordion__content usa-prose" hidden><p>${HOVER_CONTENT}</p></div>
   </div>`,
       flex: `<flex-accordion>
     <div>
       <h3 class="flex-accordion__heading">
-        <button type="button" class="flex-accordion__button" aria-expanded="false" aria-controls="flex-hp">Section</button>
+        <button type="button" class="flex-accordion__button" aria-expanded="false" aria-controls="flex-hp">${HOVER_TITLE}</button>
       </h3>
-      <div class="flex-accordion__content" id="flex-hp" hidden><p>Content.</p></div>
+      <div class="flex-accordion__content" id="flex-hp" hidden><p>${HOVER_CONTENT}</p></div>
     </div>
   </flex-accordion>`,
       uswdsSelector: '.usa-accordion__button',

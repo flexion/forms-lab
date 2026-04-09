@@ -1,4 +1,8 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const LABEL_TEXT = 'Date'
+const FIELD_NAME = 'date'
 
 export const spec: ConformanceSpec = {
   component: 'flex-date-picker',
@@ -97,8 +101,8 @@ export const spec: ConformanceSpec = {
   intentionalDifferences: [
     {
       property: 'background-color',
-      ours: 'var(--flex-gray-5) (#f0f0f0) — calendar background',
-      uswds: '#f0f0f0 — same color, different token',
+      ours: 'var(--flex-gray-5) (#f0f0f0) \u2014 calendar background',
+      uswds: '#f0f0f0 \u2014 same color, different token',
       reason: 'Using design token for theming support',
     },
   ],
@@ -106,15 +110,15 @@ export const spec: ConformanceSpec = {
     {
       name: 'date picker input matches USWDS date picker input styling',
       uswds: `<div class="usa-date-picker" data-testid="target">
-    <label class="usa-label" for="uswds-date">Date</label>
+    <label class="usa-label" for="uswds-date">${LABEL_TEXT}</label>
     <div class="usa-date-picker__wrapper" style="display: flex">
-      <input class="usa-input usa-date-picker__external-input" id="uswds-date" name="date" type="text" data-testid="target">
+      <input class="usa-input usa-date-picker__external-input" id="uswds-date" name="${FIELD_NAME}" type="text" data-testid="target">
     </div>
   </div>`,
       flex: `<flex-date-picker data-testid="target">
-    <label class="flex-label" for="date">Date</label>
+    <label class="flex-label" for="date">${LABEL_TEXT}</label>
     <div class="flex-date-picker__wrapper">
-      <input class="flex-input flex-date-picker__external-input" id="date" name="date" type="text" placeholder="mm/dd/yyyy" data-testid="target">
+      <input class="flex-input flex-date-picker__external-input" id="date" name="${FIELD_NAME}" type="text" placeholder="mm/dd/yyyy" data-testid="target">
     </div>
   </flex-date-picker>`,
       uswdsSelector:

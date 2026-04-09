@@ -1,4 +1,9 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const LABEL_TEXT = 'Upload a file'
+const INSTRUCTIONS_TEXT = 'Drag file here or'
+const CHOOSE_TEXT = 'choose from folder'
 
 export const spec: ConformanceSpec = {
   component: 'flex-file-input',
@@ -73,20 +78,20 @@ export const spec: ConformanceSpec = {
     {
       name: 'file input target matches usa-file-input__target',
       uswds: `<div class="usa-file-input" data-testid="outer">
-    <label class="usa-label" for="uswds-file">Upload a file</label>
+    <label class="usa-label" for="uswds-file">${LABEL_TEXT}</label>
     <div class="usa-file-input__target" data-testid="target">
       <div class="usa-file-input__instructions" aria-hidden="true">
-        Drag file here or <span class="usa-file-input__choose">choose from folder</span>
+        ${INSTRUCTIONS_TEXT} <span class="usa-file-input__choose">${CHOOSE_TEXT}</span>
       </div>
       <div class="usa-file-input__box"></div>
       <input class="usa-file-input__input" id="uswds-file" name="file" type="file">
     </div>
   </div>`,
       flex: `<flex-file-input data-testid="outer">
-    <label class="flex-label" for="flex-file">Upload a file</label>
+    <label class="flex-label" for="flex-file">${LABEL_TEXT}</label>
     <div class="flex-file-input__target" data-testid="target">
       <div class="flex-file-input__instructions" aria-hidden="true">
-        Drag file here or <span class="flex-file-input__choose">choose from folder</span>
+        ${INSTRUCTIONS_TEXT} <span class="flex-file-input__choose">${CHOOSE_TEXT}</span>
       </div>
       <input class="flex-file-input__input" id="flex-file" name="file" type="file">
     </div>

@@ -1,4 +1,10 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const LABEL_TEXT = 'Message'
+const MAXLENGTH = '100'
+const ALLOWED_MESSAGE = '100 characters allowed'
+const OVER_LIMIT_MESSAGE = '5 characters over limit'
 
 export const spec: ConformanceSpec = {
   component: 'flex-character-count',
@@ -53,14 +59,14 @@ export const spec: ConformanceSpec = {
     {
       name: 'character count message matches usa-character-count__status',
       uswds: `<div class="usa-character-count">
-    <label class="usa-label" for="uswds-message">Message</label>
-    <textarea class="usa-textarea usa-character-count__field" id="uswds-message" name="message" maxlength="100"></textarea>
-    <span class="usa-character-count__status" data-testid="target" aria-live="polite">100 characters allowed</span>
+    <label class="usa-label" for="uswds-message">${LABEL_TEXT}</label>
+    <textarea class="usa-textarea usa-character-count__field" id="uswds-message" name="message" maxlength="${MAXLENGTH}"></textarea>
+    <span class="usa-character-count__status" data-testid="target" aria-live="polite">${ALLOWED_MESSAGE}</span>
   </div>`,
-      flex: `<flex-character-count data-maxlength="100">
-    <label class="flex-label" for="flex-message">Message</label>
-    <textarea class="flex-textarea" id="flex-message" name="message" maxlength="100"></textarea>
-    <span class="flex-character-count__message" data-testid="target" aria-live="polite">100 characters allowed</span>
+      flex: `<flex-character-count data-maxlength="${MAXLENGTH}">
+    <label class="flex-label" for="flex-message">${LABEL_TEXT}</label>
+    <textarea class="flex-textarea" id="flex-message" name="message" maxlength="${MAXLENGTH}"></textarea>
+    <span class="flex-character-count__message" data-testid="target" aria-live="polite">${ALLOWED_MESSAGE}</span>
   </flex-character-count>`,
       uswdsSelector: '[data-testid="target"]',
       flexSelector: '[data-testid="target"]',
@@ -68,14 +74,14 @@ export const spec: ConformanceSpec = {
     {
       name: 'over-limit error state matches usa-character-count__status--invalid',
       uswds: `<div class="usa-character-count">
-    <label class="usa-label" for="uswds-msg2">Message</label>
-    <textarea class="usa-textarea usa-character-count__field" id="uswds-msg2" name="message" maxlength="100"></textarea>
-    <span class="usa-character-count__status usa-character-count__status--invalid" data-testid="target" aria-live="polite">5 characters over limit</span>
+    <label class="usa-label" for="uswds-msg2">${LABEL_TEXT}</label>
+    <textarea class="usa-textarea usa-character-count__field" id="uswds-msg2" name="message" maxlength="${MAXLENGTH}"></textarea>
+    <span class="usa-character-count__status usa-character-count__status--invalid" data-testid="target" aria-live="polite">${OVER_LIMIT_MESSAGE}</span>
   </div>`,
-      flex: `<flex-character-count data-maxlength="100">
-    <label class="flex-label" for="flex-msg2">Message</label>
-    <textarea class="flex-textarea" id="flex-msg2" name="message" maxlength="100"></textarea>
-    <span class="flex-character-count__message" data-state="error" data-testid="target" aria-live="polite">5 characters over limit</span>
+      flex: `<flex-character-count data-maxlength="${MAXLENGTH}">
+    <label class="flex-label" for="flex-msg2">${LABEL_TEXT}</label>
+    <textarea class="flex-textarea" id="flex-msg2" name="message" maxlength="${MAXLENGTH}"></textarea>
+    <span class="flex-character-count__message" data-state="error" data-testid="target" aria-live="polite">${OVER_LIMIT_MESSAGE}</span>
   </flex-character-count>`,
       uswdsSelector: '[data-testid="target"]',
       flexSelector: '[data-testid="target"]',

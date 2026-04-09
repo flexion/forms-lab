@@ -1,4 +1,8 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const BANNER_LABEL = 'Official website of the United States government'
+const BANNER_TEXT = 'An official website of the United States government'
 
 export const spec: ConformanceSpec = {
   component: 'flex-banner',
@@ -59,8 +63,32 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'banner matches usa-banner background',
-      uswds: `<section class="usa-banner" aria-label="Official website of the United States government" data-testid="target"><div class="usa-banner__header"><p class="usa-banner__header-text">An official website of the United States government</p></div></section>`,
-      flex: `<section class="flex-banner" aria-label="Official website of the United States government" data-testid="target"><div class="flex-banner__header"><div class="flex-banner__inner"><div class="flex-banner__header-text"><p>An official website of the United States government</p></div></div></div></section>`,
+      uswds: (
+        <section
+          class="usa-banner"
+          aria-label={BANNER_LABEL}
+          data-testid="target"
+        >
+          <div class="usa-banner__header">
+            <p class="usa-banner__header-text">{BANNER_TEXT}</p>
+          </div>
+        </section>
+      ).toString(),
+      flex: (
+        <section
+          class="flex-banner"
+          aria-label={BANNER_LABEL}
+          data-testid="target"
+        >
+          <div class="flex-banner__header">
+            <div class="flex-banner__inner">
+              <div class="flex-banner__header-text">
+                <p>{BANNER_TEXT}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>

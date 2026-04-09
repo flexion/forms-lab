@@ -1,4 +1,9 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const MODAL_TITLE = 'Modal title'
+const MODAL_BODY = 'Modal body content.'
+const CLOSE_LABEL = 'Close this modal'
 
 export const spec: ConformanceSpec = {
   component: 'flex-modal',
@@ -112,13 +117,13 @@ export const spec: ConformanceSpec = {
       <div class="usa-modal" data-testid="target">
         <div class="usa-modal__content">
           <div class="usa-modal__main">
-            <h2 class="usa-modal__heading">Modal title</h2>
-            <div class="usa-prose"><p>Modal body content.</p></div>
+            <h2 class="usa-modal__heading">${MODAL_TITLE}</h2>
+            <div class="usa-prose"><p>${MODAL_BODY}</p></div>
             <div class="usa-modal__footer">
               <button type="button" class="usa-button">Close</button>
             </div>
           </div>
-          <button type="button" class="usa-modal__close" aria-label="Close this modal">
+          <button type="button" class="usa-modal__close" aria-label="${CLOSE_LABEL}">
             &times;
           </button>
         </div>
@@ -129,13 +134,13 @@ export const spec: ConformanceSpec = {
     <div class="flex-modal__overlay"></div>
     <div class="flex-modal__content" role="dialog" aria-modal="true" aria-labelledby="modal-test-h" aria-describedby="modal-test-d" data-testid="target">
       <div class="flex-modal__main">
-        <h2 class="flex-modal__heading" id="modal-test-h">Modal title</h2>
-        <div class="flex-modal__body" id="modal-test-d"><p>Modal body content.</p></div>
+        <h2 class="flex-modal__heading" id="modal-test-h">${MODAL_TITLE}</h2>
+        <div class="flex-modal__body" id="modal-test-d"><p>${MODAL_BODY}</p></div>
         <div class="flex-modal__footer">
           <button type="button" class="flex-button" data-close-modal>Close</button>
         </div>
       </div>
-      <button type="button" class="flex-modal__close" aria-label="Close this modal" data-close-modal>
+      <button type="button" class="flex-modal__close" aria-label="${CLOSE_LABEL}" data-close-modal>
         &times;
       </button>
     </div>

@@ -1,4 +1,8 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const LABEL_TEXT = 'Select a fruit'
+const FIELD_NAME = 'fruit'
 
 export const spec: ConformanceSpec = {
   component: 'flex-combo-box',
@@ -98,13 +102,13 @@ export const spec: ConformanceSpec = {
     {
       name: 'combo box input matches USWDS combo box input styling',
       uswds: `<div class="usa-combo-box" data-testid="target">
-    <label class="usa-label" for="uswds-fruit">Select a fruit</label>
-    <input class="usa-combo-box__input" id="uswds-fruit" name="fruit" type="text" role="combobox" aria-expanded="false" aria-autocomplete="list" autocomplete="off" data-testid="target">
+    <label class="usa-label" for="uswds-fruit">${LABEL_TEXT}</label>
+    <input class="usa-combo-box__input" id="uswds-fruit" name="${FIELD_NAME}" type="text" role="combobox" aria-expanded="false" aria-autocomplete="list" autocomplete="off" data-testid="target">
   </div>`,
       flex: `<flex-combo-box data-testid="target">
-    <label class="flex-label" for="fruit">Select a fruit</label>
+    <label class="flex-label" for="fruit">${LABEL_TEXT}</label>
     <div class="flex-combo-box__wrapper">
-      <input class="flex-combo-box__input" id="fruit" name="fruit" type="text" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="fruit-list" autocomplete="off" data-testid="target">
+      <input class="flex-combo-box__input" id="fruit" name="${FIELD_NAME}" type="text" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="fruit-list" autocomplete="off" data-testid="target">
       <ul class="flex-combo-box__list" id="fruit-list" role="listbox" hidden>
         <li class="flex-combo-box__option" role="option" data-value="apple" id="fruit-opt-apple">Apple</li>
       </ul>

@@ -1,4 +1,7 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const LABEL_TEXT = 'Time'
 
 export const spec: ConformanceSpec = {
   component: 'flex-time-picker',
@@ -70,13 +73,13 @@ export const spec: ConformanceSpec = {
     {
       name: 'time picker input matches USWDS combo box input styling',
       uswds: `<div class="usa-time-picker">
-    <label class="usa-label" for="uswds-time">Time</label>
+    <label class="usa-label" for="uswds-time">${LABEL_TEXT}</label>
     <div class="usa-combo-box">
       <input class="usa-combo-box__input" id="uswds-time" type="text" data-testid="target">
     </div>
   </div>`,
       flex: `<flex-time-picker>
-    <label class="flex-label" for="time">Time</label>
+    <label class="flex-label" for="time">${LABEL_TEXT}</label>
     <flex-combo-box>
       <div class="flex-combo-box__wrapper">
         <input class="flex-combo-box__input" id="time" type="text" role="combobox" aria-expanded="false" data-testid="target">

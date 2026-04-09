@@ -1,4 +1,8 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const TRIGGER_TEXT = 'Trigger'
+const TOOLTIP_TEXT = 'Tooltip text'
 
 export const spec: ConformanceSpec = {
   component: 'flex-tooltip',
@@ -59,15 +63,15 @@ export const spec: ConformanceSpec = {
     {
       name: 'tooltip body matches USWDS tooltip styling',
       uswds: `<span class="usa-tooltip">
-    <button type="button" class="usa-button usa-tooltip__trigger">Trigger</button>
+    <button type="button" class="usa-button usa-tooltip__trigger">${TRIGGER_TEXT}</button>
     <span class="usa-tooltip__body usa-tooltip__body--top is-set is-visible" data-testid="target" role="tooltip">
-      Tooltip text
+      ${TOOLTIP_TEXT}
     </span>
   </span>`,
       flex: `<flex-tooltip data-position="top">
-    <button type="button" class="flex-tooltip__trigger">Trigger</button>
+    <button type="button" class="flex-tooltip__trigger">${TRIGGER_TEXT}</button>
     <span class="flex-tooltip__body" data-testid="target" data-visible data-position-actual="top" role="tooltip">
-      Tooltip text
+      ${TOOLTIP_TEXT}
     </span>
   </flex-tooltip>`,
       uswdsSelector: '[data-testid="target"]',

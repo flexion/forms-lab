@@ -1,4 +1,7 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const START_LABEL = 'Start date'
 
 export const spec: ConformanceSpec = {
   component: 'flex-date-range-picker',
@@ -38,12 +41,12 @@ export const spec: ConformanceSpec = {
       name: 'date range picker start section matches USWDS styling',
       uswds: `<div class="usa-date-range-picker">
     <div class="usa-date-range-picker__range-start" data-testid="target">
-      <div class="usa-date-picker"><label class="usa-label" for="start">Start date</label></div>
+      <div class="usa-date-picker"><label class="usa-label" for="start">${START_LABEL}</label></div>
     </div>
   </div>`,
       flex: `<flex-date-range-picker>
     <div class="flex-date-range-picker__range-start" data-testid="target">
-      <flex-date-picker><label class="flex-label" for="start">Start date</label></flex-date-picker>
+      <flex-date-picker><label class="flex-label" for="start">${START_LABEL}</label></flex-date-picker>
     </div>
   </flex-date-range-picker>`,
     },
