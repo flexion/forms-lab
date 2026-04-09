@@ -1,7 +1,4 @@
-import type {
-  DataCollectionSpec,
-  FormSpec,
-} from '../../src/types/models'
+import type { DataCollectionSpec, FormSpec } from '../../src/types/models'
 
 /**
  * A benefits application spec exercising all 10 field types,
@@ -24,7 +21,11 @@ export const testDataSpec: DataCollectionSpec = {
           fieldType: 'text',
           required: true,
           validation: [
-            { type: 'minLength', value: 2, message: 'Name must be at least 2 characters' },
+            {
+              type: 'minLength',
+              value: 2,
+              message: 'Name must be at least 2 characters',
+            },
           ],
         },
         {
