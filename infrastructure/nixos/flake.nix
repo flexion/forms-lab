@@ -21,6 +21,7 @@
         ./modules/webhook.nix
         ./modules/app.nix
         ./modules/deploy.nix
+        ./modules/homepage.nix
       ];
     };
   };

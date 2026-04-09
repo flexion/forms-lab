@@ -49,9 +49,10 @@ function StatusBadge({ status, label }: { status: string; label: string }) {
   return (
     <span
       style={{
-        display: 'inline-block',
-        padding: 'var(--flex-space-05) var(--flex-space-1)',
-        fontSize: 'var(--flex-text-xs)',
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: '2px 8px',
+        fontSize: 'var(--flex-text-2xs)',
         fontWeight: 'var(--flex-font-weight-bold)',
         backgroundColor: colors.bg,
         color: colors.text,
@@ -59,6 +60,7 @@ function StatusBadge({ status, label }: { status: string; label: string }) {
         borderRadius: 'var(--flex-radius-md)',
         textTransform: 'uppercase',
         letterSpacing: '0.05em',
+        whiteSpace: 'nowrap',
       }}
     >
       {label}

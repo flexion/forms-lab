@@ -211,10 +211,9 @@ export async function getDeploymentInfo(
   branch: string,
   port: number,
 ): Promise<DeploymentInfo> {
-  // Determine URL based on branch
-  const isMain = branch === 'main'
+  // All branches deploy to /<branch>/ (main is treated like any other branch)
   const safeBranch = branch.replace(/\//g, '-')
-  const url = isMain ? '/' : `/${safeBranch}/`
+  const url = `/${safeBranch}/`
 
   // Collect metadata in parallel (PR info last to avoid blocking on GitHub API)
   const [commit, service, health] = await Promise.all([

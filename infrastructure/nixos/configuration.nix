@@ -34,6 +34,8 @@
   systemd.tmpfiles.rules = [
     "d /srv/forms-lab 0755 forms-lab forms-lab -"
     "d /srv/forms-lab/caddy.d 0755 forms-lab forms-lab -"
+    # Create root route for homepage service (port 3000)
+    "f /srv/forms-lab/caddy.d/root.caddy 0644 forms-lab forms-lab - # Route for homepage (port 3000)\nhandle /* {\n  reverse_proxy localhost:3000\n}\n"
   ];
 
   # Service user
@@ -65,6 +67,9 @@
       options = [ "NOPASSWD" ];
     } {
       command = "${pkgs.systemd}/bin/systemctl stop forms-lab-app@*";
+      options = [ "NOPASSWD" ];
+    } {
+      command = "${pkgs.systemd}/bin/systemctl restart forms-lab-homepage.service";
       options = [ "NOPASSWD" ];
     } {
       command = "${pkgs.systemd}/bin/systemctl reload caddy.service";

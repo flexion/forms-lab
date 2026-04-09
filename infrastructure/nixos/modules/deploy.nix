@@ -60,18 +60,11 @@ let
     fi
 
     # Write per-branch env file
-    # Main branch serves at root, others serve at /<branch>/
-    if [ "$BRANCH" = "main" ]; then
-      cat > "$BRANCH_DIR/.env" <<ENVEOF
-    PORT=$PORT
-    BASE_PATH=/
-    ENVEOF
-    else
-      cat > "$BRANCH_DIR/.env" <<ENVEOF
+    # All branches serve at /<branch>/
+    cat > "$BRANCH_DIR/.env" <<ENVEOF
     PORT=$PORT
     BASE_PATH=/$UNIT_NAME/
     ENVEOF
-    fi
 
     # Start or restart the service (use full path to sudo wrapper with setuid bit)
     /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
@@ -81,23 +74,13 @@ let
     CADDY_DIR="$DEPLOY_ROOT/caddy.d"
     mkdir -p "$CADDY_DIR"
 
-    # Main branch handles root path (use special filename for import order)
-    # Other branches handle /<branch>/*
-    if [ "$BRANCH" = "main" ]; then
-      cat > "$CADDY_DIR/root.caddy" <<CADDYEOF
-    # Route for branch: $BRANCH (port $PORT) - serves at root
-    handle /* {
-      reverse_proxy localhost:$PORT
-    }
-    CADDYEOF
-    else
-      cat > "$CADDY_DIR/branch-$UNIT_NAME.caddy" <<CADDYEOF
+    # All branches handle /<branch>/*
+    cat > "$CADDY_DIR/branch-$UNIT_NAME.caddy" <<CADDYEOF
     # Route for branch: $BRANCH (port $PORT)
     handle /$UNIT_NAME* {
       reverse_proxy localhost:$PORT
     }
     CADDYEOF
-    fi
 
     # Reload Caddy to pick up the new route
     /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl reload caddy.service
