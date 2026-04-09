@@ -1,7 +1,6 @@
 import type {
   DeploymentInfo,
   DeploymentSummary,
-  HealthStatus,
   ServiceStatus,
 } from '../types/deployment'
 import { createGitHubClient, getGitHubToken } from './github'

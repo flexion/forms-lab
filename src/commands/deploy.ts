@@ -27,7 +27,9 @@ export async function deploy(args: string[]): Promise<number> {
       const hostname = await getHostname()
       if (!hostname) {
         console.error('Could not get hostname from Pulumi outputs')
-        console.error('Make sure infrastructure is provisioned with: bun run cli infra up')
+        console.error(
+          'Make sure infrastructure is provisioned with: bun run cli infra up',
+        )
         return 1
       }
 
