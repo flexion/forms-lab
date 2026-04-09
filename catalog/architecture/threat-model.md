@@ -121,21 +121,27 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 
 ### Browser to Hono application (authentication)
 
-**What crosses:** OAuth tokens, session cookies, user identity information. (Future -- Story 2)
+**What crosses:** OAuth authorization codes, encrypted session cookies, user identity information (login, display name, avatar URL).
 
 **Threats:**
 - **Session hijacking** -- stolen session cookies used to impersonate authenticated users.
-- **CSRF** -- cross-site requests that perform actions using the user's session.
-- **OAuth token theft** -- authorization codes or tokens intercepted during the OAuth flow.
+- **Session cookie tampering** -- attacker modifies cookie payload to change identity.
+- **CSRF** -- cross-site requests that perform state-changing actions (sign-out) using the user's session.
+- **OAuth token theft** -- authorization codes intercepted during the OAuth redirect flow.
 - **Privilege escalation** -- users gaining authoring access without proper GitHub repo permissions.
+- **Open redirect** -- attacker crafts sign-in URL with `returnTo` pointing to external site.
+- **Session fixation** -- attacker sets a known session cookie before user authenticates.
 
-**Mitigations (planned):**
-- Session cookies will use `HttpOnly`, `Secure`, `SameSite=Strict` attributes.
-- OAuth flow will use PKCE and state parameter validation.
-- Authorization checks will verify GitHub repo write access, not just authentication.
-- Protected routes (`/authoring/*`) will require valid session; public routes (`/`, `/catalog/*`, `/health`) will not.
+**Mitigations:**
+- Session cookies use AES-GCM encryption with PBKDF2-derived key (100k iterations, SHA-256) and random 12-byte IV per session. Cookie attributes: `HttpOnly`, `SameSite=Lax`, 7-day max-age. `Secure` flag set in production.
+- No access tokens or secrets stored in session -- only user profile data (login, name, avatar URL). GitHub OAuth tokens are used server-side only during callback and immediately discarded.
+- OAuth state parameter carries `returnTo` path as JSON. Authorization codes are exchanged server-to-server with client secret.
+- Authorization checks verify GitHub repo write/admin permission via collaborator API -- authentication alone is insufficient.
+- Protected routes (`/projects/*`) require valid session via `requireAuth` middleware; public routes (`/`, `/catalog/*`, `/health`, `/static/*`) do not.
+- Sign-out is POST-only (form submission), preventing GET-based CSRF. SameSite=Lax prevents cross-origin POST cookie sending.
+- Session cookie is only created after successful OAuth callback with a fresh random IV, so pre-set cookies are simply invalid.
 
-**Residual risk:** To be fully assessed when Story 2 is implemented. The threat model should be updated with actual implementation details during that story.
+**Residual risk:** The `returnTo` parameter is not validated against a whitelist of internal paths -- an attacker could craft a sign-in link that redirects to an external site after authentication. Mitigation: validate that `returnTo` starts with `/` and does not contain `//` or protocol schemes. No server-side session revocation -- sessions rely on cookie expiry (7 days). No PKCE in the OAuth flow (GitHub OAuth Apps do not support PKCE; only GitHub Apps do). No rate limiting on the OAuth callback endpoint beyond GitHub's own rate limits.
 
 ## Non-data-flow threats
 
@@ -178,7 +184,8 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | Caddy config injection via branch name | Webhook-Deploy | Low | High | HMAC verification, `tr` sanitization | Partially mitigated |
 | Command injection in deploy | Webhook-Deploy | Low | Critical | HMAC verification, quoted variables, Nix packaging | Partially mitigated |
 | Repository compromise | Webhook-Deploy | Low | Critical | Branch protection, required reviews | Partially mitigated |
-| Session hijacking | Browser-Hono Auth | Medium | High | Secure cookie attributes (planned) | Planned |
+| Session hijacking | Browser-Hono Auth | Medium | High | AES-GCM encrypted cookies, HttpOnly, SameSite=Lax | Mitigated |
+| Open redirect via returnTo | Browser-Hono Auth | Low | Medium | None -- returnTo not validated | Unmitigated |
 | Dependency supply chain | N/A | Low | High | Lock file, small dependency tree | Partially mitigated |
 | SSH open to all IPs | Infrastructure | Medium | Critical | Key-based auth only, no password | Partially mitigated |
 | Secrets exposure on host | Infrastructure | Low | Critical | sops-nix encryption | Partially mitigated |
@@ -189,6 +196,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 |------|----------|--------|
 | 2026-04-09 | #14 | Initial threat model covering Slice 0 architecture |
 | 2026-04-09 | #14 | Corrected mitigations to match actual infrastructure after deploy PR #12 merge |
+| 2026-04-09 | #11 / Story 2 | Updated authentication boundary from planned to implemented; added open redirect risk |
 
 ## Sources
 
