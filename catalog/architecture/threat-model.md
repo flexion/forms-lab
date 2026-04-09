@@ -195,7 +195,6 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 - [System overview](system-overview.md)
 - [Data model](data-model.md)
 - [Deployment architecture](deployment.md)
-- [Deployment design](../../notes/2026-04-08-deployment-infrastructure/2026-04-08-deployment-design.md)
 - [Caddy reverse proxy decision](../decisions/infrastructure/caddy-reverse-proxy.md)
 - [GitHub webhook deploys decision](../decisions/infrastructure/github-webhook-deploys.md)
 - [Nix-built processes decision](../decisions/infrastructure/nix-built-processes.md)

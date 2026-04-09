@@ -4,9 +4,9 @@ Review the threat model against the current branch's changes.
 
 1. Read `catalog/architecture/threat-model.md` to understand the current threat model.
 
-2. Determine the base branch by running `git log --oneline --merges -1` or checking the PR base. Then run `git diff $(git merge-base HEAD <base-branch>)...HEAD --stat` to see what files changed on this branch.
+2. Determine the base branch (default: `main`). Then run `git diff $(git merge-base HEAD main)...HEAD --stat` to see what files changed on this branch.
 
-3. Run `git diff $(git merge-base HEAD <base-branch>)...HEAD` to see the actual changes.
+3. Run `git diff $(git merge-base HEAD main)...HEAD` to see the actual changes.
 
 4. For each change, assess whether it affects any of these:
    - **New trust boundary** -- does the change introduce communication between components with different trust levels?
