@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
-import { getBasePath } from '../lib/base-path'
+import { getBasePath, resolveUrl } from '../lib/base-path'
 import { Layout } from './components/flex-layout'
 import catalog from './routes/catalog/index'
 
@@ -96,7 +96,7 @@ app.get('/', (c) => {
         experiences (static or conversational), and generate completed PDFs.
       </p>
       <p>
-        <a href="/catalog">Browse the Catalog</a>
+        <a href={resolveUrl('/catalog')}>Browse the Catalog</a>
       </p>
     </Layout>,
   )

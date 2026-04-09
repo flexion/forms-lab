@@ -1,3 +1,4 @@
+import { resolveUrl } from '../../../lib/base-path'
 import type { Decision, Story } from '../../../types/models'
 import { getComponentsByCategory } from '../../components/registry'
 
@@ -8,37 +9,37 @@ export function getCatalogSidebar(currentPath?: string) {
       items: [
         {
           label: 'Overview',
-          href: '/catalog',
+          href: resolveUrl('/catalog'),
           current: currentPath === '/catalog',
         },
         {
           label: 'Personas',
-          href: '/catalog/personas',
+          href: resolveUrl('/catalog/personas'),
           current: currentPath === '/catalog/personas',
         },
         {
           label: 'Decisions',
-          href: '/catalog/decisions',
+          href: resolveUrl('/catalog/decisions'),
           current: currentPath === '/catalog/decisions',
         },
         {
           label: 'Architecture',
-          href: '/catalog/architecture',
+          href: resolveUrl('/catalog/architecture'),
           current: currentPath === '/catalog/architecture',
         },
         {
           label: 'Stories',
-          href: '/catalog/stories',
+          href: resolveUrl('/catalog/stories'),
           current: currentPath === '/catalog/stories',
         },
         {
           label: 'Experiments',
-          href: '/catalog/experiments',
+          href: resolveUrl('/catalog/experiments'),
           current: currentPath === '/catalog/experiments',
         },
         {
           label: 'Design System',
-          href: '/catalog/design-system',
+          href: resolveUrl('/catalog/design-system'),
           current: currentPath === '/catalog/design-system',
         },
       ],
@@ -71,12 +72,12 @@ export function getDesignSystemSidebar(currentPath?: string) {
       items: [
         {
           label: '← Back to Catalog',
-          href: '/catalog',
+          href: resolveUrl('/catalog'),
           current: false,
         },
         {
           label: 'Overview',
-          href: '/catalog/design-system',
+          href: resolveUrl('/catalog/design-system'),
           current: currentPath === '/catalog/design-system',
         },
       ],
@@ -86,32 +87,32 @@ export function getDesignSystemSidebar(currentPath?: string) {
       items: [
         {
           label: 'Tokens',
-          href: '/catalog/design-system/tokens',
+          href: resolveUrl('/catalog/design-system/tokens'),
           current: currentPath === '/catalog/design-system/tokens',
         },
         {
           label: 'Typography',
-          href: '/catalog/design-system/typography',
+          href: resolveUrl('/catalog/design-system/typography'),
           current: currentPath === '/catalog/design-system/typography',
         },
         {
           label: 'Compositions',
-          href: '/catalog/design-system/compositions',
+          href: resolveUrl('/catalog/design-system/compositions'),
           current: currentPath === '/catalog/design-system/compositions',
         },
         {
           label: 'Base Classes',
-          href: '/catalog/design-system/base-classes',
+          href: resolveUrl('/catalog/design-system/base-classes'),
           current: currentPath === '/catalog/design-system/base-classes',
         },
         {
           label: 'Rules',
-          href: '/catalog/design-system/rules',
+          href: resolveUrl('/catalog/design-system/rules'),
           current: currentPath === '/catalog/design-system/rules',
         },
         {
           label: 'Data Visualizations',
-          href: '/catalog/design-system/data-visualizations',
+          href: resolveUrl('/catalog/design-system/data-visualizations'),
           current: currentPath === '/catalog/design-system/data-visualizations',
         },
       ],
@@ -120,7 +121,7 @@ export function getDesignSystemSidebar(currentPath?: string) {
       title: categoryLabels[category] || category,
       items: components.map((comp) => ({
         label: comp.name,
-        href: `/catalog/design-system/${comp.slug}`,
+        href: resolveUrl(`/catalog/design-system/${comp.slug}`),
         current: currentPath === `/catalog/design-system/${comp.slug}`,
       })),
     })),
@@ -152,12 +153,12 @@ export function getDecisionsSidebar(
       items: [
         {
           label: '\u2190 Back to Catalog',
-          href: '/catalog',
+          href: resolveUrl('/catalog'),
           current: false,
         },
         {
           label: 'All Decisions',
-          href: '/catalog/decisions',
+          href: resolveUrl('/catalog/decisions'),
           current: currentPath === '/catalog/decisions',
         },
       ],
@@ -166,7 +167,7 @@ export function getDecisionsSidebar(
       title: groupLabels[group] || group,
       items: decisions.map((d) => ({
         label: d.title,
-        href: `/catalog/decisions/${d.group}/${d.slug}`,
+        href: resolveUrl(`/catalog/decisions/${d.group}/${d.slug}`),
         current: currentPath === `/catalog/decisions/${d.group}/${d.slug}`,
       })),
     })),
@@ -185,17 +186,17 @@ export function getStoriesSidebar(stories: Story[], currentPath?: string) {
       items: [
         {
           label: '\u2190 Back to Catalog',
-          href: '/catalog',
+          href: resolveUrl('/catalog'),
           current: false,
         },
         {
           label: 'All Stories',
-          href: '/catalog/stories',
+          href: resolveUrl('/catalog/stories'),
           current: currentPath === '/catalog/stories',
         },
         ...stories.map((s) => ({
           label: `#${s.issue} ${s.title}`,
-          href: `/catalog/stories/${s.slug}`,
+          href: resolveUrl(`/catalog/stories/${s.slug}`),
           current: currentPath === `/catalog/stories/${s.slug}`,
         })),
       ],

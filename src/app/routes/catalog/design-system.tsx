@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import hljs from 'highlight.js/lib/core'
 import css from 'highlight.js/lib/languages/css'
 import { Hono } from 'hono'
+import { resolveUrl } from '../../../lib/base-path'
 
 hljs.registerLanguage('css', css)
 
@@ -50,36 +51,36 @@ designSystem.get('/', (c) => {
   const foundations = [
     {
       title: 'Tokens',
-      href: '/catalog/design-system/tokens',
+      href: resolveUrl('/catalog/design-system/tokens'),
       description:
         'Two-tier token architecture: USWDS palette tokens and semantic role-based tokens.',
     },
     {
       title: 'Typography',
-      href: '/catalog/design-system/typography',
+      href: resolveUrl('/catalog/design-system/typography'),
       description:
         'Font families, type scale, weights, line heights, measure, and heading hierarchy.',
     },
     {
       title: 'Compositions',
-      href: '/catalog/design-system/compositions',
+      href: resolveUrl('/catalog/design-system/compositions'),
       description:
         'Layout primitives from CUBE CSS: stack, cluster, center, sidebar, grid.',
     },
     {
       title: 'Base Classes',
-      href: '/catalog/design-system/base-classes',
+      href: resolveUrl('/catalog/design-system/base-classes'),
       description: 'Shared CSS properties extracted into multi-selector rules.',
     },
     {
       title: 'Rules',
-      href: '/catalog/design-system/rules',
+      href: resolveUrl('/catalog/design-system/rules'),
       description:
         'Token rules, component rules, and accessibility invariants.',
     },
     {
       title: 'Data Visualizations',
-      href: '/catalog/design-system/data-visualizations',
+      href: resolveUrl('/catalog/design-system/data-visualizations'),
       description:
         'Accessibility-first guidance for charts, graphs, maps, and infographics.',
     },
@@ -115,7 +116,7 @@ designSystem.get('/', (c) => {
               {components.map((comp) => (
                 <ContentCard
                   title={comp.name}
-                  href={`/catalog/design-system/${comp.slug}`}
+                  href={resolveUrl(`/catalog/design-system/${comp.slug}`)}
                   description={comp.description}
                 >
                   <StatusBadge
@@ -529,7 +530,9 @@ designSystem.get('/:slug', async (c) => {
                   <code class="flex-mono">.flex-input</code>
                 </td>
                 <td>
-                  <a href="/catalog/design-system/flex-text-input">
+                  <a
+                    href={resolveUrl('/catalog/design-system/flex-text-input')}
+                  >
                     Text Input
                   </a>
                 </td>
@@ -539,7 +542,9 @@ designSystem.get('/:slug', async (c) => {
                   <code class="flex-mono">.flex-select</code>
                 </td>
                 <td>
-                  <a href="/catalog/design-system/flex-select">Select</a>
+                  <a href={resolveUrl('/catalog/design-system/flex-select')}>
+                    Select
+                  </a>
                 </td>
               </tr>
               <tr>
@@ -547,7 +552,9 @@ designSystem.get('/:slug', async (c) => {
                   <code class="flex-mono">.flex-textarea</code>
                 </td>
                 <td>
-                  <a href="/catalog/design-system/flex-textarea">Textarea</a>
+                  <a href={resolveUrl('/catalog/design-system/flex-textarea')}>
+                    Textarea
+                  </a>
                 </td>
               </tr>
             </tbody>
@@ -586,7 +593,9 @@ designSystem.get('/:slug', async (c) => {
                   <code class="flex-mono">.flex-label</code>
                 </td>
                 <td>
-                  <a href="/catalog/design-system/flex-label">Label</a>
+                  <a href={resolveUrl('/catalog/design-system/flex-label')}>
+                    Label
+                  </a>
                 </td>
               </tr>
               <tr>
@@ -594,7 +603,11 @@ designSystem.get('/:slug', async (c) => {
                   <code class="flex-mono">.flex-error-message</code>
                 </td>
                 <td>
-                  <a href="/catalog/design-system/flex-error-message">
+                  <a
+                    href={resolveUrl(
+                      '/catalog/design-system/flex-error-message',
+                    )}
+                  >
                     Error Message
                   </a>
                 </td>
@@ -632,7 +645,9 @@ designSystem.get('/:slug', async (c) => {
                   <code class="flex-mono">.flex-checkbox__label</code>
                 </td>
                 <td>
-                  <a href="/catalog/design-system/flex-checkbox">Checkbox</a>
+                  <a href={resolveUrl('/catalog/design-system/flex-checkbox')}>
+                    Checkbox
+                  </a>
                 </td>
               </tr>
               <tr>
@@ -640,7 +655,9 @@ designSystem.get('/:slug', async (c) => {
                   <code class="flex-mono">.flex-radio__label</code>
                 </td>
                 <td>
-                  <a href="/catalog/design-system/flex-radio">Radio</a>
+                  <a href={resolveUrl('/catalog/design-system/flex-radio')}>
+                    Radio
+                  </a>
                 </td>
               </tr>
             </tbody>
@@ -670,7 +687,9 @@ designSystem.get('/:slug', async (c) => {
                   <code class="flex-mono">.flex-alert::before</code>
                 </td>
                 <td>
-                  <a href="/catalog/design-system/flex-alert">Alert</a>
+                  <a href={resolveUrl('/catalog/design-system/flex-alert')}>
+                    Alert
+                  </a>
                 </td>
               </tr>
               <tr>
@@ -678,7 +697,9 @@ designSystem.get('/:slug', async (c) => {
                   <code class="flex-mono">.flex-site-alert__body::before</code>
                 </td>
                 <td>
-                  <a href="/catalog/design-system/flex-site-alert">
+                  <a
+                    href={resolveUrl('/catalog/design-system/flex-site-alert')}
+                  >
                     Site Alert
                   </a>
                 </td>
@@ -985,7 +1006,11 @@ designSystem.get('/:slug', async (c) => {
               {baseClassName && (
                 <p>
                   Base styles:{' '}
-                  <a href={`/catalog/design-system/base-classes${baseAnchor}`}>
+                  <a
+                    href={resolveUrl(
+                      `/catalog/design-system/base-classes${baseAnchor}`,
+                    )}
+                  >
                     {baseClassName}
                   </a>
                 </p>

@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { resolveUrl } from '../../../lib/base-path'
 import { readMarkdownDir } from '../../../lib/markdown'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
@@ -63,37 +64,37 @@ catalog.get('/', async (c) => {
       <div class="l-grid">
         <div class="content-card">
           <h2>
-            <a href="/catalog/personas">Personas</a>
+            <a href={resolveUrl('/catalog/personas')}>Personas</a>
           </h2>
           <p>{personaFiles.length} personas</p>
         </div>
         <div class="content-card">
           <h2>
-            <a href="/catalog/decisions">Decisions</a>
+            <a href={resolveUrl('/catalog/decisions')}>Decisions</a>
           </h2>
           <p>{decisionCount} decisions</p>
         </div>
         <div class="content-card">
           <h2>
-            <a href="/catalog/architecture">Architecture</a>
+            <a href={resolveUrl('/catalog/architecture')}>Architecture</a>
           </h2>
           <p>{architectureFiles.length} documents</p>
         </div>
         <div class="content-card">
           <h2>
-            <a href="/catalog/stories">Stories</a>
+            <a href={resolveUrl('/catalog/stories')}>Stories</a>
           </h2>
           <p>{storyFiles.length} stories</p>
         </div>
         <div class="content-card">
           <h2>
-            <a href="/catalog/experiments">Experiments</a>
+            <a href={resolveUrl('/catalog/experiments')}>Experiments</a>
           </h2>
           <p>Coming soon</p>
         </div>
         <div class="content-card">
           <h2>
-            <a href="/catalog/design-system">Design System</a>
+            <a href={resolveUrl('/catalog/design-system')}>Design System</a>
           </h2>
           <p>Tokens, components, and compositions</p>
         </div>

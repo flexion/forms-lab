@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { resolveUrl } from '../../../lib/base-path'
 import { parseMarkdown, readMarkdownDir } from '../../../lib/markdown'
 import { StatusBadge } from '../../components/flex-badge'
 import { Breadcrumb } from '../../components/flex-breadcrumb'
@@ -36,7 +37,7 @@ architecture.get('/', async (c) => {
             <ContentCard
               key={file.filename}
               title={title}
-              href={`/catalog/architecture/${file.filename}`}
+              href={resolveUrl(`/catalog/architecture/${file.filename}`)}
             >
               <StatusBadge status={status} />
             </ContentCard>
@@ -65,8 +66,11 @@ architecture.get('/:slug', async (c) => {
       <Layout title={title} sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
-            { label: 'Catalog', href: '/catalog' },
-            { label: 'Architecture', href: '/catalog/architecture' },
+            { label: 'Catalog', href: resolveUrl('/catalog') },
+            {
+              label: 'Architecture',
+              href: resolveUrl('/catalog/architecture'),
+            },
             { label: title },
           ]}
         />
@@ -78,8 +82,11 @@ architecture.get('/:slug', async (c) => {
       <Layout title="Not Found" sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
-            { label: 'Catalog', href: '/catalog' },
-            { label: 'Architecture', href: '/catalog/architecture' },
+            { label: 'Catalog', href: resolveUrl('/catalog') },
+            {
+              label: 'Architecture',
+              href: resolveUrl('/catalog/architecture'),
+            },
             { label: 'Not Found' },
           ]}
         />

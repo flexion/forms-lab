@@ -1,6 +1,7 @@
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { resolveUrl } from '../../../lib/base-path'
 import { parseMarkdown, readMarkdownDir } from '../../../lib/markdown'
 import type { Decision } from '../../../types/models'
 import { StatusBadge } from '../../components/flex-badge'
@@ -66,7 +67,9 @@ decisions.get('/', async (c) => {
                 <ContentCard
                   key={decision.slug}
                   title={decision.title}
-                  href={`/catalog/decisions/${decision.group}/${decision.slug}`}
+                  href={resolveUrl(
+                    `/catalog/decisions/${decision.group}/${decision.slug}`,
+                  )}
                 >
                   <StatusBadge status={decision.status} />
                   <TagList tags={decision.tags} />
@@ -109,8 +112,8 @@ decisions.get('/:group/:slug', async (c) => {
       <Layout title={title} sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
-            { label: 'Catalog', href: '/catalog' },
-            { label: 'Decisions', href: '/catalog/decisions' },
+            { label: 'Catalog', href: resolveUrl('/catalog') },
+            { label: 'Decisions', href: resolveUrl('/catalog/decisions') },
             { label: title },
           ]}
         />
@@ -127,8 +130,8 @@ decisions.get('/:group/:slug', async (c) => {
       <Layout title="Not Found" sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
-            { label: 'Catalog', href: '/catalog' },
-            { label: 'Decisions', href: '/catalog/decisions' },
+            { label: 'Catalog', href: resolveUrl('/catalog') },
+            { label: 'Decisions', href: resolveUrl('/catalog/decisions') },
             { label: 'Not Found' },
           ]}
         />

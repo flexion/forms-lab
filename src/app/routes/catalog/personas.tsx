@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { resolveUrl } from '../../../lib/base-path'
 import { parseMarkdown, readMarkdownDir } from '../../../lib/markdown'
 import { Breadcrumb } from '../../components/flex-breadcrumb'
 import { ContentCard } from '../../components/flex-card'
@@ -29,7 +30,9 @@ personas.get('/', async (c) => {
           <ContentCard
             key={file.filename}
             title={file.frontmatter.name || file.filename}
-            href={`/catalog/personas/${file.frontmatter.id || file.filename}`}
+            href={resolveUrl(
+              `/catalog/personas/${file.frontmatter.id || file.filename}`,
+            )}
             description={file.frontmatter.role || ''}
           />
         ))}
@@ -53,8 +56,8 @@ personas.get('/:id', async (c) => {
       <Layout title={name} sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
-            { label: 'Catalog', href: '/catalog' },
-            { label: 'Personas', href: '/catalog/personas' },
+            { label: 'Catalog', href: resolveUrl('/catalog') },
+            { label: 'Personas', href: resolveUrl('/catalog/personas') },
             { label: name },
           ]}
         />
@@ -66,8 +69,8 @@ personas.get('/:id', async (c) => {
       <Layout title="Not Found" sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
-            { label: 'Catalog', href: '/catalog' },
-            { label: 'Personas', href: '/catalog/personas' },
+            { label: 'Catalog', href: resolveUrl('/catalog') },
+            { label: 'Personas', href: resolveUrl('/catalog/personas') },
             { label: 'Not Found' },
           ]}
         />

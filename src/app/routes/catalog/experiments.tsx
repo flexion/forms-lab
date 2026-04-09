@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { resolveUrl } from '../../../lib/base-path'
 import { parseMarkdown, readMarkdownDir } from '../../../lib/markdown'
 import { StatusBadge } from '../../components/flex-badge'
 import { ContentCard } from '../../components/flex-card'
@@ -38,7 +39,7 @@ experiments.get('/', async (c) => {
             <ContentCard
               key={file.filename}
               title={title}
-              href={`/catalog/experiments/${file.filename}`}
+              href={resolveUrl(`/catalog/experiments/${file.filename}`)}
             >
               <StatusBadge status={status} />
             </ContentCard>
@@ -69,7 +70,7 @@ experiments.get('/:slug', async (c) => {
       <Layout title={title} sidebar={sidebar} currentPath="/catalog">
         <Prose content={file.content} />
         <p style="margin-top: var(--flex-space-lg);">
-          <a href="/catalog/experiments">← Back to Experiments</a>
+          <a href={resolveUrl('/catalog/experiments')}>← Back to Experiments</a>
         </p>
       </Layout>,
     )
@@ -78,7 +79,7 @@ experiments.get('/:slug', async (c) => {
       <Layout title="Not Found" sidebar={sidebar} currentPath="/catalog">
         <h1>Experiment Not Found</h1>
         <p>
-          <a href="/catalog/experiments">← Back to Experiments</a>
+          <a href={resolveUrl('/catalog/experiments')}>← Back to Experiments</a>
         </p>
       </Layout>,
       404,

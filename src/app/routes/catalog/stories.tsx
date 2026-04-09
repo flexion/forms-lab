@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { resolveUrl } from '../../../lib/base-path'
 import { parseMarkdown, readMarkdownDir } from '../../../lib/markdown'
 import type { Story } from '../../../types/models'
 import { StatusBadge } from '../../components/flex-badge'
@@ -65,7 +66,7 @@ stories.get('/', async (c) => {
           <ContentCard
             key={story.slug}
             title={`#${story.issue} ${story.title}`}
-            href={`/catalog/stories/${story.slug}`}
+            href={resolveUrl(`/catalog/stories/${story.slug}`)}
           >
             <StatusBadge status={story.state} />
             <TagList tags={story.labels.filter((l) => l !== 'user-story')} />
@@ -107,8 +108,8 @@ stories.get('/:slug', async (c) => {
       <Layout title={story.title} sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
-            { label: 'Catalog', href: '/catalog' },
-            { label: 'Stories', href: '/catalog/stories' },
+            { label: 'Catalog', href: resolveUrl('/catalog') },
+            { label: 'Stories', href: resolveUrl('/catalog/stories') },
             { label: story.title },
           ]}
         />
@@ -137,8 +138,8 @@ stories.get('/:slug', async (c) => {
       <Layout title="Not Found" sidebar={sidebar} currentPath="/catalog">
         <Breadcrumb
           items={[
-            { label: 'Catalog', href: '/catalog' },
-            { label: 'Stories', href: '/catalog/stories' },
+            { label: 'Catalog', href: resolveUrl('/catalog') },
+            { label: 'Stories', href: resolveUrl('/catalog/stories') },
             { label: 'Not Found' },
           ]}
         />
