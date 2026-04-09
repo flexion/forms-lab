@@ -1,10 +1,5 @@
 import { Hono } from 'hono'
 import { resolveUrl } from '../../../lib/base-path'
-import { FormConfirmation } from '../../components/flex-form-confirmation'
-import { FormLanding } from '../../components/flex-form-landing'
-import { FormPageView } from '../../components/flex-form-page'
-import { FormReview } from '../../components/flex-form-review'
-import { Layout } from '../../components/flex-layout'
 import { findNextPage, findPrevPage } from '../../../services/form-navigation'
 import { resolveFormSpec } from '../../../services/form-resolver'
 import { validateFields } from '../../../services/form-validation'
@@ -14,6 +9,11 @@ import type {
   FormSpec,
   SubmissionGateway,
 } from '../../../types/models'
+import { FormConfirmation } from '../../components/flex-form-confirmation'
+import { FormLanding } from '../../components/flex-form-landing'
+import { FormPageView } from '../../components/flex-form-page'
+import { FormReview } from '../../components/flex-form-review'
+import { Layout } from '../../components/flex-layout'
 
 interface FormRouterDeps {
   sessionGateway: FormSessionGateway
@@ -66,14 +66,18 @@ export function createFormRouter(deps: FormRouterDeps) {
     const prev = findPrevPage(resolved, pageIndex, session.fields)
     const prevUrl =
       prev !== null
-        ? resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`)
+        ? resolveUrl(
+            `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`,
+          )
         : null
     return c.html(
       <Layout title={resolved.pages[pageIndex].page.title} currentPath="/forms">
         <FormPageView
           resolvedPage={resolved.pages[pageIndex]}
           pageIndex={pageIndex}
-          actionUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`)}
+          actionUrl={resolveUrl(
+            `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`,
+          )}
           fields={session.fields}
           prevUrl={prevUrl}
         />
@@ -110,14 +114,18 @@ export function createFormRouter(deps: FormRouterDeps) {
       const prev = findPrevPage(resolved, pageIndex, mergedFields)
       const prevUrl =
         prev !== null
-          ? resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`)
+          ? resolveUrl(
+              `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`,
+            )
           : null
       return c.html(
         <Layout title={resolvedPage.page.title} currentPath="/forms">
           <FormPageView
             resolvedPage={resolvedPage}
             pageIndex={pageIndex}
-            actionUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`)}
+            actionUrl={resolveUrl(
+              `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`,
+            )}
             fields={mergedFields}
             prevUrl={prevUrl}
           />
@@ -131,7 +139,9 @@ export function createFormRouter(deps: FormRouterDeps) {
     const next = findNextPage(resolved, pageIndex, updatedSession.fields)
     if (next !== null) {
       return c.redirect(
-        resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${next}`),
+        resolveUrl(
+          `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${next}`,
+        ),
       )
     }
     return c.redirect(
@@ -151,8 +161,12 @@ export function createFormRouter(deps: FormRouterDeps) {
         <FormReview
           resolved={resolved}
           fields={session.fields}
-          submitUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/submit`)}
-          editBaseUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages`)}
+          submitUrl={resolveUrl(
+            `/forms/${specs.dataSpec.id}/sessions/${session.id}/submit`,
+          )}
+          editBaseUrl={resolveUrl(
+            `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages`,
+          )}
         />
       </Layout>,
     )
@@ -167,7 +181,9 @@ export function createFormRouter(deps: FormRouterDeps) {
     const submission = sessionGateway.submit(session.id)
     submissionGateway.save(submission)
     return c.redirect(
-      resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/confirmation?submissionId=${submission.id}`),
+      resolveUrl(
+        `/forms/${specs.dataSpec.id}/sessions/${session.id}/confirmation?submissionId=${submission.id}`,
+      ),
     )
   })
 
