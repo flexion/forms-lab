@@ -219,7 +219,7 @@ export async function getDeploymentInfo(
   const [commit, service, health] = await Promise.all([
     getCommitInfo(branch),
     getServiceStatus(branch),
-    getHealthStatus(`http://localhost:${port}/`),
+    getHealthStatus(`http://localhost:${port}${url}`),
   ])
 
   // Fetch PR info separately (with timeout)
