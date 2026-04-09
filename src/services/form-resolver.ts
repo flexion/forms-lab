@@ -25,3 +25,23 @@ export function evaluateCondition(
       )
   }
 }
+
+export function resolveFormSpec(
+  formSpec: FormSpec,
+  dataSpec: DataCollectionSpec,
+): ResolvedForm {
+  const groupMap = new Map(dataSpec.groups.map((g) => [g.id, g]))
+  const pages = formSpec.pages.map((page) => {
+    const groups = page.groups.map((groupId) => {
+      const group = groupMap.get(groupId)
+      if (!group) {
+        throw new Error(
+          `RequirementGroup "${groupId}" not found in DataCollectionSpec "${dataSpec.id}"`,
+        )
+      }
+      return group
+    })
+    return { page, groups }
+  })
+  return { formSpec, dataSpec, pages }
+}
