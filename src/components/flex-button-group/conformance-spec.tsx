@@ -1,4 +1,46 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+function buttonGroupFixture(
+  name: string,
+  buttons: Array<{ label: string; variant?: string }>,
+  groupVariant?: string,
+) {
+  return {
+    name,
+    uswds: (
+      <ul
+        class={`usa-button-group${groupVariant ? ` usa-button-group--${groupVariant}` : ''}`}
+        data-testid="target"
+      >
+        {buttons.map((b) => (
+          <li class="usa-button-group__item">
+            <button
+              class={`usa-button${b.variant ? ` usa-button--${b.variant}` : ''}`}
+            >
+              {b.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+    ).toString(),
+    flex: (
+      <ul
+        class="flex-button-group"
+        data-variant={groupVariant}
+        data-testid="target"
+      >
+        {buttons.map((b) => (
+          <li class="flex-button-group__item">
+            <button class="flex-button" data-variant={b.variant}>
+              {b.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+    ).toString(),
+  }
+}
 
 export const spec: ConformanceSpec = {
   component: 'flex-button-group',
@@ -32,18 +74,18 @@ export const spec: ConformanceSpec = {
   structuralIgnores: ['margin-left', 'margin-right'],
   intentionalDifferences: [],
   fixtures: [
-    {
-      name: 'default button group matches usa-button-group',
-      uswds:
-        '<ul class="usa-button-group" data-testid="target"><li class="usa-button-group__item"><button class="usa-button">Primary</button></li><li class="usa-button-group__item"><button class="usa-button usa-button--outline">Secondary</button></li></ul>',
-      flex: '<ul class="flex-button-group" data-testid="target"><li class="flex-button-group__item"><button class="flex-button">Primary</button></li><li class="flex-button-group__item"><button class="flex-button" data-variant="outline">Secondary</button></li></ul>',
-    },
-    {
-      name: 'segmented button group',
-      uswds:
-        '<ul class="usa-button-group usa-button-group--segmented" data-testid="target"><li class="usa-button-group__item"><button class="usa-button">First</button></li><li class="usa-button-group__item"><button class="usa-button">Last</button></li></ul>',
-      flex: '<ul class="flex-button-group" data-variant="segmented" data-testid="target"><li class="flex-button-group__item"><button class="flex-button">First</button></li><li class="flex-button-group__item"><button class="flex-button">Last</button></li></ul>',
-    },
+    buttonGroupFixture(
+      'default button group matches usa-button-group',
+      [
+        { label: 'Primary' },
+        { label: 'Secondary', variant: 'outline' },
+      ],
+    ),
+    buttonGroupFixture(
+      'segmented button group',
+      [{ label: 'First' }, { label: 'Last' }],
+      'segmented',
+    ),
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Button Group Test</h1>

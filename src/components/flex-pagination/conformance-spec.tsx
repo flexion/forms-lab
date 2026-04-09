@@ -1,4 +1,47 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+type PageItem = {
+  page: number
+  current?: boolean
+}
+
+function paginationPageItems(items: PageItem[], prefix: string) {
+  return items.map((item) => {
+    const isCurrent = item.current
+    const liClass = isCurrent
+      ? prefix === 'usa'
+        ? `${prefix}-pagination__item`
+        : `${prefix}-pagination__item ${prefix}-pagination__item--current`
+      : `${prefix}-pagination__item`
+    const aClass = isCurrent
+      ? prefix === 'usa'
+        ? `${prefix}-pagination__button usa-current`
+        : `${prefix}-pagination__button ${prefix}-pagination__button--current`
+      : `${prefix}-pagination__button`
+    const ariaLabel = isCurrent
+      ? `Page ${item.page}, current page`
+      : `Page ${item.page}`
+    return (
+      <li class={liClass}>
+        <a
+          href={`?page=${item.page}`}
+          class={aClass}
+          aria-label={ariaLabel}
+          aria-current={isCurrent ? 'page' : undefined}
+        >
+          {String(item.page)}
+        </a>
+      </li>
+    )
+  })
+}
+
+const pages: PageItem[] = [
+  { page: 1 },
+  { page: 2, current: true },
+  { page: 3 },
+]
 
 export const spec: ConformanceSpec = {
   component: 'flex-pagination',
@@ -67,13 +110,67 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'pagination nav matches usa-pagination',
-      uswds: `<div><nav class="usa-pagination" aria-label="Pagination" data-testid="target"><ul class="usa-pagination__list"><li class="usa-pagination__item"><a href="?page=1" class="usa-pagination__button" aria-label="Page 1">1</a></li><li class="usa-pagination__item"><a href="?page=2" class="usa-pagination__button usa-current" aria-label="Page 2, current page" aria-current="page">2</a></li><li class="usa-pagination__item"><a href="?page=3" class="usa-pagination__button" aria-label="Page 3">3</a></li></ul></nav></div>`,
-      flex: `<div><nav class="flex-pagination" aria-label="Pagination" data-testid="target"><ul class="flex-pagination__list"><li class="flex-pagination__item"><a href="?page=1" class="flex-pagination__button" aria-label="Page 1">1</a></li><li class="flex-pagination__item flex-pagination__item--current"><a href="?page=2" class="flex-pagination__button flex-pagination__button--current" aria-label="Page 2, current page" aria-current="page">2</a></li><li class="flex-pagination__item"><a href="?page=3" class="flex-pagination__button" aria-label="Page 3">3</a></li></ul></nav></div>`,
+      uswds: (
+        <div>
+          <nav
+            class="usa-pagination"
+            aria-label="Pagination"
+            data-testid="target"
+          >
+            <ul class="usa-pagination__list">
+              {paginationPageItems(pages, 'usa')}
+            </ul>
+          </nav>
+        </div>
+      ).toString(),
+      flex: (
+        <div>
+          <nav
+            class="flex-pagination"
+            aria-label="Pagination"
+            data-testid="target"
+          >
+            <ul class="flex-pagination__list">
+              {paginationPageItems(pages, 'flex')}
+            </ul>
+          </nav>
+        </div>
+      ).toString(),
     },
     {
       name: 'page button matches usa-pagination__button',
-      uswds: `<nav class="usa-pagination" aria-label="Pagination"><ul class="usa-pagination__list"><li class="usa-pagination__item"><a href="?page=1" class="usa-pagination__button" aria-label="Page 1" data-testid="target">1</a></li></ul></nav>`,
-      flex: `<nav class="flex-pagination" aria-label="Pagination"><ul class="flex-pagination__list"><li class="flex-pagination__item"><a href="?page=1" class="flex-pagination__button" aria-label="Page 1" data-testid="target">1</a></li></ul></nav>`,
+      uswds: (
+        <nav class="usa-pagination" aria-label="Pagination">
+          <ul class="usa-pagination__list">
+            <li class="usa-pagination__item">
+              <a
+                href="?page=1"
+                class="usa-pagination__button"
+                aria-label="Page 1"
+                data-testid="target"
+              >
+                1
+              </a>
+            </li>
+          </ul>
+        </nav>
+      ).toString(),
+      flex: (
+        <nav class="flex-pagination" aria-label="Pagination">
+          <ul class="flex-pagination__list">
+            <li class="flex-pagination__item">
+              <a
+                href="?page=1"
+                class="flex-pagination__button"
+                aria-label="Page 1"
+                data-testid="target"
+              >
+                1
+              </a>
+            </li>
+          </ul>
+        </nav>
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>

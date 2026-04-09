@@ -1,3 +1,4 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
 
 export const spec: ConformanceSpec = {
@@ -53,13 +54,65 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'sidenav list matches usa-sidenav',
-      uswds: `<nav aria-label="Side navigation"><ul class="usa-sidenav" data-testid="target"><li class="usa-sidenav__item"><a href="/page1" class="usa-current">Current Page</a></li><li class="usa-sidenav__item"><a href="/page2">Another Page</a></li></ul></nav>`,
-      flex: `<nav aria-label="Side navigation"><ul class="flex-sidenav" data-testid="target"><li class="flex-sidenav__item"><a href="/page1" class="flex-sidenav__link flex-sidenav__link--current" aria-current="page">Current Page</a></li><li class="flex-sidenav__item"><a href="/page2" class="flex-sidenav__link">Another Page</a></li></ul></nav>`,
+      uswds: (
+        <nav aria-label="Side navigation">
+          <ul class="usa-sidenav" data-testid="target">
+            <li class="usa-sidenav__item">
+              <a href="/page1" class="usa-current">
+                Current Page
+              </a>
+            </li>
+            <li class="usa-sidenav__item">
+              <a href="/page2">Another Page</a>
+            </li>
+          </ul>
+        </nav>
+      ).toString(),
+      flex: (
+        <nav aria-label="Side navigation">
+          <ul class="flex-sidenav" data-testid="target">
+            <li class="flex-sidenav__item">
+              <a
+                href="/page1"
+                class="flex-sidenav__link flex-sidenav__link--current"
+                aria-current="page"
+              >
+                Current Page
+              </a>
+            </li>
+            <li class="flex-sidenav__item">
+              <a href="/page2" class="flex-sidenav__link">
+                Another Page
+              </a>
+            </li>
+          </ul>
+        </nav>
+      ).toString(),
     },
     {
       name: 'sidenav link matches usa-sidenav link',
-      uswds: `<nav aria-label="Side navigation"><ul class="usa-sidenav"><li class="usa-sidenav__item"><a href="/page1" data-testid="target">Page 1</a></li></ul></nav>`,
-      flex: `<nav aria-label="Side navigation"><ul class="flex-sidenav"><li class="flex-sidenav__item"><a href="/page1" class="flex-sidenav__link" data-testid="target">Page 1</a></li></ul></nav>`,
+      uswds: (
+        <nav aria-label="Side navigation">
+          <ul class="usa-sidenav">
+            <li class="usa-sidenav__item">
+              <a href="/page1" data-testid="target">
+                Page 1
+              </a>
+            </li>
+          </ul>
+        </nav>
+      ).toString(),
+      flex: (
+        <nav aria-label="Side navigation">
+          <ul class="flex-sidenav">
+            <li class="flex-sidenav__item">
+              <a href="/page1" class="flex-sidenav__link" data-testid="target">
+                Page 1
+              </a>
+            </li>
+          </ul>
+        </nav>
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>

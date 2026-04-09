@@ -1,4 +1,9 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const domainText = 'agency.gov'
+const disclaimerText = 'An official website of the Agency'
+const aboutLinkText = 'About'
 
 export const spec: ConformanceSpec = {
   component: 'flex-identifier',
@@ -78,13 +83,82 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'identifier matches usa-identifier background and text color',
-      uswds: `<div class="usa-identifier" data-testid="target"><section class="usa-identifier__section usa-identifier__section--masthead" aria-label="Agency identifier"><div class="usa-identifier__container"><div class="usa-identifier__identity"><p class="usa-identifier__identity-domain">agency.gov</p><p class="usa-identifier__identity-disclaimer">An official website of the Agency</p></div></div></section></div>`,
-      flex: `<div class="flex-identifier" data-testid="target"><section class="flex-identifier__section flex-identifier__section--masthead" aria-label="Agency identifier"><div class="flex-identifier__container"><div class="flex-identifier__identity"><p class="flex-identifier__identity-domain">agency.gov</p><p class="flex-identifier__identity-disclaimer">An official website of the Agency</p></div></div></section></div>`,
+      uswds: (
+        <div class="usa-identifier" data-testid="target">
+          <section
+            class="usa-identifier__section usa-identifier__section--masthead"
+            aria-label="Agency identifier"
+          >
+            <div class="usa-identifier__container">
+              <div class="usa-identifier__identity">
+                <p class="usa-identifier__identity-domain">{domainText}</p>
+                <p class="usa-identifier__identity-disclaimer">
+                  {disclaimerText}
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      ).toString(),
+      flex: (
+        <div class="flex-identifier" data-testid="target">
+          <section
+            class="flex-identifier__section flex-identifier__section--masthead"
+            aria-label="Agency identifier"
+          >
+            <div class="flex-identifier__container">
+              <div class="flex-identifier__identity">
+                <p class="flex-identifier__identity-domain">{domainText}</p>
+                <p class="flex-identifier__identity-disclaimer">
+                  {disclaimerText}
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      ).toString(),
     },
     {
       name: 'identifier required links list matches usa-identifier',
-      uswds: `<div class="usa-identifier"><nav class="usa-identifier__section" aria-label="Important links"><div class="usa-identifier__container"><ul class="usa-identifier__required-links-list" data-testid="target"><li class="usa-identifier__required-links-item"><a href="#" class="usa-identifier__required-link usa-link">About</a></li></ul></div></nav></div>`,
-      flex: `<div class="flex-identifier"><nav class="flex-identifier__section" aria-label="Important links"><div class="flex-identifier__container"><ul class="flex-identifier__required-links-list" data-testid="target"><li class="flex-identifier__required-links-list-item"><a href="#" class="flex-identifier__required-link">About</a></li></ul></div></nav></div>`,
+      uswds: (
+        <div class="usa-identifier">
+          <nav class="usa-identifier__section" aria-label="Important links">
+            <div class="usa-identifier__container">
+              <ul
+                class="usa-identifier__required-links-list"
+                data-testid="target"
+              >
+                <li class="usa-identifier__required-links-item">
+                  <a
+                    href="#"
+                    class="usa-identifier__required-link usa-link"
+                  >
+                    {aboutLinkText}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      ).toString(),
+      flex: (
+        <div class="flex-identifier">
+          <nav class="flex-identifier__section" aria-label="Important links">
+            <div class="flex-identifier__container">
+              <ul
+                class="flex-identifier__required-links-list"
+                data-testid="target"
+              >
+                <li class="flex-identifier__required-links-list-item">
+                  <a href="#" class="flex-identifier__required-link">
+                    {aboutLinkText}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>

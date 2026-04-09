@@ -1,4 +1,7 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const proseText = 'The quick brown fox jumps over the lazy dog.'
 
 export const spec: ConformanceSpec = {
   component: 'flex-prose',
@@ -24,9 +27,20 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'prose container matches usa-prose',
-      uswds:
-        '<div><div class="usa-prose" data-testid="target"><p>The quick brown fox jumps over the lazy dog.</p></div></div>',
-      flex: '<div><div class="prose" data-testid="target"><p>The quick brown fox jumps over the lazy dog.</p></div></div>',
+      uswds: (
+        <div>
+          <div class="usa-prose" data-testid="target">
+            <p>{proseText}</p>
+          </div>
+        </div>
+      ).toString(),
+      flex: (
+        <div>
+          <div class="prose" data-testid="target">
+            <p>{proseText}</p>
+          </div>
+        </div>
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>

@@ -1,4 +1,8 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const primaryLinkText = 'Primary link'
+const agencyName = 'Agency Name'
 
 export const spec: ConformanceSpec = {
   component: 'flex-footer',
@@ -74,13 +78,49 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'footer primary section matches usa-footer__primary-section',
-      uswds: `<footer class="usa-footer usa-footer--slim"><div class="usa-footer__primary-section" data-testid="target"><div class="usa-footer__primary-container"><a class="usa-footer__primary-link" href="#">Primary link</a></div></div></footer>`,
-      flex: `<footer class="flex-footer"><div class="flex-footer__primary" data-testid="target"><div class="flex-footer__primary-container"><a class="flex-footer__primary-link" href="#">Primary link</a></div></div></footer>`,
+      uswds: (
+        <footer class="usa-footer usa-footer--slim">
+          <div class="usa-footer__primary-section" data-testid="target">
+            <div class="usa-footer__primary-container">
+              <a class="usa-footer__primary-link" href="#">
+                {primaryLinkText}
+              </a>
+            </div>
+          </div>
+        </footer>
+      ).toString(),
+      flex: (
+        <footer class="flex-footer">
+          <div class="flex-footer__primary" data-testid="target">
+            <div class="flex-footer__primary-container">
+              <a class="flex-footer__primary-link" href="#">
+                {primaryLinkText}
+              </a>
+            </div>
+          </div>
+        </footer>
+      ).toString(),
     },
     {
       name: 'footer secondary section matches usa-footer__secondary-section',
-      uswds: `<footer class="usa-footer usa-footer--slim"><div class="usa-footer__secondary-section" data-testid="target"><div class="grid-container"><p>Agency Name</p></div></div></footer>`,
-      flex: `<footer class="flex-footer"><div class="flex-footer__secondary" data-testid="target"><div class="flex-footer__secondary-container"><p>Agency Name</p></div></div></footer>`,
+      uswds: (
+        <footer class="usa-footer usa-footer--slim">
+          <div class="usa-footer__secondary-section" data-testid="target">
+            <div class="grid-container">
+              <p>{agencyName}</p>
+            </div>
+          </div>
+        </footer>
+      ).toString(),
+      flex: (
+        <footer class="flex-footer">
+          <div class="flex-footer__secondary" data-testid="target">
+            <div class="flex-footer__secondary-container">
+              <p>{agencyName}</p>
+            </div>
+          </div>
+        </footer>
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>

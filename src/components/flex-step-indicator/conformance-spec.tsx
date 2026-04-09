@@ -1,4 +1,56 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+type StepState = 'complete' | 'current' | undefined
+
+const steps: Array<{ label: string; state: StepState }> = [
+  { label: 'Step 1', state: 'complete' },
+  { label: 'Step 2', state: 'current' },
+  { label: 'Step 3', state: undefined },
+]
+
+const headerContent = (prefix: string) => (
+  <div class={`${prefix}-step-indicator__header`}>
+    <h4 class={`${prefix}-step-indicator__heading`}>
+      <span class={`${prefix}-step-indicator__current-step`}>
+        Step 2 of 3
+      </span>
+      <span class={`${prefix}-step-indicator__heading-text`}>Step title</span>
+    </h4>
+  </div>
+)
+
+function uswdsSegments() {
+  return steps.map((step) => {
+    const classes = [
+      'usa-step-indicator__segment',
+      step.state === 'complete' && 'usa-step-indicator__segment--complete',
+      step.state === 'current' && 'usa-step-indicator__segment--current',
+    ]
+      .filter(Boolean)
+      .join(' ')
+    return (
+      <li
+        class={classes}
+        aria-current={step.state === 'current' ? 'step' : undefined}
+      >
+        <span class="usa-step-indicator__segment-label">{step.label}</span>
+      </li>
+    )
+  })
+}
+
+function flexSegments() {
+  return steps.map((step) => (
+    <li
+      class="flex-step-indicator__segment"
+      data-state={step.state}
+      aria-current={step.state === 'current' ? 'step' : undefined}
+    >
+      <span class="flex-step-indicator__segment-label">{step.label}</span>
+    </li>
+  ))
+}
 
 export const spec: ConformanceSpec = {
   component: 'flex-step-indicator',
@@ -104,44 +156,26 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'step indicator with default labels matches USWDS layout',
-      uswds: `<div class="usa-step-indicator" aria-label="Progress" data-testid="target">
-        <ol class="usa-step-indicator__segments">
-          <li class="usa-step-indicator__segment usa-step-indicator__segment--complete">
-            <span class="usa-step-indicator__segment-label">Step 1</span>
-          </li>
-          <li class="usa-step-indicator__segment usa-step-indicator__segment--current" aria-current="step">
-            <span class="usa-step-indicator__segment-label">Step 2</span>
-          </li>
-          <li class="usa-step-indicator__segment">
-            <span class="usa-step-indicator__segment-label">Step 3</span>
-          </li>
-        </ol>
-        <div class="usa-step-indicator__header">
-          <h4 class="usa-step-indicator__heading">
-            <span class="usa-step-indicator__current-step">Step 2 of 3</span>
-            <span class="usa-step-indicator__heading-text">Step title</span>
-          </h4>
+      uswds: (
+        <div
+          class="usa-step-indicator"
+          aria-label="Progress"
+          data-testid="target"
+        >
+          <ol class="usa-step-indicator__segments">{uswdsSegments()}</ol>
+          {headerContent('usa')}
         </div>
-      </div>`,
-      flex: `<div class="flex-step-indicator" aria-label="Progress" data-testid="target">
-        <ol class="flex-step-indicator__segments">
-          <li class="flex-step-indicator__segment" data-state="complete">
-            <span class="flex-step-indicator__segment-label">Step 1</span>
-          </li>
-          <li class="flex-step-indicator__segment" data-state="current" aria-current="step">
-            <span class="flex-step-indicator__segment-label">Step 2</span>
-          </li>
-          <li class="flex-step-indicator__segment">
-            <span class="flex-step-indicator__segment-label">Step 3</span>
-          </li>
-        </ol>
-        <div class="flex-step-indicator__header">
-          <h4 class="flex-step-indicator__heading">
-            <span class="flex-step-indicator__current-step">Step 2 of 3</span>
-            <span class="flex-step-indicator__heading-text">Step title</span>
-          </h4>
+      ).toString(),
+      flex: (
+        <div
+          class="flex-step-indicator"
+          aria-label="Progress"
+          data-testid="target"
+        >
+          <ol class="flex-step-indicator__segments">{flexSegments()}</ol>
+          {headerContent('flex')}
         </div>
-      </div>`,
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>

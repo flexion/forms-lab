@@ -1,4 +1,29 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+function tagFixture(name: string, size?: string) {
+  const text = 'New'
+  return {
+    name,
+    uswds: (
+      <div>
+        <span
+          class={`usa-tag${size ? ` usa-tag--${size}` : ''}`}
+          data-testid="target"
+        >
+          {text}
+        </span>
+      </div>
+    ).toString(),
+    flex: (
+      <div>
+        <span class="flex-tag" data-size={size} data-testid="target">
+          {text}
+        </span>
+      </div>
+    ).toString(),
+  }
+}
 
 export const spec: ConformanceSpec = {
   component: 'flex-tag',
@@ -30,17 +55,8 @@ export const spec: ConformanceSpec = {
   structuralIgnores: [],
   intentionalDifferences: [],
   fixtures: [
-    {
-      name: 'default tag matches usa-tag',
-      uswds: '<div><span class="usa-tag" data-testid="target">New</span></div>',
-      flex: '<div><span class="flex-tag" data-testid="target">New</span></div>',
-    },
-    {
-      name: 'big tag matches usa-tag--big',
-      uswds:
-        '<div><span class="usa-tag usa-tag--big" data-testid="target">New</span></div>',
-      flex: '<div><span class="flex-tag" data-size="big" data-testid="target">New</span></div>',
-    },
+    tagFixture('default tag matches usa-tag'),
+    tagFixture('big tag matches usa-tag--big', 'big'),
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Tag Test</h1>

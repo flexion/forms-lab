@@ -1,4 +1,20 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+function inputFixture(name: string, state?: string) {
+  return {
+    name,
+    uswds: (
+      <input
+        class={`usa-input${state ? ` usa-input--${state}` : ''}`}
+        data-testid="target"
+      />
+    ).toString(),
+    flex: (
+      <input class="flex-input" data-state={state} data-testid="target" />
+    ).toString(),
+  }
+}
 
 export const spec: ConformanceSpec = {
   component: 'flex-text-input',
@@ -49,17 +65,8 @@ export const spec: ConformanceSpec = {
   ],
   intentionalDifferences: [],
   fixtures: [
-    {
-      name: 'default input matches usa-input',
-      uswds: '<input class="usa-input" data-testid="target" />',
-      flex: '<input class="flex-input" data-testid="target" />',
-    },
-    {
-      name: 'error state matches usa-input--error',
-      uswds:
-        '<input class="usa-input usa-input--error" data-testid="target" />',
-      flex: '<input class="flex-input" data-state="error" data-testid="target" />',
-    },
+    inputFixture('default input matches usa-input'),
+    inputFixture('error state matches usa-input--error', 'error'),
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Text Input Test</h1>

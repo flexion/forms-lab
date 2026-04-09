@@ -1,4 +1,41 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+function buttonFixture(
+  name: string,
+  label: string,
+  opts?: { variant?: string; size?: string; disabled?: boolean },
+) {
+  return {
+    name,
+    uswds: (
+      <button
+        class={[
+          'usa-button',
+          opts?.variant && `usa-button--${opts.variant}`,
+          opts?.size && `usa-button--${opts.size}`,
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        disabled={opts?.disabled}
+        data-testid="target"
+      >
+        {label}
+      </button>
+    ).toString(),
+    flex: (
+      <button
+        class="flex-button"
+        data-variant={opts?.variant}
+        data-size={opts?.size}
+        disabled={opts?.disabled}
+        data-testid="target"
+      >
+        {label}
+      </button>
+    ).toString(),
+  }
+}
 
 export const spec: ConformanceSpec = {
   component: 'flex-button',
@@ -76,29 +113,12 @@ export const spec: ConformanceSpec = {
     },
   ],
   fixtures: [
-    {
-      name: 'default button matches usa-button',
-      uswds: '<button class="usa-button" data-testid="target">Default</button>',
-      flex: '<button class="flex-button" data-testid="target">Default</button>',
-    },
-    {
-      name: 'outline button matches usa-button--outline',
-      uswds:
-        '<button class="usa-button usa-button--outline" data-testid="target">Outline</button>',
-      flex: '<button class="flex-button" data-variant="outline" data-testid="target">Outline</button>',
-    },
-    {
-      name: 'disabled button',
-      uswds:
-        '<button class="usa-button" disabled data-testid="target">Disabled</button>',
-      flex: '<button class="flex-button" disabled data-testid="target">Disabled</button>',
-    },
-    {
-      name: 'big button matches usa-button--big',
-      uswds:
-        '<button class="usa-button usa-button--big" data-testid="target">Big</button>',
-      flex: '<button class="flex-button" data-size="big" data-testid="target">Big</button>',
-    },
+    buttonFixture('default button matches usa-button', 'Default'),
+    buttonFixture('outline button matches usa-button--outline', 'Outline', {
+      variant: 'outline',
+    }),
+    buttonFixture('disabled button', 'Disabled', { disabled: true }),
+    buttonFixture('big button matches usa-button--big', 'Big', { size: 'big' }),
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Button Test</h1>

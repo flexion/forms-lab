@@ -1,4 +1,13 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const headingText = 'Key information'
+const keyPoints = (
+  <ul>
+    <li>First key point</li>
+    <li>Second key point</li>
+  </ul>
+)
 
 export const spec: ConformanceSpec = {
   component: 'flex-summary-box',
@@ -53,28 +62,41 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'summary box background and border match USWDS',
-      uswds: `<div class="usa-summary-box" role="region" aria-labelledby="summary-heading" data-testid="target">
-        <div class="usa-summary-box__body">
-          <h3 class="usa-summary-box__heading" id="summary-heading">Key information</h3>
-          <div class="usa-summary-box__text">
-            <ul class="usa-list">
-              <li>First key point</li>
-              <li>Second key point</li>
-            </ul>
+      uswds: (
+        <div
+          class="usa-summary-box"
+          role="region"
+          aria-labelledby="summary-heading"
+          data-testid="target"
+        >
+          <div class="usa-summary-box__body">
+            <h3 class="usa-summary-box__heading" id="summary-heading">
+              {headingText}
+            </h3>
+            <div class="usa-summary-box__text">
+              <ul class="usa-list">
+                <li>First key point</li>
+                <li>Second key point</li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>`,
-      flex: `<div class="flex-summary-box" role="region" aria-labelledby="summary-heading" data-testid="target">
-        <div class="flex-summary-box__body">
-          <h3 class="flex-summary-box__heading" id="summary-heading">Key information</h3>
-          <div class="flex-summary-box__text">
-            <ul>
-              <li>First key point</li>
-              <li>Second key point</li>
-            </ul>
+      ).toString(),
+      flex: (
+        <div
+          class="flex-summary-box"
+          role="region"
+          aria-labelledby="summary-heading"
+          data-testid="target"
+        >
+          <div class="flex-summary-box__body">
+            <h3 class="flex-summary-box__heading" id="summary-heading">
+              {headingText}
+            </h3>
+            <div class="flex-summary-box__text">{keyPoints}</div>
           </div>
         </div>
-      </div>`,
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>

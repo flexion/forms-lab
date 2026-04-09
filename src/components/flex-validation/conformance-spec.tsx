@@ -1,4 +1,8 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const uncheckedText = 'Use at least one uppercase letter'
+const checkedText = 'Use at least one number'
 
 export const spec: ConformanceSpec = {
   component: 'flex-validation',
@@ -34,14 +38,26 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'checklist matches usa-checklist',
-      uswds: `<div><ul class="usa-checklist" data-testid="target">
-        <li class="usa-checklist__item">Use at least one uppercase letter</li>
-        <li class="usa-checklist__item usa-checklist__item--checked">Use at least one number</li>
-      </ul></div>`,
-      flex: `<div><ul class="flex-checklist" data-testid="target">
-        <li class="flex-checklist__item">Use at least one uppercase letter</li>
-        <li class="flex-checklist__item" data-state="checked">Use at least one number</li>
-      </ul></div>`,
+      uswds: (
+        <div>
+          <ul class="usa-checklist" data-testid="target">
+            <li class="usa-checklist__item">{uncheckedText}</li>
+            <li class="usa-checklist__item usa-checklist__item--checked">
+              {checkedText}
+            </li>
+          </ul>
+        </div>
+      ).toString(),
+      flex: (
+        <div>
+          <ul class="flex-checklist" data-testid="target">
+            <li class="flex-checklist__item">{uncheckedText}</li>
+            <li class="flex-checklist__item" data-state="checked">
+              {checkedText}
+            </li>
+          </ul>
+        </div>
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>

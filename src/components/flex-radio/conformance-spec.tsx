@@ -1,4 +1,45 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const labelText = 'Option'
+const tileLabelText = 'Tile'
+
+function radioFixture(
+  name: string,
+  opts: { id: string; label: string; tile?: boolean },
+) {
+  return {
+    name,
+    uswds: (
+      <div class="usa-radio">
+        <input
+          class={`usa-radio__input${opts.tile ? ' usa-radio__input--tile' : ''}`}
+          id={opts.id}
+          type="radio"
+          name="test"
+          value={opts.id === 'r1' ? '1' : '2'}
+        />
+        <label class="usa-radio__label" for={opts.id} data-testid="target">
+          {opts.label}
+        </label>
+      </div>
+    ).toString(),
+    flex: (
+      <div class="flex-radio" data-variant={opts.tile ? 'tile' : undefined}>
+        <input
+          class="flex-radio__input"
+          id={opts.id}
+          type="radio"
+          name="test"
+          value={opts.id === 'r1' ? '1' : '2'}
+        />
+        <label class="flex-radio__label" for={opts.id} data-testid="target">
+          {opts.label}
+        </label>
+      </div>
+    ).toString(),
+  }
+}
 
 export const spec: ConformanceSpec = {
   component: 'flex-radio',
@@ -39,18 +80,14 @@ export const spec: ConformanceSpec = {
   structuralIgnores: [],
   intentionalDifferences: [],
   fixtures: [
-    {
-      name: 'default radio label matches usa-radio__label',
-      uswds:
-        '<div class="usa-radio"><input class="usa-radio__input" id="r1" type="radio" name="test" value="1"><label class="usa-radio__label" for="r1" data-testid="target">Option</label></div>',
-      flex: '<div class="flex-radio"><input class="flex-radio__input" id="r1" type="radio" name="test" value="1"><label class="flex-radio__label" for="r1" data-testid="target">Option</label></div>',
-    },
-    {
-      name: 'tile variant label matches usa-radio__input--tile label',
-      uswds:
-        '<div class="usa-radio"><input class="usa-radio__input usa-radio__input--tile" id="r2" type="radio" name="test" value="2"><label class="usa-radio__label" for="r2" data-testid="target">Tile</label></div>',
-      flex: '<div class="flex-radio" data-variant="tile"><input class="flex-radio__input" id="r2" type="radio" name="test" value="2"><label class="flex-radio__label" for="r2" data-testid="target">Tile</label></div>',
-    },
+    radioFixture('default radio label matches usa-radio__label', {
+      id: 'r1',
+      label: labelText,
+    }),
+    radioFixture(
+      'tile variant label matches usa-radio__input--tile label',
+      { id: 'r2', label: tileLabelText, tile: true },
+    ),
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Radio Test</h1>

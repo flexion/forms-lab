@@ -1,4 +1,28 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+type ProcessStep = { heading: string; description: string }
+
+const steps: ProcessStep[] = [
+  {
+    heading: 'Step heading',
+    description: 'Step description and instructions.',
+  },
+  { heading: 'Another step', description: 'More description.' },
+]
+
+function processListFixture(
+  name: string,
+  items: ProcessStep[],
+  prefix: string,
+) {
+  return items.map((item) => (
+    <li class={`${prefix}-process-list__item`}>
+      <h4 class={`${prefix}-process-list__heading`}>{item.heading}</h4>
+      <p>{item.description}</p>
+    </li>
+  ))
+}
 
 export const spec: ConformanceSpec = {
   component: 'flex-process-list',
@@ -49,26 +73,16 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'process list structure and typography match USWDS',
-      uswds: `<ol class="usa-process-list" data-testid="target">
-        <li class="usa-process-list__item">
-          <h4 class="usa-process-list__heading">Step heading</h4>
-          <p>Step description and instructions.</p>
-        </li>
-        <li class="usa-process-list__item">
-          <h4 class="usa-process-list__heading">Another step</h4>
-          <p>More description.</p>
-        </li>
-      </ol>`,
-      flex: `<ol class="flex-process-list" data-testid="target">
-        <li class="flex-process-list__item">
-          <h4 class="flex-process-list__heading">Step heading</h4>
-          <p>Step description and instructions.</p>
-        </li>
-        <li class="flex-process-list__item">
-          <h4 class="flex-process-list__heading">Another step</h4>
-          <p>More description.</p>
-        </li>
-      </ol>`,
+      uswds: (
+        <ol class="usa-process-list" data-testid="target">
+          {processListFixture('', steps, 'usa')}
+        </ol>
+      ).toString(),
+      flex: (
+        <ol class="flex-process-list" data-testid="target">
+          {processListFixture('', steps, 'flex')}
+        </ol>
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>

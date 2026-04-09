@@ -1,4 +1,49 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const labelText = 'Option'
+const tileLabelText = 'Tile'
+
+function checkboxFixture(
+  name: string,
+  opts: { id: string; label: string; tile?: boolean },
+) {
+  return {
+    name,
+    uswds: (
+      <div class="usa-checkbox">
+        <input
+          class={`usa-checkbox__input${opts.tile ? ' usa-checkbox__input--tile' : ''}`}
+          id={opts.id}
+          type="checkbox"
+          name="test"
+          value={opts.id === 'cb1' ? '1' : '2'}
+        />
+        <label class="usa-checkbox__label" for={opts.id} data-testid="target">
+          {opts.label}
+        </label>
+      </div>
+    ).toString(),
+    flex: (
+      <div class="flex-checkbox" data-variant={opts.tile ? 'tile' : undefined}>
+        <input
+          class="flex-checkbox__input"
+          id={opts.id}
+          type="checkbox"
+          name="test"
+          value={opts.id === 'cb1' ? '1' : '2'}
+        />
+        <label
+          class="flex-checkbox__label"
+          for={opts.id}
+          data-testid="target"
+        >
+          {opts.label}
+        </label>
+      </div>
+    ).toString(),
+  }
+}
 
 export const spec: ConformanceSpec = {
   component: 'flex-checkbox',
@@ -39,18 +84,14 @@ export const spec: ConformanceSpec = {
   structuralIgnores: [],
   intentionalDifferences: [],
   fixtures: [
-    {
-      name: 'default checkbox label matches usa-checkbox__label',
-      uswds:
-        '<div class="usa-checkbox"><input class="usa-checkbox__input" id="cb1" type="checkbox" name="test" value="1"><label class="usa-checkbox__label" for="cb1" data-testid="target">Option</label></div>',
-      flex: '<div class="flex-checkbox"><input class="flex-checkbox__input" id="cb1" type="checkbox" name="test" value="1"><label class="flex-checkbox__label" for="cb1" data-testid="target">Option</label></div>',
-    },
-    {
-      name: 'tile variant label matches usa-checkbox__input--tile label',
-      uswds:
-        '<div class="usa-checkbox"><input class="usa-checkbox__input usa-checkbox__input--tile" id="cb2" type="checkbox" name="test" value="2"><label class="usa-checkbox__label" for="cb2" data-testid="target">Tile</label></div>',
-      flex: '<div class="flex-checkbox" data-variant="tile"><input class="flex-checkbox__input" id="cb2" type="checkbox" name="test" value="2"><label class="flex-checkbox__label" for="cb2" data-testid="target">Tile</label></div>',
-    },
+    checkboxFixture('default checkbox label matches usa-checkbox__label', {
+      id: 'cb1',
+      label: labelText,
+    }),
+    checkboxFixture(
+      'tile variant label matches usa-checkbox__input--tile label',
+      { id: 'cb2', label: tileLabelText, tile: true },
+    ),
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Checkbox Test</h1>

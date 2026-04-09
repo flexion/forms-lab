@@ -1,4 +1,38 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+function linkFixture(
+  name: string,
+  text: string,
+  href: string,
+  variant?: string,
+) {
+  return {
+    name,
+    uswds: (
+      <div>
+        <a
+          class={`usa-link${variant ? ` usa-link--${variant}` : ''}`}
+          href={href}
+          data-testid="target"
+        >
+          {text}
+        </a>
+      </div>
+    ).toString(),
+    flex: (
+      <div>
+        <a
+          class={`flex-link${variant ? ` flex-link--${variant}` : ''}`}
+          href={href}
+          data-testid="target"
+        >
+          {text}
+        </a>
+      </div>
+    ).toString(),
+  }
+}
 
 export const spec: ConformanceSpec = {
   component: 'flex-link',
@@ -19,18 +53,17 @@ export const spec: ConformanceSpec = {
   structuralIgnores: [],
   intentionalDifferences: [],
   fixtures: [
-    {
-      name: 'default link matches usa-link',
-      uswds:
-        '<div><a class="usa-link" href="/example" data-testid="target">An example link</a></div>',
-      flex: '<div><a class="flex-link" href="/example" data-testid="target">An example link</a></div>',
-    },
-    {
-      name: 'external link matches usa-link--external',
-      uswds:
-        '<div><a class="usa-link usa-link--external" href="https://example.com" data-testid="target">An external link</a></div>',
-      flex: '<div><a class="flex-link flex-link--external" href="https://example.com" data-testid="target">An external link</a></div>',
-    },
+    linkFixture(
+      'default link matches usa-link',
+      'An example link',
+      '/example',
+    ),
+    linkFixture(
+      'external link matches usa-link--external',
+      'An external link',
+      'https://example.com',
+      'external',
+    ),
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Link Test</h1>

@@ -1,4 +1,38 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const bodyText = 'Lorem ipsum dolor sit amet.'
+
+function siteAlertFixture(name: string, variant: string, heading: string) {
+  return {
+    name,
+    uswds: (
+      <div
+        class={`usa-site-alert usa-site-alert--${variant}`}
+        aria-label="Site alert"
+      >
+        <div class="usa-alert">
+          <div class="usa-alert__body" data-testid="target">
+            <h3 class="usa-alert__heading">{heading}</h3>
+            <p class="usa-alert__text">{bodyText}</p>
+          </div>
+        </div>
+      </div>
+    ).toString(),
+    flex: (
+      <div
+        class="flex-site-alert"
+        data-variant={variant}
+        aria-label="Site alert"
+      >
+        <div class="flex-site-alert__body" data-testid="target">
+          <h3 class="flex-site-alert__heading">{heading}</h3>
+          <p class="flex-site-alert__text">{bodyText}</p>
+        </div>
+      </div>
+    ).toString(),
+  }
+}
 
 export const spec: ConformanceSpec = {
   component: 'flex-site-alert',
@@ -85,40 +119,16 @@ export const spec: ConformanceSpec = {
     },
   ],
   fixtures: [
-    {
-      name: 'info site alert body matches USWDS',
-      uswds: `<div class="usa-site-alert usa-site-alert--info" aria-label="Site alert">
-        <div class="usa-alert">
-          <div class="usa-alert__body" data-testid="target">
-            <h3 class="usa-alert__heading">Informative status</h3>
-            <p class="usa-alert__text">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-      </div>`,
-      flex: `<div class="flex-site-alert" data-variant="info" aria-label="Site alert">
-        <div class="flex-site-alert__body" data-testid="target">
-          <h3 class="flex-site-alert__heading">Informative status</h3>
-          <p class="flex-site-alert__text">Lorem ipsum dolor sit amet.</p>
-        </div>
-      </div>`,
-    },
-    {
-      name: 'emergency site alert body matches USWDS',
-      uswds: `<div class="usa-site-alert usa-site-alert--emergency" aria-label="Site alert">
-        <div class="usa-alert">
-          <div class="usa-alert__body" data-testid="target">
-            <h3 class="usa-alert__heading">Emergency status</h3>
-            <p class="usa-alert__text">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-      </div>`,
-      flex: `<div class="flex-site-alert" data-variant="emergency" aria-label="Site alert">
-        <div class="flex-site-alert__body" data-testid="target">
-          <h3 class="flex-site-alert__heading">Emergency status</h3>
-          <p class="flex-site-alert__text">Lorem ipsum dolor sit amet.</p>
-        </div>
-      </div>`,
-    },
+    siteAlertFixture(
+      'info site alert body matches USWDS',
+      'info',
+      'Informative status',
+    ),
+    siteAlertFixture(
+      'emergency site alert body matches USWDS',
+      'emergency',
+      'Emergency status',
+    ),
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Site Alert Test</h1>

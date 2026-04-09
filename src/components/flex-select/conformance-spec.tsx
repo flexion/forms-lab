@@ -1,4 +1,19 @@
+/** @jsxImportSource hono/jsx */
 import type { ConformanceSpec } from '../conformance-types'
+
+const defaultOptions = (
+  <>
+    <option value="">- Select -</option>
+    <option value="1">Option 1</option>
+  </>
+)
+
+const multipleOptions = (
+  <>
+    <option value="1">Option 1</option>
+    <option value="2">Option 2</option>
+  </>
+)
 
 export const spec: ConformanceSpec = {
   component: 'flex-select',
@@ -48,15 +63,29 @@ export const spec: ConformanceSpec = {
   fixtures: [
     {
       name: 'default select matches usa-select',
-      uswds:
-        '<select class="usa-select" data-testid="target"><option value="">- Select -</option><option value="1">Option 1</option></select>',
-      flex: '<select class="flex-select" data-testid="target"><option value="">- Select -</option><option value="1">Option 1</option></select>',
+      uswds: (
+        <select class="usa-select" data-testid="target">
+          {defaultOptions}
+        </select>
+      ).toString(),
+      flex: (
+        <select class="flex-select" data-testid="target">
+          {defaultOptions}
+        </select>
+      ).toString(),
     },
     {
       name: 'multiple select',
-      uswds:
-        '<select class="usa-select" multiple data-testid="target"><option value="1">Option 1</option><option value="2">Option 2</option></select>',
-      flex: '<select class="flex-select" multiple data-testid="target"><option value="1">Option 1</option><option value="2">Option 2</option></select>',
+      uswds: (
+        <select class="usa-select" multiple data-testid="target">
+          {multipleOptions}
+        </select>
+      ).toString(),
+      flex: (
+        <select class="flex-select" multiple data-testid="target">
+          {multipleOptions}
+        </select>
+      ).toString(),
     },
   ],
   accessibilityFixtureHtml: `<main>
