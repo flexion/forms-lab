@@ -9,21 +9,36 @@ class FlexTabGroupElement extends HTMLElement {
     this.removeEventListener('keydown', this.handleKeydown.bind(this))
   }
 
+  private get tablist(): Element | null {
+    // Only match the direct child tablist, not nested ones
+    for (const child of this.children) {
+      if (child.getAttribute('role') === 'tablist') return child
+    }
+    return null
+  }
+
   private get tabs(): HTMLButtonElement[] {
-    const tablist = this.querySelector('[role="tablist"]')
+    const tablist = this.tablist
     if (!tablist) return []
     return Array.from(tablist.querySelectorAll('[role="tab"]'))
   }
 
+  private ownTab(el: Element | null): HTMLButtonElement | null {
+    if (!el || !(el instanceof HTMLButtonElement)) return null
+    // Ignore tabs belonging to nested tab groups
+    const tablist = this.tablist
+    return tablist?.contains(el) ? el : null
+  }
+
   private handleClick(event: Event) {
-    const tab = (event.target as Element).closest('[role="tab"]')
-    if (!tab || !(tab instanceof HTMLButtonElement)) return
+    const tab = this.ownTab((event.target as Element).closest('[role="tab"]'))
+    if (!tab) return
     this.selectTab(tab)
   }
 
   private handleKeydown(event: KeyboardEvent) {
-    const tab = (event.target as Element).closest('[role="tab"]')
-    if (!tab || !(tab instanceof HTMLButtonElement)) return
+    const tab = this.ownTab((event.target as Element).closest('[role="tab"]'))
+    if (!tab) return
 
     const tabs = this.tabs
     const index = tabs.indexOf(tab)
@@ -58,7 +73,10 @@ class FlexTabGroupElement extends HTMLElement {
   private selectTab(selected: HTMLButtonElement) {
     for (const tab of this.tabs) {
       const panelId = tab.getAttribute('aria-controls')
-      const panel = panelId ? this.querySelector(`#${panelId}`) : null
+      // Scope to direct child panels to avoid matching nested tab group panels
+      const panel = panelId
+        ? (Array.from(this.children).find((c) => c.id === panelId) ?? null)
+        : null
       const isSelected = tab === selected
 
       tab.setAttribute('aria-selected', String(isSelected))

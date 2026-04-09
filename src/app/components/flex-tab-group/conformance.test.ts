@@ -115,6 +115,60 @@ test.describe('flex-tab-group behavior', () => {
   })
 })
 
+test.describe('flex-tab-group nesting', () => {
+  async function renderWithJs(
+    page: import('@playwright/test').Page,
+    html: string,
+  ) {
+    await renderFlexFixture(page, `${html}<script>${componentsJs}</script>`)
+    await page.waitForFunction(() => customElements.get('flex-tab-group'))
+  }
+
+  test('clicking inner tab does not affect outer tab group', async ({
+    page,
+  }) => {
+    await renderWithJs(
+      page,
+      `
+      <flex-tab-group>
+        <div role="tablist" aria-label="Outer">
+          <button type="button" role="tab" aria-selected="true" aria-controls="outer-p1" id="outer-t1" class="flex-tab-group__tab">Preview</button>
+          <button type="button" role="tab" aria-selected="false" aria-controls="outer-p2" id="outer-t2" tabindex="-1" class="flex-tab-group__tab">Code</button>
+        </div>
+        <div role="tabpanel" id="outer-p1" aria-labelledby="outer-t1" class="flex-tab-group__panel">
+          <flex-tab-group>
+            <div role="tablist" aria-label="Inner">
+              <button type="button" role="tab" aria-selected="true" aria-controls="inner-p1" id="inner-t1" class="flex-tab-group__tab">First</button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="inner-p2" id="inner-t2" tabindex="-1" class="flex-tab-group__tab">Second</button>
+            </div>
+            <div role="tabpanel" id="inner-p1" aria-labelledby="inner-t1" class="flex-tab-group__panel"><p>Inner first</p></div>
+            <div role="tabpanel" id="inner-p2" aria-labelledby="inner-t2" class="flex-tab-group__panel" hidden><p>Inner second</p></div>
+          </flex-tab-group>
+        </div>
+        <div role="tabpanel" id="outer-p2" aria-labelledby="outer-t2" class="flex-tab-group__panel" hidden><p>Code content</p></div>
+      </flex-tab-group>
+      `,
+    )
+
+    // Click inner tab
+    await page.locator('#inner-t2').click()
+
+    // Inner tab group should switch
+    await expect(page.locator('#inner-t2')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
+    await expect(page.locator('#inner-p2')).toBeVisible()
+
+    // Outer tab group should be unaffected
+    await expect(page.locator('#outer-t1')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
+    await expect(page.locator('#outer-p1')).toBeVisible()
+  })
+})
+
 test.describe('flex-tab-group accessibility', () => {
   test('accessibility audit passes', async ({ page }) => {
     await renderFlexFixture(
