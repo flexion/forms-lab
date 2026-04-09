@@ -22,10 +22,13 @@
           reverse_proxy localhost:9000
         }
 
-        # Import branch-specific routes from deploy script
-        import /srv/forms-lab/caddy.d/*.caddy
+        # Import branch-specific routes first (more specific)
+        import /srv/forms-lab/caddy.d/branch-*.caddy
 
-        # Fallback for unmatched paths
+        # Import root route last (catch-all)
+        import /srv/forms-lab/caddy.d/root.caddy
+
+        # Fallback for unmatched paths (if no routes defined)
         respond "Forms Lab — no branch deployed at this path" 404
       }
 

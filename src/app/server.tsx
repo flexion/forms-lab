@@ -109,7 +109,58 @@ app.get('/health', (c) => {
 })
 
 // Root page
-app.get('/', (c) => {
+app.get('/', async (c) => {
+  // If deployed at root (no basePath), show deployed branches list
+  if (!basePath || basePath === '/') {
+    try {
+      const { readFile } = await import('node:fs/promises')
+      const portsData = await readFile('/srv/forms-lab/ports.json', 'utf-8')
+      const ports = JSON.parse(portsData)
+      const branches = Object.entries(ports).map(([branch, port]) => ({
+        branch,
+        port,
+        // Sanitize branch name for URL (replace / with -)
+        path: branch.replace(/\//g, '-'),
+      }))
+
+      return c.html(
+        <Layout currentPath="/">
+          <h1>Forms Lab — Deployed Branches</h1>
+          <p>
+            LLM-Assisted Forms Platform for government forms. Select a deployed
+            branch below.
+          </p>
+          {branches.length > 0 ? (
+            <div class="l-stack">
+              <h2>Active Deployments</h2>
+              <ul>
+                {branches.map(({ branch, path }) => (
+                  <li key={branch}>
+                    <a href={`/${path}/`}>{branch}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p>No branches currently deployed.</p>
+          )}
+        </Layout>,
+      )
+    } catch {
+      // If ports.json doesn't exist or can't be read, show default page
+      return c.html(
+        <Layout currentPath="/">
+          <h1>Forms Lab</h1>
+          <p>
+            Upload a government PDF form, extract structured specs, deliver form
+            experiences (static or conversational), and generate completed PDFs.
+          </p>
+        </Layout>,
+      )
+    }
+  }
+
+  // Branch-specific homepage
   return c.html(
     <Layout currentPath="/">
       <h1>Forms Lab</h1>
