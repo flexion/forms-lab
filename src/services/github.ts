@@ -7,12 +7,28 @@ export interface GitHubIssue {
   milestone: { title: string } | null
 }
 
+export interface GitHubPullRequest {
+  number: number
+  title: string
+  state: 'open' | 'closed'
+  merged_at: string | null
+  html_url: string
+  head: {
+    ref: string
+  }
+}
+
 export interface GitHubClient {
   listIssues(
     owner: string,
     repo: string,
     labels: string,
   ): Promise<GitHubIssue[]>
+  findPullRequest(
+    owner: string,
+    repo: string,
+    branch: string,
+  ): Promise<GitHubPullRequest | null>
 }
 
 export function createGitHubClient(token?: string): GitHubClient {
@@ -32,6 +48,29 @@ export function createGitHubClient(token?: string): GitHubClient {
       }
 
       return res.json() as Promise<GitHubIssue[]>
+    },
+
+    async findPullRequest(owner, repo, branch) {
+      // Search for open PRs with this head branch
+      const url = `https://api.github.com/repos/${owner}/${repo}/pulls?head=${owner}:${branch}&state=all&per_page=1`
+      const headers: Record<string, string> = {
+        Accept: 'application/vnd.github+json',
+      }
+      if (token) {
+        headers.Authorization = `Bearer ${token}`
+      }
+
+      try {
+        const res = await fetch(url, { headers })
+        if (!res.ok) {
+          return null
+        }
+
+        const prs = (await res.json()) as GitHubPullRequest[]
+        return prs.length > 0 ? prs[0] : null
+      } catch {
+        return null
+      }
     },
   }
 }

@@ -90,7 +90,7 @@ function RelativeTime({ isoDate }: { isoDate: string }) {
 }
 
 export function DeploymentCard({ deployment }: DeploymentCardProps) {
-  const { branch, url, commit, service, health } = deployment
+  const { branch, url, commit, service, health, pullRequest } = deployment
 
   return (
     <div
@@ -139,6 +139,41 @@ export function DeploymentCard({ deployment }: DeploymentCardProps) {
           <StatusBadge status={health.status} label={health.status} />
         </div>
       </div>
+
+      {/* Pull Request info */}
+      {pullRequest && (
+        <div
+          style={{
+            fontSize: 'var(--flex-text-sm)',
+            padding: 'var(--flex-space-1) var(--flex-space-2)',
+            backgroundColor: 'var(--flex-color-info-lightest)',
+            borderRadius: 'var(--flex-radius-md)',
+            borderLeft: '3px solid var(--flex-color-info)',
+          }}
+        >
+          <a
+            href={pullRequest.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: 'var(--flex-color-primary)',
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--flex-space-1)',
+            }}
+          >
+            <span style={{ fontWeight: 'var(--flex-font-weight-semibold)' }}>
+              #{pullRequest.number}
+            </span>
+            <span>{pullRequest.title}</span>
+            <StatusBadge
+              status={pullRequest.status}
+              label={pullRequest.status}
+            />
+          </a>
+        </div>
+      )}
 
       {/* Commit info */}
       <div

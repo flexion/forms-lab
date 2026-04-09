@@ -4,9 +4,19 @@ import type {
   HealthStatus,
   ServiceStatus,
 } from '../types/deployment'
+import { createGitHubClient, getGitHubToken } from './github'
 
 const DEPLOY_ROOT = '/srv/forms-lab'
 const PORTS_FILE = `${DEPLOY_ROOT}/ports.json`
+const GIT_BIN = '/run/current-system/sw/bin/git'
+
+// PR cache with TTL (5 minutes)
+const PR_CACHE_TTL = 5 * 60 * 1000
+interface PRCacheEntry {
+  data: DeploymentInfo['pullRequest']
+  timestamp: number
+}
+const prCache = new Map<string, PRCacheEntry>()
 
 interface PortsConfig {
   [branch: string]: number
@@ -37,18 +47,18 @@ async function getCommitInfo(
   try {
     const { $ } = await import('bun')
 
-    // Get commit info
-    const sha = await $`git -C ${worktreePath} rev-parse HEAD`
+    // Get commit info using explicit git path for NixOS
+    const sha = await $`${GIT_BIN} -C ${worktreePath} rev-parse HEAD`
       .text()
       .then((s) => s.trim())
     const shortSha = sha.slice(0, 7)
-    const message = await $`git -C ${worktreePath} log -1 --pretty=%s`
+    const message = await $`${GIT_BIN} -C ${worktreePath} log -1 --pretty=%s`
       .text()
       .then((s) => s.trim())
-    const author = await $`git -C ${worktreePath} log -1 --pretty=%an`
+    const author = await $`${GIT_BIN} -C ${worktreePath} log -1 --pretty=%an`
       .text()
       .then((s) => s.trim())
-    const date = await $`git -C ${worktreePath} log -1 --pretty=%cI`
+    const date = await $`${GIT_BIN} -C ${worktreePath} log -1 --pretty=%cI`
       .text()
       .then((s) => s.trim())
 
@@ -60,7 +70,9 @@ async function getCommitInfo(
       date,
       githubUrl: `https://github.com/flexion/forms-lab/commit/${sha}`,
     }
-  } catch {
+  } catch (error) {
+    // Log error for debugging
+    console.error(`Failed to get git info for ${branch}:`, error)
     return {
       sha: 'unknown',
       shortSha: 'unknown',
@@ -154,6 +166,45 @@ async function getHealthStatus(url: string): Promise<DeploymentInfo['health']> {
 }
 
 /**
+ * Get GitHub PR info for a branch (with caching)
+ */
+async function getPullRequestInfo(
+  branch: string,
+): Promise<DeploymentInfo['pullRequest']> {
+  // Check cache first
+  const cached = prCache.get(branch)
+  if (cached && Date.now() - cached.timestamp < PR_CACHE_TTL) {
+    return cached.data
+  }
+
+  try {
+    const token = await getGitHubToken()
+    const client = createGitHubClient(token)
+    const pr = await client.findPullRequest('flexion', 'forms-lab', branch)
+
+    if (!pr) {
+      // Cache null result to avoid repeated queries for branches without PRs
+      prCache.set(branch, { data: undefined, timestamp: Date.now() })
+      return undefined
+    }
+
+    const prInfo: DeploymentInfo['pullRequest'] = {
+      number: pr.number,
+      title: pr.title,
+      url: pr.html_url,
+      status: pr.merged_at ? 'merged' : pr.state === 'open' ? 'open' : 'closed',
+    }
+
+    // Cache the result
+    prCache.set(branch, { data: prInfo, timestamp: Date.now() })
+    return prInfo
+  } catch (error) {
+    console.error(`Failed to fetch PR info for ${branch}:`, error)
+    return undefined
+  }
+}
+
+/**
  * Get full deployment info for a branch
  */
 export async function getDeploymentInfo(
@@ -165,12 +216,25 @@ export async function getDeploymentInfo(
   const safeBranch = branch.replace(/\//g, '-')
   const url = isMain ? '/' : `/${safeBranch}/`
 
-  // Collect metadata in parallel
+  // Collect metadata in parallel (PR info last to avoid blocking on GitHub API)
   const [commit, service, health] = await Promise.all([
     getCommitInfo(branch),
     getServiceStatus(branch),
     getHealthStatus(`http://localhost:${port}/`),
   ])
+
+  // Fetch PR info separately (with timeout)
+  let pullRequest: DeploymentInfo['pullRequest']
+  try {
+    pullRequest = await Promise.race([
+      getPullRequestInfo(branch),
+      new Promise<undefined>((resolve) =>
+        setTimeout(() => resolve(undefined), 2000),
+      ),
+    ])
+  } catch {
+    pullRequest = undefined
+  }
 
   return {
     branch,
@@ -179,6 +243,7 @@ export async function getDeploymentInfo(
     commit,
     service,
     health,
+    pullRequest,
   }
 }
 

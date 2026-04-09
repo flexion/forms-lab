@@ -14,6 +14,7 @@ interface LayoutProps {
   title?: string
   sidebar?: Child
   currentPath?: string
+  fullWidth?: boolean
 }
 
 export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
@@ -89,6 +90,15 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
               <div class="l-stack">{props.children}</div>
             </main>
           </div>
+        ) : props.fullWidth ? (
+          <main
+            style={{
+              paddingInline: 'var(--flex-space-md)',
+              paddingBlock: 'var(--flex-space-lg)',
+            }}
+          >
+            {props.children}
+          </main>
         ) : (
           <main class="l-center">
             <div class="l-stack">{props.children}</div>

@@ -118,115 +118,117 @@ app.get('/', async (c) => {
       const summary = await getDeploymentSummary()
 
       return c.html(
-        <Layout currentPath="/">
-          <h1>Forms Lab — Deployment Dashboard</h1>
-          <p>
-            Automated branch deployments for the Forms Lab platform. Each push
-            triggers a deployment.
-          </p>
+        <Layout currentPath="/" fullWidth={true}>
+          <div class="l-stack" style={{ maxWidth: '1400px', margin: '0 auto' }}>
+            <h1>Forms Lab — Deployment Dashboard</h1>
+            <p>
+              Automated branch deployments for the Forms Lab platform. Each push
+              triggers a deployment.
+            </p>
 
-          {/* Summary statistics */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: 'var(--flex-space-2)',
-              marginTop: 'var(--flex-space-4)',
-              marginBottom: 'var(--flex-space-4)',
-            }}
-          >
+            {/* Summary statistics */}
             <div
-              class="content-card"
-              style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gap: 'var(--flex-space-2)',
+                marginTop: 'var(--flex-space-4)',
+                marginBottom: 'var(--flex-space-4)',
+              }}
             >
               <div
-                style={{
-                  fontSize: 'var(--flex-text-2xl)',
-                  fontWeight: 'var(--flex-font-weight-bold)',
-                  color: 'var(--flex-color-primary)',
-                }}
+                class="content-card"
+                style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
               >
-                {summary.totalDeployments}
+                <div
+                  style={{
+                    fontSize: 'var(--flex-text-2xl)',
+                    fontWeight: 'var(--flex-font-weight-bold)',
+                    color: 'var(--flex-color-primary)',
+                  }}
+                >
+                  {summary.totalDeployments}
+                </div>
+                <div
+                  style={{
+                    fontSize: 'var(--flex-text-sm)',
+                    color: 'var(--flex-color-text-muted)',
+                    marginTop: 'var(--flex-space-1)',
+                  }}
+                >
+                  Total Deployments
+                </div>
               </div>
+
               <div
-                style={{
-                  fontSize: 'var(--flex-text-sm)',
-                  color: 'var(--flex-color-text-muted)',
-                  marginTop: 'var(--flex-space-1)',
-                }}
+                class="content-card"
+                style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
               >
-                Total Deployments
+                <div
+                  style={{
+                    fontSize: 'var(--flex-text-2xl)',
+                    fontWeight: 'var(--flex-font-weight-bold)',
+                    color: 'var(--flex-color-success)',
+                  }}
+                >
+                  {summary.healthyDeployments}
+                </div>
+                <div
+                  style={{
+                    fontSize: 'var(--flex-text-sm)',
+                    color: 'var(--flex-color-text-muted)',
+                    marginTop: 'var(--flex-space-1)',
+                  }}
+                >
+                  Healthy
+                </div>
+              </div>
+
+              <div
+                class="content-card"
+                style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
+              >
+                <div
+                  style={{
+                    fontSize: 'var(--flex-text-2xl)',
+                    fontWeight: 'var(--flex-font-weight-bold)',
+                    color:
+                      summary.failedDeployments > 0
+                        ? 'var(--flex-color-error)'
+                        : 'var(--flex-color-text-muted)',
+                  }}
+                >
+                  {summary.failedDeployments}
+                </div>
+                <div
+                  style={{
+                    fontSize: 'var(--flex-text-sm)',
+                    color: 'var(--flex-color-text-muted)',
+                    marginTop: 'var(--flex-space-1)',
+                  }}
+                >
+                  Failed
+                </div>
               </div>
             </div>
 
-            <div
-              class="content-card"
-              style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
-            >
-              <div
-                style={{
-                  fontSize: 'var(--flex-text-2xl)',
-                  fontWeight: 'var(--flex-font-weight-bold)',
-                  color: 'var(--flex-color-success)',
-                }}
-              >
-                {summary.healthyDeployments}
+            {/* Deployment cards grid */}
+            {summary.deployments.length > 0 ? (
+              <div class="l-stack">
+                <h2>Active Deployments</h2>
+                <div class="l-grid">
+                  {summary.deployments.map((deployment) => (
+                    <DeploymentCard
+                      key={deployment.branch}
+                      deployment={deployment}
+                    />
+                  ))}
+                </div>
               </div>
-              <div
-                style={{
-                  fontSize: 'var(--flex-text-sm)',
-                  color: 'var(--flex-color-text-muted)',
-                  marginTop: 'var(--flex-space-1)',
-                }}
-              >
-                Healthy
-              </div>
-            </div>
-
-            <div
-              class="content-card"
-              style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
-            >
-              <div
-                style={{
-                  fontSize: 'var(--flex-text-2xl)',
-                  fontWeight: 'var(--flex-font-weight-bold)',
-                  color:
-                    summary.failedDeployments > 0
-                      ? 'var(--flex-color-error)'
-                      : 'var(--flex-color-text-muted)',
-                }}
-              >
-                {summary.failedDeployments}
-              </div>
-              <div
-                style={{
-                  fontSize: 'var(--flex-text-sm)',
-                  color: 'var(--flex-color-text-muted)',
-                  marginTop: 'var(--flex-space-1)',
-                }}
-              >
-                Failed
-              </div>
-            </div>
+            ) : (
+              <p>No branches currently deployed.</p>
+            )}
           </div>
-
-          {/* Deployment cards grid */}
-          {summary.deployments.length > 0 ? (
-            <div class="l-stack">
-              <h2>Active Deployments</h2>
-              <div class="l-grid">
-                {summary.deployments.map((deployment) => (
-                  <DeploymentCard
-                    key={deployment.branch}
-                    deployment={deployment}
-                  />
-                ))}
-              </div>
-            </div>
-          ) : (
-            <p>No branches currently deployed.</p>
-          )}
         </Layout>,
       )
     } catch (error) {
