@@ -14,7 +14,7 @@ export const Default: FC = () => (
       <CardHeading>Card Title</CardHeading>
     </CardHeader>
     <CardMedia
-      src="https://designsystem.digital.gov/img/introducing-uswds-2-0/built-to-grow--702702.jpg"
+      src="/static/img/hero.jpg"
       alt="Placeholder"
     />
     <CardBody>
@@ -37,7 +37,7 @@ export const HeaderFirst: FC = () => (
       <CardHeading>Header First</CardHeading>
     </CardHeader>
     <CardMedia
-      src="https://designsystem.digital.gov/img/introducing-uswds-2-0/built-to-grow--702702.jpg"
+      src="/static/img/hero.jpg"
       alt="Placeholder"
     />
     <CardBody>
@@ -57,7 +57,7 @@ export const Flag: FC = () => (
       <CardHeading>Flag Layout</CardHeading>
     </CardHeader>
     <CardMedia
-      src="https://designsystem.digital.gov/img/introducing-uswds-2-0/built-to-grow--702702.jpg"
+      src="/static/img/hero.jpg"
       alt="Placeholder"
     />
     <CardBody>
@@ -72,7 +72,7 @@ export const FlagMediaRight: FC = () => (
       <CardHeading>Flag Media Right</CardHeading>
     </CardHeader>
     <CardMedia
-      src="https://designsystem.digital.gov/img/introducing-uswds-2-0/built-to-grow--702702.jpg"
+      src="/static/img/hero.jpg"
       alt="Placeholder"
     />
     <CardBody>

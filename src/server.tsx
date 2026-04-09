@@ -29,6 +29,7 @@ app.get('/static/img/:name', async (c) => {
     'icon-dot-gov.svg',
     'icon-https.svg',
     'logo-img.png',
+    'hero.jpg',
   ]
   if (!allowed.includes(name)) return c.notFound()
   const filePath = resolve(
@@ -43,7 +44,9 @@ app.get('/static/img/:name', async (c) => {
         ? 'image/svg+xml'
         : ext === 'png'
           ? 'image/png'
-          : 'application/octet-stream'
+          : ext === 'jpg' || ext === 'jpeg'
+            ? 'image/jpeg'
+            : 'application/octet-stream'
     c.header('Content-Type', contentType)
     c.header('Cache-Control', 'public, max-age=31536000')
     return c.body(data)
