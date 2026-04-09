@@ -7,15 +7,11 @@ const config = new pulumi.Config()
 const sshKeyPath = config.require('sshPublicKeyPath')
 const sshPublicKey = readFileSync(resolve(sshKeyPath), 'utf-8').trim()
 
-// Look up the latest NixOS 24.11 AMI
-const nixosAmi = aws.ec2.getAmi({
-  mostRecent: true,
-  owners: ['427812963091'], // NixOS community AMI owner
-  filters: [
-    { name: 'name', values: ['nixos/24.11*'] },
-    { name: 'architecture', values: ['x86_64'] },
-  ],
-})
+// Use NixOS 25.11 AMI for us-east-1
+// AMI ID from https://nixos.github.io/amis/ (updates weekly)
+// Note: Can't use getAmi() due to missing ec2:DescribeImages IAM permission
+const nixosAmiId = 'ami-0d1f1bc132c528d59' // NixOS 25.11.8107 x86_64 (2026-03-29)
+const nixosAmi = Promise.resolve({ id: nixosAmiId })
 
 // SSH key pair
 const keyPair = new aws.ec2.KeyPair('forms-lab-key', {

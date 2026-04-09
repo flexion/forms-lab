@@ -2,7 +2,7 @@
 
 {
   # Basic system configuration
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.11";
 
   # Packages available system-wide
   environment.systemPackages = with pkgs; [
