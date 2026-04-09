@@ -1,6 +1,8 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { getBasePath, resolveUrl } from '../lib/base-path'
+import { getDeploymentSummary } from '../services/deployment-metadata'
+import { DeploymentCard } from './components/deployment-card'
 import { Layout } from './components/flex-layout'
 import catalog from './routes/catalog/index'
 
@@ -110,50 +112,135 @@ app.get('/health', (c) => {
 
 // Root page
 app.get('/', async (c) => {
-  // If deployed at root (no basePath), show deployed branches list
+  // If deployed at root (no basePath), show deployment dashboard
   if (!basePath || basePath === '/') {
     try {
-      const { readFile } = await import('node:fs/promises')
-      const portsData = await readFile('/srv/forms-lab/ports.json', 'utf-8')
-      const ports = JSON.parse(portsData)
-      const branches = Object.entries(ports).map(([branch, port]) => ({
-        branch,
-        port,
-        // Main branch deploys to root, others to /<branch>/
-        url: branch === 'main' ? '/' : `/${branch.replace(/\//g, '-')}/`,
-      }))
+      const summary = await getDeploymentSummary()
 
       return c.html(
         <Layout currentPath="/">
-          <h1>Forms Lab — Deployed Branches</h1>
+          <h1>Forms Lab — Deployment Dashboard</h1>
           <p>
-            LLM-Assisted Forms Platform for government forms. Select a deployed
-            branch below.
+            Automated branch deployments for the Forms Lab platform. Each push
+            triggers a deployment.
           </p>
-          {branches.length > 0 ? (
+
+          {/* Summary statistics */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: 'var(--flex-space-2)',
+              marginTop: 'var(--flex-space-4)',
+              marginBottom: 'var(--flex-space-4)',
+            }}
+          >
+            <div
+              class="content-card"
+              style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
+            >
+              <div
+                style={{
+                  fontSize: 'var(--flex-text-2xl)',
+                  fontWeight: 'var(--flex-font-weight-bold)',
+                  color: 'var(--flex-color-primary)',
+                }}
+              >
+                {summary.totalDeployments}
+              </div>
+              <div
+                style={{
+                  fontSize: 'var(--flex-text-sm)',
+                  color: 'var(--flex-color-text-muted)',
+                  marginTop: 'var(--flex-space-1)',
+                }}
+              >
+                Total Deployments
+              </div>
+            </div>
+
+            <div
+              class="content-card"
+              style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
+            >
+              <div
+                style={{
+                  fontSize: 'var(--flex-text-2xl)',
+                  fontWeight: 'var(--flex-font-weight-bold)',
+                  color: 'var(--flex-color-success)',
+                }}
+              >
+                {summary.healthyDeployments}
+              </div>
+              <div
+                style={{
+                  fontSize: 'var(--flex-text-sm)',
+                  color: 'var(--flex-color-text-muted)',
+                  marginTop: 'var(--flex-space-1)',
+                }}
+              >
+                Healthy
+              </div>
+            </div>
+
+            <div
+              class="content-card"
+              style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
+            >
+              <div
+                style={{
+                  fontSize: 'var(--flex-text-2xl)',
+                  fontWeight: 'var(--flex-font-weight-bold)',
+                  color:
+                    summary.failedDeployments > 0
+                      ? 'var(--flex-color-error)'
+                      : 'var(--flex-color-text-muted)',
+                }}
+              >
+                {summary.failedDeployments}
+              </div>
+              <div
+                style={{
+                  fontSize: 'var(--flex-text-sm)',
+                  color: 'var(--flex-color-text-muted)',
+                  marginTop: 'var(--flex-space-1)',
+                }}
+              >
+                Failed
+              </div>
+            </div>
+          </div>
+
+          {/* Deployment cards grid */}
+          {summary.deployments.length > 0 ? (
             <div class="l-stack">
               <h2>Active Deployments</h2>
-              <ul>
-                {branches.map(({ branch, url }) => (
-                  <li key={branch}>
-                    <a href={url}>{branch}</a>
-                  </li>
+              <div class="l-grid">
+                {summary.deployments.map((deployment) => (
+                  <DeploymentCard
+                    key={deployment.branch}
+                    deployment={deployment}
+                  />
                 ))}
-              </ul>
+              </div>
             </div>
           ) : (
             <p>No branches currently deployed.</p>
           )}
         </Layout>,
       )
-    } catch {
-      // If ports.json doesn't exist or can't be read, show default page
+    } catch (error) {
+      // If deployment metadata can't be read, show fallback page
+      console.error('Failed to load deployment summary:', error)
       return c.html(
         <Layout currentPath="/">
           <h1>Forms Lab</h1>
           <p>
             Upload a government PDF form, extract structured specs, deliver form
             experiences (static or conversational), and generate completed PDFs.
+          </p>
+          <p>
+            <a href="/catalog">Browse the Catalog</a>
           </p>
         </Layout>,
       )
