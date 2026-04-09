@@ -14,6 +14,7 @@
       system = "x86_64-linux";
       modules = [
         sops-nix.nixosModules.sops
+        ./hardware-configuration.nix
         ./configuration.nix
         ./modules/users.nix
         ./modules/caddy.nix
