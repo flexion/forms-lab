@@ -1,9 +1,11 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
+import { getBasePath } from '../lib/base-path'
 import { Layout } from './components/flex-layout'
 import catalog from './routes/catalog/index'
 
-const app = new Hono()
+const basePath = getBasePath()
+const app = new Hono().basePath(basePath)
 
 // USWDS icon sprite
 app.get('/static/sprite.svg', async (c) => {

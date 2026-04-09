@@ -1,4 +1,5 @@
 import type { Child, FC, PropsWithChildren } from 'hono/jsx'
+import { resolveUrl } from '../../../lib/base-path'
 import { Banner } from '../flex-banner'
 import {
   Footer,
@@ -29,7 +30,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             __html: `(function(){var t=localStorage.getItem('theme');if(t==='light'||t==='dark'||t==='auto')document.documentElement.setAttribute('data-theme',t)})()`,
           }}
         />
-        <link rel="stylesheet" href="/static/styles.css" />
+        <link rel="stylesheet" href={resolveUrl('/static/styles.css')} />
       </head>
       <body>
         <Banner
@@ -40,7 +41,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           guidance={[
             {
               icon: {
-                src: '/static/sprite.svg#account_balance',
+                src: `${resolveUrl('/static/sprite.svg')}#account_balance`,
                 alt: 'Flexion',
                 color: 'var(--flex-color-accent)',
               },
@@ -55,7 +56,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             },
             {
               icon: {
-                src: '/static/sprite.svg#github',
+                src: `${resolveUrl('/static/sprite.svg')}#github`,
                 alt: 'GitHub',
                 color: '#24292f',
               },
@@ -71,12 +72,12 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
         />
         <Header>
           <HeaderNavItem
-            href="/"
+            href={resolveUrl('/')}
             label="Home"
             current={props.currentPath === '/'}
           />
           <HeaderNavItem
-            href="/catalog"
+            href={resolveUrl('/catalog')}
             label="Catalog"
             current={props.currentPath?.startsWith('/catalog') ?? false}
           />
@@ -99,19 +100,22 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             <FooterNav>
               <ul>
                 <li>
-                  <a class="flex-footer__primary-link" href="/">
+                  <a class="flex-footer__primary-link" href={resolveUrl('/')}>
                     Home
                   </a>
                 </li>
                 <li>
-                  <a class="flex-footer__primary-link" href="/catalog">
+                  <a
+                    class="flex-footer__primary-link"
+                    href={resolveUrl('/catalog')}
+                  >
                     Catalog
                   </a>
                 </li>
                 <li>
                   <a
                     class="flex-footer__primary-link"
-                    href="/catalog/design-system"
+                    href={resolveUrl('/catalog/design-system')}
                   >
                     Design System
                   </a>
@@ -125,7 +129,10 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             </p>
           </FooterSecondary>
         </Footer>
-        <script type="module" src="/static/components.js"></script>
+        <script
+          type="module"
+          src={resolveUrl('/static/components.js')}
+        ></script>
       </body>
     </html>
   )

@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach } from 'bun:test'
+import { afterEach, describe, expect, it } from 'bun:test'
 import { getBasePath, resolveUrl } from '../src/lib/base-path'
 
 describe('getBasePath', () => {
@@ -76,9 +76,9 @@ describe('resolveUrl', () => {
 
   it('handles paths with fragments', () => {
     process.env.BASE_PATH = '/main'
-    const basePath = getBasePath()
+    const _basePath = getBasePath()
     const spriteUrl = resolveUrl('/static/sprite.svg')
-    const fragmentUrl = spriteUrl + '#account_balance'
+    const fragmentUrl = `${spriteUrl}#account_balance`
     expect(fragmentUrl).toBe('/main/static/sprite.svg#account_balance')
   })
 
