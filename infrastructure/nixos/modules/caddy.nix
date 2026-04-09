@@ -10,8 +10,7 @@
     '';
 
     # Base Caddyfile — webhook route is always present
-    # Branch routes are added dynamically by the deploy script
-    # via Caddy's admin API
+    # Branch routes are imported from /srv/forms-lab/caddy.d/*.caddy
     extraConfig = ''
       ec2-34-197-222-16.compute-1.amazonaws.com {
         # Use self-signed certificate (Let's Encrypt won't issue for .compute.amazonaws.com)
@@ -23,8 +22,10 @@
           reverse_proxy localhost:9000
         }
 
-        # The deploy script configures route blocks via admin API
-        # This is the fallback
+        # Import branch-specific routes from deploy script
+        import /srv/forms-lab/caddy.d/*.caddy
+
+        # Fallback for unmatched paths
         respond "Forms Lab — no branch deployed at this path" 404
       }
 

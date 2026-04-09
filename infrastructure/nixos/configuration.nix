@@ -30,9 +30,10 @@
   # Timezone
   time.timeZone = "UTC";
 
-  # Create the forms-lab service directory
+  # Create the forms-lab service directory and Caddy routes directory
   systemd.tmpfiles.rules = [
     "d /srv/forms-lab 0755 forms-lab forms-lab -"
+    "d /srv/forms-lab/caddy.d 0755 forms-lab forms-lab -"
   ];
 
   # Service user
@@ -53,7 +54,7 @@
     };
   };
 
-  # Allow forms-lab user to manage its own services
+  # Allow forms-lab user to manage its own services and reload Caddy
   security.sudo.extraRules = [{
     users = [ "forms-lab" ];
     commands = [{
@@ -64,6 +65,9 @@
       options = [ "NOPASSWD" ];
     } {
       command = "${pkgs.systemd}/bin/systemctl stop forms-lab-app@*";
+      options = [ "NOPASSWD" ];
+    } {
+      command = "${pkgs.systemd}/bin/systemctl reload caddy.service";
       options = [ "NOPASSWD" ];
     }];
   }];

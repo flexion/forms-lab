@@ -69,19 +69,18 @@ let
     sudo ${pkgs.systemd}/bin/systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
       sudo ${pkgs.systemd}/bin/systemctl start "forms-lab-app@$UNIT_NAME.service"
 
-    # Update Caddy config via admin API
-    # Routes need to be added inside the host block at routes/0/handle/0/routes
-    # Insert before the last route (fallback 404)
-    ${pkgs.curl}/bin/curl -s -X POST http://localhost:2019/config/apps/http/servers/srv0/routes/0/handle/0/routes/@before:-1 \
-      -H "Content-Type: application/json" \
-      -d "{
-        \"@id\": \"branch-$UNIT_NAME\",
-        \"match\": [{\"path\": [\"/$UNIT_NAME/*\"]}],
-        \"handle\": [{
-          \"handler\": \"reverse_proxy\",
-          \"upstreams\": [{\"dial\": \"localhost:$PORT\"}]
-        }]
-      }" || echo "Warning: Caddy config update may need manual adjustment"
+    # Write Caddy route snippet to persistent config directory
+    CADDY_DIR="$DEPLOY_ROOT/caddy.d"
+    mkdir -p "$CADDY_DIR"
+    cat > "$CADDY_DIR/$UNIT_NAME.caddy" <<CADDYEOF
+    # Route for branch: $BRANCH (port $PORT)
+    handle /$UNIT_NAME* {
+      reverse_proxy localhost:$PORT
+    }
+    CADDYEOF
+
+    # Reload Caddy to pick up the new route
+    sudo ${pkgs.systemd}/bin/systemctl reload caddy.service
 
     echo "Deployed $BRANCH at port $PORT (/$UNIT_NAME/)"
   '';
