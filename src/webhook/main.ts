@@ -28,7 +28,7 @@ app.post('/', async (c) => {
     return c.json({ ignored: true, reason: `Event type: ${event}` }, 200)
   }
 
-  let payload
+  let payload: unknown
   try {
     payload = JSON.parse(body)
   } catch (err) {
