@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
-import type { FieldEntry } from '../../src/types/models'
-import { resolveFormSpec } from '../../src/services/form-resolver'
 import { findNextPage, findPrevPage } from '../../src/services/form-navigation'
-import { testDataSpec, testFormSpec, conditionalPageFormSpec } from './fixtures'
+import { resolveFormSpec } from '../../src/services/form-resolver'
+import type { FieldEntry } from '../../src/types/models'
+import { conditionalPageFormSpec, testDataSpec, testFormSpec } from './fixtures'
 
 describe('findNextPage', () => {
   it('returns next page index in linear form', () => {

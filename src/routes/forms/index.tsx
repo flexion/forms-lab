@@ -1,24 +1,25 @@
 import { Hono } from 'hono'
-import { Layout } from '../../components/flex-layout'
+import { FormConfirmation } from '../../components/flex-form-confirmation'
 import { FormLanding } from '../../components/flex-form-landing'
 import { FormPageView } from '../../components/flex-form-page'
 import { FormReview } from '../../components/flex-form-review'
-import { FormConfirmation } from '../../components/flex-form-confirmation'
+import { Layout } from '../../components/flex-layout'
+import { findNextPage, findPrevPage } from '../../services/form-navigation'
 import { resolveFormSpec } from '../../services/form-resolver'
 import { validateFields } from '../../services/form-validation'
-import { findNextPage, findPrevPage } from '../../services/form-navigation'
 import type {
   DataCollectionSpec,
-  FieldEntry,
-  FormSpec,
   FormSessionGateway,
+  FormSpec,
   SubmissionGateway,
 } from '../../types/models'
 
 interface FormRouterDeps {
   sessionGateway: FormSessionGateway
   submissionGateway: SubmissionGateway
-  getSpecs: (specId: string) => { dataSpec: DataCollectionSpec; formSpec: FormSpec } | null
+  getSpecs: (
+    specId: string,
+  ) => { dataSpec: DataCollectionSpec; formSpec: FormSpec } | null
 }
 
 export function createFormRouter(deps: FormRouterDeps) {
@@ -43,8 +44,13 @@ export function createFormRouter(deps: FormRouterDeps) {
   forms.post('/:specId/sessions', (c) => {
     const specs = getSpecs(c.req.param('specId'))
     if (!specs) return c.notFound()
-    const session = sessionGateway.createSession(specs.dataSpec.id, specs.formSpec.id)
-    return c.redirect(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/0`)
+    const session = sessionGateway.createSession(
+      specs.dataSpec.id,
+      specs.formSpec.id,
+    )
+    return c.redirect(
+      `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/0`,
+    )
   })
 
   // Render page
@@ -57,9 +63,10 @@ export function createFormRouter(deps: FormRouterDeps) {
     const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
     if (pageIndex < 0 || pageIndex >= resolved.pages.length) return c.notFound()
     const prev = findPrevPage(resolved, pageIndex, session.fields)
-    const prevUrl = prev !== null
-      ? `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`
-      : null
+    const prevUrl =
+      prev !== null
+        ? `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`
+        : null
     return c.html(
       <Layout title={resolved.pages[pageIndex].page.title} currentPath="/forms">
         <FormPageView
@@ -93,14 +100,17 @@ export function createFormRouter(deps: FormRouterDeps) {
     }
 
     const validated = validateFields(formData, requirements, session.fields)
-    const hasErrors = Object.values(validated).some((e) => e.errors && e.errors.length > 0)
+    const hasErrors = Object.values(validated).some(
+      (e) => e.errors && e.errors.length > 0,
+    )
 
     if (hasErrors) {
       const mergedFields = { ...session.fields, ...validated }
       const prev = findPrevPage(resolved, pageIndex, mergedFields)
-      const prevUrl = prev !== null
-        ? `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`
-        : null
+      const prevUrl =
+        prev !== null
+          ? `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`
+          : null
       return c.html(
         <Layout title={resolvedPage.page.title} currentPath="/forms">
           <FormPageView
@@ -115,12 +125,17 @@ export function createFormRouter(deps: FormRouterDeps) {
     }
 
     sessionGateway.writeFields(session.id, validated)
-    const updatedSession = sessionGateway.getSession(session.id)!
+    const updatedSession = sessionGateway.getSession(session.id)
+    if (!updatedSession) return c.notFound()
     const next = findNextPage(resolved, pageIndex, updatedSession.fields)
     if (next !== null) {
-      return c.redirect(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${next}`)
+      return c.redirect(
+        `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${next}`,
+      )
     }
-    return c.redirect(`/forms/${specs.dataSpec.id}/sessions/${session.id}/review`)
+    return c.redirect(
+      `/forms/${specs.dataSpec.id}/sessions/${session.id}/review`,
+    )
   })
 
   // Review page

@@ -21,7 +21,9 @@ describe('Form routes', () => {
     })
     expect(res.status).toBe(302)
     const location = res.headers.get('Location')
-    expect(location).toMatch(/\/forms\/benefits-app\/sessions\/[\w-]+\/pages\/0/)
+    expect(location).toMatch(
+      /\/forms\/benefits-app\/sessions\/[\w-]+\/pages\/0/,
+    )
   })
 
   it('full flow: create session, fill pages, review, submit', async () => {
@@ -29,8 +31,9 @@ describe('Form routes', () => {
     const createRes = await app.request('/forms/benefits-app/sessions', {
       method: 'POST',
     })
-    const location = createRes.headers.get('Location')!
-    const sessionId = location.split('/sessions/')[1].split('/pages/')[0]
+    const location = createRes.headers.get('Location')
+    expect(location).toBeTruthy()
+    const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
     const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
 
     // GET page 0
@@ -88,11 +91,13 @@ describe('Form routes', () => {
       method: 'POST',
     })
     expect(submitRes.status).toBe(302)
-    const confirmLocation = submitRes.headers.get('Location')!
+    const confirmLocation = submitRes.headers.get('Location')
+    expect(confirmLocation).toBeTruthy()
     expect(confirmLocation).toContain('confirmation')
     expect(confirmLocation).toContain('submissionId=')
 
     // GET confirmation
+    if (!confirmLocation) throw new Error('Missing confirmation location')
     const confirmRes = await app.request(confirmLocation)
     expect(confirmRes.status).toBe(200)
     const confirmHtml = await confirmRes.text()
@@ -103,8 +108,9 @@ describe('Form routes', () => {
     const createRes = await app.request('/forms/benefits-app/sessions', {
       method: 'POST',
     })
-    const location = createRes.headers.get('Location')!
-    const sessionId = location.split('/sessions/')[1].split('/pages/')[0]
+    const location = createRes.headers.get('Location')
+    expect(location).toBeTruthy()
+    const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
     const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
 
     // POST page 0 with missing required fields

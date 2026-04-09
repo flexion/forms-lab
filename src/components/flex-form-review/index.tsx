@@ -1,6 +1,6 @@
 import type { FC } from 'hono/jsx'
-import type { FieldEntry, ResolvedForm } from '../../types/models'
 import { evaluateCondition } from '../../services/form-resolver'
+import type { FieldEntry, ResolvedForm } from '../../types/models'
 
 interface FormReviewProps {
   resolved: ResolvedForm
@@ -60,7 +60,9 @@ export const FormReview: FC<FormReviewProps> = ({
   )
 }
 
-function formatValue(value: string | number | boolean | null | undefined): string {
+function formatValue(
+  value: string | number | boolean | null | undefined,
+): string {
   if (value === null || value === undefined) return '—'
   if (typeof value === 'boolean') return value ? 'Yes' : 'No'
   return String(value)
