@@ -65,6 +65,7 @@
 @import "../components/flex-date-range-picker/styles.css" layer(block);
 @import "../components/flex-time-picker/styles.css" layer(block);
 @import "../components/flex-in-page-nav/styles.css" layer(block);
+@import "../components/flex-tab-group/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);
