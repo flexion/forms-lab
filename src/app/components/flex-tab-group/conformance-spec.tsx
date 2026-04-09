@@ -86,7 +86,7 @@ export const spec: ConformanceSpec = {
     { description: 'Arrow keys navigate between tabs', tested: true },
     { description: 'Home key moves focus to first tab', tested: true },
     { description: 'End key moves focus to last tab', tested: true },
-    { description: 'Tab key wraps around at end', tested: true },
+    { description: 'Arrow keys wrap around at edges', tested: true },
     { description: 'Accessibility audit passes', tested: true },
   ],
 }
