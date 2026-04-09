@@ -6,7 +6,7 @@
     wantedBy = [ "multi-user.target" ];
     after = [ "network.target" ];
 
-    path = with pkgs; [ git openssh bun ];
+    path = with pkgs; [ git openssh bun sudo ];
 
     serviceConfig = {
       Type = "simple";
