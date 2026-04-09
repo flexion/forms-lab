@@ -4,15 +4,15 @@ import { FormLanding } from '../../components/flex-form-landing'
 import { FormPageView } from '../../components/flex-form-page'
 import { FormReview } from '../../components/flex-form-review'
 import { Layout } from '../../components/flex-layout'
-import { findNextPage, findPrevPage } from '../../services/form-navigation'
-import { resolveFormSpec } from '../../services/form-resolver'
-import { validateFields } from '../../services/form-validation'
+import { findNextPage, findPrevPage } from '../../../services/form-navigation'
+import { resolveFormSpec } from '../../../services/form-resolver'
+import { validateFields } from '../../../services/form-validation'
 import type {
   DataCollectionSpec,
   FormSessionGateway,
   FormSpec,
   SubmissionGateway,
-} from '../../types/models'
+} from '../../../types/models'
 
 interface FormRouterDeps {
   sessionGateway: FormSessionGateway
