@@ -5,7 +5,7 @@ tags: [infrastructure, deployment, architecture]
 
 # Deployment Architecture
 
-How the forms-lab application is deployed and served.
+How forms-lab is deployed and served.
 
 ## Overview
 
@@ -15,9 +15,11 @@ A single EC2 instance hosts all branch deployments. GitHub push webhooks trigger
 
 1. **Push to GitHub** — A developer pushes to any branch.
 2. **Webhook fires** — GitHub sends a push event to the webhook listener on EC2.
-3. **Deploy script runs** — The listener validates the signature and spawns the deploy script.
+3. **Deploy script runs** — The listener validates the signature, creates a GitHub Deployment (status: `in_progress`), and spawns the deploy script.
 4. **Build and serve** — The script creates/updates a git worktree, runs `bun install && bun run build`, starts/restarts the systemd service, and updates Caddy routing.
-5. **Traffic routes** — Caddy proxies `/<branch>/` to the branch's Bun process on its assigned port.
+5. **Status updated** — On success, the deployment status is set to `success` with a link to the branch URL. On failure, it is set to `failure`. PRs show a "View deployment" link in the sidebar.
+6. **Traffic routes** — Caddy proxies `/<branch>/` to the branch's Bun process on its assigned port.
+7. **Branch deleted** — When a branch is deleted, the webhook marks its deployment as `inactive`.
 
 ## Components
 

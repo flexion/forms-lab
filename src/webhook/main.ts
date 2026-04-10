@@ -1,7 +1,8 @@
 import { Hono } from 'hono'
-import { triggerDeploy } from './deploy'
+import { createGitHubClient } from '../services/github'
+import { triggerDeployWithStatus } from './deploy'
 import type { PushPayload } from './handler'
-import { parsePushEvent, verifySignature } from './handler'
+import { parseDeleteEvent, parsePushEvent, verifySignature } from './handler'
 
 const app = new Hono()
 
@@ -9,6 +10,16 @@ const secret = process.env.GITHUB_WEBHOOK_SECRET
 if (!secret) {
   console.error('GITHUB_WEBHOOK_SECRET environment variable is required')
   process.exit(1)
+}
+
+const githubToken = process.env.GITHUB_TOKEN
+const githubClient = githubToken ? createGitHubClient(githubToken) : undefined
+const hostname = process.env.DEPLOY_HOSTNAME
+
+if (!githubToken) {
+  console.warn(
+    'GITHUB_TOKEN not set — deployment status updates will be skipped',
+  )
 }
 
 app.get('/health', (c) => {
@@ -36,18 +47,77 @@ app.post('/', async (c) => {
     console.error('Invalid JSON in webhook payload:', err)
     return c.json({ error: 'Invalid JSON' }, 400)
   }
-  const push = parsePushEvent(payload)
-  if (!push) {
-    return c.json({ ignored: true, reason: 'Deleted branch or tag push' }, 200)
+
+  // Handle branch deletion
+  const deletion = parseDeleteEvent(payload)
+  if (deletion) {
+    if (githubClient && deletion.owner && deletion.repo) {
+      markDeploymentInactive(
+        deletion.owner,
+        deletion.repo,
+        deletion.branch,
+      ).catch((err) => {
+        console.error('Failed to mark deployment inactive:', err)
+      })
+    }
+    return c.json(
+      { accepted: true, branch: deletion.branch, action: 'delete' },
+      202,
+    )
   }
 
-  // Trigger deploy asynchronously
-  triggerDeploy(push.branch, push.sha).catch((err) => {
+  const push = parsePushEvent(payload)
+  if (!push) {
+    return c.json({ ignored: true, reason: 'Tag push' }, 200)
+  }
+
+  // Trigger deploy asynchronously with status updates
+  triggerDeployWithStatus({
+    branch: push.branch,
+    sha: push.sha,
+    owner: push.owner,
+    repo: push.repo,
+    githubClient,
+    hostname,
+  }).catch((err) => {
     console.error('Deploy trigger failed:', err)
   })
 
   return c.json({ accepted: true, branch: push.branch, sha: push.sha }, 202)
 })
+
+async function markDeploymentInactive(
+  owner: string,
+  repo: string,
+  branch: string,
+): Promise<void> {
+  if (!githubClient) return
+  const safeBranch = branch.replace(/\//g, '-')
+
+  // List deployments for this environment and mark the latest inactive
+  const url = `https://api.github.com/repos/${owner}/${repo}/deployments?environment=${encodeURIComponent(safeBranch)}&per_page=1`
+  const res = await fetch(url, {
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${githubToken}`,
+    },
+  })
+
+  if (!res.ok) return
+
+  const deployments = (await res.json()) as Array<{ id: number }>
+  if (deployments.length === 0) return
+
+  await githubClient.createDeploymentStatus(
+    owner,
+    repo,
+    deployments[0].id,
+    'inactive',
+    undefined,
+    `Branch ${branch} deleted`,
+  )
+  console.log(`Marked deployment for ${branch} as inactive`)
+}
 
 const port = process.env.PORT || 9000
 console.log(`Webhook listener running on port ${port}`)

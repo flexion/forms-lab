@@ -18,6 +18,19 @@ export interface GitHubPullRequest {
   }
 }
 
+export interface GitHubDeployment {
+  id: number
+  url: string
+}
+
+export type DeploymentState =
+  | 'pending'
+  | 'in_progress'
+  | 'success'
+  | 'failure'
+  | 'error'
+  | 'inactive'
+
 export interface GitHubClient {
   listIssues(
     owner: string,
@@ -29,6 +42,21 @@ export interface GitHubClient {
     repo: string,
     branch: string,
   ): Promise<GitHubPullRequest | null>
+  createDeployment(
+    owner: string,
+    repo: string,
+    ref: string,
+    environment: string,
+    description?: string,
+  ): Promise<GitHubDeployment>
+  createDeploymentStatus(
+    owner: string,
+    repo: string,
+    deploymentId: number,
+    state: DeploymentState,
+    environmentUrl?: string,
+    description?: string,
+  ): Promise<void>
 }
 
 export function createGitHubClient(token?: string): GitHubClient {
@@ -70,6 +98,67 @@ export function createGitHubClient(token?: string): GitHubClient {
         return prs.length > 0 ? prs[0] : null
       } catch {
         return null
+      }
+    },
+
+    async createDeployment(owner, repo, ref, environment, description) {
+      const url = `https://api.github.com/repos/${owner}/${repo}/deployments`
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/vnd.github+json',
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          ref,
+          environment,
+          description: description || `Deploy ${ref} to ${environment}`,
+          auto_merge: false,
+          required_contexts: [],
+        }),
+      })
+
+      if (!res.ok) {
+        const body = await res.text()
+        throw new Error(
+          `Failed to create deployment: ${res.status} ${res.statusText} — ${body}`,
+        )
+      }
+
+      const data = (await res.json()) as { id: number; url: string }
+      return { id: data.id, url: data.url }
+    },
+
+    async createDeploymentStatus(
+      owner,
+      repo,
+      deploymentId,
+      state,
+      environmentUrl,
+      description,
+    ) {
+      const url = `https://api.github.com/repos/${owner}/${repo}/deployments/${deploymentId}/statuses`
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/vnd.github+json',
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          state,
+          auto_inactive: true,
+          ...(environmentUrl ? { environment_url: environmentUrl } : {}),
+          ...(description ? { description } : {}),
+        }),
+      })
+
+      if (!res.ok) {
+        const body = await res.text()
+        throw new Error(
+          `Failed to create deployment status: ${res.status} ${res.statusText} — ${body}`,
+        )
       }
     },
   }
