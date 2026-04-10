@@ -135,6 +135,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
           now,
         ],
       )
+      // biome-ignore lint/style/noNonNullAssertion: row was just inserted
       return this.get(id)!
     },
 
@@ -194,6 +195,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
 
       values.push(id)
       db.run(`UPDATE projects SET ${sets.join(', ')} WHERE id = ?`, values)
+      // biome-ignore lint/style/noNonNullAssertion: row was just updated
       return this.get(id)!
     },
   }

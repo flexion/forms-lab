@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import { createCacheStore } from '../src/services/database'
 import {
-  type PdfExtractor,
   createCachedPdfExtractor,
+  type PdfExtractor,
 } from '../src/services/pdf-extractor'
 import type { ExtractionResult } from '../src/types/models'
 
@@ -45,7 +45,9 @@ const stubResult: ExtractionResult = {
   confidence: [{ fieldId: 'f1', confidence: 0.95 }],
 }
 
-function createStubExtractor(result: ExtractionResult): PdfExtractor & { callCount: number } {
+function createStubExtractor(
+  result: ExtractionResult,
+): PdfExtractor & { callCount: number } {
   const extractor = {
     callCount: 0,
     async extract(): Promise<ExtractionResult> {
