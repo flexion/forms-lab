@@ -1,11 +1,8 @@
-import { generateObject } from 'ai'
 import { bedrock } from '@ai-sdk/amazon-bedrock'
-import type { CacheStore } from './database'
+import { generateObject } from 'ai'
 import type { ExtractionOptions, ExtractionResult } from '../types/models'
-import {
-  extractionResponseSchema,
-  formSpecSchema,
-} from './extraction-schemas'
+import type { CacheStore } from './database'
+import { extractionResponseSchema, formSpecSchema } from './extraction-schemas'
 
 export interface PdfExtractor {
   extract(pdf: Buffer, options?: ExtractionOptions): Promise<ExtractionResult>

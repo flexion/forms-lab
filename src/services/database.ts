@@ -34,9 +34,14 @@ export function createCacheStore(dbPath: string): CacheStore {
 
   return {
     get(key: string): CacheEntry | null {
-      const row = db.query(
-        'SELECT key, model, result, created_at FROM cache WHERE key = ?',
-      ).get(key) as { key: string; model: string; result: string; created_at: number } | null
+      const row = db
+        .query('SELECT key, model, result, created_at FROM cache WHERE key = ?')
+        .get(key) as {
+        key: string
+        model: string
+        result: string
+        created_at: number
+      } | null
       if (!row) return null
       return {
         key: row.key,
@@ -59,7 +64,15 @@ export interface ProjectStore {
   create(project: NewProject): StoredProject
   get(id: string): StoredProject | null
   list(userId?: string): StoredProject[]
-  update(id: string, changes: Partial<Pick<StoredProject, 'status' | 'spec' | 'formSpec' | 'confidence' | 'error'>>): StoredProject
+  update(
+    id: string,
+    changes: Partial<
+      Pick<
+        StoredProject,
+        'status' | 'spec' | 'formSpec' | 'confidence' | 'error'
+      >
+    >,
+  ): StoredProject
 }
 
 export function createProjectStore(dbPath: string): ProjectStore {
@@ -89,9 +102,15 @@ export function createProjectStore(dbPath: string): ProjectStore {
       description: row.description as string,
       status: row.status as ProjectStatus,
       sourcePdf: row.source_pdf as Buffer,
-      spec: row.spec ? JSON.parse(row.spec as string) as DataCollectionSpec : null,
-      formSpec: row.form_spec ? JSON.parse(row.form_spec as string) as FormSpec : null,
-      confidence: row.confidence ? JSON.parse(row.confidence as string) as FieldConfidence[] : null,
+      spec: row.spec
+        ? (JSON.parse(row.spec as string) as DataCollectionSpec)
+        : null,
+      formSpec: row.form_spec
+        ? (JSON.parse(row.form_spec as string) as FormSpec)
+        : null,
+      confidence: row.confidence
+        ? (JSON.parse(row.confidence as string) as FieldConfidence[])
+        : null,
       error: (row.error as string | null) ?? null,
       createdBy: row.created_by as string,
       createdAt: row.created_at as number,
@@ -106,26 +125,49 @@ export function createProjectStore(dbPath: string): ProjectStore {
       db.run(
         `INSERT INTO projects (id, name, description, status, source_pdf, created_by, created_at, updated_at)
          VALUES (?, ?, ?, 'extracting', ?, ?, ?, ?)`,
-        [id, project.name, project.description, project.sourcePdf, project.createdBy, now, now],
+        [
+          id,
+          project.name,
+          project.description,
+          project.sourcePdf,
+          project.createdBy,
+          now,
+          now,
+        ],
       )
       return this.get(id)!
     },
 
     get(id: string): StoredProject | null {
-      const row = db.query('SELECT * FROM projects WHERE id = ?').get(id) as Record<string, unknown> | null
+      const row = db
+        .query('SELECT * FROM projects WHERE id = ?')
+        .get(id) as Record<string, unknown> | null
       if (!row) return null
       return rowToProject(row)
     },
 
     list(userId?: string): StoredProject[] {
       const query = userId
-        ? db.query('SELECT * FROM projects WHERE created_by = ? ORDER BY created_at DESC')
+        ? db.query(
+            'SELECT * FROM projects WHERE created_by = ? ORDER BY created_at DESC',
+          )
         : db.query('SELECT * FROM projects ORDER BY created_at DESC')
-      const rows = (userId ? query.all(userId) : query.all()) as Record<string, unknown>[]
+      const rows = (userId ? query.all(userId) : query.all()) as Record<
+        string,
+        unknown
+      >[]
       return rows.map(rowToProject)
     },
 
-    update(id: string, changes: Partial<Pick<StoredProject, 'status' | 'spec' | 'formSpec' | 'confidence' | 'error'>>): StoredProject {
+    update(
+      id: string,
+      changes: Partial<
+        Pick<
+          StoredProject,
+          'status' | 'spec' | 'formSpec' | 'confidence' | 'error'
+        >
+      >,
+    ): StoredProject {
       const sets: string[] = ['updated_at = ?']
       const values: (string | number | null)[] = [Math.floor(Date.now() / 1000)]
 
