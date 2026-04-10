@@ -19,7 +19,7 @@ A single EC2 instance hosts all branch deployments. GitHub push webhooks trigger
 4. **Build and serve** — The script creates/updates a git worktree, runs `bun install && bun run build`, starts/restarts the systemd service, and updates Caddy routing.
 5. **Status updated** — On success, the deployment status is set to `success` with a link to the branch URL. On failure, it is set to `failure`. PRs show a "View deployment" link in the sidebar.
 6. **Traffic routes** — Caddy proxies `/<branch>/` to the branch's Bun process on its assigned port.
-7. **Branch deleted** — When a branch is deleted, the webhook marks its deployment `inactive`.
+7. **Branch deleted** — When a branch is deleted, the webhook marks its deployment as `inactive`.
 
 ## Components
 
