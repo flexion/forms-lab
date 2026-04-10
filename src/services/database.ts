@@ -127,7 +127,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
 
     update(id: string, changes: Partial<Pick<StoredProject, 'status' | 'spec' | 'formSpec' | 'confidence' | 'error'>>): StoredProject {
       const sets: string[] = ['updated_at = ?']
-      const values: unknown[] = [Math.floor(Date.now() / 1000)]
+      const values: (string | number | null)[] = [Math.floor(Date.now() / 1000)]
 
       if (changes.status !== undefined) {
         sets.push('status = ?')
