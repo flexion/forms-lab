@@ -75,3 +75,178 @@ describe('GET /projects/new', () => {
     expect(html).toContain('Upload')
   })
 })
+
+describe('POST /projects', () => {
+  it('creates project from fixture selection', async () => {
+    const { app, projectStore } = createTestApp()
+    const res = await app.request('/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'fixture=pardon-application',
+    })
+    expect(res.status).toBe(302)
+    expect(res.headers.get('location')).toContain('/projects/')
+
+    const projects = projectStore.list('testuser')
+    expect(projects).toHaveLength(1)
+    expect(projects[0].name).toBe(
+      'Application for Pardon After Completion of Sentence',
+    )
+    // Stub extractor resolves immediately, so status transitions to 'ready'
+    expect(['extracting', 'ready']).toContain(projects[0].status)
+  })
+
+  it('returns 400 for unknown fixture', async () => {
+    const { app } = createTestApp()
+    const res = await app.request('/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'fixture=nonexistent',
+    })
+    expect(res.status).toBe(400)
+  })
+})
+
+describe('GET /projects/:id', () => {
+  it('shows extracting status with auto-refresh', async () => {
+    const { app, projectStore } = createTestApp()
+    const project = projectStore.create({
+      name: 'Test',
+      description: 'Test',
+      sourcePdf: Buffer.from('pdf'),
+      createdBy: 'testuser',
+    })
+    const res = await app.request(`/projects/${project.id}`)
+    const html = await res.text()
+    expect(html).toContain('Extracting form structure')
+    expect(html).toContain('http-equiv="refresh"')
+  })
+
+  it('shows ready project with spec details', async () => {
+    const { app, projectStore } = createTestApp()
+    const project = projectStore.create({
+      name: 'Test Form',
+      description: 'Test',
+      sourcePdf: Buffer.from('pdf'),
+      createdBy: 'testuser',
+    })
+    projectStore.update(project.id, {
+      status: 'ready',
+      spec: stubResult.spec,
+      formSpec: stubResult.formSpec,
+      confidence: stubResult.confidence,
+    })
+    const res = await app.request(`/projects/${project.id}`)
+    const html = await res.text()
+    expect(html).toContain('Test Form')
+    expect(html).toContain('Extracted Data Requirements')
+  })
+
+  it('returns 404 for missing project', async () => {
+    const { app } = createTestApp()
+    const res = await app.request('/projects/nonexistent')
+    expect(res.status).toBe(404)
+  })
+})
+
+describe('GET /projects/:id (error state)', () => {
+  it('shows error message and retry button', async () => {
+    const { app, projectStore } = createTestApp()
+    const project = projectStore.create({
+      name: 'Failed Project',
+      description: 'Test',
+      sourcePdf: Buffer.from('pdf'),
+      createdBy: 'testuser',
+    })
+    projectStore.update(project.id, {
+      status: 'error',
+      error: 'Model timeout after 60 seconds',
+    })
+    const res = await app.request(`/projects/${project.id}`)
+    const html = await res.text()
+    expect(html).toContain('Extraction failed')
+    expect(html).toContain('Model timeout after 60 seconds')
+    expect(html).toContain('Retry')
+  })
+})
+
+describe('POST /projects/:id/retry', () => {
+  it('resets status to extracting and redirects', async () => {
+    const { app, projectStore } = createTestApp()
+    const project = projectStore.create({
+      name: 'Retry Test',
+      description: 'Test',
+      sourcePdf: Buffer.from('pdf'),
+      createdBy: 'testuser',
+    })
+    projectStore.update(project.id, { status: 'error', error: 'timeout' })
+
+    const res = await app.request(`/projects/${project.id}/retry`, {
+      method: 'POST',
+    })
+    expect(res.status).toBe(302)
+
+    // Give async extraction a tick to start
+    await new Promise((r) => setTimeout(r, 50))
+    const updated = projectStore.get(project.id)
+    // Status should be 'ready' since stub extractor resolves immediately
+    expect(updated!.status).toBe('ready')
+  })
+})
+
+describe('Confidence indicators', () => {
+  it('shows badge for low-confidence fields', async () => {
+    const { app, projectStore } = createTestApp()
+    const project = projectStore.create({
+      name: 'Confidence Test',
+      description: 'Test',
+      sourcePdf: Buffer.from('pdf'),
+      createdBy: 'testuser',
+    })
+    projectStore.update(project.id, {
+      status: 'ready',
+      spec: {
+        id: 'spec-1',
+        title: 'Test',
+        description: '',
+        groups: [
+          {
+            id: 'g1',
+            title: 'Group',
+            requirements: [
+              {
+                id: 'low-conf',
+                fieldName: 'ambiguous',
+                label: 'Ambiguous Field',
+                fieldType: 'text',
+                required: true,
+              },
+              {
+                id: 'high-conf',
+                fieldName: 'clear',
+                label: 'Clear Field',
+                fieldType: 'text',
+                required: true,
+              },
+            ],
+          },
+        ],
+      },
+      formSpec: {
+        id: 'form-1',
+        specId: 'spec-1',
+        title: 'Test',
+        pages: [],
+        createdAt: '',
+        updatedAt: '',
+      },
+      confidence: [
+        { fieldId: 'low-conf', confidence: 0.3, flags: ['ambiguous-type'] },
+        { fieldId: 'high-conf', confidence: 0.95 },
+      ],
+    })
+    const res = await app.request(`/projects/${project.id}`)
+    const html = await res.text()
+    expect(html).toContain('Low confidence')
+  })
+})
