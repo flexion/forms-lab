@@ -5,7 +5,7 @@ tags: [infrastructure, deployment, architecture]
 
 # Deployment Architecture
 
-How the forms-lab application is deployed and served.
+How forms-lab is deployed and served.
 
 ## Overview
 
