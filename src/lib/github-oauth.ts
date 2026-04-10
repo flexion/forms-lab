@@ -56,6 +56,29 @@ export async function fetchUserProfile(token: string): Promise<GitHubUser> {
   return await response.json()
 }
 
+export async function checkOrgMembership(
+  token: string,
+  org: string,
+): Promise<boolean> {
+  // Check if user is a member of the specified organization
+  const response = await fetch('https://api.github.com/user/orgs', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github.v3+json',
+    },
+  })
+
+  if (!response.ok) {
+    console.error(
+      `Org membership check failed: HTTP ${response.status}`,
+    )
+    return false
+  }
+
+  const orgs = await response.json()
+  return orgs.some((o: { login: string }) => o.login === org)
+}
+
 export async function checkRepoPermission(
   token: string,
   _username: string,

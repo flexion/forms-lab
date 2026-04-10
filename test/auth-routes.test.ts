@@ -18,7 +18,7 @@ describe('Auth Routes', () => {
     // Set up test environment
     process.env.GITHUB_CLIENT_ID = 'test_client_id'
     process.env.GITHUB_CLIENT_SECRET = 'test_client_secret'
-    process.env.GITHUB_AUTHZ_REPO = 'flexion/forms-lab'
+    process.env.GITHUB_AUTHZ_ORG = 'flexion'
     process.env.SESSION_SECRET = 'test-secret-key-32-bytes-long!'
 
     // Create app
@@ -46,7 +46,7 @@ describe('Auth Routes', () => {
       expect(url.origin).toBe('https://github.com')
       expect(url.pathname).toBe('/login/oauth/authorize')
       expect(url.searchParams.get('client_id')).toBe('test_client_id')
-      expect(url.searchParams.get('scope')).toBe('read:user repo')
+      expect(url.searchParams.get('scope')).toBe('read:user read:org')
       expect(url.searchParams.get('state')).toBeTruthy()
     })
 
@@ -93,11 +93,12 @@ describe('Auth Routes', () => {
         ) {
           return new Response(JSON.stringify(mockUser), { status: 200 })
         }
-        if (url.toString().includes('/repos/flexion/forms-lab')) {
+        if (url.toString() === 'https://api.github.com/user/orgs') {
           return new Response(
-            JSON.stringify({
-              permissions: { admin: false, push: true, pull: true },
-            }),
+            JSON.stringify([
+              { login: 'flexion' },
+              { login: 'other-org' },
+            ]),
             { status: 200 },
           )
         }
@@ -149,11 +150,11 @@ describe('Auth Routes', () => {
         ) {
           return new Response(JSON.stringify(mockUser), { status: 200 })
         }
-        if (url.toString().includes('/repos/flexion/forms-lab')) {
+        if (url.toString() === 'https://api.github.com/user/orgs') {
           return new Response(
-            JSON.stringify({
-              permissions: { admin: false, push: false, pull: true },
-            }),
+            JSON.stringify([
+              { login: 'other-org' },
+            ]),
             { status: 200 },
           )
         }
@@ -203,11 +204,11 @@ describe('Auth Routes', () => {
         ) {
           return new Response(JSON.stringify(mockUser), { status: 200 })
         }
-        if (url.toString().includes('/repos/flexion/forms-lab')) {
+        if (url.toString() === 'https://api.github.com/user/orgs') {
           return new Response(
-            JSON.stringify({
-              permissions: { admin: true, push: true, pull: true },
-            }),
+            JSON.stringify([
+              { login: 'flexion' },
+            ]),
             { status: 200 },
           )
         }

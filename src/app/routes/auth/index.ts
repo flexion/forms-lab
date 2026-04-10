@@ -2,7 +2,6 @@ import { Hono } from 'hono'
 import { deleteCookie, setCookie } from 'hono/cookie'
 import { resolveUrl } from '../../../lib/base-path'
 import {
-  checkRepoPermission,
   exchangeCodeForToken,
   fetchUserProfile,
 } from '../../../lib/github-oauth'
@@ -52,7 +51,7 @@ auth.get('/signin', (c) => {
   const authUrl = new URL('https://github.com/login/oauth/authorize')
   authUrl.searchParams.set('client_id', clientId)
   authUrl.searchParams.set('redirect_uri', callbackUrl)
-  authUrl.searchParams.set('scope', 'read:user repo')
+  authUrl.searchParams.set('scope', 'read:user read:org')
   authUrl.searchParams.set('state', state)
 
   return c.redirect(authUrl.toString())
@@ -69,10 +68,9 @@ auth.get('/callback', async (c) => {
 
   const clientId = process.env.GITHUB_CLIENT_ID
   const clientSecret = process.env.GITHUB_CLIENT_SECRET
-  const authzRepo = process.env.GITHUB_AUTHZ_REPO
   const sessionSecret = process.env.SESSION_SECRET
 
-  if (!clientId || !clientSecret || !authzRepo || !sessionSecret) {
+  if (!clientId || !clientSecret || !sessionSecret) {
     return c.redirect(resolveUrl('/?error=config'))
   }
 
@@ -98,14 +96,11 @@ auth.get('/callback', async (c) => {
     // Fetch user profile
     const ghUser = await fetchUserProfile(token)
 
-    // Check repository permission
-    const hasPermission = await checkRepoPermission(
-      token,
-      ghUser.login,
-      authzRepo,
-    )
-
-    if (!hasPermission) {
+    // TODO: Replace with org membership check once OAuth app is approved
+    // Temporary allowlist for development
+    const allowedUsers = ['danielnaab']
+    if (!allowedUsers.includes(ghUser.login)) {
+      console.log(`Authorization failed for user: ${ghUser.login}`)
       return c.redirect(resolveUrl('/?error=unauthorized'))
     }
 

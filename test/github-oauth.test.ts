@@ -1,5 +1,6 @@
 import { describe, expect, it, mock } from 'bun:test'
 import {
+  checkOrgMembership,
   checkRepoPermission,
   exchangeCodeForToken,
   fetchUserProfile,
@@ -87,6 +88,55 @@ describe('GitHub OAuth', () => {
       await expect(fetchUserProfile('bad_token')).rejects.toThrow(
         'Failed to fetch user profile',
       )
+    })
+  })
+
+  describe('checkOrgMembership', () => {
+    it('returns true for users in the organization', async () => {
+      global.fetch = mock(
+        () =>
+          Promise.resolve(
+            new Response(
+              JSON.stringify([
+                { login: 'flexion' },
+                { login: 'other-org' },
+              ]),
+              { status: 200 },
+            ),
+          ),
+        // biome-ignore lint/suspicious/noExplicitAny: Mock type doesn't match global.fetch signature
+      ) as any
+
+      const isMember = await checkOrgMembership('gho_test_token', 'flexion')
+      expect(isMember).toBe(true)
+    })
+
+    it('returns false for users not in the organization', async () => {
+      global.fetch = mock(
+        () =>
+          Promise.resolve(
+            new Response(
+              JSON.stringify([
+                { login: 'other-org' },
+              ]),
+              { status: 200 },
+            ),
+          ),
+        // biome-ignore lint/suspicious/noExplicitAny: Mock type doesn't match global.fetch signature
+      ) as any
+
+      const isMember = await checkOrgMembership('gho_test_token', 'flexion')
+      expect(isMember).toBe(false)
+    })
+
+    it('returns false when org list fetch fails', async () => {
+      global.fetch = mock(
+        () => Promise.resolve(new Response('', { status: 401 })),
+        // biome-ignore lint/suspicious/noExplicitAny: Mock type doesn't match global.fetch signature
+      ) as any
+
+      const isMember = await checkOrgMembership('gho_test_token', 'flexion')
+      expect(isMember).toBe(false)
     })
   })
 
