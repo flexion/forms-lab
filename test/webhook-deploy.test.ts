@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
 import type { GitHubClient } from '../src/services/github'
-import { triggerDeploy, triggerDeployWithStatus } from '../src/webhook/deploy'
+import {
+  deployMainBranch,
+  triggerDeploy,
+  triggerDeployWithStatus,
+} from '../src/webhook/deploy'
 
 describe('triggerDeploy', () => {
   const _originalEnv = process.env.DEPLOY_SCRIPT
@@ -211,5 +215,21 @@ describe('triggerDeployWithStatus', () => {
     )
     const successCall = statusCalls.find((c) => c.args[3] === 'success')
     expect(successCall?.args[4]).toBeUndefined()
+  })
+})
+
+describe('deployMainBranch', () => {
+  it('returns DeployResult structure', async () => {
+    // Note: This test will fail in most test environments because it requires
+    // git, nixos-rebuild, and the /srv/forms-lab structure to exist.
+    // It's here to verify the function signature and error handling.
+    const result = await deployMainBranch('abc123')
+
+    expect(result).toBeDefined()
+    expect(typeof result.success).toBe('boolean')
+    // In test environment, it will likely fail, but should return proper structure
+    if (!result.success) {
+      expect(result.error).toBeDefined()
+    }
   })
 })

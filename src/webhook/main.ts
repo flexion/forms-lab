@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { createGitHubClient } from '../services/github'
-import { triggerDeployWithStatus } from './deploy'
+import { deployMainBranch, triggerDeployWithStatus } from './deploy'
 import type { PushPayload } from './handler'
 import { parseDeleteEvent, parsePushEvent, verifySignature } from './handler'
 
@@ -71,7 +71,18 @@ app.post('/', async (c) => {
     return c.json({ ignored: true, reason: 'Tag push' }, 200)
   }
 
-  // Trigger deploy asynchronously with status updates
+  // Handle main branch deployment (includes NixOS config updates)
+  if (push.branch === 'main') {
+    deployMainBranch(push.sha).catch((err) => {
+      console.error('Main deployment failed:', err)
+    })
+    return c.json(
+      { accepted: true, branch: 'main', sha: push.sha, type: 'production' },
+      202,
+    )
+  }
+
+  // Trigger branch deploy asynchronously with status updates
   triggerDeployWithStatus({
     branch: push.branch,
     sha: push.sha,

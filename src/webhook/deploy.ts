@@ -48,6 +48,68 @@ export interface DeployWithStatusOptions {
   hostname?: string
 }
 
+export async function deployMainBranch(sha: string): Promise<DeployResult> {
+  try {
+    const proc = Bun.spawn(
+      [
+        'bash',
+        '-c',
+        `
+      set -e
+      cd /tmp
+      rm -rf forms-lab-deploy
+      git clone https://github.com/flexion/forms-lab.git forms-lab-deploy
+      cd forms-lab-deploy
+      git checkout ${sha}
+
+      # Check if nixos config changed since last deployment
+      if ! diff -qr infrastructure/nixos /etc/nixos >/dev/null 2>&1; then
+        echo "NixOS config changed, rebuilding..."
+        rsync -av infrastructure/nixos/ /etc/nixos/
+        nixos-rebuild switch --flake /etc/nixos#forms-lab
+      else
+        echo "No NixOS config changes"
+      fi
+
+      # Deploy main branch app
+      forms-lab-deploy main ${sha}
+
+      # Restart homepage service
+      systemctl restart forms-lab-homepage.service
+
+      # Health check
+      sleep 2
+      curl -f http://localhost:3000/health || exit 1
+
+      echo "Main deployment complete"
+    `,
+      ],
+      {
+        stdout: 'pipe',
+        stderr: 'pipe',
+      },
+    )
+
+    const [stdout, stderr] = await Promise.all([
+      new Response(proc.stdout).text(),
+      new Response(proc.stderr).text(),
+    ])
+    const exitCode = await proc.exited
+
+    if (exitCode !== 0) {
+      console.error(`Main deployment failed:`, stderr)
+      return { success: false, error: stderr, stdout, stderr }
+    }
+
+    console.log(`Main deployment succeeded:`, stdout)
+    return { success: true, stdout, stderr }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error(`Main deployment error:`, message)
+    return { success: false, error: message }
+  }
+}
+
 export async function triggerDeployWithStatus(
   options: DeployWithStatusOptions,
 ): Promise<DeployResult> {
