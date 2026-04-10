@@ -97,10 +97,7 @@ describe('GitHub OAuth', () => {
         () =>
           Promise.resolve(
             new Response(
-              JSON.stringify([
-                { login: 'flexion' },
-                { login: 'other-org' },
-              ]),
+              JSON.stringify([{ login: 'flexion' }, { login: 'other-org' }]),
               { status: 200 },
             ),
           ),
@@ -115,12 +112,9 @@ describe('GitHub OAuth', () => {
       global.fetch = mock(
         () =>
           Promise.resolve(
-            new Response(
-              JSON.stringify([
-                { login: 'other-org' },
-              ]),
-              { status: 200 },
-            ),
+            new Response(JSON.stringify([{ login: 'other-org' }]), {
+              status: 200,
+            }),
           ),
         // biome-ignore lint/suspicious/noExplicitAny: Mock type doesn't match global.fetch signature
       ) as any

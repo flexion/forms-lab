@@ -69,9 +69,7 @@ export async function checkOrgMembership(
   })
 
   if (!response.ok) {
-    console.error(
-      `Org membership check failed: HTTP ${response.status}`,
-    )
+    console.error(`Org membership check failed: HTTP ${response.status}`)
     return false
   }
 

@@ -18,7 +18,6 @@ describe('Auth Routes', () => {
     // Set up test environment
     process.env.GITHUB_CLIENT_ID = 'test_client_id'
     process.env.GITHUB_CLIENT_SECRET = 'test_client_secret'
-    process.env.GITHUB_AUTHZ_ORG = 'flexion'
     process.env.SESSION_SECRET = 'test-secret-key-32-bytes-long!'
 
     // Create app
@@ -66,7 +65,7 @@ describe('Auth Routes', () => {
   describe('GET /auth/callback', () => {
     it('creates session and redirects for authorized user', async () => {
       const mockUser: GitHubUser = {
-        login: 'testuser',
+        login: 'danielnaab',
         name: 'Test User',
         avatar_url: 'https://example.com/avatar.png',
       }
@@ -92,15 +91,6 @@ describe('Auth Routes', () => {
             url.href === 'https://api.github.com/user')
         ) {
           return new Response(JSON.stringify(mockUser), { status: 200 })
-        }
-        if (url.toString() === 'https://api.github.com/user/orgs') {
-          return new Response(
-            JSON.stringify([
-              { login: 'flexion' },
-              { login: 'other-org' },
-            ]),
-            { status: 200 },
-          )
         }
         return new Response('', { status: 404 })
       })
@@ -150,14 +140,6 @@ describe('Auth Routes', () => {
         ) {
           return new Response(JSON.stringify(mockUser), { status: 200 })
         }
-        if (url.toString() === 'https://api.github.com/user/orgs') {
-          return new Response(
-            JSON.stringify([
-              { login: 'other-org' },
-            ]),
-            { status: 200 },
-          )
-        }
         return new Response('', { status: 404 })
       })
       // biome-ignore lint/suspicious/noExplicitAny: Mock type doesn't match global.fetch signature
@@ -179,7 +161,7 @@ describe('Auth Routes', () => {
 
     it('redirects to root when returnTo is not specified', async () => {
       const mockUser: GitHubUser = {
-        login: 'testuser',
+        login: 'danielnaab',
         name: 'Test User',
         avatar_url: 'https://example.com/avatar.png',
       }
@@ -203,14 +185,6 @@ describe('Auth Routes', () => {
             url.href === 'https://api.github.com/user')
         ) {
           return new Response(JSON.stringify(mockUser), { status: 200 })
-        }
-        if (url.toString() === 'https://api.github.com/user/orgs') {
-          return new Response(
-            JSON.stringify([
-              { login: 'flexion' },
-            ]),
-            { status: 200 },
-          )
         }
         return new Response('', { status: 404 })
       })
