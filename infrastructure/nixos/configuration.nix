@@ -54,6 +54,9 @@
     secrets.github-webhook-secret = {
       owner = "forms-lab";
     };
+    secrets.github-token = {
+      owner = "forms-lab";
+    };
   };
 
   # Allow forms-lab user to manage its own services and reload Caddy

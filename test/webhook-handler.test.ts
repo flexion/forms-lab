@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'bun:test'
-import { parsePushEvent, verifySignature } from '../src/webhook/handler'
+import {
+  parseDeleteEvent,
+  parsePushEvent,
+  verifySignature,
+} from '../src/webhook/handler'
 
 describe('verifySignature', () => {
   const secret = 'test-secret'
@@ -34,14 +38,20 @@ describe('verifySignature', () => {
 })
 
 describe('parsePushEvent', () => {
-  it('extracts branch name and SHA from push payload', () => {
+  it('extracts branch name, SHA, and repo info from push payload', () => {
     const payload = {
       ref: 'refs/heads/main',
       after: 'abc123def456',
       deleted: false,
+      repository: { full_name: 'flexion/forms-lab' },
     }
     const result = parsePushEvent(payload)
-    expect(result).toEqual({ branch: 'main', sha: 'abc123def456' })
+    expect(result).toEqual({
+      branch: 'main',
+      sha: 'abc123def456',
+      owner: 'flexion',
+      repo: 'forms-lab',
+    })
   })
 
   it('extracts branch with slashes in name', () => {
@@ -49,9 +59,15 @@ describe('parsePushEvent', () => {
       ref: 'refs/heads/slice-0/skeleton',
       after: 'xyz789',
       deleted: false,
+      repository: { full_name: 'flexion/forms-lab' },
     }
     const result = parsePushEvent(payload)
-    expect(result).toEqual({ branch: 'slice-0/skeleton', sha: 'xyz789' })
+    expect(result).toEqual({
+      branch: 'slice-0/skeleton',
+      sha: 'xyz789',
+      owner: 'flexion',
+      repo: 'forms-lab',
+    })
   })
 
   it('returns null for deleted branch', () => {
@@ -71,6 +87,58 @@ describe('parsePushEvent', () => {
       deleted: false,
     }
     const result = parsePushEvent(payload)
+    expect(result).toBeNull()
+  })
+
+  it('handles missing repository field', () => {
+    const payload = {
+      ref: 'refs/heads/main',
+      after: 'abc123',
+      deleted: false,
+    }
+    const result = parsePushEvent(payload)
+    expect(result).toEqual({
+      branch: 'main',
+      sha: 'abc123',
+      owner: '',
+      repo: '',
+    })
+  })
+})
+
+describe('parseDeleteEvent', () => {
+  it('extracts branch and repo info from delete payload', () => {
+    const payload = {
+      ref: 'refs/heads/feature/test',
+      after: '0000000000000000000000000000000000000000',
+      deleted: true,
+      repository: { full_name: 'flexion/forms-lab' },
+    }
+    const result = parseDeleteEvent(payload)
+    expect(result).toEqual({
+      branch: 'feature/test',
+      owner: 'flexion',
+      repo: 'forms-lab',
+    })
+  })
+
+  it('returns null for non-deleted push', () => {
+    const payload = {
+      ref: 'refs/heads/main',
+      after: 'abc123',
+      deleted: false,
+    }
+    const result = parseDeleteEvent(payload)
+    expect(result).toBeNull()
+  })
+
+  it('returns null for tag deletion', () => {
+    const payload = {
+      ref: 'refs/tags/v1.0.0',
+      after: '0000000',
+      deleted: true,
+    }
+    const result = parseDeleteEvent(payload)
     expect(result).toBeNull()
   })
 })
