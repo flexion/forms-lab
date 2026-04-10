@@ -59,6 +59,96 @@ bun run cli deploy homepage     # Update homepage service (dashboard)
 - **Design tokens** — all colors, spacing, fonts use `--flex-*` tokens, enforced by stylelint
 - **Cascade layers** — CSS uses `@layer` (reset → tokens → composition → base → block → utility)
 
+## Stacked Branch Workflow
+
+### Branch Types
+
+- **`main`** — Stable, deployed automatically to EC2 via webhook
+- **`infra/YYYY-MM-DD-description`** — Infrastructure changes (PR to main, fast-track merge)
+- **`story-N/name`** — Feature branches (stack on each other or main, PR when ready)
+
+### Making Infrastructure Changes
+
+When you need to change infrastructure (NixOS config, deploy scripts, webhook, secrets, etc.), follow this pattern:
+
+**1. Create infra branch from main:**
+```bash
+git checkout main && git pull
+git checkout -b infra/2026-04-10-description
+```
+
+**2. Make changes and commit with conventional format:**
+```bash
+# Edit files
+git add -A
+git commit -m "infra(scope): description
+
+Detailed explanation of what changed and why.
+"
+```
+
+**3. Push and open PR:**
+```bash
+git push -u origin infra/YYYY-MM-DD-description
+gh pr create --base main \
+  --title "infra(scope): description" \
+  --body "## Context
+Why this change? What problem does it solve?
+
+## Changes
+- Change 1
+- Change 2
+
+## Testing
+- [ ] Tests pass
+- [ ] Deployed and verified
+
+## Related
+- Enables: #X story branch work
+"
+```
+
+**4. Merge triggers auto-deploy:**
+- PR merges to main → webhook deploys to EC2 (~3 minutes)
+- NixOS config rebuilt only if `infrastructure/nixos/` changed
+- Main branch app deployed
+- Homepage service restarted
+
+**5. Rebase your story branch onto new main:**
+```bash
+git checkout story-N/name
+git fetch && git rebase main
+git push --force-with-lease
+```
+
+### Commit Convention
+
+Use [conventional commits](https://www.conventionalcommits.org/) with scope:
+
+- `infra(nixos):` — NixOS configuration changes
+- `infra(webhook):` — Webhook or deployment logic
+- `infra(secrets):` — Secrets management (sops-nix)
+- `feat(component):` — New feature in a component
+- `fix(bug):` — Bug fix
+- `docs(arch):` — Documentation updates
+- `test(unit):` — Test additions or fixes
+- `chore:` — Maintenance tasks
+
+### Example
+
+See [PR #25](https://github.com/flexion/forms-lab/pull/25) for the pattern:
+- Infra branch from main
+- Detailed PR description with context, changes, testing
+- Merge to main
+- Auto-deploy via webhook
+
+### Why This Workflow?
+
+**Fast iteration:** Infrastructure changes merge and deploy in minutes, not hours  
+**Clear history:** Conventional commits + PR descriptions = reconstructable narrative  
+**No blocking:** Story branches continue working while infra changes deploy  
+**Simple:** Branch types are clear, process is predictable  
+
 ## Architecture
 
 - **Runtime:** Bun
