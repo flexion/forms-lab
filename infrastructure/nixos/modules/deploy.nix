@@ -28,8 +28,9 @@ let
       echo "Creating worktree for $BRANCH..."
       # Fetch into the bare repo's branch ref so worktree add gets the latest
       # (--force handles force pushes where the local ref is stale)
-      ${pkgs.git}/bin/git -C "$REPO_DIR" fetch origin "$BRANCH:$BRANCH" --force
-      ${pkgs.git}/bin/git -C "$REPO_DIR" worktree add "$BRANCH_DIR" "$BRANCH"
+      # Use full refs/heads/ path to avoid ambiguity with slashes in branch names
+      ${pkgs.git}/bin/git -C "$REPO_DIR" fetch origin "+refs/heads/$BRANCH:refs/heads/$BRANCH" --force
+      ${pkgs.git}/bin/git -C "$REPO_DIR" worktree add "$BRANCH_DIR" "refs/heads/$BRANCH"
     else
       echo "Updating worktree for $BRANCH..."
       cd "$BRANCH_DIR"
