@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { getCommand, parseArgs } from '../src/cli'
+import { getCommand, parseArgs } from '../src/entrypoints/cli/main'
 
 describe('CLI', () => {
   describe('parseArgs', () => {

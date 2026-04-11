@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import app from '../src/app/server'
+import app from '../src/entrypoints/app/server'
 import { COOKIE_NAME, encryptSession } from '../src/services/auth/session'
 
 describe('Server', () => {

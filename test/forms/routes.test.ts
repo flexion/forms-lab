@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
-import { createFormRouter } from '../../src/app/routes/forms/index'
+import { createFormRouter } from '../../src/entrypoints/app/routes/forms/index'
 import { InMemoryFormSessionGateway } from '../../src/services/forms/session'
 import { InMemorySubmissionGateway } from '../../src/services/forms/submission'
 import { testDataSpec, testFormSpec } from './fixtures'

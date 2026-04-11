@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { getCommand } from '../src/cli'
+import { getCommand } from '../src/entrypoints/cli/main'
 
 describe('CLI infrastructure commands', () => {
   it('registers infra command', () => {

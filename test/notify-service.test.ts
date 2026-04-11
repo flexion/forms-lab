@@ -16,7 +16,7 @@ describe('notify service', () => {
   })
 
   it('GET /health returns ok', async () => {
-    const { default: app } = await import('../src/notify/main')
+    const { default: app } = await import('../src/entrypoints/notify/main')
     const res = await app.fetch(new Request('http://localhost/health'))
     expect(res.status).toBe(200)
     const body = await res.json()
@@ -29,7 +29,7 @@ describe('notify service', () => {
     mockFetch.preconnect = (_url: string) => {}
     globalThis.fetch = mockFetch as typeof fetch
 
-    const { default: app } = await import('../src/notify/main')
+    const { default: app } = await import('../src/entrypoints/notify/main')
     const res = await app.fetch(
       new Request('http://localhost/event', {
         method: 'POST',
@@ -48,7 +48,7 @@ describe('notify service', () => {
   })
 
   it('POST /event with invalid JSON returns 400', async () => {
-    const { default: app } = await import('../src/notify/main')
+    const { default: app } = await import('../src/entrypoints/notify/main')
     const res = await app.fetch(
       new Request('http://localhost/event', {
         method: 'POST',
@@ -61,7 +61,7 @@ describe('notify service', () => {
   })
 
   it('POST /event with missing fields returns 400', async () => {
-    const { default: app } = await import('../src/notify/main')
+    const { default: app } = await import('../src/entrypoints/notify/main')
     const res = await app.fetch(
       new Request('http://localhost/event', {
         method: 'POST',
@@ -81,7 +81,7 @@ describe('notify service', () => {
     mockFetch.preconnect = (_url: string) => {}
     globalThis.fetch = mockFetch as typeof fetch
 
-    const { default: app } = await import('../src/notify/main')
+    const { default: app } = await import('../src/entrypoints/notify/main')
     const res = await app.fetch(
       new Request('http://localhost/event', {
         method: 'POST',

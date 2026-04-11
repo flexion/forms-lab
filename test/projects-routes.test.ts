@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
-import { createProjectRoutes } from '../src/app/routes/projects/index'
+import { createProjectRoutes } from '../src/entrypoints/app/routes/projects/index'
 import type { PdfExtractor } from '../src/services/ingestion/pdf-extractor'
 import { createProjectStore } from '../src/services/storage'
 import type { ExtractionResult } from '../src/types/models'

@@ -1,7 +1,10 @@
 import { mkdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-const entrypoint = resolve(import.meta.dir, '../src/app/public/styles.css')
+const entrypoint = resolve(
+  import.meta.dir,
+  '../src/entrypoints/app/public/styles.css',
+)
 const outdir = resolve(import.meta.dir, '../dist')
 
 await mkdir(outdir, { recursive: true })

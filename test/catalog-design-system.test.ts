@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import app from '../src/app/server'
+import app from '../src/entrypoints/app/server'
 
 describe('GET /catalog/design-system/:slug (tabbed examples)', () => {
   it('renders tab groups for component examples', async () => {

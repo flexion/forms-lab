@@ -4,7 +4,7 @@ import {
   getCombinedHealthLabel,
   getCombinedHealthStatus,
   relativeTime,
-} from '../src/app/components/deployment-table'
+} from '../src/entrypoints/dashboard/deployment-table'
 import { sortDeploymentsByDate } from '../src/services/deployment/metadata'
 import type { DeploymentInfo } from '../src/services/deployment/types'
 

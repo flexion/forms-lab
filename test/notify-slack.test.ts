@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
-import { formatSlackMessage, postToSlack } from '../src/notify/slack'
+import {
+  formatSlackMessage,
+  postToSlack,
+} from '../src/entrypoints/notify/slack'
 import type { NotifyEvent } from '../src/services/notifications/types'
 import { validateEvent } from '../src/services/notifications/types'
 

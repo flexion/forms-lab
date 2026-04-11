@@ -179,7 +179,7 @@ describe('softwareArchitectureGraph', () => {
   })
 })
 
-import app from '../src/app/server'
+import app from '../src/entrypoints/app/server'
 
 describe('Architecture route with diagrams', () => {
   it('renders a diagram on the system-overview page', async () => {
