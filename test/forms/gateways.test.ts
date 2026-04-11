@@ -10,7 +10,7 @@ describe('InMemoryFormSessionGateway', () => {
   })
 
   it('creates a session with a unique ID', () => {
-    const session = gateway.createSession('spec-1', 'form-1')
+    const session = gateway.createSession('spec-1', 'form-1', 'testuser')
     expect(session.id).toBeTruthy()
     expect(session.specId).toBe('spec-1')
     expect(session.formSpecId).toBe('form-1')
@@ -19,7 +19,7 @@ describe('InMemoryFormSessionGateway', () => {
   })
 
   it('retrieves a session by ID', () => {
-    const session = gateway.createSession('spec-1', 'form-1')
+    const session = gateway.createSession('spec-1', 'form-1', 'testuser')
     const retrieved = gateway.getSession(session.id)
     expect(retrieved).toEqual(session)
   })
@@ -29,7 +29,7 @@ describe('InMemoryFormSessionGateway', () => {
   })
 
   it('writes fields to a session', () => {
-    const session = gateway.createSession('spec-1', 'form-1')
+    const session = gateway.createSession('spec-1', 'form-1', 'testuser')
     gateway.writeFields(session.id, {
       fullName: { value: 'Alice' },
       email: { value: 'alice@example.com' },
@@ -40,7 +40,7 @@ describe('InMemoryFormSessionGateway', () => {
   })
 
   it('merges fields across multiple writes', () => {
-    const session = gateway.createSession('spec-1', 'form-1')
+    const session = gateway.createSession('spec-1', 'form-1', 'testuser')
     gateway.writeFields(session.id, { fullName: { value: 'Alice' } })
     gateway.writeFields(session.id, { email: { value: 'alice@example.com' } })
     const updated = gateway.getSession(session.id)
@@ -49,7 +49,7 @@ describe('InMemoryFormSessionGateway', () => {
   })
 
   it('submits a session and returns a submission', () => {
-    const session = gateway.createSession('spec-1', 'form-1')
+    const session = gateway.createSession('spec-1', 'form-1', 'testuser')
     gateway.writeFields(session.id, {
       fullName: { value: 'Alice' },
     })
@@ -62,7 +62,7 @@ describe('InMemoryFormSessionGateway', () => {
   })
 
   it('marks session as submitted after submit', () => {
-    const session = gateway.createSession('spec-1', 'form-1')
+    const session = gateway.createSession('spec-1', 'form-1', 'testuser')
     gateway.submit(session.id)
     const updated = gateway.getSession(session.id)
     expect(updated?.status).toBe('submitted')
@@ -80,6 +80,7 @@ describe('InMemorySubmissionGateway', () => {
       id: 'sub-1',
       specId: 'spec-1',
       formSpecId: 'form-1',
+      ownerId: 'testuser',
       data: { fullName: 'Alice' },
       submittedAt: new Date().toISOString(),
     }

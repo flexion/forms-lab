@@ -20,6 +20,7 @@ import { FormLanding } from '../../components/flex-form-landing'
 import { FormPageView } from '../../components/flex-form-page'
 import { FormReview } from '../../components/flex-form-review'
 import { Layout } from '../../components/flex-layout'
+import { requireAuth } from '../../middleware/auth'
 
 interface FormRouterDeps {
   sessionGateway: FormSessionGateway
@@ -33,12 +34,16 @@ export function createFormRouter(deps: FormRouterDeps) {
   const { sessionGateway, submissionGateway, getSpecs } = deps
   const forms = new Hono()
 
-  // Landing page
+  // Landing page (public — viewing a form description is fine)
   forms.get('/:specId', (c) => {
     const specs = getSpecs(c.req.param('specId'))
     if (!specs) return c.notFound()
     return c.html(
-      <Layout user={c.get('user')} title={specs.formSpec.title} currentPath="/forms">
+      <Layout
+        user={c.get('user')}
+        title={specs.formSpec.title}
+        currentPath="/forms"
+      >
         <FormLanding
           formSpec={specs.formSpec}
           startUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions`)}
@@ -47,13 +52,20 @@ export function createFormRouter(deps: FormRouterDeps) {
     )
   })
 
+  // All session routes require authentication
+  forms.use('/:specId/sessions/*', requireAuth())
+  forms.post('/:specId/sessions', requireAuth())
+
   // Create session
   forms.post('/:specId/sessions', (c) => {
     const specs = getSpecs(c.req.param('specId'))
     if (!specs) return c.notFound()
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.createSession(
       specs.dataSpec.id,
       specs.formSpec.id,
+      user.login,
     )
     return c.redirect(
       resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/0`),
@@ -64,8 +76,11 @@ export function createFormRouter(deps: FormRouterDeps) {
   forms.get('/:specId/sessions/:sessionId/pages/:pageIndex', (c) => {
     const specs = getSpecs(c.req.param('specId'))
     if (!specs) return c.notFound()
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.getSession(c.req.param('sessionId'))
     if (!session) return c.notFound()
+    if (session.ownerId !== user.login) return c.notFound()
     const pageIndex = Number(c.req.param('pageIndex'))
     const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
     if (pageIndex < 0 || pageIndex >= resolved.pages.length) return c.notFound()
@@ -77,7 +92,11 @@ export function createFormRouter(deps: FormRouterDeps) {
           )
         : null
     return c.html(
-      <Layout user={c.get('user')} title={resolved.pages[pageIndex].page.title} currentPath="/forms">
+      <Layout
+        user={user}
+        title={resolved.pages[pageIndex].page.title}
+        currentPath="/forms"
+      >
         <FormPageView
           resolvedPage={resolved.pages[pageIndex]}
           actionUrl={resolveUrl(
@@ -97,8 +116,11 @@ export function createFormRouter(deps: FormRouterDeps) {
   forms.post('/:specId/sessions/:sessionId/pages/:pageIndex', async (c) => {
     const specs = getSpecs(c.req.param('specId'))
     if (!specs) return c.notFound()
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.getSession(c.req.param('sessionId'))
     if (!session) return c.notFound()
+    if (session.ownerId !== user.login) return c.notFound()
     const pageIndex = Number(c.req.param('pageIndex'))
     const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
     if (pageIndex < 0 || pageIndex >= resolved.pages.length) return c.notFound()
@@ -134,7 +156,7 @@ export function createFormRouter(deps: FormRouterDeps) {
           : null
       return c.html(
         <Layout
-          user={c.get('user')}
+          user={user}
           title={`Error: ${resolvedPage.page.title}`}
           currentPath="/forms"
         >
@@ -173,11 +195,14 @@ export function createFormRouter(deps: FormRouterDeps) {
   forms.get('/:specId/sessions/:sessionId/review', (c) => {
     const specs = getSpecs(c.req.param('specId'))
     if (!specs) return c.notFound()
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.getSession(c.req.param('sessionId'))
     if (!session) return c.notFound()
+    if (session.ownerId !== user.login) return c.notFound()
     const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
     return c.html(
-      <Layout user={c.get('user')} title="Review" currentPath="/forms">
+      <Layout user={user} title="Review" currentPath="/forms">
         <FormReview
           resolved={resolved}
           fields={session.fields}
@@ -196,8 +221,11 @@ export function createFormRouter(deps: FormRouterDeps) {
   forms.post('/:specId/sessions/:sessionId/submit', (c) => {
     const specs = getSpecs(c.req.param('specId'))
     if (!specs) return c.notFound()
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.getSession(c.req.param('sessionId'))
     if (!session) return c.notFound()
+    if (session.ownerId !== user.login) return c.notFound()
     if (session.status === 'submitted') {
       return c.text('This form has already been submitted.', 409)
     }
@@ -212,12 +240,15 @@ export function createFormRouter(deps: FormRouterDeps) {
 
   // Confirmation
   forms.get('/:specId/sessions/:sessionId/confirmation', (c) => {
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
     const submissionId = c.req.query('submissionId')
     if (!submissionId) return c.notFound()
     const submission = submissionGateway.getSubmission(submissionId)
     if (!submission) return c.notFound()
+    if (submission.ownerId !== user.login) return c.notFound()
     return c.html(
-      <Layout user={c.get('user')} title="Confirmation" currentPath="/forms">
+      <Layout user={user} title="Confirmation" currentPath="/forms">
         <FormConfirmation submission={submission} />
       </Layout>,
     )
