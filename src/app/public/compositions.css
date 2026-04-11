@@ -12,6 +12,8 @@
 }
 
 .l-center {
+  display: flex;
+  flex-direction: column;
   max-width: 960px;
   margin-inline: auto;
   padding-inline: var(--flex-space-md);
