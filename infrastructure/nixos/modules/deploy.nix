@@ -73,6 +73,7 @@ GITHUB_CLIENT_ID=$(cat /run/secrets/github-client-id 2>/dev/null || echo "")
 GITHUB_CLIENT_SECRET=$(cat /run/secrets/github-client-secret 2>/dev/null || echo "")
 SESSION_SECRET=$(cat /run/secrets/session-secret 2>/dev/null || echo "")
 GITHUB_AUTHZ_ORG=flexion
+AWS_REGION=us-east-1
 ENVEOF
 
     # Start or restart the service (use full path to sudo wrapper with setuid bit)

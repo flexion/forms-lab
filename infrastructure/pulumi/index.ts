@@ -58,12 +58,46 @@ const sg = new aws.ec2.SecurityGroup('forms-lab-sg', {
   ],
 })
 
+// IAM role for EC2 instance (Bedrock access)
+const role = new aws.iam.Role('forms-lab-role', {
+  assumeRolePolicy: JSON.stringify({
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Principal: { Service: 'ec2.amazonaws.com' },
+        Action: 'sts:AssumeRole',
+      },
+    ],
+  }),
+  tags: { Name: 'forms-lab' },
+})
+
+new aws.iam.RolePolicy('forms-lab-bedrock', {
+  role: role.id,
+  policy: JSON.stringify({
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Action: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+        Resource: 'arn:aws:bedrock:us-east-1::foundation-model/*',
+      },
+    ],
+  }),
+})
+
+const instanceProfile = new aws.iam.InstanceProfile('forms-lab-profile', {
+  role: role.name,
+})
+
 // EC2 instance
 const instance = new aws.ec2.Instance('forms-lab', {
   ami: nixosAmi.then((ami) => ami.id),
   instanceType: 't3.small',
   keyName: keyPair.keyName,
   vpcSecurityGroupIds: [sg.id],
+  iamInstanceProfile: instanceProfile.name,
   rootBlockDevice: {
     volumeSize: 30,
     volumeType: 'gp3',
