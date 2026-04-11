@@ -50,17 +50,20 @@ describe('GET /projects', () => {
     expect(html).toContain('New Project')
   })
 
-  it('lists existing projects', async () => {
+  it('lists existing projects in a table', async () => {
     const { app, projectStore } = createTestApp()
-    projectStore.create({
+    const p = projectStore.create({
       name: 'Pardon App',
       description: 'Test',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'testuser',
     })
+    projectStore.update(p.id, { status: 'ready' })
     const res = await app.request('/projects')
     const html = await res.text()
     expect(html).toContain('Pardon App')
+    expect(html).toContain('flex-table')
+    expect(html).toContain('Delete')
   })
 })
 
@@ -219,6 +222,108 @@ describe('POST /projects/:id/delete', () => {
       method: 'POST',
     })
     expect(res.status).toBe(404)
+  })
+})
+
+describe('Project detail - ready state', () => {
+  function createReadyProject() {
+    const { app, projectStore } = createTestApp()
+    const project = projectStore.create({
+      name: 'Summary Test',
+      description: 'Test',
+      sourcePdf: Buffer.from('pdf'),
+      createdBy: 'testuser',
+    })
+    projectStore.update(project.id, {
+      status: 'ready',
+      spec: {
+        id: 'spec-1',
+        title: 'Test',
+        description: 'A test form',
+        groups: [
+          {
+            id: 'g1',
+            title: 'Personal Info',
+            requirements: [
+              {
+                id: 'f1',
+                fieldName: 'firstName',
+                label: 'First name',
+                fieldType: 'text',
+                required: true,
+              },
+              {
+                id: 'f2',
+                fieldName: 'maidenName',
+                label: 'Maiden name',
+                fieldType: 'text',
+                required: false,
+                condition: {
+                  field: 'marital-status',
+                  operator: 'equals',
+                  value: 'married',
+                },
+              },
+            ],
+          },
+        ],
+      },
+      formSpec: {
+        id: 'form-1',
+        specId: 'spec-1',
+        title: 'Test',
+        pages: [
+          {
+            id: 'page-1',
+            title: 'Personal Information',
+            groups: ['g1'],
+            deliveryMode: 'conversational',
+          },
+        ],
+        createdAt: '2026-04-11',
+        updatedAt: '2026-04-11',
+      },
+      confidence: [
+        { fieldId: 'f1', confidence: 0.95 },
+        {
+          fieldId: 'f2',
+          confidence: 0.6,
+          flags: ['conditional-logic-unclear'],
+        },
+      ],
+    })
+    return { app, project }
+  }
+
+  it('shows summary bar with counts', async () => {
+    const { app, project } = createReadyProject()
+    const res = await app.request(`/projects/${project.id}`)
+    const html = await res.text()
+    expect(html).toContain('project-summary')
+  })
+
+  it('shows back link', async () => {
+    const { app, project } = createReadyProject()
+    const res = await app.request(`/projects/${project.id}`)
+    const html = await res.text()
+    expect(html).toContain('Back to projects')
+  })
+
+  it('shows condition for conditional fields', async () => {
+    const { app, project } = createReadyProject()
+    const res = await app.request(`/projects/${project.id}`)
+    const html = await res.text()
+    expect(html).toContain('marital-status')
+    expect(html).toContain('equals')
+  })
+
+  it('shows form layout with resolved group names', async () => {
+    const { app, project } = createReadyProject()
+    const res = await app.request(`/projects/${project.id}`)
+    const html = await res.text()
+    expect(html).toContain('form-page-card')
+    expect(html).toContain('Personal Information')
+    expect(html).toContain('Personal Info')
   })
 })
 
