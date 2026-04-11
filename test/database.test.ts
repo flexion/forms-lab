@@ -12,10 +12,10 @@ describe('CacheStore', () => {
     store.set('abc123', 'sonnet-4', '{"spec":{}}')
     const entry = store.get('abc123')
     expect(entry).not.toBeNull()
-    expect(entry!.key).toBe('abc123')
-    expect(entry!.model).toBe('sonnet-4')
-    expect(entry!.result).toBe('{"spec":{}}')
-    expect(entry!.createdAt).toBeGreaterThan(0)
+    expect(entry?.key).toBe('abc123')
+    expect(entry?.model).toBe('sonnet-4')
+    expect(entry?.result).toBe('{"spec":{}}')
+    expect(entry?.createdAt).toBeGreaterThan(0)
   })
 
   it('overwrites existing entry on same key', () => {
@@ -23,8 +23,8 @@ describe('CacheStore', () => {
     store.set('abc123', 'sonnet-4', '{"v":1}')
     store.set('abc123', 'opus-4', '{"v":2}')
     const entry = store.get('abc123')
-    expect(entry!.model).toBe('opus-4')
-    expect(entry!.result).toBe('{"v":2}')
+    expect(entry?.model).toBe('opus-4')
+    expect(entry?.result).toBe('{"v":2}')
   })
 })
 
@@ -44,7 +44,7 @@ describe('ProjectStore', () => {
 
     const retrieved = store.get(project.id)
     expect(retrieved).not.toBeNull()
-    expect(retrieved!.name).toBe('Pardon Application')
+    expect(retrieved?.name).toBe('Pardon Application')
     expect(Buffer.from(retrieved!.sourcePdf).toString()).toBe('fake-pdf')
   })
 
@@ -109,8 +109,8 @@ describe('ProjectStore', () => {
     })
 
     expect(updated.status).toBe('ready')
-    expect(updated.spec!.title).toBe('Spec')
-    expect(updated.formSpec!.title).toBe('Form')
+    expect(updated.spec?.title).toBe('Spec')
+    expect(updated.formSpec?.title).toBe('Form')
     expect(updated.confidence).toHaveLength(1)
   })
 })
