@@ -36,5 +36,5 @@ export const deploymentGraph: GraphDefinition = {
     { source: 'build', target: 'systemd' },
     { source: 'systemd', target: 'caddy-route', label: 'Port assigned' },
   ],
-  direction: 'LR',
+  direction: 'TB',
 }

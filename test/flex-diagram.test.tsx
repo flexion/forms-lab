@@ -133,8 +133,8 @@ describe('deploymentGraph', () => {
     expect(nodeIds).toContain('caddy-route')
   })
 
-  it('uses left-to-right layout for pipeline flow', () => {
-    expect(deploymentGraph.direction).toBe('LR')
+  it('uses top-to-bottom layout for pipeline flow', () => {
+    expect(deploymentGraph.direction).toBe('TB')
   })
 })
 
