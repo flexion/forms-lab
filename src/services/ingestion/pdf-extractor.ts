@@ -21,13 +21,14 @@ function cacheKey(pdf: Buffer, model: string): string {
 export function createCachedPdfExtractor(
   inner: PdfExtractor,
   cacheStore: CacheStore,
+  cacheModel?: string,
 ): PdfExtractor {
   return {
     async extract(
       pdf: Buffer,
       options?: ExtractionOptions,
     ): Promise<ExtractionResult> {
-      const model = options?.model ?? DEFAULT_MODEL
+      const model = options?.model ?? cacheModel ?? DEFAULT_MODEL
       const key = cacheKey(pdf, model)
 
       const cached = cacheStore.get(key)

@@ -4,6 +4,7 @@ export interface StrategyMetadata {
   status: 'baseline' | 'experimental' | 'production'
   courseTopics: string[]
   catalogPath?: string
+  modelId?: string
   metrics?: Record<string, number>
 }
 

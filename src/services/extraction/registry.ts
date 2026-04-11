@@ -15,6 +15,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       status: 'baseline',
       courseTopics: ['evaluation'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/baseline-opus',
+      modelId: OPUS_MODEL_ID,
     },
     create: () => createBedrockPdfExtractor({ model: OPUS_MODEL_ID }),
   })
@@ -27,6 +28,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       status: 'production',
       courseTopics: ['evaluation', 'model-selection'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/sonnet',
+      modelId: SONNET_MODEL_ID,
     },
     create: () => createBedrockPdfExtractor({ model: SONNET_MODEL_ID }),
   })
@@ -39,6 +41,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       status: 'experimental',
       courseTopics: ['evaluation', 'model-selection'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/haiku',
+      modelId: HAIKU_MODEL_ID,
     },
     create: () => createBedrockPdfExtractor({ model: HAIKU_MODEL_ID }),
   })

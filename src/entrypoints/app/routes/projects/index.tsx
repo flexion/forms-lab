@@ -96,8 +96,15 @@ export function createProjectRoutes(
     const strategyId =
       (typeof body.strategy === 'string' && body.strategy) ||
       extractorRegistry.getDefaultId()
+    const strategyMeta = extractorRegistry
+      .list()
+      .find((s) => s.id === strategyId)
     const innerExtractor = extractorRegistry.get(strategyId)
-    const extractor = createCachedPdfExtractor(innerExtractor, cacheStore)
+    const extractor = createCachedPdfExtractor(
+      innerExtractor,
+      cacheStore,
+      strategyMeta?.metadata.modelId,
+    )
 
     const project = projectStore.create({
       name,
@@ -155,8 +162,15 @@ export function createProjectRoutes(
 
     projectStore.update(project.id, { status: 'extracting', error: null })
 
+    const retryMeta = extractorRegistry
+      .list()
+      .find((s) => s.id === project.strategy)
     const innerExtractor = extractorRegistry.get(project.strategy)
-    const extractor = createCachedPdfExtractor(innerExtractor, cacheStore)
+    const extractor = createCachedPdfExtractor(
+      innerExtractor,
+      cacheStore,
+      retryMeta?.metadata.modelId,
+    )
 
     extractor
       .extract(project.sourcePdf)

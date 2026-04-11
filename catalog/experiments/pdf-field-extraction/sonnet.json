@@ -1,0 +1,34 @@
+{
+  "kind": "pdf-field-extraction",
+  "implementation": "sonnet",
+  "specVersion": "2026-04-11",
+  "status": "current",
+  "timestamp": "2026-04-11T16:16:46.061Z",
+  "model": "Claude Sonnet 4",
+  "summary": {
+    "fieldRecall": 1,
+    "fieldPrecision": 1,
+    "typeAccuracy": 1,
+    "groupAccuracy": 1,
+    "sensitivityAccuracy": 1
+  },
+  "cases": [
+    {
+      "fixture": "pardon-application",
+      "metrics": {
+        "fieldRecall": 1,
+        "fieldPrecision": 1,
+        "typeAccuracy": 1,
+        "groupAccuracy": 1,
+        "sensitivityAccuracy": 1
+      },
+      "details": {
+        "missed": [],
+        "extra": [],
+        "totalGroundTruth": 72,
+        "totalExtracted": 72,
+        "totalMatched": 72
+      }
+    }
+  ]
+}

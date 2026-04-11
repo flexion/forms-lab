@@ -14,7 +14,7 @@ function printUsage(): void {
   console.log('Subcommands:')
   console.log('  strategies             List registered extraction strategies')
   console.log(
-    '  ground-truth <slug>    Generate ground truth for a fixture using Opus',
+    '  ground-truth <slug>    Generate ground truth (default: Opus, --strategy <id> to override)',
   )
   console.log('  run <strategy-id>      Run a strategy against the test suite')
   console.log(
@@ -46,9 +46,17 @@ export async function evaluate(args: string[]): Promise<number> {
     case 'ground-truth': {
       const slug = args[1]
       if (!slug) {
-        console.error('Usage: evaluate ground-truth <fixture-slug>')
+        console.error(
+          'Usage: evaluate ground-truth <fixture-slug> [--strategy <id>]',
+        )
         return 1
       }
+
+      const strategyIdx = args.indexOf('--strategy')
+      const strategyId =
+        strategyIdx !== -1 && args[strategyIdx + 1]
+          ? args[strategyIdx + 1]
+          : 'opus-baseline'
 
       const { loadFixtureForEvaluation } = await import('../../../../fixtures/index')
       const fixture = loadFixtureForEvaluation(slug)
@@ -57,16 +65,23 @@ export async function evaluate(args: string[]): Promise<number> {
         return 1
       }
 
-      console.log(`Generating ground truth for: ${fixture.name}`)
-      console.log('Using Opus as reference model...')
-
       const registry = createExtractorRegistry()
+      const strategyMeta = registry.list().find((s) => s.id === strategyId)
+      if (!strategyMeta) {
+        console.error(`Unknown strategy: ${strategyId}`)
+        return 1
+      }
+
+      console.log(`Generating ground truth for: ${fixture.name}`)
+      console.log(`Using ${strategyMeta.metadata.name} as reference model...`)
+
       const cacheDbPath = process.env.CACHE_DB_PATH ?? 'data/cache.sqlite'
       mkdirSync('data', { recursive: true })
       const cacheStore = createCacheStore(cacheDbPath)
       const extractor = createCachedPdfExtractor(
-        registry.get('opus-baseline'),
+        registry.get(strategyId),
         cacheStore,
+        strategyMeta.metadata.modelId,
       )
 
       const start = Date.now()
@@ -86,8 +101,9 @@ export async function evaluate(args: string[]): Promise<number> {
       // Update manifest
       const manifestPath = join('fixtures', slug, 'manifest.json')
       const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'))
+      manifest.groundTruthModel = strategyId
       manifest.reviewed = false
-      manifest.notes = `Opus extraction generated ${new Date().toISOString()}. Needs review.`
+      manifest.notes = `${strategyMeta.metadata.name} extraction generated ${new Date().toISOString()}. Needs review.`
       writeFileSync(manifestPath, JSON.stringify(manifest, null, 2))
       console.log(
         'Manifest updated. Review ground-truth.json and set reviewed: true.',
@@ -136,6 +152,7 @@ export async function evaluate(args: string[]): Promise<number> {
       const extractor = createCachedPdfExtractor(
         registry.get(strategyId),
         cacheStore,
+        strategyMeta.metadata.modelId,
       )
 
       console.log(`Running evaluation: ${strategyMeta.metadata.name}`)
