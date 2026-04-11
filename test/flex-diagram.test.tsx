@@ -147,7 +147,9 @@ describe('threatModelGraph', () => {
   })
 
   it('uses dashed edges for trust boundaries', () => {
-    const dashedEdges = threatModelGraph.edges.filter((e) => e.style === 'dashed')
+    const dashedEdges = threatModelGraph.edges.filter(
+      (e) => e.style === 'dashed',
+    )
     expect(dashedEdges.length).toBeGreaterThan(0)
   })
 })

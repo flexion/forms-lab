@@ -15,10 +15,14 @@ describe('GET /catalog (landing page)', () => {
     const res = await app.request('/catalog')
     const body = await res.text()
     // Check for descriptions (apostrophes may be HTML-escaped)
-    expect(body).toContain('System overview, data model, deployment, threat model')
+    expect(body).toContain(
+      'System overview, data model, deployment, threat model',
+    )
     expect(body).toContain('Who the system serves')
     expect(body).toContain('being built')
-    expect(body).toContain('Tokens, components, compositions, and visual language')
+    expect(body).toContain(
+      'Tokens, components, compositions, and visual language',
+    )
   })
 
   it('renders an orienting introduction', async () => {

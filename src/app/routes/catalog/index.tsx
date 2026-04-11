@@ -2,8 +2,8 @@ import { join } from 'node:path'
 import { Hono } from 'hono'
 import { resolveUrl } from '../../../lib/base-path'
 import { readMarkdownDir } from '../../../lib/markdown'
-import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { ContentCard } from '../../components/flex-card'
+import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'
 import architecture from './architecture'
 import decisions from './decisions'
@@ -26,12 +26,6 @@ catalog.route('/design-system', designSystem)
 // Catalog landing page
 catalog.get('/', async (c) => {
   const catalogDir = join(process.cwd(), 'catalog')
-
-  const [personaFiles, storyFiles, architectureFiles] = await Promise.all([
-    readMarkdownDir(join(catalogDir, 'personas')).catch(() => []),
-    readMarkdownDir(join(catalogDir, 'stories')).catch(() => []),
-    readMarkdownDir(join(catalogDir, 'architecture')).catch(() => []),
-  ])
 
   // Count decisions across subdirectories
   const { readdir } = await import('node:fs/promises')
