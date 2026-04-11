@@ -309,7 +309,8 @@ export function sortDeploymentsByDate(
   deployments: DeploymentInfo[],
 ): DeploymentInfo[] {
   return [...deployments].sort(
-    (a, b) => new Date(b.commit.date).getTime() - new Date(a.commit.date).getTime(),
+    (a, b) =>
+      new Date(b.commit.date).getTime() - new Date(a.commit.date).getTime(),
   )
 }
 

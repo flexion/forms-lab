@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import type { DeploymentInfo, DeploymentSummary } from '../src/types/deployment'
 import { sortDeploymentsByDate } from '../src/services/deployment-metadata'
+import type { DeploymentInfo } from '../src/types/deployment'
 
 function makeDeployment(branch: string, date: string): DeploymentInfo {
   return {
