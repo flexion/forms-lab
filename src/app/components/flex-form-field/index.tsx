@@ -32,7 +32,7 @@ export const FormField: FC<FormFieldProps> = ({ requirement, entry }) => {
   return (
     <div class="l-stack" style="--stack-space: var(--flex-spacing-1)">
       {fieldType !== 'boolean' && fieldType !== 'date' && (
-        <Label htmlFor={fieldName} required={required}>
+        <Label htmlFor={fieldName} optional={!required}>
           {label}
         </Label>
       )}

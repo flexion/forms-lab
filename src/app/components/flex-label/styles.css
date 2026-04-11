@@ -7,8 +7,8 @@
   max-width: var(--flex-control-max-width);
 }
 
-.flex-label__required {
-  color: var(--flex-color-error);
-  text-decoration: none;
+.flex-label__optional {
+  color: var(--flex-color-text-muted);
+  font-weight: normal;
   font-style: normal;
 }
