@@ -1,4 +1,9 @@
+import { deploy } from './commands/deploy'
+import { infra } from './commands/infra'
+import { nixos } from './commands/nixos'
+import { setupOAuth } from './commands/setup-oauth'
 import { syncStories } from './commands/sync-stories'
+import { webhook } from './commands/webhook'
 
 export interface ParsedArgs {
   command: string
@@ -16,6 +21,31 @@ const commands: Command[] = [
     name: 'sync-stories',
     description: 'Sync user stories from GitHub Issues',
     run: syncStories,
+  },
+  {
+    name: 'infra',
+    description: 'Manage EC2 infrastructure via Pulumi',
+    run: infra,
+  },
+  {
+    name: 'nixos',
+    description: 'Manage NixOS configuration on EC2',
+    run: nixos,
+  },
+  {
+    name: 'webhook',
+    description: 'GitHub webhook configuration',
+    run: webhook,
+  },
+  {
+    name: 'deploy',
+    description: 'Manual deployment commands',
+    run: deploy,
+  },
+  {
+    name: 'setup-oauth',
+    description: 'Create GitHub OAuth app and update .env',
+    run: setupOAuth,
   },
 ]
 

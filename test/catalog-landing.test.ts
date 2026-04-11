@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import app from '../src/server'
+import app from '../src/app/server'
 
 describe('GET /catalog', () => {
   it('returns 200 and shows content type overview', async () => {

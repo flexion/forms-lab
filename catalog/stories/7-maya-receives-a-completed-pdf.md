@@ -4,7 +4,7 @@ title: Maya receives a completed PDF
 milestone: "Final Project"
 labels: [user-story]
 state: open
-synced_at: 2026-04-09T02:23:21.175Z
+synced_at: 2026-04-09T14:40:12.308Z
 ---
 
 ## User Story:
@@ -39,6 +39,8 @@ As a **form creator (Maya)**, in order to **process applications using existing 
 ## Definition of Done:
 
 - [ ] Acceptance criteria met
+- [ ] Threat model updated -- any new trust boundaries, data flows, or attack surfaces are reflected in `catalog/architecture/threat-model.md`
+- [ ] Technical documentation updated -- architecture docs and decisions are current
 - [ ] At least one end-to-end test: upload PDF → extract → fill → generate completed PDF
 - [ ] Tests pass
 - [ ] Type checking passes

@@ -4,89 +4,27 @@ import type { Page } from '@playwright/test'
 
 const DEV_SERVER = 'http://localhost:3000'
 
-function readCSSFile(path: string): string {
-  return readFileSync(resolve(process.cwd(), path), 'utf-8')
-}
+// Cache CSS in memory — these never change during a test run.
+// Eliminates thousands of redundant disk reads across 279 tests.
+let cachedFlexCSS: string | undefined
+let cachedUswdsCSS: string | undefined
 
 function getFlexCSS(): string {
-  const files = [
-    'src/public/reset.css',
-    'src/public/font-normalize.css',
-    'src/public/base.css',
-    'src/public/base-classes.css',
-    'src/public/utilities.css',
-    'src/components/flex-accordion/styles.css',
-    'src/components/flex-alert/styles.css',
-    'src/components/flex-icon/styles.css',
-    'src/components/flex-layout/styles.css',
-    'src/components/flex-badge/styles.css',
-    'src/components/flex-card/styles.css',
-    'src/components/flex-prose/styles.css',
-    'src/components/flex-button/styles.css',
-    'src/components/flex-label/styles.css',
-    'src/components/flex-text-input/styles.css',
-    'src/components/flex-textarea/styles.css',
-    'src/components/flex-error-message/styles.css',
-    'src/components/flex-tag/styles.css',
-    'src/components/flex-link/styles.css',
-    'src/components/flex-list/styles.css',
-    'src/components/flex-collection/styles.css',
-    'src/components/flex-table/styles.css',
-    'src/components/flex-breadcrumb/styles.css',
-    'src/components/flex-side-navigation/styles.css',
-    'src/components/flex-pagination/styles.css',
-    'src/components/flex-search/styles.css',
-    'src/components/flex-checkbox/styles.css',
-    'src/components/flex-radio/styles.css',
-    'src/components/flex-select/styles.css',
-    'src/components/flex-button-group/styles.css',
-    'src/components/flex-footer/styles.css',
-    'src/components/flex-header/styles.css',
-    'src/components/flex-banner/styles.css',
-    'src/components/flex-identifier/styles.css',
-    'src/components/flex-form/styles.css',
-    'src/components/flex-validation/styles.css',
-    'src/components/flex-input-prefix-suffix/styles.css',
-    'src/components/flex-site-alert/styles.css',
-    'src/components/flex-summary-box/styles.css',
-    'src/components/flex-step-indicator/styles.css',
-    'src/components/flex-process-list/styles.css',
-    'src/components/flex-character-count/styles.css',
-    'src/components/flex-memorable-date/styles.css',
-    'src/components/flex-input-mask/styles.css',
-    'src/components/flex-range-slider/styles.css',
-    'src/components/flex-file-input/styles.css',
-    'src/components/flex-language-selector/styles.css',
-    'src/components/flex-modal/styles.css',
-    'src/components/flex-tooltip/styles.css',
-    'src/components/flex-combo-box/styles.css',
-    'src/components/flex-date-picker/styles.css',
-    'src/components/flex-date-range-picker/styles.css',
-    'src/components/flex-time-picker/styles.css',
-    'src/components/flex-in-page-nav/styles.css',
-  ]
-  let css = files.map((f) => readCSSFile(f)).join('\n')
-  // Resolve absolute font paths for Playwright's page.setContent()
+  if (cachedFlexCSS) return cachedFlexCSS
+  // Use the pre-built CSS bundle (includes tokens + all component styles)
+  // instead of reading 50+ individual files.
+  let css = readFileSync(resolve(process.cwd(), 'dist/styles.css'), 'utf-8')
   css = css.replaceAll('url("/static/', `url("${DEV_SERVER}/static/`)
+  cachedFlexCSS = css
   return css
 }
 
-function getTokenCSS(): string {
-  return readCSSFile('src/public/tokens.css')
-}
-
 function getUswdsCSS(): string {
+  if (cachedUswdsCSS) return cachedUswdsCSS
   let css = readFileSync(
     resolve(process.cwd(), 'node_modules/@uswds/uswds/dist/css/uswds.min.css'),
     'utf-8',
   )
-  // USWDS font paths are relative (../fonts/...) — resolve to absolute
-  // by pointing to the USWDS dist directory served by the dev server
-  // We can't serve USWDS fonts from our server, so use data URI font-face
-  // replacements. Actually — USWDS CSS references ../fonts/ relative to
-  // the CSS file location. When injected via setContent, there's no base URL.
-  // Fix: rewrite to absolute localhost URLs pointing to our copies of the
-  // same font files.
   css = css.replaceAll(
     'url(../fonts/source-sans-pro/',
     `url(${DEV_SERVER}/static/fonts/source-sans-pro/`,
@@ -95,8 +33,7 @@ function getUswdsCSS(): string {
     'url(../fonts/roboto-mono/',
     `url(${DEV_SERVER}/static/fonts/roboto-mono/`,
   )
-  // USWDS also references merriweather and public-sans — we don't serve those
-  // but they're fallback fonts not used in default theme components
+  cachedUswdsCSS = css
   return css
 }
 
@@ -104,7 +41,7 @@ export async function renderFlexFixture(
   page: Page,
   html: string,
 ): Promise<void> {
-  const css = `${getTokenCSS()}\n${getFlexCSS()}`
+  const css = getFlexCSS()
   await page.setContent(`
     <!DOCTYPE html>
     <html lang="en">
@@ -114,7 +51,7 @@ export async function renderFlexFixture(
     </body>
     </html>
   `)
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
 }
 
 export async function renderUswdsFixture(
@@ -131,5 +68,5 @@ export async function renderUswdsFixture(
     </body>
     </html>
   `)
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
 }
