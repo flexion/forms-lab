@@ -116,8 +116,13 @@ export interface Submission {
 // --- Persistence Gateways ---
 
 export interface FormSessionGateway {
-  createSession(specId: string, formSpecId: string, ownerId: string): FormSession
+  createSession(
+    specId: string,
+    formSpecId: string,
+    ownerId: string,
+  ): FormSession
   getSession(id: string): FormSession | null
+  listByOwner(ownerId: string): FormSession[]
   writeFields(sessionId: string, fields: Record<string, FieldEntry>): void
   submit(sessionId: string): Submission
 }

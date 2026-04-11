@@ -28,13 +28,114 @@ interface FormRouterDeps {
   getSpecs: (
     specId: string,
   ) => { dataSpec: DataCollectionSpec; formSpec: FormSpec } | null
+  listSpecs: () => { dataSpec: DataCollectionSpec; formSpec: FormSpec }[]
 }
 
 export function createFormRouter(deps: FormRouterDeps) {
-  const { sessionGateway, submissionGateway, getSpecs } = deps
+  const { sessionGateway, submissionGateway, getSpecs, listSpecs } = deps
   const forms = new Hono()
 
-  // Landing page (public — viewing a form description is fine)
+  // Forms index (public)
+  forms.get('/', (c) => {
+    const allSpecs = listSpecs()
+    return c.html(
+      <Layout user={c.get('user')} title="Forms" currentPath="/forms">
+        <div class="flex-form" data-size="large">
+          <h1>Available Forms</h1>
+          {allSpecs.length === 0 ? (
+            <p>No forms available.</p>
+          ) : (
+            <ul class="l-stack">
+              {allSpecs.map(({ dataSpec, formSpec }) => (
+                <li key={dataSpec.id}>
+                  <a href={resolveUrl(`/forms/${dataSpec.id}`)}>
+                    <strong>{formSpec.title}</strong>
+                  </a>
+                  {formSpec.description && <p>{formSpec.description}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </Layout>,
+    )
+  })
+
+  // My sessions (requires auth)
+  forms.get('/sessions', requireAuth(), (c) => {
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
+    const sessions = sessionGateway.listByOwner(user.login)
+    const active = sessions.filter((s) => s.status === 'active')
+    const submitted = sessions.filter((s) => s.status === 'submitted')
+    return c.html(
+      <Layout user={user} title="My Sessions" currentPath="/forms">
+        <div class="flex-form" data-size="large">
+          <h1>My Sessions</h1>
+          {sessions.length === 0 ? (
+            <p>
+              You have no form sessions.{' '}
+              <a href={resolveUrl('/forms')}>Browse available forms</a> to get
+              started.
+            </p>
+          ) : (
+            <>
+              {active.length > 0 && (
+                <>
+                  <h2>In Progress</h2>
+                  <ul class="l-stack">
+                    {active.map((s) => {
+                      const specs = getSpecs(s.specId)
+                      const title = specs?.formSpec.title ?? s.specId
+                      return (
+                        <li key={s.id}>
+                          <a
+                            href={resolveUrl(
+                              `/forms/${s.specId}/sessions/${s.id}/pages/0`,
+                            )}
+                          >
+                            <strong>{title}</strong>
+                          </a>
+                          <span class="u-text-muted">
+                            {' '}
+                            — started{' '}
+                            {new Date(s.createdAt).toLocaleDateString()}
+                          </span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </>
+              )}
+              {submitted.length > 0 && (
+                <>
+                  <h2>Completed</h2>
+                  <ul class="l-stack">
+                    {submitted.map((s) => {
+                      const specs = getSpecs(s.specId)
+                      const title = specs?.formSpec.title ?? s.specId
+                      return (
+                        <li key={s.id}>
+                          <strong>{title}</strong>
+                          <span class="u-text-muted">
+                            {' '}
+                            — submitted{' '}
+                            {new Date(s.createdAt).toLocaleDateString()}
+                          </span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      </Layout>,
+    )
+  })
+
+  // Form landing page (public — viewing a form description is fine)
   forms.get('/:specId', (c) => {
     const specs = getSpecs(c.req.param('specId'))
     if (!specs) return c.notFound()

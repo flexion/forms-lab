@@ -30,6 +30,7 @@ function createTestApp() {
       sessionGateway,
       submissionGateway,
       getSpecs: (specId) => specRegistry.get(specId) ?? null,
+      listSpecs: () => [...specRegistry.values()],
     }),
   )
   return app
@@ -50,6 +51,7 @@ function createUnauthTestApp() {
       sessionGateway,
       submissionGateway,
       getSpecs: (specId) => specRegistry.get(specId) ?? null,
+      listSpecs: () => [...specRegistry.values()],
     }),
   )
   return app
@@ -308,5 +310,121 @@ describe('Form routes', () => {
     expect(res.status).toBe(200)
     const html = await res.text()
     expect(html).toContain('Benefits Application Form')
+  })
+
+  it('GET /forms shows available forms', async () => {
+    const app = createTestApp()
+    const res = await app.request('/forms')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('Available Forms')
+    expect(html).toContain('Benefits Application Form')
+  })
+
+  it('forms index is accessible without auth', async () => {
+    const app = createUnauthTestApp()
+    const res = await app.request('/forms')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('Available Forms')
+  })
+
+  it('GET /forms/sessions shows user sessions', async () => {
+    const app = createTestApp()
+    // Create a session first
+    await app.request('/forms/benefits-app/sessions', { method: 'POST' })
+    const res = await app.request('/forms/sessions')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('My Sessions')
+    expect(html).toContain('In Progress')
+    expect(html).toContain('Benefits Application Form')
+  })
+
+  it('sessions page shows empty state when no sessions', async () => {
+    const app = createTestApp()
+    const res = await app.request('/forms/sessions')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('You have no form sessions')
+  })
+
+  it('sessions page requires auth', async () => {
+    const app = createUnauthTestApp()
+    const res = await app.request('/forms/sessions')
+    expect(res.status).toBe(302)
+    const location = res.headers.get('Location')
+    expect(location).toContain('/auth/signin')
+  })
+
+  it('sessions page only shows own sessions', async () => {
+    const app = createTestApp()
+    // testuser creates a session
+    await app.request('/forms/benefits-app/sessions', { method: 'POST' })
+
+    // Create a separate app with a different user
+    const sessionGateway = new InMemoryFormSessionGateway()
+    const submissionGateway = new InMemorySubmissionGateway()
+    const otherApp = new Hono()
+    otherApp.use('*', async (c, next) => {
+      c.set('user', { login: 'otheruser', name: 'Other', avatarUrl: '' })
+      await next()
+    })
+    otherApp.route(
+      '/forms',
+      createFormRouter({
+        sessionGateway,
+        submissionGateway,
+        getSpecs: (specId) => specRegistry.get(specId) ?? null,
+        listSpecs: () => [...specRegistry.values()],
+      }),
+    )
+    // otheruser creates a session in the same gateway
+    await otherApp.request('/forms/benefits-app/sessions', { method: 'POST' })
+
+    // otheruser should only see their own session
+    const res = await otherApp.request('/forms/sessions')
+    const html = await res.text()
+    expect(html).toContain('In Progress')
+    // Verify it shows exactly one session (their own)
+    const matches = html.match(/Benefits Application Form/g)
+    expect(matches).toHaveLength(1)
+  })
+
+  it('user cannot access another user session', async () => {
+    // Set up shared gateways
+    const sessionGateway = new InMemoryFormSessionGateway()
+    const submissionGateway = new InMemorySubmissionGateway()
+    const routerDeps = {
+      sessionGateway,
+      submissionGateway,
+      getSpecs: (specId: string) => specRegistry.get(specId) ?? null,
+      listSpecs: () => [...specRegistry.values()],
+    }
+
+    // User A creates a session
+    const appA = new Hono()
+    appA.use('*', async (c, next) => {
+      c.set('user', { login: 'userA', name: 'User A', avatarUrl: '' })
+      await next()
+    })
+    appA.route('/forms', createFormRouter(routerDeps))
+    const createRes = await appA.request('/forms/benefits-app/sessions', {
+      method: 'POST',
+    })
+    const location = createRes.headers.get('Location')
+    const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
+
+    // User B tries to access User A's session
+    const appB = new Hono()
+    appB.use('*', async (c, next) => {
+      c.set('user', { login: 'userB', name: 'User B', avatarUrl: '' })
+      await next()
+    })
+    appB.route('/forms', createFormRouter(routerDeps))
+    const res = await appB.request(
+      `/forms/benefits-app/sessions/${sessionId}/pages/0`,
+    )
+    expect(res.status).toBe(404)
   })
 })
