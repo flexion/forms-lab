@@ -52,6 +52,25 @@ function filterVisibleGroups(
     }))
 }
 
+function buildReviewPages(
+  resolved: ReturnType<typeof resolveFormSpec>,
+  fields: Record<string, FieldEntry>,
+) {
+  return resolved.pages
+    .filter((rp) => evaluateCondition(rp.page.condition, fields))
+    .map((rp) => ({
+      id: rp.page.id,
+      title: rp.page.title,
+      groups: filterVisibleGroups(rp.groups, fields).map((g) => ({
+        id: g.id,
+        requirements: g.requirements.map((r) => ({
+          fieldName: r.fieldName,
+          label: r.label,
+        })),
+      })),
+    }))
+}
+
 export function createFormRouter(deps: FormRouterDeps) {
   const { sessionGateway, submissionGateway, getSpecs, listSpecs } = deps
   const forms = new Hono()
@@ -337,7 +356,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     return c.html(
       <Layout user={user} title="Review" currentPath="/forms">
         <FormReview
-          resolved={resolved}
+          pages={buildReviewPages(resolved, session.fields)}
           fields={session.fields}
           submitUrl={resolveUrl(
             `/forms/${specs.dataSpec.id}/sessions/${session.id}/submit`,

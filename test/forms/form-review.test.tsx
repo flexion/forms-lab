@@ -1,21 +1,37 @@
 import { describe, expect, it } from 'bun:test'
+import type { FormFieldEntry } from '../../src/design-system/components/flex-form-field'
 import { FormReview } from '../../src/design-system/components/flex-form-review'
-import { resolveFormSpec } from '../../src/services/forms/resolver'
-import type { FieldEntry, ResolvedForm } from '../../src/services/forms/types'
+import {
+  evaluateCondition,
+  resolveFormSpec,
+} from '../../src/services/forms/resolver'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 describe('FormReview', () => {
   const resolved = resolveFormSpec(testFormSpec, testDataSpec)
 
   function render(
-    fields: Record<string, FieldEntry>,
-    resolvedForm?: ResolvedForm,
+    fields: Record<string, FormFieldEntry>,
+    resolvedForm = resolved,
   ): string {
-    const r = resolvedForm ?? resolved
+    const reviewPages = resolvedForm.pages
+      .filter((rp) => evaluateCondition(rp.page.condition, fields))
+      .map((rp) => ({
+        id: rp.page.id,
+        title: rp.page.title,
+        groups: rp.groups
+          .filter((g) => evaluateCondition(g.condition, fields))
+          .map((g) => ({
+            id: g.id,
+            requirements: g.requirements
+              .filter((r) => evaluateCondition(r.condition, fields))
+              .map((r) => ({ fieldName: r.fieldName, label: r.label })),
+          })),
+      }))
     return (
       (
         <FormReview
-          resolved={r}
+          pages={reviewPages}
           fields={fields}
           submitUrl="/submit"
           editBaseUrl="/forms/benefits-app/sessions/s1/pages"
