@@ -1,0 +1,34 @@
+{
+  "kind": "pdf-field-extraction",
+  "implementation": "opus-baseline",
+  "specVersion": "2026-04-11",
+  "status": "current",
+  "timestamp": "2026-04-11T16:34:28.512Z",
+  "model": "Claude Opus 4.6",
+  "summary": {
+    "fieldRecall": 1,
+    "fieldPrecision": 1,
+    "typeAccuracy": 1,
+    "groupAccuracy": 1,
+    "sensitivityAccuracy": 1
+  },
+  "cases": [
+    {
+      "fixture": "pardon-application",
+      "metrics": {
+        "fieldRecall": 1,
+        "fieldPrecision": 1,
+        "typeAccuracy": 1,
+        "groupAccuracy": 1,
+        "sensitivityAccuracy": 1
+      },
+      "details": {
+        "missed": [],
+        "extra": [],
+        "totalGroundTruth": 181,
+        "totalExtracted": 181,
+        "totalMatched": 181
+      }
+    }
+  ]
+}

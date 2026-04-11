@@ -87,7 +87,7 @@ export function createBedrockPdfExtractor(
       // tool-use mode returns empty objects on Bedrock.
       const extraction = await generateText({
         model: bedrock(model),
-        maxOutputTokens: 16384,
+        maxOutputTokens: 32768,
         messages: [
           {
             role: 'user',
@@ -154,7 +154,7 @@ Guidelines:
       // Step 2: Generate default FormSpec from extracted spec
       const formSpecResult = await generateText({
         model: bedrock(model),
-        maxOutputTokens: 4096,
+        maxOutputTokens: 8192,
         messages: [
           {
             role: 'user',

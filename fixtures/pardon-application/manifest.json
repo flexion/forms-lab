@@ -1,7 +1,7 @@
 {
   "name": "Application for Pardon After Completion of Sentence",
   "specVersion": "2026-04-11",
-  "groundTruthModel": "sonnet",
+  "groundTruthModel": "opus-baseline",
   "reviewed": false,
-  "notes": "Claude Sonnet 4 extraction generated 2026-04-11T16:13:27.297Z. Needs review."
+  "notes": "Claude Opus 4.6 extraction generated 2026-04-11T16:34:04.807Z. Needs review."
 }
