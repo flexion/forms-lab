@@ -55,44 +55,23 @@ describe('FormField', () => {
     expect(html).not.toContain('*')
   })
 
-  // --- Field width defaults ---
+  // --- Field width (opt-in via displayWidth, no defaults) ---
 
-  it('renders email with data-width="xl"', () => {
+  it('does not apply width by default', () => {
     const html = render({
       ...baseReq,
       fieldType: 'email',
       fieldName: 'email',
     })
-    expect(html).toContain('data-width="xl"')
+    expect(html).not.toContain('data-width')
   })
 
-  it('renders phone with data-width="md"', () => {
+  it('applies displayWidth when specified in requirement', () => {
     const html = render({
       ...baseReq,
-      fieldType: 'phone',
-      fieldName: 'phone',
+      displayWidth: 'md',
     })
     expect(html).toContain('data-width="md"')
-  })
-
-  it('renders number with data-width="sm"', () => {
-    const html = render({
-      ...baseReq,
-      fieldType: 'number',
-      fieldName: 'count',
-    })
-    expect(html).toContain('data-width="sm"')
-  })
-
-  it('respects displayWidth override from requirement', () => {
-    const html = render({
-      ...baseReq,
-      fieldType: 'email',
-      fieldName: 'email',
-      displayWidth: '2xs',
-    })
-    expect(html).toContain('data-width="2xs"')
-    expect(html).not.toContain('data-width="xl"')
   })
 
   // --- Field type rendering ---

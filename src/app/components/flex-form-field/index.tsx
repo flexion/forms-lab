@@ -12,15 +12,6 @@ import { Textarea } from '../flex-textarea'
 
 const CHOICE_RADIO_THRESHOLD = 7
 
-const DEFAULT_WIDTHS: Partial<
-  Record<DataRequirement['fieldType'], DataRequirement['displayWidth']>
-> = {
-  email: 'xl',
-  phone: 'md',
-  number: 'sm',
-  currency: 'md',
-}
-
 interface FormFieldProps {
   requirement: DataRequirement
   entry?: FieldEntry
@@ -44,7 +35,7 @@ export const FormField: FC<FormFieldProps> = ({ requirement, entry }) => {
       .filter(Boolean)
       .join(' ') || undefined
   const value = entry?.value
-  const width = displayWidth ?? DEFAULT_WIDTHS[fieldType]
+  const width = displayWidth
 
   return (
     <div class="flex-form-group" data-state={hasError ? 'error' : undefined}>
