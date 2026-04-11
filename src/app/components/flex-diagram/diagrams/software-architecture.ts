@@ -4,7 +4,7 @@ import type { GraphDefinition } from '../types'
 export const softwareArchitectureGraph: GraphDefinition = {
   title: 'Software Architecture',
   description:
-    'Codebase organization showing the main modules and their dependencies. The app (routes, components, middleware) depends on services, libraries, and types. The webhook is a separate process that shares services and types with the app. The CLI uses services and libraries for operational commands. Libraries are pure utilities with no internal dependencies.',
+    'Codebase organization showing the main modules and their dependencies. The app, webhook, and CLI are top-level entry points that depend on shared services, libraries, and types. The app reads catalog content at runtime. Libraries are pure utilities with no internal dependencies.',
   nodes: [
     {
       id: 'app',
@@ -25,16 +25,16 @@ export const softwareArchitectureGraph: GraphDefinition = {
   ],
   edges: [
     { source: 'app', target: 'services' },
-    { source: 'app', target: 'lib' },
-    { source: 'app', target: 'types' },
     { source: 'app', target: 'catalog', label: 'reads' },
     { source: 'webhook', target: 'services' },
-    { source: 'webhook', target: 'lib' },
-    { source: 'webhook', target: 'types' },
     { source: 'cli', target: 'services' },
-    { source: 'cli', target: 'lib' },
-    { source: 'cli', target: 'types' },
     { source: 'services', target: 'types' },
+    { source: 'app', target: 'lib' },
+    { source: 'lib', target: 'types' },
   ],
   direction: 'TB',
+  nodeWidth: 140,
+  nodeHeight: 36,
+  ranksep: 40,
+  nodesep: 40,
 }

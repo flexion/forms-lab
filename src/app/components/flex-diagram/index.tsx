@@ -16,13 +16,15 @@ export function DiagramRenderer({ graph }: { graph: GraphDefinition }) {
     direction = 'TB',
     nodeWidth = 160,
     nodeHeight = 50,
+    nodesep = 60,
+    ranksep = 80,
   } = graph
 
   const g = new dagre.graphlib.Graph()
   g.setGraph({
     rankdir: direction,
-    nodesep: 60,
-    ranksep: 80,
+    nodesep,
+    ranksep,
     marginx: 40,
     marginy: 40,
   })

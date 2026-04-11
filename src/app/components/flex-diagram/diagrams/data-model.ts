@@ -17,4 +17,7 @@ export const dataModelGraph: GraphDefinition = {
     { source: 'form-project', target: 'form-spec', label: 'contains' },
   ],
   direction: 'TB',
+  nodeWidth: 150,
+  nodeHeight: 36,
+  ranksep: 40,
 }
