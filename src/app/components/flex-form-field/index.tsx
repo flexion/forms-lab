@@ -151,6 +151,7 @@ function renderInput(
         <Textarea
           id={name}
           name={name}
+          defaultValue={strValue}
           state={state}
           required={required}
           ariaDescribedby={describedBy}
@@ -164,6 +165,9 @@ function renderInput(
           value="on"
           label={label}
           checked={value === true}
+          required={required}
+          state={state}
+          ariaDescribedby={describedBy}
         />
       )
     case 'date':
@@ -199,6 +203,8 @@ function renderInput(
           id={name}
           name={name}
           state={hasError ? 'error' : undefined}
+          value={strValue}
+          ariaDescribedby={describedBy}
           options={choices.map((c) => ({ value: c, label: c }))}
         />
       )

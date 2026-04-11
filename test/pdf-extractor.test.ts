@@ -36,11 +36,8 @@ const stubResult: ExtractionResult = {
         id: 'p1',
         title: 'Personal Info',
         groups: ['g1'],
-        deliveryMode: 'static',
       },
     ],
-    createdAt: '2026-04-09',
-    updatedAt: '2026-04-09',
   },
   confidence: [{ fieldId: 'f1', confidence: 0.95 }],
 }

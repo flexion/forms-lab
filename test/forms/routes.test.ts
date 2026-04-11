@@ -1,8 +1,32 @@
 import { describe, expect, it } from 'bun:test'
-import app from '../../src/app/server'
+import { Hono } from 'hono'
+import { createFormRouter } from '../../src/app/routes/forms/index'
+import { InMemoryFormSessionGateway } from '../../src/services/form-session'
+import { InMemorySubmissionGateway } from '../../src/services/submission'
+import { testDataSpec, testFormSpec } from './fixtures'
+
+const specRegistry = new Map([
+  [testDataSpec.id, { dataSpec: testDataSpec, formSpec: testFormSpec }],
+])
+
+function createTestApp() {
+  const sessionGateway = new InMemoryFormSessionGateway()
+  const submissionGateway = new InMemorySubmissionGateway()
+  const app = new Hono()
+  app.route(
+    '/forms',
+    createFormRouter({
+      sessionGateway,
+      submissionGateway,
+      getSpecs: (specId) => specRegistry.get(specId) ?? null,
+    }),
+  )
+  return app
+}
 
 describe('Form routes', () => {
   it('GET /forms/benefits-app returns landing page', async () => {
+    const app = createTestApp()
     const res = await app.request('/forms/benefits-app')
     expect(res.status).toBe(200)
     const html = await res.text()
@@ -11,11 +35,13 @@ describe('Form routes', () => {
   })
 
   it('GET /forms/nonexistent returns 404', async () => {
+    const app = createTestApp()
     const res = await app.request('/forms/nonexistent')
     expect(res.status).toBe(404)
   })
 
   it('POST /forms/benefits-app/sessions creates session and redirects', async () => {
+    const app = createTestApp()
     const res = await app.request('/forms/benefits-app/sessions', {
       method: 'POST',
     })
@@ -27,6 +53,8 @@ describe('Form routes', () => {
   })
 
   it('full flow: create session, fill pages, review, submit', async () => {
+    const app = createTestApp()
+
     // Create session
     const createRes = await app.request('/forms/benefits-app/sessions', {
       method: 'POST',
@@ -105,6 +133,7 @@ describe('Form routes', () => {
   })
 
   it('validation errors re-render the page', async () => {
+    const app = createTestApp()
     const createRes = await app.request('/forms/benefits-app/sessions', {
       method: 'POST',
     })
@@ -124,7 +153,56 @@ describe('Form routes', () => {
   })
 
   it('returns 404 for invalid session ID', async () => {
+    const app = createTestApp()
     const res = await app.request('/forms/benefits-app/sessions/bad-id/pages/0')
     expect(res.status).toBe(404)
+  })
+
+  it('rejects double submission', async () => {
+    const app = createTestApp()
+
+    // Create session and fill all pages
+    const createRes = await app.request('/forms/benefits-app/sessions', {
+      method: 'POST',
+    })
+    const location = createRes.headers.get('Location')
+    const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
+    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+
+    await app.request(`${baseUrl}/pages/0`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        fullName: 'Alice Johnson',
+        email: 'alice@example.com',
+      }),
+    })
+    await app.request(`${baseUrl}/pages/1`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        employed: 'Yes',
+        employmentType: 'Full-time',
+        monthlyIncome: '5000',
+      }),
+    })
+    await app.request(`${baseUrl}/pages/2`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        startDate: '2026-05-01',
+        dependents: '2',
+        agreeTerms: 'on',
+      }),
+    })
+
+    // First submit succeeds
+    const submitRes1 = await app.request(`${baseUrl}/submit`, {
+      method: 'POST',
+    })
+    expect(submitRes1.status).toBe(302)
+
+    // Second submit returns 409
+    const submitRes2 = await app.request(`${baseUrl}/submit`, {
+      method: 'POST',
+    })
+    expect(submitRes2.status).toBe(409)
   })
 })

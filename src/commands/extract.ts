@@ -128,7 +128,7 @@ export async function extract(args: string[]): Promise<number> {
 
         console.log('\nPages:')
         for (const page of result.formSpec.pages) {
-          console.log(`  ${page.title} [${page.deliveryMode}]`)
+          console.log(`  ${page.title} (${page.groups.length} groups)`)
         }
       } catch (err) {
         const elapsed = ((Date.now() - start) / 1000).toFixed(1)

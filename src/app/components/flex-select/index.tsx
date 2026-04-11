@@ -12,6 +12,8 @@ interface SelectProps {
   disabled?: boolean
   state?: 'error'
   multiple?: boolean
+  value?: string
+  ariaDescribedby?: string
 }
 
 export const Select: FC<SelectProps> = ({
@@ -21,6 +23,8 @@ export const Select: FC<SelectProps> = ({
   disabled,
   state,
   multiple,
+  value,
+  ariaDescribedby,
 }) => {
   return (
     <select
@@ -30,10 +34,15 @@ export const Select: FC<SelectProps> = ({
       disabled={disabled}
       data-state={state}
       multiple={multiple}
+      aria-describedby={ariaDescribedby}
     >
       {!multiple && <option value="">- Select -</option>}
       {options.map((opt) => (
-        <option key={opt.value} value={opt.value}>
+        <option
+          key={opt.value}
+          value={opt.value}
+          selected={opt.value === value}
+        >
           {opt.label}
         </option>
       ))}

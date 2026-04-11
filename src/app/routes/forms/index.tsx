@@ -74,7 +74,6 @@ export function createFormRouter(deps: FormRouterDeps) {
       <Layout title={resolved.pages[pageIndex].page.title} currentPath="/forms">
         <FormPageView
           resolvedPage={resolved.pages[pageIndex]}
-          pageIndex={pageIndex}
           actionUrl={resolveUrl(
             `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`,
           )}
@@ -122,7 +121,6 @@ export function createFormRouter(deps: FormRouterDeps) {
         <Layout title={resolvedPage.page.title} currentPath="/forms">
           <FormPageView
             resolvedPage={resolvedPage}
-            pageIndex={pageIndex}
             actionUrl={resolveUrl(
               `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`,
             )}
@@ -178,6 +176,9 @@ export function createFormRouter(deps: FormRouterDeps) {
     if (!specs) return c.notFound()
     const session = sessionGateway.getSession(c.req.param('sessionId'))
     if (!session) return c.notFound()
+    if (session.status === 'submitted') {
+      return c.text('This form has already been submitted.', 409)
+    }
     const submission = sessionGateway.submit(session.id)
     submissionGateway.save(submission)
     return c.redirect(

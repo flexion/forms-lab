@@ -9,6 +9,7 @@ interface TextareaProps {
   placeholder?: string
   rows?: number
   ariaDescribedby?: string
+  defaultValue?: string
 }
 
 export const Textarea: FC<TextareaProps> = ({
@@ -20,6 +21,7 @@ export const Textarea: FC<TextareaProps> = ({
   placeholder,
   rows,
   ariaDescribedby,
+  defaultValue,
 }) => {
   return (
     <textarea
@@ -32,6 +34,8 @@ export const Textarea: FC<TextareaProps> = ({
       placeholder={placeholder}
       rows={rows}
       aria-describedby={ariaDescribedby}
-    />
+    >
+      {defaultValue}
+    </textarea>
   )
 }
