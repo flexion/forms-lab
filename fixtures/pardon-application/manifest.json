@@ -1,0 +1,7 @@
+{
+  "name": "Application for Pardon After Completion of Sentence",
+  "specVersion": "2026-04-11",
+  "groundTruthModel": "us.anthropic.claude-opus-4-20250514-v1:0",
+  "reviewed": false,
+  "notes": "Ground truth pending generation with Opus"
+}
