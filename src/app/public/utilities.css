@@ -55,7 +55,7 @@
   .flex-footer,
   .flex-banner,
   .flex-theme-toggle,
-  .l-sidebar > :first-child {
+  .catalog-sidebar {
     display: none !important;
   }
 
