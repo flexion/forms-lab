@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
 import { DiagramRenderer } from '../src/app/components/flex-diagram'
+import { dataModelGraph } from '../src/app/components/flex-diagram/diagrams/data-model'
+import { deploymentGraph } from '../src/app/components/flex-diagram/diagrams/deployment'
+import { systemOverviewGraph } from '../src/app/components/flex-diagram/diagrams/system-overview'
+import { threatModelGraph } from '../src/app/components/flex-diagram/diagrams/threat-model'
 import type { GraphDefinition } from '../src/app/components/flex-diagram/types'
 
 const simple: GraphDefinition = {
@@ -83,5 +87,67 @@ describe('DiagramRenderer', () => {
     const res = await testApp.request('/dashed')
     const html = await res.text()
     expect(html).toContain('stroke-dasharray')
+  })
+})
+
+describe('systemOverviewGraph', () => {
+  it('defines all system components', () => {
+    const nodeIds = systemOverviewGraph.nodes.map((n) => n.id)
+    expect(nodeIds).toContain('browser')
+    expect(nodeIds).toContain('caddy')
+    expect(nodeIds).toContain('hono')
+    expect(nodeIds).toContain('git-fs')
+    expect(nodeIds).toContain('claude-api')
+    expect(nodeIds).toContain('github')
+  })
+
+  it('has edges connecting the components', () => {
+    expect(systemOverviewGraph.edges.length).toBeGreaterThan(0)
+  })
+
+  it('links nodes to relevant catalog pages', () => {
+    const linkedNodes = systemOverviewGraph.nodes.filter((n) => n.href)
+    expect(linkedNodes.length).toBeGreaterThan(0)
+  })
+})
+
+describe('dataModelGraph', () => {
+  it('defines the three-tier data model', () => {
+    const nodeIds = dataModelGraph.nodes.map((n) => n.id)
+    expect(nodeIds).toContain('collection-spec')
+    expect(nodeIds).toContain('form-spec')
+    expect(nodeIds).toContain('submission')
+  })
+
+  it('shows the relationships between tiers', () => {
+    expect(dataModelGraph.edges.length).toBeGreaterThanOrEqual(2)
+  })
+})
+
+describe('deploymentGraph', () => {
+  it('defines the deployment pipeline stages', () => {
+    const nodeIds = deploymentGraph.nodes.map((n) => n.id)
+    expect(nodeIds).toContain('github-push')
+    expect(nodeIds).toContain('webhook')
+    expect(nodeIds).toContain('deploy-script')
+    expect(nodeIds).toContain('caddy-route')
+  })
+
+  it('uses left-to-right layout for pipeline flow', () => {
+    expect(deploymentGraph.direction).toBe('LR')
+  })
+})
+
+describe('threatModelGraph', () => {
+  it('defines system components', () => {
+    const nodeIds = threatModelGraph.nodes.map((n) => n.id)
+    expect(nodeIds).toContain('browser')
+    expect(nodeIds).toContain('caddy')
+    expect(nodeIds).toContain('hono')
+  })
+
+  it('uses dashed edges for trust boundaries', () => {
+    const dashedEdges = threatModelGraph.edges.filter((e) => e.style === 'dashed')
+    expect(dashedEdges.length).toBeGreaterThan(0)
   })
 })
