@@ -12,14 +12,30 @@ import { Textarea } from '../flex-textarea'
 
 const CHOICE_RADIO_THRESHOLD = 7
 
+const DEFAULT_WIDTHS: Partial<
+  Record<DataRequirement['fieldType'], DataRequirement['displayWidth']>
+> = {
+  email: 'xl',
+  phone: 'md',
+  number: 'sm',
+  currency: 'md',
+}
+
 interface FormFieldProps {
   requirement: DataRequirement
   entry?: FieldEntry
 }
 
 export const FormField: FC<FormFieldProps> = ({ requirement, entry }) => {
-  const { fieldName, label, fieldType, required, helpText, choices } =
-    requirement
+  const {
+    fieldName,
+    label,
+    fieldType,
+    required,
+    helpText,
+    choices,
+    displayWidth,
+  } = requirement
   const hasError = entry?.errors && entry.errors.length > 0
   const errorId = `${fieldName}-error`
   const helpId = `${fieldName}-help`
@@ -28,32 +44,39 @@ export const FormField: FC<FormFieldProps> = ({ requirement, entry }) => {
       .filter(Boolean)
       .join(' ') || undefined
   const value = entry?.value
+  const width = displayWidth ?? DEFAULT_WIDTHS[fieldType]
 
   return (
-    <div class="l-stack" style="--stack-space: var(--flex-spacing-1)">
-      {fieldType !== 'boolean' && fieldType !== 'date' && (
-        <Label htmlFor={fieldName} optional={!required}>
-          {label}
-        </Label>
-      )}
-      {helpText && (
-        <span class="flex-hint" id={helpId}>
-          {helpText}
-        </span>
-      )}
-      {hasError && entry?.errors && (
-        <ErrorMessage id={errorId}>{entry.errors.join('. ')}</ErrorMessage>
-      )}
-      {renderInput(
-        fieldType,
-        fieldName,
-        value,
-        hasError,
-        describedBy,
-        choices,
-        label,
-        required,
-      )}
+    <div
+      class="flex-form-group"
+      data-state={hasError ? 'error' : undefined}
+    >
+      <div class="l-stack" style="--stack-space: var(--flex-space-xs)">
+        {fieldType !== 'boolean' && fieldType !== 'date' && (
+          <Label htmlFor={fieldName} optional={!required}>
+            {label}
+          </Label>
+        )}
+        {helpText && (
+          <span class="flex-hint" id={helpId}>
+            {helpText}
+          </span>
+        )}
+        {hasError && entry?.errors && (
+          <ErrorMessage id={errorId}>{entry.errors.join('. ')}</ErrorMessage>
+        )}
+        {renderInput(
+          fieldType,
+          fieldName,
+          value,
+          hasError,
+          describedBy,
+          choices,
+          label,
+          required,
+          width,
+        )}
+      </div>
     </div>
   )
 }
@@ -67,6 +90,7 @@ function renderInput(
   choices: string[] | undefined,
   label: string,
   required: boolean,
+  width: DataRequirement['displayWidth'],
 ) {
   const state = hasError ? ('error' as const) : undefined
   const strValue = value != null && value !== false ? String(value) : undefined
@@ -81,6 +105,7 @@ function renderInput(
           value={strValue}
           state={state}
           required={required}
+          width={width}
           ariaDescribedby={describedBy}
         />
       )
@@ -93,6 +118,7 @@ function renderInput(
           value={strValue}
           state={state}
           required={required}
+          width={width}
           ariaDescribedby={describedBy}
         />
       )
@@ -105,6 +131,7 @@ function renderInput(
           value={strValue}
           state={state}
           required={required}
+          width={width}
           ariaDescribedby={describedBy}
         />
       )
@@ -117,6 +144,7 @@ function renderInput(
           value={strValue}
           state={state}
           required={required}
+          width={width}
           ariaDescribedby={describedBy}
         />
       )
@@ -129,6 +157,7 @@ function renderInput(
           value={strValue}
           state={state}
           required={required}
+          width={width}
           ariaDescribedby={describedBy}
         />
       )
@@ -142,6 +171,7 @@ function renderInput(
             value={strValue}
             state={state}
             required={required}
+            width={width}
             ariaDescribedby={describedBy}
           />
         </InputGroup>
