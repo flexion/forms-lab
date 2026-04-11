@@ -115,8 +115,6 @@ describe('ProjectStore', () => {
         specId: 's1',
         title: 'Form',
         pages: [],
-        createdAt: '',
-        updatedAt: '',
       },
       confidence: [{ fieldId: 'f1', confidence: 0.9 }],
     })

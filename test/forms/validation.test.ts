@@ -18,14 +18,6 @@ describe('validateFields', () => {
     ],
   }
 
-  const _emailReq: DataRequirement = {
-    id: 'email',
-    fieldName: 'email',
-    label: 'Email',
-    fieldType: 'email',
-    required: true,
-  }
-
   const numberReq: DataRequirement = {
     id: 'dep',
     fieldName: 'dependents',

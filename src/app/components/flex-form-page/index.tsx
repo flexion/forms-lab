@@ -5,7 +5,6 @@ import { FormField } from '../flex-form-field'
 
 interface FormPageViewProps {
   resolvedPage: ResolvedPage
-  pageIndex: number
   actionUrl: string
   fields: Record<string, FieldEntry>
   prevUrl: string | null
@@ -13,7 +12,6 @@ interface FormPageViewProps {
 
 export const FormPageView: FC<FormPageViewProps> = ({
   resolvedPage,
-  pageIndex: _pageIndex,
   actionUrl,
   fields,
   prevUrl,

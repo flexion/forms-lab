@@ -10,7 +10,6 @@ describe('FormPageView', () => {
   function render(
     resolvedPage: ResolvedPage,
     props: {
-      pageIndex: number
       actionUrl: string
       fields?: Record<string, FieldEntry>
       prevUrl?: string | null
@@ -20,7 +19,6 @@ describe('FormPageView', () => {
       (
         <FormPageView
           resolvedPage={resolvedPage}
-          pageIndex={props.pageIndex}
           actionUrl={props.actionUrl}
           fields={props.fields ?? {}}
           prevUrl={props.prevUrl ?? null}
@@ -30,30 +28,29 @@ describe('FormPageView', () => {
   }
 
   it('renders page title', () => {
-    const html = render(resolved.pages[0], { pageIndex: 0, actionUrl: '/test' })
+    const html = render(resolved.pages[0], { actionUrl: '/test' })
     expect(html).toContain('Personal Information')
   })
 
   it('renders page description when present', () => {
-    const html = render(resolved.pages[0], { pageIndex: 0, actionUrl: '/test' })
+    const html = render(resolved.pages[0], { actionUrl: '/test' })
     expect(html).toContain('Please provide your contact details.')
   })
 
   it('renders fields for the group', () => {
-    const html = render(resolved.pages[0], { pageIndex: 0, actionUrl: '/test' })
+    const html = render(resolved.pages[0], { actionUrl: '/test' })
     expect(html).toContain('name="fullName"')
     expect(html).toContain('name="email"')
     expect(html).toContain('name="phone"')
   })
 
   it('renders a submit button', () => {
-    const html = render(resolved.pages[0], { pageIndex: 0, actionUrl: '/test' })
+    const html = render(resolved.pages[0], { actionUrl: '/test' })
     expect(html).toContain('type="submit"')
   })
 
   it('renders previous link when prevUrl is provided', () => {
     const html = render(resolved.pages[1], {
-      pageIndex: 1,
       actionUrl: '/test',
       prevUrl: '/prev',
     })
@@ -63,7 +60,6 @@ describe('FormPageView', () => {
 
   it('does not render previous link on first page', () => {
     const html = render(resolved.pages[0], {
-      pageIndex: 0,
       actionUrl: '/test',
       prevUrl: null,
     })
@@ -72,7 +68,6 @@ describe('FormPageView', () => {
 
   it('renders form with POST method and action URL', () => {
     const html = render(resolved.pages[0], {
-      pageIndex: 0,
       actionUrl: '/submit-here',
     })
     expect(html).toContain('method="post"')

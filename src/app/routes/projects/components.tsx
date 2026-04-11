@@ -361,10 +361,7 @@ const FormSpecViewer: FC<{
                 {page.groups.map((gId) => groupMap.get(gId) ?? gId).join(', ')}
               </div>
             </div>
-            <span class="badge" data-delivery={page.deliveryMode}>
-              {page.deliveryMode.charAt(0).toUpperCase() +
-                page.deliveryMode.slice(1)}
-            </span>
+            <span class="badge">Form Page</span>
           </li>
         ))}
       </ol>

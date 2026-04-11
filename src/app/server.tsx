@@ -15,8 +15,8 @@ import { Layout } from './components/flex-layout'
 import { requireAuth, sessionReader } from './middleware/auth'
 import auth from './routes/auth/index'
 import catalog from './routes/catalog/index'
-import { createProjectRoutes } from './routes/projects/index'
 import { createFormRouter } from './routes/forms/index'
+import { createProjectRoutes } from './routes/projects/index'
 
 const basePath = getBasePath()
 const app = new Hono().basePath(basePath)
