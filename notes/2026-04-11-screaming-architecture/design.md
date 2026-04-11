@@ -1,7 +1,7 @@
 # Screaming Architecture Restructuring
 
 **Date:** 2026-04-11
-**Status:** draft
+**Status:** working
 
 ## Problem
 
@@ -163,3 +163,10 @@ All NixOS modules and package.json scripts reference `src/` paths that must be u
 This restructuring is a mechanical refactor: move files, update imports, update infrastructure references. No behavior changes, no new features, no API changes. All tests must pass identically before and after.
 
 The implementation plan will be written separately after prerequisite branches are merged.
+
+## Known Dependency Rule Violations
+
+The following pre-existing coupling patterns violate the dependency rule. They were not introduced by this refactor and would require dedicated work to resolve:
+
+- **shared/ → design-system/**: `shared/test-helpers/conformance-runner.ts` imports `design-system/conformance/types`. The conformance runner inherently depends on design system types.
+- **design-system/ → services/**: Form-specific components (`flex-form-field`, `flex-form-page`, `flex-form-review`, `flex-form-landing`, `flex-form-confirmation`) import domain types from `services/forms/` and `services/data-collection/`. `flex-layout` imports `SessionUser` from `services/auth/`. `flex-prose` imports `renderMarkdown` from `services/content/`. Resolving these would require refactoring components to receive domain data as generic props, which is out of scope for this structural refactor.
