@@ -8,6 +8,7 @@ interface ErrorMessageProps {
 export const ErrorMessage: FC<ErrorMessageProps> = ({ id, children }) => {
   return (
     <span class="flex-error-message" id={id} role="alert">
+      <span class="u-visually-hidden">Error: </span>
       {children}
     </span>
   )
