@@ -194,6 +194,34 @@ describe('POST /projects/:id/retry', () => {
   })
 })
 
+describe('POST /projects/:id/delete', () => {
+  it('deletes project and redirects to list', async () => {
+    const { app, projectStore } = createTestApp()
+    const project = projectStore.create({
+      name: 'Delete Test',
+      description: 'Test',
+      sourcePdf: Buffer.from('pdf'),
+      createdBy: 'testuser',
+    })
+    expect(projectStore.get(project.id)).not.toBeNull()
+
+    const res = await app.request(`/projects/${project.id}/delete`, {
+      method: 'POST',
+    })
+    expect(res.status).toBe(302)
+    expect(res.headers.get('Location')).toContain('/projects')
+    expect(projectStore.get(project.id)).toBeNull()
+  })
+
+  it('returns 404 for missing project', async () => {
+    const { app } = createTestApp()
+    const res = await app.request('/projects/nonexistent/delete', {
+      method: 'POST',
+    })
+    expect(res.status).toBe(404)
+  })
+})
+
 describe('Confidence indicators', () => {
   it('shows badge for low-confidence fields', async () => {
     const { app, projectStore } = createTestApp()

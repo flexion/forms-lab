@@ -85,6 +85,19 @@ describe('ProjectStore', () => {
     expect(allProjects).toHaveLength(3)
   })
 
+  it('deletes a project', () => {
+    const store = createProjectStore(':memory:')
+    const project = store.create({
+      name: 'Delete Me',
+      description: 'Test',
+      sourcePdf: Buffer.from('pdf'),
+      createdBy: 'testuser',
+    })
+    expect(store.get(project.id)).not.toBeNull()
+    store.delete(project.id)
+    expect(store.get(project.id)).toBeNull()
+  })
+
   it('updates project fields', () => {
     const store = createProjectStore(':memory:')
     const project = store.create({

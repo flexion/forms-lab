@@ -73,6 +73,7 @@ export interface ProjectStore {
       >
     >,
   ): StoredProject
+  delete(id: string): void
 }
 
 export function createProjectStore(dbPath: string): ProjectStore {
@@ -197,6 +198,10 @@ export function createProjectStore(dbPath: string): ProjectStore {
       db.run(`UPDATE projects SET ${sets.join(', ')} WHERE id = ?`, values)
       // biome-ignore lint/style/noNonNullAssertion: row was just updated
       return this.get(id)!
+    },
+
+    delete(id: string): void {
+      db.run('DELETE FROM projects WHERE id = ?', [id])
     },
   }
 }

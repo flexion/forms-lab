@@ -147,5 +147,16 @@ export function createProjectRoutes(
     return c.redirect(resolveUrl(`/projects/${project.id}`))
   })
 
+  projects.post('/:id/delete', async (c) => {
+    const user = c.get('user')
+    if (!user) return c.redirect(resolveUrl('/auth/signin'))
+
+    const project = projectStore.get(c.req.param('id'))
+    if (!project) return c.notFound()
+
+    projectStore.delete(project.id)
+    return c.redirect(resolveUrl('/projects'))
+  })
+
   return projects
 }
