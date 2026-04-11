@@ -126,7 +126,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
               </details>
               <script
                 dangerouslySetInnerHTML={{
-                  __html: `(function(){var d=document.querySelector(".catalog-nav-toggle"),m=matchMedia("(max-width:48rem)");function u(){if(m.matches)d.removeAttribute("open");else d.setAttribute("open","")}u();m.addEventListener("change",u)}())`,
+                  __html: `(function(){var d=document.querySelector(".catalog-nav-toggle");function u(){if(innerWidth<=768)d.removeAttribute("open");else d.setAttribute("open","")}u();addEventListener("resize",u)}())`,
                 }}
               />
             </aside>
