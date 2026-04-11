@@ -47,6 +47,7 @@
 @import "../components/flex-identifier/styles.css" layer(block);
 @import "../components/flex-form/styles.css" layer(block);
 @import "../components/flex-form-step-text/styles.css" layer(block);
+@import "../components/flex-form-error-summary/styles.css" layer(block);
 @import "../components/flex-validation/styles.css" layer(block);
 @import "../components/flex-input-prefix-suffix/styles.css" layer(block);
 @import "../components/flex-site-alert/styles.css" layer(block);
