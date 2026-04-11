@@ -1,6 +1,4 @@
 import type { FC } from 'hono/jsx'
-import type { DataRequirement } from '../../../services/data-collection/types'
-import type { FieldEntry } from '../../../services/forms/types'
 import { Checkbox } from '../flex-checkbox'
 import { DatePicker } from '../flex-date-picker'
 import { ErrorMessage } from '../flex-error-message'
@@ -11,10 +9,40 @@ import { Select } from '../flex-select'
 import { TextInput } from '../flex-text-input'
 import { Textarea } from '../flex-textarea'
 
+export type FieldType =
+  | 'text'
+  | 'email'
+  | 'phone'
+  | 'url'
+  | 'number'
+  | 'currency'
+  | 'date'
+  | 'boolean'
+  | 'choice'
+  | 'longText'
+
+export interface FormFieldRequirement {
+  fieldName: string
+  label: string
+  fieldType: FieldType
+  required: boolean
+  helpText?: string
+  choices?: string[]
+  displayWidth?: '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+}
+
+export interface FormFieldEntry {
+  value: string | number | boolean | null
+  errors?: string[]
+}
+
 const CHOICE_RADIO_THRESHOLD = 7
 
 const DEFAULT_WIDTHS: Partial<
-  Record<DataRequirement['fieldType'], DataRequirement['displayWidth']>
+  Record<
+    FormFieldRequirement['fieldType'],
+    FormFieldRequirement['displayWidth']
+  >
 > = {
   email: 'xl',
   phone: 'md',
@@ -23,8 +51,8 @@ const DEFAULT_WIDTHS: Partial<
 }
 
 interface FormFieldProps {
-  requirement: DataRequirement
-  entry?: FieldEntry
+  requirement: FormFieldRequirement
+  entry?: FormFieldEntry
 }
 
 export const FormField: FC<FormFieldProps> = ({ requirement, entry }) => {
@@ -80,7 +108,7 @@ export const FormField: FC<FormFieldProps> = ({ requirement, entry }) => {
 }
 
 function renderInput(
-  fieldType: DataRequirement['fieldType'],
+  fieldType: FormFieldRequirement['fieldType'],
   name: string,
   value: string | number | boolean | null | undefined,
   hasError: boolean | undefined,
@@ -88,7 +116,7 @@ function renderInput(
   choices: string[] | undefined,
   label: string,
   required: boolean,
-  width: DataRequirement['displayWidth'],
+  width: FormFieldRequirement['displayWidth'],
 ) {
   const state = hasError ? ('error' as const) : undefined
   const strValue = value != null && value !== false ? String(value) : undefined
