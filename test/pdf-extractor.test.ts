@@ -3,8 +3,8 @@ import {
   createCachedPdfExtractor,
   type PdfExtractor,
 } from '../src/services/ingestion/pdf-extractor'
+import type { ExtractionResult } from '../src/services/ingestion/types'
 import { createCacheStore } from '../src/services/storage'
-import type { ExtractionResult } from '../src/types/models'
 
 const stubResult: ExtractionResult = {
   spec: {

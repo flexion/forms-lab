@@ -1,12 +1,12 @@
 import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../../fixtures/index'
-import { resolveUrl } from '../../../../shared/base-path'
+import type { DataCollectionSpec } from '../../../../services/data-collection/types'
+import type { FormSpec } from '../../../../services/forms/types'
 import type {
-  DataCollectionSpec,
   FieldConfidence,
-  FormSpec,
   StoredProject,
-} from '../../../../types/models'
+} from '../../../../services/ingestion/types'
+import { resolveUrl } from '../../../../shared/base-path'
 
 export const ProjectList: FC<{ projects: StoredProject[] }> = ({
   projects,

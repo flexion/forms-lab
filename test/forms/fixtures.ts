@@ -1,4 +1,5 @@
-import type { DataCollectionSpec, FormSpec } from '../../src/types/models'
+import type { DataCollectionSpec } from '../../src/services/data-collection/types'
+import type { FormSpec } from '../../src/services/forms/types'
 
 /**
  * A benefits application spec exercising all 10 field types,

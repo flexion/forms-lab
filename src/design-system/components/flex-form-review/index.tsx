@@ -1,6 +1,6 @@
 import type { FC } from 'hono/jsx'
 import { evaluateCondition } from '../../../services/forms/resolver'
-import type { FieldEntry, ResolvedForm } from '../../../types/models'
+import type { FieldEntry, ResolvedForm } from '../../../services/forms/types'
 import { Form } from '../flex-form'
 
 interface FormReviewProps {

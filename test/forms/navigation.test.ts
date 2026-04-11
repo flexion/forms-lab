@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { findNextPage, findPrevPage } from '../../src/services/forms/navigation'
 import { resolveFormSpec } from '../../src/services/forms/resolver'
-import type { FieldEntry } from '../../src/types/models'
+import type { FieldEntry } from '../../src/services/forms/types'
 import { conditionalPageFormSpec, testDataSpec, testFormSpec } from './fixtures'
 
 describe('findNextPage', () => {

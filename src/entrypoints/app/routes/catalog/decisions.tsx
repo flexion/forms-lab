@@ -12,8 +12,8 @@ import {
   parseMarkdown,
   readMarkdownDir,
 } from '../../../../services/content/markdown'
+import type { Decision } from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
-import type { Decision } from '../../../../types/models'
 import { getDecisionsSidebar } from './sidebar'
 
 const groupLabels: Record<string, string> = {

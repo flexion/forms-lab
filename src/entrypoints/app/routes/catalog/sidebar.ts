@@ -1,6 +1,6 @@
 import { getComponentsByCategory } from '../../../../design-system/registry'
+import type { Decision, Story } from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
-import type { Decision, Story } from '../../../../types/models'
 
 export function getCatalogSidebar(currentPath?: string) {
   return [

@@ -1,6 +1,6 @@
 import type { FC } from 'hono/jsx'
 import { evaluateCondition } from '../../../services/forms/resolver'
-import type { FieldEntry, ResolvedPage } from '../../../types/models'
+import type { FieldEntry, ResolvedPage } from '../../../services/forms/types'
 import { Form } from '../flex-form'
 import type { FormError } from '../flex-form-error-summary'
 import { FormErrorSummary } from '../flex-form-error-summary'

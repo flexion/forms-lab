@@ -5,6 +5,7 @@ import { FormLanding } from '../../../../design-system/components/flex-form-land
 import { FormPageView } from '../../../../design-system/components/flex-form-page'
 import { FormReview } from '../../../../design-system/components/flex-form-review'
 import { Layout } from '../../../../design-system/components/flex-layout'
+import type { DataCollectionSpec } from '../../../../services/data-collection/types'
 import {
   countVisiblePages,
   findNextPage,
@@ -12,14 +13,13 @@ import {
   visiblePageNumber,
 } from '../../../../services/forms/navigation'
 import { resolveFormSpec } from '../../../../services/forms/resolver'
-import { validateFields } from '../../../../services/forms/validation'
-import { resolveUrl } from '../../../../shared/base-path'
 import type {
-  DataCollectionSpec,
   FormSessionGateway,
   FormSpec,
   SubmissionGateway,
-} from '../../../../types/models'
+} from '../../../../services/forms/types'
+import { validateFields } from '../../../../services/forms/validation'
+import { resolveUrl } from '../../../../shared/base-path'
 import { requireAuth } from '../../middleware/auth'
 
 interface FormRouterDeps {

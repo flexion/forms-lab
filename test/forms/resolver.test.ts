@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'bun:test'
+import type { FieldCondition } from '../../src/services/data-collection/types'
 import {
   evaluateCondition,
   resolveFormSpec,
 } from '../../src/services/forms/resolver'
-import type { FieldCondition, FieldEntry } from '../../src/types/models'
+import type { FieldEntry } from '../../src/services/forms/types'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 describe('evaluateCondition', () => {

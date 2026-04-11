@@ -1,5 +1,6 @@
 import type { FC } from 'hono/jsx'
-import type { DataRequirement, FieldEntry } from '../../../types/models'
+import type { DataRequirement } from '../../../services/data-collection/types'
+import type { FieldEntry } from '../../../services/forms/types'
 import { Checkbox } from '../flex-checkbox'
 import { DatePicker } from '../flex-date-picker'
 import { ErrorMessage } from '../flex-error-message'

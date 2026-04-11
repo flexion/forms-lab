@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { FormField } from '../../src/design-system/components/flex-form-field'
-import type { DataRequirement, FieldEntry } from '../../src/types/models'
+import type { DataRequirement } from '../../src/services/data-collection/types'
+import type { FieldEntry } from '../../src/services/forms/types'
 
 describe('FormField', () => {
   const baseReq: DataRequirement = {

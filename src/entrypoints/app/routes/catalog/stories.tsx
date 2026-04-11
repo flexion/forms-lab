@@ -11,8 +11,8 @@ import {
   parseMarkdown,
   readMarkdownDir,
 } from '../../../../services/content/markdown'
+import type { Story } from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
-import type { Story } from '../../../../types/models'
 import { getStoriesSidebar } from './sidebar'
 
 const stories = new Hono()
