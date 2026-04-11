@@ -15,10 +15,12 @@
     "build:components": "bun run scripts/build-components.ts",
     "build": "bun run build:css && bun run build:components",
     "check": "bunx @biomejs/biome check . && bun run --no-warnings tsc --noEmit && bun test",
-    "lint:css": "bunx stylelint 'src/**/*.css'"
+    "lint:css": "bunx stylelint 'src/**/*.css'",
+    "smoke": "bun run scripts/smoke-check.ts"
   },
   "dependencies": {
     "@ai-sdk/amazon-bedrock": "^4.0.92",
+    "@aws-sdk/credential-providers": "^3.1029.0",
     "ai": "^6.0.156",
     "highlight.js": "^11.11.1",
     "hono": "^4.0.0",

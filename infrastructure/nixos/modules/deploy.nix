@@ -98,6 +98,22 @@ CADDYEOF
 
     echo "Deployed $BRANCH at port $PORT (/$UNIT_NAME/)"
 
+    # Run smoke checks if the script exists
+    if [ -f "$BRANCH_DIR/scripts/smoke-check.ts" ]; then
+      echo "Running smoke checks..."
+      # Wait for the service to be ready
+      for i in $(seq 1 10); do
+        if ${pkgs.curl}/bin/curl -sf "http://localhost:$PORT/$UNIT_NAME/health" > /dev/null 2>&1; then
+          break
+        fi
+        sleep 1
+      done
+      # Source .env so smoke check sees AWS_REGION etc.
+      set -a; source "$BRANCH_DIR/.env"; set +a
+      BASE_URL="http://localhost:$PORT/$UNIT_NAME" ${pkgs.bun}/bin/bun run "$BRANCH_DIR/scripts/smoke-check.ts" || \
+        echo "WARNING: Smoke checks failed — deployment may be misconfigured"
+    fi
+
     # If deploying main branch, also update the homepage service
     if [ "$BRANCH" = "main" ]; then
       echo "Updating homepage service..."
