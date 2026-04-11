@@ -79,6 +79,11 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             current={props.currentPath === '/'}
           />
           <HeaderNavItem
+            href={resolveUrl('/forms')}
+            label="Forms"
+            current={props.currentPath === '/forms'}
+          />
+          <HeaderNavItem
             href={resolveUrl('/catalog')}
             label="Catalog"
             current={props.currentPath?.startsWith('/catalog') ?? false}
@@ -89,6 +94,11 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
                 href={resolveUrl('/projects')}
                 label="Projects"
                 current={props.currentPath?.startsWith('/projects') ?? false}
+              />
+              <HeaderNavItem
+                href={resolveUrl('/forms/sessions')}
+                label="My Sessions"
+                current={props.currentPath === '/forms/sessions'}
               />
               <li class="flex-header__nav-item">
                 <span class="flex-header__nav-link flex-header__user-info">
