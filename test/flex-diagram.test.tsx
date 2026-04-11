@@ -151,3 +151,40 @@ describe('threatModelGraph', () => {
     expect(dashedEdges.length).toBeGreaterThan(0)
   })
 })
+
+import app from '../src/app/server'
+
+describe('Architecture route with diagrams', () => {
+  it('renders a diagram on the system-overview page', async () => {
+    const res = await app.request('/catalog/architecture/system-overview')
+    expect(res.status).toBe(200)
+    const body = await res.text()
+    expect(body).toContain('class="flex-diagram"')
+    expect(body).toContain('role="img"')
+    expect(body).toContain('System Overview')
+  })
+
+  it('renders a diagram on the data-model page', async () => {
+    const res = await app.request('/catalog/architecture/data-model')
+    expect(res.status).toBe(200)
+    const body = await res.text()
+    expect(body).toContain('class="flex-diagram"')
+    expect(body).toContain('Data Model')
+  })
+
+  it('renders a diagram on the deployment page', async () => {
+    const res = await app.request('/catalog/architecture/deployment')
+    expect(res.status).toBe(200)
+    const body = await res.text()
+    expect(body).toContain('class="flex-diagram"')
+    expect(body).toContain('Deployment Pipeline')
+  })
+
+  it('renders a diagram on the threat-model page', async () => {
+    const res = await app.request('/catalog/architecture/threat-model')
+    expect(res.status).toBe(200)
+    const body = await res.text()
+    expect(body).toContain('class="flex-diagram"')
+    expect(body).toContain('Threat Model')
+  })
+})

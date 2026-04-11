@@ -6,9 +6,22 @@ import { StatusBadge } from '../../components/flex-badge'
 import { Breadcrumb } from '../../components/flex-breadcrumb'
 import { ContentCard } from '../../components/flex-card'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
+import { DiagramRenderer } from '../../components/flex-diagram'
+import type { GraphDefinition } from '../../components/flex-diagram/types'
+import { dataModelGraph } from '../../components/flex-diagram/diagrams/data-model'
+import { deploymentGraph } from '../../components/flex-diagram/diagrams/deployment'
+import { systemOverviewGraph } from '../../components/flex-diagram/diagrams/system-overview'
+import { threatModelGraph } from '../../components/flex-diagram/diagrams/threat-model'
 import { Layout } from '../../components/flex-layout'
 import { Prose } from '../../components/flex-prose'
 import { getCatalogSidebar } from './sidebar'
+
+const diagramsBySlug: Record<string, GraphDefinition> = {
+  'system-overview': systemOverviewGraph,
+  'data-model': dataModelGraph,
+  deployment: deploymentGraph,
+  'threat-model': threatModelGraph,
+}
 
 const architecture = new Hono()
 
@@ -66,6 +79,7 @@ architecture.get('/:slug', async (c) => {
   try {
     const file = await parseMarkdown(filePath)
     const title = file.content.split('\n')[0]?.replace(/^#\s+/, '') || slug
+    const diagram = diagramsBySlug[slug]
 
     return c.html(
       <Layout
@@ -84,6 +98,7 @@ architecture.get('/:slug', async (c) => {
             { label: title },
           ]}
         />
+        {diagram && <DiagramRenderer graph={diagram} />}
         <Prose content={file.content} />
       </Layout>,
     )
