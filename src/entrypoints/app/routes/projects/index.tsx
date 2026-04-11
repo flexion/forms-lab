@@ -33,9 +33,15 @@ export function createProjectRoutes(
 
   projects.get('/new', (c) => {
     const user = c.get('user')
+    const strategies = extractorRegistry.list()
+    const defaultId = extractorRegistry.getDefaultId()
     return c.html(
       <Layout currentPath="/projects" user={user}>
-        <NewProjectPage fixtures={demoFixtures} />
+        <NewProjectPage
+          fixtures={demoFixtures}
+          strategies={strategies}
+          defaultId={defaultId}
+        />
       </Layout>,
     )
   })
@@ -49,12 +55,19 @@ export function createProjectRoutes(
     let pdf: Buffer
     let name: string
 
+    const strategies = extractorRegistry.list()
+    const defaultId = extractorRegistry.getDefaultId()
+
     if (contentType.includes('multipart/form-data')) {
       const file = body.pdf
       if (!(file instanceof File) || file.size === 0) {
         return c.html(
           <Layout currentPath="/projects" user={user}>
-            <NewProjectPage fixtures={demoFixtures} />
+            <NewProjectPage
+              fixtures={demoFixtures}
+              strategies={strategies}
+              defaultId={defaultId}
+            />
           </Layout>,
           400,
         )
@@ -67,7 +80,11 @@ export function createProjectRoutes(
       if (!fixture) {
         return c.html(
           <Layout currentPath="/projects" user={user}>
-            <NewProjectPage fixtures={demoFixtures} />
+            <NewProjectPage
+              fixtures={demoFixtures}
+              strategies={strategies}
+              defaultId={defaultId}
+            />
           </Layout>,
           400,
         )

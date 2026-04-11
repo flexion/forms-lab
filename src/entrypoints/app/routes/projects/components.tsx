@@ -6,7 +6,9 @@ import type {
   FieldConfidence,
   StoredProject,
 } from '../../../../services/ingestion/types'
+import type { StrategyListItem } from '../../../../services/strategy-registry'
 import { resolveUrl } from '../../../../shared/base-path'
+import { StrategySelector } from '../../../../design-system/components/flex-strategy-selector'
 
 export const ProjectList: FC<{ projects: StoredProject[] }> = ({
   projects,
@@ -97,27 +99,47 @@ export const ProjectList: FC<{ projects: StoredProject[] }> = ({
   </div>
 )
 
-export const NewProjectPage: FC<{ fixtures: DemoFixture[] }> = ({
-  fixtures,
-}) => (
+export const NewProjectPage: FC<{
+  fixtures: DemoFixture[]
+  strategies: StrategyListItem[]
+  defaultId: string
+}> = ({ fixtures, strategies, defaultId }) => (
   <div class="l-stack">
     <h1>New Project</h1>
 
     <section class="l-stack">
       <h2>Start from a demo form</h2>
-      <div class="l-grid">
-        {fixtures.map((f) => (
-          <form method="post" action={resolveUrl('/projects')}>
-            <input type="hidden" name="fixture" value={f.slug} />
-            <button type="submit" class="flex-card fixture-card">
-              <div class="l-stack" style="gap: var(--flex-space-2xs);">
-                <strong>{f.name}</strong>
-                <span class="text-muted text-sm">{f.description}</span>
+      <form method="post" action={resolveUrl('/projects')} class="l-stack">
+        <div class="l-grid">
+          {fixtures.map((f) => (
+            <label key={f.slug} class="fixture-card-label">
+              <input
+                type="radio"
+                name="fixture"
+                value={f.slug}
+                class="fixture-card-input"
+                required
+              />
+              <div class="flex-card fixture-card">
+                <div class="l-stack" style="gap: var(--flex-space-2xs);">
+                  <strong>{f.name}</strong>
+                  <span class="text-muted text-sm">{f.description}</span>
+                </div>
               </div>
-            </button>
-          </form>
-        ))}
-      </div>
+            </label>
+          ))}
+        </div>
+        <StrategySelector
+          strategies={strategies}
+          defaultId={defaultId}
+          name="strategy"
+        />
+        <div>
+          <button type="submit" class="flex-button">
+            Create Project
+          </button>
+        </div>
+      </form>
     </section>
 
     <section class="l-stack">
@@ -151,6 +173,11 @@ export const NewProjectPage: FC<{ fixtures: DemoFixture[] }> = ({
             </div>
             <div class="flex-file-input__preview-area" />
           </flex-file-input>
+          <StrategySelector
+            strategies={strategies}
+            defaultId={defaultId}
+            name="strategy"
+          />
           <div>
             <button type="submit" class="flex-button">
               Upload and Extract
@@ -238,6 +265,11 @@ const ReadyView: FC<{ project: StoredProject }> = ({ project }) => {
         <span>
           <strong>{lowConfCount}</strong> low confidence
         </span>
+      </div>
+      <div class="project-provenance">
+        <p class="text-muted text-sm">
+          Extracted using <strong>{project.strategy}</strong>
+        </p>
       </div>
       {project.spec && (
         <SpecViewer spec={project.spec} confidence={project.confidence ?? []} />

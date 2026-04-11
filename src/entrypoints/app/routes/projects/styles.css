@@ -74,13 +74,49 @@
   white-space: nowrap;
 }
 
-/* Fixture demo card buttons */
+/* Fixture demo card radio labels */
+.fixture-card-label {
+  display: block;
+  cursor: pointer;
+}
+
+.fixture-card-input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+
 .fixture-card {
   cursor: pointer;
   text-align: start;
   inline-size: 100%;
   border: 1px solid var(--flex-color-border);
   background: var(--flex-color-surface);
+  transition: all 0.15s ease-in-out;
+}
+
+.fixture-card:hover {
+  border-color: var(--flex-color-primary);
+  background: var(--flex-color-surface-hover);
+}
+
+.fixture-card-label:has(.fixture-card-input:checked) .fixture-card {
+  border-color: var(--flex-color-primary);
+  background: var(--flex-color-primary-lighter);
+  box-shadow: 0 0 0 2px var(--flex-color-primary-lightest);
+}
+
+.fixture-card-label:has(.fixture-card-input:focus-visible) .fixture-card {
+  outline: 2px solid var(--flex-color-focus);
+  outline-offset: 2px;
+}
+
+/* Project provenance */
+.project-provenance {
+  padding-block: var(--flex-space-xs);
+  border-bottom: 1px solid var(--flex-color-border);
 }
 
 /* Delete confirmation */
