@@ -1,7 +1,7 @@
 # Dependency Rule Violation Fixes
 
 **Date:** 2026-04-11
-**Status:** draft
+**Status:** working
 
 ## Problem
 
