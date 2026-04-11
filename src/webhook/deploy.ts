@@ -1,3 +1,4 @@
+import { notifyEvent } from '../notify/client'
 import type { GitHubClient } from '../services/github'
 
 export interface DeployResult {
@@ -98,14 +99,31 @@ export async function deployMainBranch(sha: string): Promise<DeployResult> {
 
     if (exitCode !== 0) {
       console.error(`Main deployment failed:`, stderr)
+      notifyEvent({
+        type: 'deploy.failure',
+        title: `Main deployment failed at ${sha.slice(0, 7)}`,
+        status: 'failure',
+        details: stderr.slice(0, 500) || undefined,
+      })
       return { success: false, error: stderr, stdout, stderr }
     }
 
     console.log(`Main deployment succeeded:`, stdout)
+    notifyEvent({
+      type: 'deploy.success',
+      title: `Main deployment succeeded at ${sha.slice(0, 7)}`,
+      status: 'success',
+    })
     return { success: true, stdout, stderr }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error(`Main deployment error:`, message)
+    notifyEvent({
+      type: 'deploy.failure',
+      title: `Main deployment error at ${sha.slice(0, 7)}`,
+      status: 'failure',
+      details: message.slice(0, 500),
+    })
     return { success: false, error: message }
   }
 }
@@ -144,6 +162,22 @@ export async function triggerDeployWithStatus(
   }
 
   const result = await triggerDeploy(branch, sha)
+
+  if (result.success) {
+    notifyEvent({
+      type: 'deploy.success',
+      title: `Deployed \`${branch}\` at ${sha.slice(0, 7)}`,
+      status: 'success',
+      details: result.stdout?.split('\n').pop() || undefined,
+    })
+  } else {
+    notifyEvent({
+      type: 'deploy.failure',
+      title: `Deploy failed for \`${branch}\``,
+      status: 'failure',
+      details: result.error?.slice(0, 500) || undefined,
+    })
+  }
 
   if (deploymentId) {
     try {

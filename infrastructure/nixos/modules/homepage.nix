@@ -20,6 +20,7 @@
         "PORT=3000"
       ];
       ExecStart = "${pkgs.bun}/bin/bun run src/homepage/main.ts";
+      OnFailure = "forms-lab-notify-failure@%n.service";
     };
   };
 }

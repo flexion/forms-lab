@@ -16,6 +16,7 @@
       ExecStart = "${pkgs.bun}/bin/bun run src/app/main.ts";
       Restart = "on-failure";
       RestartSec = 5;
+      OnFailure = "forms-lab-notify-failure@%n.service";
 
       # Environment loaded from a per-branch env file written by deploy script
       EnvironmentFile = "/srv/forms-lab/%i/.env";

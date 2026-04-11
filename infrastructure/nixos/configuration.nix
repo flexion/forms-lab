@@ -67,6 +67,9 @@
     secrets.session-secret = {
       owner = "forms-lab";
     };
+    secrets.slack-webhook-url = {
+      owner = "forms-lab";
+    };
   };
 
   # Allow forms-lab user to manage its own services and reload Caddy
