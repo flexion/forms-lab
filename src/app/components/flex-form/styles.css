@@ -45,11 +45,21 @@
   margin-left: -1.25rem;
 }
 
+/* Zero out label margin-top within form — stack gap handles between-field spacing */
+.flex-form .flex-label {
+  margin-top: 0;
+}
+
 /* Fieldset reset within forms */
 .flex-form fieldset {
   border: 0;
   margin: 0;
   padding: 0;
+}
+
+/* Fieldset separation — generous spacing between sections */
+.flex-form fieldset + fieldset {
+  margin-top: var(--flex-space-xl);
 }
 
 .flex-form legend {
