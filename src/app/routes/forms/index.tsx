@@ -1,4 +1,10 @@
 import { Hono } from 'hono'
+import { FormConfirmation } from '../../../design-system/components/flex-form-confirmation'
+import type { FormError } from '../../../design-system/components/flex-form-error-summary'
+import { FormLanding } from '../../../design-system/components/flex-form-landing'
+import { FormPageView } from '../../../design-system/components/flex-form-page'
+import { FormReview } from '../../../design-system/components/flex-form-review'
+import { Layout } from '../../../design-system/components/flex-layout'
 import {
   countVisiblePages,
   findNextPage,
@@ -14,12 +20,6 @@ import type {
   FormSpec,
   SubmissionGateway,
 } from '../../../types/models'
-import { FormConfirmation } from '../../components/flex-form-confirmation'
-import type { FormError } from '../../components/flex-form-error-summary'
-import { FormLanding } from '../../components/flex-form-landing'
-import { FormPageView } from '../../components/flex-form-page'
-import { FormReview } from '../../components/flex-form-review'
-import { Layout } from '../../components/flex-layout'
 import { requireAuth } from '../../middleware/auth'
 
 interface FormRouterDeps {

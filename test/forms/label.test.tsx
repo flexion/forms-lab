@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { Label } from '../../src/app/components/flex-label'
+import { Label } from '../../src/design-system/components/flex-label'
 
 function render(props: {
   htmlFor?: string

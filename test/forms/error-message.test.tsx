@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { ErrorMessage } from '../../src/app/components/flex-error-message'
+import { ErrorMessage } from '../../src/design-system/components/flex-error-message'
 
 function render(props: { id?: string; children: string }): string {
   return (

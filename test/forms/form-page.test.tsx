@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import type { FormError } from '../../src/app/components/flex-form-error-summary'
-import { FormPageView } from '../../src/app/components/flex-form-page'
+import type { FormError } from '../../src/design-system/components/flex-form-error-summary'
+import { FormPageView } from '../../src/design-system/components/flex-form-page'
 import { resolveFormSpec } from '../../src/services/forms/resolver'
 import type { FieldEntry, ResolvedPage } from '../../src/types/models'
 import { testDataSpec, testFormSpec } from './fixtures'

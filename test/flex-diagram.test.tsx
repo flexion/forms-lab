@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
-import { DiagramRenderer } from '../src/app/components/flex-diagram'
-import { dataModelGraph } from '../src/app/components/flex-diagram/diagrams/data-model'
-import { deploymentGraph } from '../src/app/components/flex-diagram/diagrams/deployment'
-import { softwareArchitectureGraph } from '../src/app/components/flex-diagram/diagrams/software-architecture'
-import { systemOverviewGraph } from '../src/app/components/flex-diagram/diagrams/system-overview'
-import { threatModelGraph } from '../src/app/components/flex-diagram/diagrams/threat-model'
-import type { GraphDefinition } from '../src/app/components/flex-diagram/types'
+import { DiagramRenderer } from '../src/design-system/components/flex-diagram'
+import { dataModelGraph } from '../src/design-system/components/flex-diagram/diagrams/data-model'
+import { deploymentGraph } from '../src/design-system/components/flex-diagram/diagrams/deployment'
+import { softwareArchitectureGraph } from '../src/design-system/components/flex-diagram/diagrams/software-architecture'
+import { systemOverviewGraph } from '../src/design-system/components/flex-diagram/diagrams/system-overview'
+import { threatModelGraph } from '../src/design-system/components/flex-diagram/diagrams/threat-model'
+import type { GraphDefinition } from '../src/design-system/components/flex-diagram/types'
 
 const simple: GraphDefinition = {
   title: 'Test Diagram',

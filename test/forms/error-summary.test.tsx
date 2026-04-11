@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { FormErrorSummary } from '../../src/app/components/flex-form-error-summary'
+import { FormErrorSummary } from '../../src/design-system/components/flex-form-error-summary'
 
 interface ErrorItem {
   fieldId: string

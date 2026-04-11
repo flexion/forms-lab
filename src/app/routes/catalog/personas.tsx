@@ -1,15 +1,15 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { Breadcrumb } from '../../../design-system/components/flex-breadcrumb'
+import { ContentCard } from '../../../design-system/components/flex-card'
+import { CatalogSidebar } from '../../../design-system/components/flex-catalog-sidebar'
+import { Layout } from '../../../design-system/components/flex-layout'
+import { Prose } from '../../../design-system/components/flex-prose'
 import {
   parseMarkdown,
   readMarkdownDir,
 } from '../../../services/content/markdown'
 import { resolveUrl } from '../../../shared/base-path'
-import { Breadcrumb } from '../../components/flex-breadcrumb'
-import { ContentCard } from '../../components/flex-card'
-import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
-import { Layout } from '../../components/flex-layout'
-import { Prose } from '../../components/flex-prose'
 import { getCatalogSidebar } from './sidebar'
 
 const personas = new Hono()

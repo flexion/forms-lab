@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { DeploymentTable } from '../app/components/deployment-table'
-import { Layout } from '../app/components/flex-layout'
+import { Layout } from '../design-system/components/flex-layout'
 import { getDeploymentSummary } from '../services/deployment/metadata'
 
 const app = new Hono()

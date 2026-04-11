@@ -4,25 +4,25 @@ import hljs from 'highlight.js/lib/core'
 import css from 'highlight.js/lib/languages/css'
 import xml from 'highlight.js/lib/languages/xml'
 import { Hono } from 'hono'
+import { Accordion } from '../../../design-system/components/flex-accordion'
+import { Tab, TabGroup } from '../../../design-system/components/flex-tab-group'
 import { resolveUrl } from '../../../shared/base-path'
 import { formatHtml } from '../../../shared/format-html'
-import { Accordion } from '../../components/flex-accordion'
-import { Tab, TabGroup } from '../../components/flex-tab-group'
 
 hljs.registerLanguage('css', css)
 hljs.registerLanguage('xml', xml)
 
-import type { ConformanceSpec } from '../../components/conformance-types'
-import { StatusBadge } from '../../components/flex-badge'
-import { ContentCard } from '../../components/flex-card'
-import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
-import { Layout } from '../../components/flex-layout'
-import { Prose } from '../../components/flex-prose'
-import { Table } from '../../components/flex-table'
+import { StatusBadge } from '../../../design-system/components/flex-badge'
+import { ContentCard } from '../../../design-system/components/flex-card'
+import { CatalogSidebar } from '../../../design-system/components/flex-catalog-sidebar'
+import { Layout } from '../../../design-system/components/flex-layout'
+import { Prose } from '../../../design-system/components/flex-prose'
+import { Table } from '../../../design-system/components/flex-table'
+import type { ConformanceSpec } from '../../../design-system/conformance/types'
 import {
   getComponentBySlug,
   getComponentsByCategory,
-} from '../../components/registry'
+} from '../../../design-system/registry'
 import { getDesignSystemSidebar } from './sidebar'
 
 const designSystem = new Hono()
@@ -855,7 +855,9 @@ designSystem.get('/:slug', async (c) => {
   type ExampleFn = () => any
   let exampleEntries: [string, ExampleFn][] = []
   try {
-    const examples = await import(`../../components/${meta.slug}/examples.tsx`)
+    const examples = await import(
+      `../../../design-system/components/${meta.slug}/examples.tsx`
+    )
     exampleEntries = Object.entries(examples).filter(
       ([key]) => key !== 'default',
     ) as [string, ExampleFn][]
@@ -867,7 +869,14 @@ designSystem.get('/:slug', async (c) => {
   let cssSource = ''
   try {
     cssSource = readFileSync(
-      join(process.cwd(), 'src', 'app', 'components', meta.slug, 'styles.css'),
+      join(
+        process.cwd(),
+        'src',
+        'design-system',
+        'components',
+        meta.slug,
+        'styles.css',
+      ),
       'utf-8',
     )
   } catch {
@@ -878,7 +887,7 @@ designSystem.get('/:slug', async (c) => {
   let conformanceSpec: ConformanceSpec | null = null
   try {
     const specModule = await import(
-      `../../components/${meta.slug}/conformance-spec.ts`
+      `../../../design-system/components/${meta.slug}/conformance-spec.ts`
     )
     conformanceSpec = specModule.spec
   } catch {

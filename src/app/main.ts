@@ -15,7 +15,7 @@ await Bun.build({
 
 // Build component client scripts on startup
 await Bun.build({
-  entrypoints: ['./src/app/components/register.ts'],
+  entrypoints: ['./src/design-system/register.ts'],
   outdir: './dist',
   naming: 'components.js',
   target: 'browser',

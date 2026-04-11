@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 import type {
   ConformanceSpec,
   FixtureInteraction,
-} from '../../app/components/conformance-types'
+} from '../../design-system/conformance/types'
 import { diff, extract } from '../visual-descriptor'
 import { expectMatch } from './assertions'
 import { renderFlexFixture, renderUswdsFixture } from './render'
