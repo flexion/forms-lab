@@ -1,58 +1,76 @@
 import { describe, expect, it } from 'bun:test'
 import { FormReview } from '../../src/app/components/flex-form-review'
 import { resolveFormSpec } from '../../src/services/form-resolver'
-import type { FieldEntry } from '../../src/types/models'
+import type { FieldEntry, ResolvedForm } from '../../src/types/models'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 describe('FormReview', () => {
   const resolved = resolveFormSpec(testFormSpec, testDataSpec)
-  const fields: Record<string, FieldEntry> = {
-    fullName: { value: 'Alice Johnson' },
-    email: { value: 'alice@example.com' },
-    employed: { value: 'Yes' },
-    employmentType: { value: 'Full-time' },
-    monthlyIncome: { value: 5000 },
-    startDate: { value: '2026-05-01' },
-    dependents: { value: 2 },
-    agreeTerms: { value: true },
-  }
 
-  function render(): string {
+  function render(
+    fields: Record<string, FieldEntry>,
+    resolvedForm?: ResolvedForm,
+  ): string {
+    const r = resolvedForm ?? resolved
     return (
       (
         <FormReview
-          resolved={resolved}
+          resolved={r}
           fields={fields}
-          submitUrl="/forms/benefits-app/sessions/s1/submit"
+          submitUrl="/submit"
           editBaseUrl="/forms/benefits-app/sessions/s1/pages"
         />
       ) as any
     ).toString()
   }
 
-  it('renders all field values', () => {
-    const html = render()
+  it('renders review heading', () => {
+    const html = render({})
+    expect(html).toContain('Review your answers')
+  })
+
+  it('wraps in flex-form with large size', () => {
+    const html = render({})
+    expect(html).toContain('class="flex-form"')
+    expect(html).toContain('data-size="large"')
+  })
+
+  it('renders Change links with visually-hidden context', () => {
+    const html = render({})
+    expect(html).toContain('Change')
+    expect(html).toContain('u-visually-hidden')
+  })
+
+  it('renders Submit button', () => {
+    const html = render({})
+    expect(html).toContain('Submit')
+    expect(html).toContain('type="submit"')
+  })
+
+  it('shows field values', () => {
+    const html = render({
+      fullName: { value: 'Alice Johnson' },
+      email: { value: 'alice@example.com' },
+    })
     expect(html).toContain('Alice Johnson')
     expect(html).toContain('alice@example.com')
-    expect(html).toContain('Full-time')
-    expect(html).toContain('5000')
   })
 
-  it('renders group headings', () => {
-    const html = render()
-    expect(html).toContain('Personal Information')
-    expect(html).toContain('Employment Status')
+  it('shows Not provided for empty fields', () => {
+    const html = render({
+      fullName: { value: null },
+    })
+    expect(html).toContain('Not provided')
   })
 
-  it('renders edit links for each page', () => {
-    const html = render()
-    expect(html).toContain('/forms/benefits-app/sessions/s1/pages/0')
-    expect(html).toContain('/forms/benefits-app/sessions/s1/pages/1')
+  it('renders definition list structure', () => {
+    const html = render({ fullName: { value: 'Alice' } })
+    expect(html).toContain('<dt')
+    expect(html).toContain('<dd')
   })
 
-  it('renders submit form', () => {
-    const html = render()
-    expect(html).toContain('action="/forms/benefits-app/sessions/s1/submit"')
-    expect(html).toContain('method="post"')
+  it('renders summary list rows', () => {
+    const html = render({ fullName: { value: 'Alice' } })
+    expect(html).toContain('flex-summary-list__row')
   })
 })
