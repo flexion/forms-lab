@@ -59,7 +59,7 @@ sso_registration_scopes = sso:account:access
     [
       'ssh',
       `root@${hostname}`,
-      `mkdir -p /root/.aws/sso/cache && cat > /root/.aws/config << 'AWSEOF'\n${configContent}AWSEOF`,
+      `mkdir -p /srv/forms-lab/.aws/sso/cache && cat > /srv/forms-lab/.aws/config << 'AWSEOF'\n${configContent}AWSEOF\nchown -R forms-lab:forms-lab /srv/forms-lab/.aws`,
     ],
     { stdio: ['inherit', 'inherit', 'inherit'] },
   )
@@ -144,7 +144,7 @@ export async function bedrockCredentials(args: string[]): Promise<number> {
 
       // Copy SSO cache file
       const scp = Bun.spawn(
-        ['scp', cacheFile, `root@${hostname}:/root/.aws/sso/cache/`],
+        ['scp', cacheFile, `root@${hostname}:/srv/forms-lab/.aws/sso/cache/`],
         { stdio: ['inherit', 'inherit', 'inherit'] },
       )
       const scpCode = await scp.exited
@@ -153,13 +153,13 @@ export async function bedrockCredentials(args: string[]): Promise<number> {
         return 1
       }
 
-      // Restart branch services so they pick up credentials
+      // Fix ownership and restart branch services
       console.log('Restarting branch services...')
       const restart = Bun.spawn(
         [
           'ssh',
           `root@${hostname}`,
-          'systemctl restart "forms-lab-app@*.service" 2>/dev/null; echo "Services restarted"',
+          'chown -R forms-lab:forms-lab /srv/forms-lab/.aws && systemctl restart "forms-lab-app@*.service" 2>/dev/null; echo "Services restarted"',
         ],
         { stdio: ['inherit', 'inherit', 'inherit'] },
       )
@@ -181,7 +181,7 @@ export async function bedrockCredentials(args: string[]): Promise<number> {
         [
           'ssh',
           `root@${hostname}`,
-          `cd /srv/forms-lab/main 2>/dev/null || cd /srv/forms-lab/story-3-pdf-upload && bun -e '
+          `cd /srv/forms-lab/main 2>/dev/null || cd /srv/forms-lab/story-3-pdf-upload && HOME=/srv/forms-lab bun -e '
 async function check() {
   const { fromIni } = await import("@aws-sdk/credential-providers");
   try {
