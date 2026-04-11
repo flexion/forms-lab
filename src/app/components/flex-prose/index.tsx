@@ -1,5 +1,5 @@
 import type { FC } from 'hono/jsx'
-import { renderMarkdown } from '../../../lib/markdown'
+import { renderMarkdown } from '../../../services/content/markdown'
 
 interface ProseProps {
   content: string

@@ -1,4 +1,4 @@
-import type { NotifyEvent } from './types'
+import type { NotifyEvent } from '../services/notifications/types'
 
 const STATUS_COLORS: Record<string, string> = {
   success: '#2eb886',

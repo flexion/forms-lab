@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { createGitHubClient } from '../services/github'
+import { createGitHubClient } from '../services/deployment/github'
 import { deployMainBranch, triggerDeployWithStatus } from './deploy'
 import type { PushPayload } from './handler'
 import { parseDeleteEvent, parsePushEvent, verifySignature } from './handler'

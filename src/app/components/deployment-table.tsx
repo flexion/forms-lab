@@ -2,7 +2,7 @@ import type {
   DeploymentInfo,
   HealthStatus,
   ServiceStatus,
-} from '../../types/deployment'
+} from '../../services/deployment/types'
 
 type CombinedHealth =
   | 'healthy'

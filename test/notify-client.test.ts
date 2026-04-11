@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
-import { notifyEvent } from '../src/notify/client'
+import { notifyEvent } from '../src/services/notifications/client'
 
 describe('notifyEvent', () => {
   let originalFetch: typeof globalThis.fetch

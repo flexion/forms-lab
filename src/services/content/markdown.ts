@@ -3,13 +3,9 @@ import { join } from 'node:path'
 import MarkdownIt from 'markdown-it'
 import taskLists from 'markdown-it-task-lists'
 
-/**
- * Parse frontmatter and content from a markdown file
- */
-export interface MarkdownFile {
-  frontmatter: Record<string, string>
-  content: string
-}
+import type { MarkdownFile } from './types'
+
+export type { MarkdownFile }
 
 /**
  * Parse markdown file with YAML frontmatter

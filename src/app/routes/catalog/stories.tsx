@@ -1,6 +1,9 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
-import { parseMarkdown, readMarkdownDir } from '../../../lib/markdown'
+import {
+  parseMarkdown,
+  readMarkdownDir,
+} from '../../../services/content/markdown'
 import { resolveUrl } from '../../../shared/base-path'
 import type { Story } from '../../../types/models'
 import { StatusBadge } from '../../components/flex-badge'

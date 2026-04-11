@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
-import { readMarkdownDir } from '../../../lib/markdown'
+import { readMarkdownDir } from '../../../services/content/markdown'
 import { resolveUrl } from '../../../shared/base-path'
 import { ContentCard } from '../../components/flex-card'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'

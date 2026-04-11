@@ -1,9 +1,5 @@
-import type {
-  DeploymentInfo,
-  DeploymentSummary,
-  ServiceStatus,
-} from '../types/deployment'
 import { createGitHubClient, getGitHubToken } from './github'
+import type { DeploymentInfo, DeploymentSummary, ServiceStatus } from './types'
 
 const DEPLOY_ROOT = process.env.DEPLOY_ROOT || '/srv/forms-lab'
 const PORTS_FILE = `${DEPLOY_ROOT}/ports.json`

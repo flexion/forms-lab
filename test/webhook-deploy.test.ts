@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
-import type { GitHubClient } from '../src/services/github'
+import type { GitHubClient } from '../src/services/deployment/github'
 import {
   deployMainBranch,
   triggerDeploy,
