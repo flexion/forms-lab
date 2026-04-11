@@ -1,4 +1,10 @@
 export {
+  type EvaluationFixture,
+  type RunOptions,
+  runEvaluation,
+} from './harness'
+export { pdfFieldExtractionKind } from './kinds/pdf-field-extraction'
+export {
   type EvaluationRun,
   evaluationRunSchema,
   type FixtureManifest,
