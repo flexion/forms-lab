@@ -1,5 +1,6 @@
 import type { FC } from 'hono/jsx'
 import type { FormSpec } from '../../../types/models'
+import { Form } from '../flex-form'
 
 interface FormLandingProps {
   formSpec: FormSpec
@@ -8,15 +9,15 @@ interface FormLandingProps {
 
 export const FormLanding: FC<FormLandingProps> = ({ formSpec, startUrl }) => {
   return (
-    <div class="l-stack">
+    <Form size="large">
       <h1>{formSpec.title}</h1>
-      {formSpec.description && <p>{formSpec.description}</p>}
-      <p>{formSpec.pages.length} pages</p>
+      {formSpec.description && <p class="flex-prose">{formSpec.description}</p>}
+      <p>This form has {formSpec.pages.length} sections.</p>
       <form method="post" action={startUrl}>
         <button type="submit" class="flex-button">
-          Start Form
+          Start now
         </button>
       </form>
-    </div>
+    </Form>
   )
 }
