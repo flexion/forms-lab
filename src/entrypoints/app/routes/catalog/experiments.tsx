@@ -8,6 +8,7 @@ import { Prose } from '../../../../design-system/components/flex-prose'
 import {
   parseMarkdown,
   readMarkdownDir,
+  renderMarkdown,
 } from '../../../../services/content/markdown'
 import { resolveUrl } from '../../../../shared/base-path'
 import { getCatalogSidebar } from './sidebar'
@@ -81,7 +82,7 @@ experiments.get('/:slug', async (c) => {
         currentPath="/catalog"
         user={c.get('user')}
       >
-        <Prose content={file.content} />
+        <Prose html={renderMarkdown(file.content)} />
         <p style="margin-top: var(--flex-space-lg);">
           <a href={resolveUrl('/catalog/experiments')}>← Back to Experiments</a>
         </p>

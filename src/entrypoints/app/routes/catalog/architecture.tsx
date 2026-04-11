@@ -16,6 +16,7 @@ import { Prose } from '../../../../design-system/components/flex-prose'
 import {
   parseMarkdown,
   readMarkdownDir,
+  renderMarkdown,
 } from '../../../../services/content/markdown'
 import { resolveUrl } from '../../../../shared/base-path'
 import { getCatalogSidebar } from './sidebar'
@@ -104,7 +105,7 @@ architecture.get('/:slug', async (c) => {
           ]}
         />
         {diagram && <DiagramRenderer graph={diagram} />}
-        <Prose content={file.content} />
+        <Prose html={renderMarkdown(file.content)} />
       </Layout>,
     )
   } catch {

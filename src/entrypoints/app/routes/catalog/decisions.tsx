@@ -11,6 +11,7 @@ import { TagList } from '../../../../design-system/components/flex-tag-list'
 import {
   parseMarkdown,
   readMarkdownDir,
+  renderMarkdown,
 } from '../../../../services/content/markdown'
 import type { Decision } from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
@@ -140,7 +141,7 @@ decisions.get('/:group/:slug', async (c) => {
           <TagList tags={tags} />
           {decided && <span class="u-text-muted">Decided: {decided}</span>}
         </div>
-        <Prose content={file.content} />
+        <Prose html={renderMarkdown(file.content)} />
       </Layout>,
     )
   } catch {

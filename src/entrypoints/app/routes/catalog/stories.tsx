@@ -10,6 +10,7 @@ import { TagList } from '../../../../design-system/components/flex-tag-list'
 import {
   parseMarkdown,
   readMarkdownDir,
+  renderMarkdown,
 } from '../../../../services/content/markdown'
 import type { Story } from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
@@ -143,7 +144,7 @@ stories.get('/:slug', async (c) => {
             </a>
           )}
         </div>
-        <Prose content={story.content} />
+        <Prose html={renderMarkdown(story.content)} />
       </Layout>,
     )
   } catch {

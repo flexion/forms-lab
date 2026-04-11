@@ -8,6 +8,7 @@ import { Prose } from '../../../../design-system/components/flex-prose'
 import {
   parseMarkdown,
   readMarkdownDir,
+  renderMarkdown,
 } from '../../../../services/content/markdown'
 import { resolveUrl } from '../../../../shared/base-path'
 import { getCatalogSidebar } from './sidebar'
@@ -74,7 +75,7 @@ personas.get('/:id', async (c) => {
             { label: name },
           ]}
         />
-        <Prose content={file.content} />
+        <Prose html={renderMarkdown(file.content)} />
       </Layout>,
     )
   } catch {

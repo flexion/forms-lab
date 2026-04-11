@@ -1,11 +1,9 @@
 import type { FC } from 'hono/jsx'
-import { renderMarkdown } from '../../../services/content/markdown'
 
 interface ProseProps {
-  content: string
+  html: string
 }
 
-export const Prose: FC<ProseProps> = ({ content }) => {
-  const html = renderMarkdown(content)
+export const Prose: FC<ProseProps> = ({ html }) => {
   return <div class="prose" dangerouslySetInnerHTML={{ __html: html }} />
 }
