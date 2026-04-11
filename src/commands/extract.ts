@@ -187,18 +187,27 @@ export async function extract(args: string[]): Promise<number> {
       }
 
       const cacheDbPath = process.env.CACHE_DB_PATH ?? 'data/cache.sqlite'
-      const { existsSync } = await import('node:fs')
+      const { existsSync, unlinkSync } = await import('node:fs')
       if (!existsSync(cacheDbPath)) {
         console.error(`No local cache at ${cacheDbPath}`)
         return 1
       }
 
       const remotePath = '/srv/forms-lab/cache.sqlite'
+      const exportPath = '/tmp/forms-lab-cache-export.sqlite'
       console.log(`Syncing cache to ${hostname}:${remotePath}`)
 
-      // Copy to the shared cache location
+      // Export a clean copy (WAL-mode DBs can't be reliably copied via scp)
+      const { Database } = await import('bun:sqlite')
+      try {
+        unlinkSync(exportPath)
+      } catch {}
+      const db = new Database(cacheDbPath, { readonly: true })
+      db.run(`VACUUM INTO '${exportPath}'`)
+      db.close()
+
       const scp = Bun.spawn(
-        ['scp', cacheDbPath, `root@${hostname}:${remotePath}`],
+        ['scp', exportPath, `root@${hostname}:${remotePath}`],
         { stdio: ['inherit', 'inherit', 'inherit'] },
       )
       const code = await scp.exited
