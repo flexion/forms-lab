@@ -4,7 +4,6 @@
    Table, code, link, and hr styling within prose */
 
 .prose {
-  font-family: var(--flex-font-sans);
   font-size: var(--flex-text-uswds);
   line-height: 1.5;
   color: var(--flex-color-text);
@@ -18,8 +17,8 @@
 .prose h4,
 .prose h5,
 .prose h6 {
-  margin-bottom: 0;
-  margin-top: 0;
+  margin-block-end: 0;
+  margin-block-start: 0;
   clear: both;
 }
 
@@ -27,90 +26,89 @@
   font-size: 2.44rem;
   line-height: 1.2;
   font-weight: 700;
-  margin-top: var(--flex-space-xl);
-  margin-bottom: var(--flex-space-md);
+  margin-block-start: var(--flex-space-xl);
+  margin-block-end: var(--flex-space-md);
 }
 
 .prose h2 {
   font-size: 1.95rem;
   line-height: 1.2;
   font-weight: 700;
-  margin-top: var(--flex-space-lg);
-  margin-bottom: var(--flex-space-sm);
+  margin-block-start: var(--flex-space-lg);
+  margin-block-end: var(--flex-space-sm);
 }
 
 .prose h3 {
   font-size: 1.34rem;
   line-height: 1.2;
   font-weight: 700;
-  margin-top: var(--flex-space-lg);
-  margin-bottom: var(--flex-space-sm);
+  margin-block-start: var(--flex-space-lg);
+  margin-block-end: var(--flex-space-sm);
 }
 
 .prose h4 {
   font-size: 0.98rem;
   line-height: 1.2;
   font-weight: 700;
-  margin-top: var(--flex-space-lg);
-  margin-bottom: var(--flex-space-sm);
+  margin-block-start: var(--flex-space-lg);
+  margin-block-end: var(--flex-space-sm);
 }
 
 .prose h5 {
   font-size: 0.91rem;
   line-height: 1.2;
   font-weight: 700;
-  margin-top: var(--flex-space-md);
-  margin-bottom: var(--flex-space-xs);
+  margin-block-start: var(--flex-space-md);
+  margin-block-end: var(--flex-space-xs);
 }
 
 .prose h6 {
-  font-family: var(--flex-font-sans);
   font-size: 0.87rem;
   line-height: 1.1;
   font-weight: 400;
   letter-spacing: 0.025em;
   text-transform: uppercase;
-  margin-top: var(--flex-space-md);
-  margin-bottom: var(--flex-space-xs);
+  margin-block-start: var(--flex-space-md);
+  margin-block-end: var(--flex-space-xs);
 }
 
 /* --- Paragraphs — USWDS measure (reading width) --- */
 
 .prose p {
   line-height: 1.5;
-  max-width: 68ex;
-  margin-bottom: 1em;
+  max-inline-size: 68ex;
+  margin-block-end: 1em;
 }
 
 /* --- Lists --- */
 
 .prose ul,
 .prose ol {
-  margin-bottom: 1em;
-  margin-top: 1em;
+  margin-block-end: 1em;
+  margin-block-start: 1em;
   line-height: 1.5;
-  padding-left: 3ch;
+  padding-inline-start: 3ch;
 }
 
 .prose li {
-  margin-bottom: 0.25em;
-  max-width: 68ex;
+  margin-block-end: 0.25em;
+  max-inline-size: 68ex;
 }
 
 .prose li:last-child {
-  margin-bottom: 0;
+  margin-block-end: 0;
 }
 
 .prose ul:last-child,
 .prose ol:last-child {
-  margin-bottom: 0;
+  margin-block-end: 0;
 }
 
 .prose ul ul,
 .prose ul ol,
 .prose ol ul,
 .prose ol ol {
-  margin-top: 0.25em;
+  margin-block-start: 0.25em;
 }
 
 /* --- Code --- */
@@ -128,7 +126,7 @@
   padding: var(--flex-space-md);
   border-radius: var(--flex-radius-md);
   overflow-x: auto;
-  margin-bottom: var(--flex-space-md);
+  margin-block-end: var(--flex-space-md);
 }
 
 .prose pre code {
@@ -141,21 +139,21 @@
 .prose a {
   color: var(--flex-color-accent);
   text-decoration: underline;
-}
 
-.prose a:hover {
-  text-decoration: none;
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 /* --- Task lists (markdown checkboxes) --- */
 
 .prose .task-list-item {
   list-style: none;
-  margin-left: calc(-1 * var(--flex-space-lg));
+  margin-inline-start: calc(-1 * var(--flex-space-lg));
 }
 
 .prose .task-list-item input[type="checkbox"] {
-  margin-right: var(--flex-space-xs);
+  margin-inline-end: var(--flex-space-xs);
 }
 
 /* --- Misc --- */
@@ -166,7 +164,7 @@
 
 .prose hr {
   border: none;
-  border-top: 1px solid var(--flex-color-border);
+  border-block-start: 1px solid var(--flex-color-border);
   margin: var(--flex-space-lg) 0;
 }
 
@@ -179,7 +177,7 @@
   border-spacing: 0;
   color: var(--flex-color-text);
   margin: 1.25rem 0;
-  width: 100%;
+  inline-size: 100%;
 }
 
 .prose th {
@@ -188,7 +186,7 @@
   background-color: var(--flex-color-table-header);
   color: var(--flex-color-text);
   font-weight: 600;
-  text-align: left;
+  text-align: start;
   padding: 0.5rem 1rem;
   border: 1px solid var(--flex-color-text);
 }

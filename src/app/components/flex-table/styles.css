@@ -5,23 +5,21 @@
 /* --- Base table --- */
 
 .flex-table {
-  font-family: var(--flex-font-sans);
   font-size: 1.06rem;
   line-height: 1.5;
   border-collapse: collapse;
   border-spacing: 0;
   color: var(--flex-color-text);
   margin: 1.25rem 0;
-  text-align: left;
-  width: 100%;
+  text-align: start;
+  inline-size: 100%;
 }
 
 .flex-table caption {
-  font-family: var(--flex-font-sans);
-  text-align: left;
+  text-align: start;
   font-size: 1rem;
   font-weight: 700;
-  margin-bottom: 0.75rem;
+  margin-block-end: 0.75rem;
 }
 
 /* --- Base th/td --- */
@@ -55,14 +53,14 @@
 /* --- Variant: borderless --- */
 
 .flex-table[data-variant="borderless"] th {
-  border-top: 0;
-  border-left: 0;
-  border-right: 0;
+  border-block-start: 0;
+  border-inline-start: 0;
+  border-inline-end: 0;
 }
 
 .flex-table[data-variant="borderless"] td {
-  border-left: 0;
-  border-right: 0;
+  border-inline-start: 0;
+  border-inline-end: 0;
 }
 
 .flex-table[data-variant="borderless"] th,
@@ -88,7 +86,7 @@
 
 .flex-table[data-sticky-header] thead th {
   position: sticky;
-  top: 0;
+  inset-block-start: 0;
   z-index: 1;
 }
 
@@ -117,20 +115,20 @@
 
   .flex-table[data-stacked] th,
   .flex-table[data-stacked] td {
-    border-bottom-width: 0;
+    border-block-end-width: 0;
     display: block;
-    width: 100%;
+    inline-size: 100%;
   }
 
   .flex-table[data-stacked] tr {
-    border-bottom: 0.25rem solid var(--flex-color-text);
-    border-top-width: 0;
-    width: 100%;
+    border-block-end: 0.25rem solid var(--flex-color-text);
+    border-block-start-width: 0;
+    inline-size: 100%;
   }
 
   .flex-table[data-stacked] tr td:first-child,
   .flex-table[data-stacked] tr th:first-child {
-    border-top-width: 0;
+    border-block-start-width: 0;
   }
 
   .flex-table[data-stacked] tr:nth-child(odd) td {
@@ -139,12 +137,12 @@
 
   .flex-table[data-stacked] tr:first-child td:first-child,
   .flex-table[data-stacked] tr:first-child th:first-child {
-    border-top: 0.25rem solid var(--flex-color-text);
+    border-block-start: 0.25rem solid var(--flex-color-text);
   }
 
   .flex-table[data-stacked] td[data-label],
   .flex-table[data-stacked] th[data-label] {
-    padding-bottom: 0.75rem;
+    padding-block-end: 0.75rem;
   }
 
   .flex-table[data-stacked] td[data-label]::before,
@@ -164,21 +162,20 @@
 
   .flex-table[data-stacked-header] th,
   .flex-table[data-stacked-header] td {
-    border-bottom-width: 0;
+    border-block-end-width: 0;
     display: block;
-    width: 100%;
+    inline-size: 100%;
   }
 
   .flex-table[data-stacked-header] tr {
-    border-bottom: 0.25rem solid var(--flex-color-text);
-    border-top-width: 0;
-    width: 100%;
+    border-block-end: 0.25rem solid var(--flex-color-text);
+    border-block-start-width: 0;
+    inline-size: 100%;
   }
 
   .flex-table[data-stacked-header] tr td:first-child,
   .flex-table[data-stacked-header] tr th:first-child {
-    border-top-width: 0;
-    font-family: var(--flex-font-sans);
+    border-block-start-width: 0;
     font-size: 1.06rem;
     line-height: 1.1;
     background-color: var(--flex-color-table-header);
@@ -194,12 +191,12 @@
 
   .flex-table[data-stacked-header] tr:first-child td:first-child,
   .flex-table[data-stacked-header] tr:first-child th:first-child {
-    border-top: 0.25rem solid var(--flex-color-text);
+    border-block-start: 0.25rem solid var(--flex-color-text);
   }
 
   .flex-table[data-stacked-header] td[data-label],
   .flex-table[data-stacked-header] th[data-label] {
-    padding-bottom: 0.75rem;
+    padding-block-end: 0.75rem;
   }
 
   .flex-table[data-stacked-header] td[data-label]::before,
