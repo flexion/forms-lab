@@ -102,24 +102,25 @@ designSystem.get('/', (c) => {
         tokens, layout compositions, and accessible components.
       </p>
 
-      <section class="l-stack">
-        <h2>Foundations</h2>
-        <div class="l-grid" style="--grid-min: 250px;">
-          {foundations.map((item) => (
-            <ContentCard
-              title={item.title}
-              href={item.href}
-              description={item.description}
-            />
-          ))}
-        </div>
-      </section>
+      <div class="l-stack" style="--stack-space: var(--flex-space-xl)">
+        <section>
+          <p class="catalog-group-label">Foundations</p>
+          <div class="l-grid" style="--grid-min: 250px;">
+            {foundations.map((item) => (
+              <ContentCard
+                title={item.title}
+                href={item.href}
+                description={item.description}
+              />
+            ))}
+          </div>
+        </section>
 
-      <section class="l-stack">
-        <h2>Components</h2>
         {Object.entries(grouped).map(([category, components]) => (
-          <div class="l-stack">
-            <h3>{categoryLabels[category] || category}</h3>
+          <section>
+            <p class="catalog-group-label">
+              {categoryLabels[category] || category}
+            </p>
             <div class="l-grid" style="--grid-min: 250px;">
               {components.map((comp) => (
                 <ContentCard
@@ -133,9 +134,9 @@ designSystem.get('/', (c) => {
                 </ContentCard>
               ))}
             </div>
-          </div>
+          </section>
         ))}
-      </section>
+      </div>
     </Layout>,
   )
 })

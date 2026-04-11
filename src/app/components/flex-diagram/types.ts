@@ -28,4 +28,6 @@ export interface GraphDefinition {
   direction?: 'TB' | 'LR'
   nodeWidth?: number
   nodeHeight?: number
+  nodesep?: number
+  ranksep?: number
 }

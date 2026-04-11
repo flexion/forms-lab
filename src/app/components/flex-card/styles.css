@@ -262,3 +262,12 @@
   gap: var(--flex-space-xs);
   margin-top: var(--flex-space-sm);
 }
+
+.catalog-group-label {
+  font-size: var(--flex-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--flex-color-text-muted);
+  margin-block-end: var(--flex-space-sm);
+}

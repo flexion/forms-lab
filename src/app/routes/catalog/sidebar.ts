@@ -12,20 +12,30 @@ export function getCatalogSidebar(currentPath?: string) {
           href: resolveUrl('/catalog'),
           current: currentPath === '/catalog',
         },
+      ],
+    },
+    {
+      title: 'The System',
+      items: [
         {
-          label: 'Personas',
-          href: resolveUrl('/catalog/personas'),
-          current: currentPath === '/catalog/personas',
+          label: 'Architecture',
+          href: resolveUrl('/catalog/architecture'),
+          current: currentPath === '/catalog/architecture',
         },
         {
           label: 'Decisions',
           href: resolveUrl('/catalog/decisions'),
           current: currentPath === '/catalog/decisions',
         },
+      ],
+    },
+    {
+      title: 'The Work',
+      items: [
         {
-          label: 'Architecture',
-          href: resolveUrl('/catalog/architecture'),
-          current: currentPath === '/catalog/architecture',
+          label: 'Personas',
+          href: resolveUrl('/catalog/personas'),
+          current: currentPath === '/catalog/personas',
         },
         {
           label: 'Stories',
@@ -37,6 +47,11 @@ export function getCatalogSidebar(currentPath?: string) {
           href: resolveUrl('/catalog/experiments'),
           current: currentPath === '/catalog/experiments',
         },
+      ],
+    },
+    {
+      title: 'The Craft',
+      items: [
         {
           label: 'Design System',
           href: resolveUrl('/catalog/design-system'),

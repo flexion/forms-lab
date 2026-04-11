@@ -66,6 +66,7 @@
 @import "../components/flex-time-picker/styles.css" layer(block);
 @import "../components/flex-in-page-nav/styles.css" layer(block);
 @import "../components/flex-tab-group/styles.css" layer(block);
+@import "../components/flex-diagram/styles.css" layer(block);
 
 @import "../routes/projects/styles.css" layer(block);
 
