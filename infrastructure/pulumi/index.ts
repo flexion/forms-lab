@@ -85,10 +85,11 @@ new aws.iam.RolePolicy('forms-lab-bedrock', {
           'bedrock:InvokeModelWithResponseStream',
         ],
         Resource: [
-          // Direct model invocation
-          'arn:aws:bedrock:us-east-1::foundation-model/*',
+          // Direct model invocation (any US region — cross-region
+          // inference routes to the least-loaded region)
+          'arn:aws:bedrock:us-*::foundation-model/*',
           // Cross-region inference profiles (us.anthropic.* model IDs)
-          'arn:aws:bedrock:us-east-1:*:inference-profile/*',
+          'arn:aws:bedrock:us-*:*:inference-profile/*',
         ],
       },
     ],
