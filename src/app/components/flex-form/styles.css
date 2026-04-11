@@ -43,11 +43,21 @@
     }
   }
 
+  /* Zero out label margin-top within form — stack gap handles between-field spacing */
+  .flex-label {
+    margin-block-start: 0;
+  }
+
   /* Fieldset reset within forms */
   fieldset {
     border: 0;
     margin: 0;
     padding: 0;
+  }
+
+  /* Fieldset separation — generous spacing between sections */
+  fieldset + fieldset {
+    margin-block-start: var(--flex-space-xl);
   }
 
   legend {
