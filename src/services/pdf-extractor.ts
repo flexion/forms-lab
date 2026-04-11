@@ -1,6 +1,6 @@
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers'
-import { generateObject } from 'ai'
+import { generateText } from 'ai'
 import type { ExtractionOptions, ExtractionResult } from '../types/models'
 import type { CacheStore } from './database'
 import { extractionResponseSchema, formSpecSchema } from './extraction-schemas'
@@ -42,6 +42,20 @@ export function createCachedPdfExtractor(
   }
 }
 
+/** Extract JSON from a model response, stripping markdown fences if present. */
+function parseJsonResponse<T>(
+  text: string,
+  schema: { parse: (v: unknown) => T },
+): T {
+  const trimmed = text.trim()
+  // Strip ```json ... ``` fences
+  const jsonStr = trimmed.startsWith('```')
+    ? trimmed.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '')
+    : trimmed
+  const parsed = JSON.parse(jsonStr)
+  return schema.parse(parsed)
+}
+
 export function createBedrockPdfExtractor(): PdfExtractor {
   // Use AWS SSO profile if configured, otherwise fall back to default chain
   // (env vars, instance profile, etc.)
@@ -62,8 +76,11 @@ export function createBedrockPdfExtractor(): PdfExtractor {
       const model = options?.model ?? DEFAULT_MODEL
 
       // Step 1: Extract DataCollectionSpec + confidence from PDF
-      const extraction = await generateObject({
+      // Use generateText + manual JSON parsing because generateObject's
+      // tool-use mode returns empty objects on Bedrock.
+      const extraction = await generateText({
         model: bedrock(model),
+        maxOutputTokens: 16384,
         messages: [
           {
             role: 'user',
@@ -75,60 +92,99 @@ export function createBedrockPdfExtractor(): PdfExtractor {
               },
               {
                 type: 'text',
-                text: `Analyze this government PDF form and extract its structure as a DataCollectionSpec.
+                text: `Analyze this government PDF form and extract its structure. Return ONLY valid JSON (no markdown, no explanation) matching this exact schema:
 
-For each field in the form, identify:
-- A unique id (kebab-case, e.g., "full-name", "date-of-birth")
-- The fieldName (camelCase version)
-- A human-readable label
-- The field type (text, email, phone, url, number, currency, date, boolean, choice, longText)
-- Whether it is required
-- Any help text or instructions
-- Validation rules (patterns, min/max values, length constraints)
-- Conditions (fields that only appear based on other field values)
-- Sensitivity level (low, medium, high, pii)
+{
+  "spec": {
+    "id": "string (kebab-case)",
+    "title": "string",
+    "description": "string",
+    "groups": [
+      {
+        "id": "string",
+        "title": "string",
+        "description": "string (optional)",
+        "requirements": [
+          {
+            "id": "string (kebab-case)",
+            "fieldName": "string (camelCase)",
+            "label": "string",
+            "fieldType": "text|email|phone|url|number|currency|date|boolean|choice|longText",
+            "required": true/false,
+            "helpText": "string (optional)",
+            "sensitivity": "low|medium|high|pii (optional)"
+          }
+        ]
+      }
+    ]
+  },
+  "confidence": [
+    {
+      "fieldId": "string (matches requirement id)",
+      "confidence": 0.0-1.0,
+      "flags": ["string"] (optional, e.g. "ambiguous-type", "label-unclear")
+    }
+  ]
+}
 
-Group related fields into RequirementGroups (e.g., "Personal Information", "Employment History").
-
-For each field, also provide a confidence score (0-1) indicating how certain you are about the extraction. Flag any ambiguous fields with descriptive flags like "ambiguous-type", "conditional-logic-unclear", "label-unclear".
-
-Be thorough — extract every field visible in the form.`,
+Guidelines:
+- Group related fields (e.g., "Personal Information", "Employment History")
+- Use kebab-case for ids, camelCase for fieldName
+- Flag low-confidence fields (< 0.8) with descriptive flags
+- Only include validation rules and conditions if clearly specified in the form
+- Be thorough — extract every field visible in the form`,
               },
             ],
           },
         ],
-        schema: extractionResponseSchema,
       })
 
-      const { spec, confidence } = extraction.object
+      const { spec, confidence } = parseJsonResponse(
+        extraction.text,
+        extractionResponseSchema,
+      )
 
       // Step 2: Generate default FormSpec from extracted spec
-      const formSpecResult = await generateObject({
+      const formSpecResult = await generateText({
         model: bedrock(model),
+        maxOutputTokens: 4096,
         messages: [
           {
             role: 'user',
-            content: `Given this DataCollectionSpec, generate a default FormSpec that organizes the form into logical pages.
+            content: `Given this DataCollectionSpec, generate a FormSpec as JSON. Return ONLY valid JSON (no markdown, no explanation) matching this schema:
 
-DataCollectionSpec:
-${JSON.stringify(spec, null, 2)}
+{
+  "id": "form-<specId>",
+  "specId": "${spec.id}",
+  "title": "string",
+  "pages": [
+    {
+      "id": "page-1",
+      "title": "string",
+      "description": "string (optional)",
+      "groups": ["group-id-1", "group-id-2"],
+      "deliveryMode": "static|conversational|hybrid"
+    }
+  ],
+  "createdAt": "${new Date().toISOString()}",
+  "updatedAt": "${new Date().toISOString()}"
+}
 
 Rules:
 - Each page should contain 1-3 related requirement groups
-- Set the specId to "${spec.id}"
-- Use a unique id for the FormSpec (e.g., "form-" + specId)
-- Each page needs a unique id (e.g., "page-1", "page-2")
-- Set deliveryMode to "static" for simple sections, "conversational" for sections with many conditional fields (more than 3 conditions), and "hybrid" for moderately complex sections
-- Set createdAt and updatedAt to "${new Date().toISOString()}"
-- Give each page a descriptive title`,
+- Set deliveryMode to "static" for simple sections, "conversational" for sections with many conditional fields, "hybrid" for moderately complex sections
+
+DataCollectionSpec:
+${JSON.stringify(spec, null, 2)}`,
           },
         ],
-        schema: formSpecSchema,
       })
+
+      const formSpec = parseJsonResponse(formSpecResult.text, formSpecSchema)
 
       return {
         spec,
-        formSpec: formSpecResult.object,
+        formSpec,
         confidence,
       }
     },

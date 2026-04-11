@@ -18,7 +18,7 @@ const basePath = getBasePath()
 const app = new Hono().basePath(basePath)
 
 const projectDbPath = process.env.PROJECT_DB_PATH ?? 'data/projects.sqlite'
-const cacheDbPath = process.env.CACHE_DB_PATH ?? 'data/cache.sqlite'
+const cacheDbPath = process.env.CACHE_DB_PATH ?? 'data/cache.sqlite' // Shared across branches in production
 mkdirSync(dirname(projectDbPath), { recursive: true })
 mkdirSync(dirname(cacheDbPath), { recursive: true })
 

@@ -77,6 +77,7 @@ GITHUB_AUTHZ_ORG=flexion
 AWS_REGION=us-east-1
 AWS_BEDROCK_PROFILE=ClaudeCodeAccess-FlexionLLM
 AWS_BEDROCK_REGION=us-west-2
+CACHE_DB_PATH=/srv/forms-lab/cache.sqlite
 ENVEOF
 
     # Start or restart the service (use full path to sudo wrapper with setuid bit)
