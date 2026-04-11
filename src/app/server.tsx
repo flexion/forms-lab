@@ -1,14 +1,33 @@
+import { mkdirSync } from 'node:fs'
+import { dirname } from 'node:path'
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { getBasePath, resolveUrl } from '../lib/base-path'
+import { createCacheStore, createProjectStore } from '../services/database'
+import {
+  createBedrockPdfExtractor,
+  createCachedPdfExtractor,
+} from '../services/pdf-extractor'
 import { Layout } from './components/flex-layout'
 import { requireAuth, sessionReader } from './middleware/auth'
 import auth from './routes/auth/index'
 import catalog from './routes/catalog/index'
-import projects from './routes/projects/index'
+import { createProjectRoutes } from './routes/projects/index'
 
 const basePath = getBasePath()
 const app = new Hono().basePath(basePath)
+
+const projectDbPath = process.env.PROJECT_DB_PATH ?? 'data/projects.sqlite'
+const cacheDbPath = process.env.CACHE_DB_PATH ?? 'data/cache.sqlite' // Shared across branches in production
+mkdirSync(dirname(projectDbPath), { recursive: true })
+mkdirSync(dirname(cacheDbPath), { recursive: true })
+
+const projectStore = createProjectStore(projectDbPath)
+const cacheStore = createCacheStore(cacheDbPath)
+const extractor = createCachedPdfExtractor(
+  createBedrockPdfExtractor(),
+  cacheStore,
+)
 
 // Apply session reader globally
 app.use('*', sessionReader())
@@ -108,7 +127,7 @@ app.route('/auth', auth)
 
 // Mount projects routes with auth guard
 app.use('/projects/*', requireAuth())
-app.route('/projects', projects)
+app.route('/projects', createProjectRoutes(projectStore, extractor))
 
 // Mount catalog routes
 app.route('/catalog', catalog)

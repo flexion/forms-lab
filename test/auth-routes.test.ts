@@ -19,6 +19,7 @@ describe('Auth Routes', () => {
     process.env.GITHUB_CLIENT_ID = 'test_client_id'
     process.env.GITHUB_CLIENT_SECRET = 'test_client_secret'
     process.env.SESSION_SECRET = 'test-secret-key-32-bytes-long!'
+    process.env.ALLOWED_USERS = 'testuser'
 
     // Create app
     app = new Hono()
@@ -65,7 +66,7 @@ describe('Auth Routes', () => {
   describe('GET /auth/callback', () => {
     it('creates session and redirects for authorized user', async () => {
       const mockUser: GitHubUser = {
-        login: 'danielnaab',
+        login: 'testuser',
         name: 'Test User',
         avatar_url: 'https://example.com/avatar.png',
       }
@@ -161,7 +162,7 @@ describe('Auth Routes', () => {
 
     it('redirects to root when returnTo is not specified', async () => {
       const mockUser: GitHubUser = {
-        login: 'danielnaab',
+        login: 'testuser',
         name: 'Test User',
         avatar_url: 'https://example.com/avatar.png',
       }

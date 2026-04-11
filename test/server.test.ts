@@ -58,4 +58,29 @@ describe('Authentication', () => {
     const html = await res.text()
     expect(html).toContain('My Projects')
   })
+
+  it('shows Projects link in nav for authenticated users', async () => {
+    const secret = 'test-secret-key-32-bytes-long!'
+    process.env.SESSION_SECRET = secret
+    const sessionCookie = await encryptSession(
+      {
+        login: 'testuser',
+        name: 'Test User',
+        avatarUrl: 'https://example.com/avatar.png',
+      },
+      secret,
+    )
+    const res = await app.request('/', {
+      headers: { Cookie: `${COOKIE_NAME}=${sessionCookie}` },
+    })
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('flex-header__nav-link">Projects</a>')
+  })
+
+  it('does not show Projects link in header nav for unauthenticated users', async () => {
+    const res = await app.request('/')
+    const html = await res.text()
+    expect(html).not.toContain('flex-header__nav-link">Projects</a>')
+  })
 })

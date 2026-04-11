@@ -50,3 +50,36 @@
   background: var(--flex-color-error-lighter);
   color: var(--flex-color-text);
 }
+
+/* Project status badges */
+.badge[data-status="ready"] {
+  background: var(--flex-color-success-lighter);
+  color: var(--flex-color-text);
+}
+
+.badge[data-status="extracting"] {
+  background: var(--flex-color-info-lighter);
+  color: var(--flex-color-text);
+}
+
+.badge[data-status="error"] {
+  background: var(--flex-color-error-lighter);
+  color: var(--flex-color-text);
+}
+
+/* Delivery mode badges */
+.badge[data-delivery="static"] {
+  background: var(--flex-color-surface);
+  border: 1px solid var(--flex-color-border);
+  color: var(--flex-color-text-muted);
+}
+
+.badge[data-delivery="conversational"] {
+  background: var(--flex-color-info-lighter);
+  color: var(--flex-color-text);
+}
+
+.badge[data-delivery="hybrid"] {
+  background: var(--flex-color-warning-lighter);
+  color: var(--flex-color-text);
+}

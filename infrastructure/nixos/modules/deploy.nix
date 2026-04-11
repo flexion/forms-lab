@@ -28,8 +28,9 @@ let
       echo "Creating worktree for $BRANCH..."
       # Fetch into the bare repo's branch ref so worktree add gets the latest
       # (--force handles force pushes where the local ref is stale)
-      ${pkgs.git}/bin/git -C "$REPO_DIR" fetch origin "$BRANCH:$BRANCH" --force
-      ${pkgs.git}/bin/git -C "$REPO_DIR" worktree add "$BRANCH_DIR" "$BRANCH"
+      # Use full refs/heads/ path to avoid ambiguity with slashes in branch names
+      ${pkgs.git}/bin/git -C "$REPO_DIR" fetch origin "+refs/heads/$BRANCH:refs/heads/$BRANCH" --force
+      ${pkgs.git}/bin/git -C "$REPO_DIR" worktree add "$BRANCH_DIR" "refs/heads/$BRANCH"
     else
       echo "Updating worktree for $BRANCH..."
       cd "$BRANCH_DIR"
@@ -74,6 +75,9 @@ GITHUB_CLIENT_SECRET=$(cat /run/secrets/github-client-secret 2>/dev/null || echo
 SESSION_SECRET=$(cat /run/secrets/session-secret 2>/dev/null || echo "")
 GITHUB_AUTHZ_ORG=flexion
 AWS_REGION=us-east-1
+AWS_BEDROCK_PROFILE=ClaudeCodeAccess-FlexionLLM
+AWS_BEDROCK_REGION=us-west-2
+CACHE_DB_PATH=/srv/forms-lab/cache.sqlite
 ENVEOF
 
     # Start or restart the service (use full path to sudo wrapper with setuid bit)
@@ -96,6 +100,22 @@ CADDYEOF
     /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl reload caddy.service
 
     echo "Deployed $BRANCH at port $PORT (/$UNIT_NAME/)"
+
+    # Run smoke checks if the script exists
+    if [ -f "$BRANCH_DIR/scripts/smoke-check.ts" ]; then
+      echo "Running smoke checks..."
+      # Wait for the service to be ready
+      for i in $(seq 1 10); do
+        if ${pkgs.curl}/bin/curl -sf "http://localhost:$PORT/$UNIT_NAME/health" > /dev/null 2>&1; then
+          break
+        fi
+        sleep 1
+      done
+      # Source .env so smoke check sees AWS_REGION etc.
+      set -a; source "$BRANCH_DIR/.env"; set +a
+      BASE_URL="http://localhost:$PORT/$UNIT_NAME" ${pkgs.bun}/bin/bun run "$BRANCH_DIR/scripts/smoke-check.ts" || \
+        echo "WARNING: Smoke checks failed — deployment may be misconfigured"
+    fi
 
     # If deploying main branch, also update the homepage service
     if [ "$BRANCH" = "main" ]; then

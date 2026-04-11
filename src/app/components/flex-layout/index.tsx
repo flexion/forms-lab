@@ -85,6 +85,11 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           />
           {props.user ? (
             <>
+              <HeaderNavItem
+                href={resolveUrl('/projects')}
+                label="Projects"
+                current={props.currentPath?.startsWith('/projects') ?? false}
+              />
               <li class="flex-header__nav-item">
                 <span class="flex-header__nav-link flex-header__user-info">
                   <img
@@ -140,6 +145,14 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
                     href={resolveUrl('/catalog')}
                   >
                     Catalog
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="flex-footer__primary-link"
+                    href={resolveUrl('/projects')}
+                  >
+                    Projects
                   </a>
                 </li>
                 <li>
