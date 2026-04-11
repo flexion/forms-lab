@@ -33,3 +33,31 @@ describe('Layout with auth', () => {
     expect(html).toContain('Sign out')
   })
 })
+
+describe('Layout sidebar', () => {
+  it('wraps sidebar in a details/summary toggle', () => {
+    const result = Layout({
+      currentPath: '/catalog',
+      sidebar: <nav>sidebar content</nav>,
+      children: <p>Main</p>,
+    })
+    const html = result?.toString() ?? ''
+
+    expect(html).toContain('<details class="catalog-nav-toggle"')
+    expect(html).toContain('<summary>')
+    expect(html).toContain('open')
+  })
+
+  it('includes resize script for sidebar toggle', () => {
+    const result = Layout({
+      currentPath: '/catalog',
+      sidebar: <nav>sidebar content</nav>,
+      children: <p>Main</p>,
+    })
+    const html = result?.toString() ?? ''
+
+    expect(html).toContain('addEventListener')
+    expect(html).toContain('resize')
+    expect(html).toContain('catalog-nav-toggle')
+  })
+})

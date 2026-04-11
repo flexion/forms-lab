@@ -4,7 +4,6 @@
    States: hover, active, focus-visible, disabled */
 
 .flex-button {
-  font-family: var(--flex-font-sans);
   font-size: var(--flex-text-uswds);
   font-weight: 700;
   line-height: 0.9;
@@ -17,213 +16,213 @@
   justify-content: center;
   column-gap: var(--flex-space-sm);
   padding: 12px 20px;
-  margin-right: var(--flex-space-sm);
+  margin-inline-end: var(--flex-space-sm);
   cursor: pointer;
   text-decoration: none;
   appearance: none;
-}
 
-/* --- Default variant states --- */
+  /* --- Default variant states --- */
 
-.flex-button:hover {
-  background-color: color-mix(in srgb, var(--flex-color-accent) 85%, black);
-}
+  &:hover {
+    background-color: color-mix(in srgb, var(--flex-color-accent) 85%, black);
+  }
 
-.flex-button:active {
-  background-color: color-mix(in srgb, var(--flex-color-accent) 70%, black);
-}
+  &:active {
+    background-color: color-mix(in srgb, var(--flex-color-accent) 70%, black);
+  }
 
-.flex-button:focus-visible {
-  outline: var(--flex-focus-ring);
-  outline-offset: 2px;
-}
+  &:focus-visible {
+    outline: var(--flex-focus-ring);
+    outline-offset: 2px;
+  }
 
-.flex-button:disabled {
-  background-color: var(--flex-color-disabled-lighter);
-  color: var(--flex-color-disabled-dark);
-  cursor: not-allowed;
-}
+  &:disabled {
+    background-color: var(--flex-color-disabled-lighter);
+    color: var(--flex-color-disabled-dark);
+    cursor: not-allowed;
+  }
 
-/* --- Secondary variant --- */
+  /* --- Secondary variant --- */
 
-.flex-button[data-variant="secondary"] {
-  background-color: var(--flex-red-60);
-  color: var(--flex-color-on-accent);
-  box-shadow: none;
-}
+  &[data-variant="secondary"] {
+    background-color: var(--flex-red-60);
+    color: var(--flex-color-on-accent);
+    box-shadow: none;
 
-.flex-button[data-variant="secondary"]:hover {
-  background-color: color-mix(in srgb, var(--flex-red-60) 85%, black);
-}
+    &:hover {
+      background-color: color-mix(in srgb, var(--flex-red-60) 85%, black);
+    }
 
-.flex-button[data-variant="secondary"]:active {
-  background-color: color-mix(in srgb, var(--flex-red-60) 70%, black);
-}
+    &:active {
+      background-color: color-mix(in srgb, var(--flex-red-60) 70%, black);
+    }
 
-.flex-button[data-variant="secondary"]:disabled {
-  background-color: var(--flex-color-disabled-lighter);
-  color: var(--flex-color-disabled-dark);
-  box-shadow: none;
-}
+    &:disabled {
+      background-color: var(--flex-color-disabled-lighter);
+      color: var(--flex-color-disabled-dark);
+      box-shadow: none;
+    }
+  }
 
-/* --- Accent Cool variant --- */
+  /* --- Accent Cool variant --- */
 
-.flex-button[data-variant="accent-cool"] {
-  background-color: var(--flex-cyan-vivid-30);
-  color: var(--flex-gray-90);
-}
+  &[data-variant="accent-cool"] {
+    background-color: var(--flex-cyan-vivid-30);
+    color: var(--flex-gray-90);
 
-.flex-button[data-variant="accent-cool"]:hover {
-  background-color: color-mix(in srgb, var(--flex-cyan-vivid-30) 85%, black);
-}
+    &:hover {
+      background-color: color-mix(in srgb, var(--flex-cyan-vivid-30) 85%, black);
+    }
 
-.flex-button[data-variant="accent-cool"]:active {
-  background-color: color-mix(in srgb, var(--flex-cyan-vivid-30) 70%, black);
-}
+    &:active {
+      background-color: color-mix(in srgb, var(--flex-cyan-vivid-30) 70%, black);
+    }
 
-.flex-button[data-variant="accent-cool"]:disabled {
-  background-color: var(--flex-color-disabled-lighter);
-  color: var(--flex-color-disabled-dark);
-}
+    &:disabled {
+      background-color: var(--flex-color-disabled-lighter);
+      color: var(--flex-color-disabled-dark);
+    }
+  }
 
-/* --- Accent Warm variant --- */
+  /* --- Accent Warm variant --- */
 
-.flex-button[data-variant="accent-warm"] {
-  background-color: var(--flex-orange-vivid-30);
-  color: var(--flex-gray-90);
-}
+  &[data-variant="accent-warm"] {
+    background-color: var(--flex-orange-vivid-30);
+    color: var(--flex-gray-90);
 
-.flex-button[data-variant="accent-warm"]:hover {
-  background-color: color-mix(in srgb, var(--flex-orange-vivid-30) 85%, black);
-}
+    &:hover {
+      background-color: color-mix(in srgb, var(--flex-orange-vivid-30) 85%, black);
+    }
 
-.flex-button[data-variant="accent-warm"]:active {
-  background-color: color-mix(in srgb, var(--flex-orange-vivid-30) 70%, black);
-}
+    &:active {
+      background-color: color-mix(in srgb, var(--flex-orange-vivid-30) 70%, black);
+    }
 
-.flex-button[data-variant="accent-warm"]:disabled {
-  background-color: var(--flex-color-disabled-lighter);
-  color: var(--flex-color-disabled-dark);
-}
+    &:disabled {
+      background-color: var(--flex-color-disabled-lighter);
+      color: var(--flex-color-disabled-dark);
+    }
+  }
 
-/* --- Base variant --- */
+  /* --- Base variant --- */
 
-.flex-button[data-variant="base"] {
-  background-color: var(--flex-gray-90);
-  color: var(--flex-color-on-accent);
-}
+  &[data-variant="base"] {
+    background-color: var(--flex-gray-90);
+    color: var(--flex-color-on-accent);
 
-.flex-button[data-variant="base"]:hover {
-  background-color: color-mix(in srgb, var(--flex-gray-90) 85%, black);
-}
+    &:hover {
+      background-color: color-mix(in srgb, var(--flex-gray-90) 85%, black);
+    }
 
-.flex-button[data-variant="base"]:active {
-  background-color: color-mix(in srgb, var(--flex-gray-90) 70%, black);
-}
+    &:active {
+      background-color: color-mix(in srgb, var(--flex-gray-90) 70%, black);
+    }
 
-.flex-button[data-variant="base"]:disabled {
-  background-color: var(--flex-color-disabled-lighter);
-  color: var(--flex-color-disabled-dark);
-}
+    &:disabled {
+      background-color: var(--flex-color-disabled-lighter);
+      color: var(--flex-color-disabled-dark);
+    }
+  }
 
-/* --- Outline variant --- */
+  /* --- Outline variant --- */
 
-.flex-button[data-variant="outline"] {
-  background-color: transparent;
-  color: var(--flex-color-accent);
-  box-shadow: inset 0 0 0 2px var(--flex-color-accent);
-}
+  &[data-variant="outline"] {
+    background-color: transparent;
+    color: var(--flex-color-accent);
+    box-shadow: inset 0 0 0 2px var(--flex-color-accent);
 
-.flex-button[data-variant="outline"]:hover {
-  background-color: color-mix(
-    in srgb,
-    var(--flex-color-accent) 8%,
-    transparent
-  );
-}
+    &:hover {
+      background-color: color-mix(
+        in srgb,
+        var(--flex-color-accent) 8%,
+        transparent
+      );
+    }
 
-.flex-button[data-variant="outline"]:active {
-  background-color: color-mix(
-    in srgb,
-    var(--flex-color-accent) 16%,
-    transparent
-  );
-}
+    &:active {
+      background-color: color-mix(
+        in srgb,
+        var(--flex-color-accent) 16%,
+        transparent
+      );
+    }
 
-.flex-button[data-variant="outline"]:disabled {
-  background-color: transparent;
-  color: var(--flex-color-disabled-dark);
-  box-shadow: inset 0 0 0 2px var(--flex-color-disabled-lighter);
-}
+    &:disabled {
+      background-color: transparent;
+      color: var(--flex-color-disabled-dark);
+      box-shadow: inset 0 0 0 2px var(--flex-color-disabled-lighter);
+    }
+  }
 
-/* --- Inverse variant --- */
+  /* --- Inverse variant --- */
 
-.flex-button[data-variant="inverse"] {
-  background-color: transparent;
-  color: var(--flex-color-on-accent);
-  box-shadow: inset 0 0 0 2px var(--flex-color-on-accent);
-}
+  &[data-variant="inverse"] {
+    background-color: transparent;
+    color: var(--flex-color-on-accent);
+    box-shadow: inset 0 0 0 2px var(--flex-color-on-accent);
 
-.flex-button[data-variant="inverse"]:hover {
-  background-color: color-mix(
-    in srgb,
-    var(--flex-color-on-accent) 16%,
-    transparent
-  );
-}
+    &:hover {
+      background-color: color-mix(
+        in srgb,
+        var(--flex-color-on-accent) 16%,
+        transparent
+      );
+    }
 
-.flex-button[data-variant="inverse"]:active {
-  background-color: color-mix(
-    in srgb,
-    var(--flex-color-on-accent) 24%,
-    transparent
-  );
-}
+    &:active {
+      background-color: color-mix(
+        in srgb,
+        var(--flex-color-on-accent) 24%,
+        transparent
+      );
+    }
 
-.flex-button[data-variant="inverse"]:disabled {
-  color: var(--flex-color-disabled-dark);
-  box-shadow: inset 0 0 0 2px var(--flex-color-disabled-lighter);
-}
+    &:disabled {
+      color: var(--flex-color-disabled-dark);
+      box-shadow: inset 0 0 0 2px var(--flex-color-disabled-lighter);
+    }
+  }
 
-/* --- Unstyled variant --- */
+  /* --- Unstyled variant --- */
 
-.flex-button[data-variant="unstyled"] {
-  background-color: transparent;
-  color: var(--flex-color-accent);
-  border: none;
-  border-radius: 0;
-  padding: 0;
-  margin-right: 0;
-  font-weight: 400;
-  text-decoration: underline;
-  cursor: pointer;
-}
+  &[data-variant="unstyled"] {
+    background-color: transparent;
+    color: var(--flex-color-accent);
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin-inline-end: 0;
+    font-weight: 400;
+    text-decoration: underline;
+    cursor: pointer;
 
-.flex-button[data-variant="unstyled"]:hover {
-  background-color: transparent;
-  color: color-mix(in srgb, var(--flex-color-accent) 85%, black);
-}
+    &:hover {
+      background-color: transparent;
+      color: color-mix(in srgb, var(--flex-color-accent) 85%, black);
+    }
 
-.flex-button[data-variant="unstyled"]:active {
-  background-color: transparent;
-  color: color-mix(in srgb, var(--flex-color-accent) 70%, black);
-}
+    &:active {
+      background-color: transparent;
+      color: color-mix(in srgb, var(--flex-color-accent) 70%, black);
+    }
 
-.flex-button[data-variant="unstyled"]:disabled {
-  background-color: transparent;
-  color: var(--flex-color-disabled-dark);
-}
+    &:disabled {
+      background-color: transparent;
+      color: var(--flex-color-disabled-dark);
+    }
+  }
 
-/* --- Size: Big --- */
+  /* --- Size: Big --- */
 
-.flex-button[data-size="big"] {
-  padding: 16px 24px;
-  font-size: 1.46rem; /* @uswds big button font-size */
-}
+  &[data-size="big"] {
+    padding: 16px 24px;
+    font-size: 1.46rem; /* @uswds big button font-size */
+  }
 
-/* --- Size: Small --- */
+  /* --- Size: Small --- */
 
-.flex-button[data-size="small"] {
-  padding: var(--flex-space-xs) var(--flex-space-sm);
-  font-size: var(--flex-text-xs);
+  &[data-size="small"] {
+    padding: var(--flex-space-xs) var(--flex-space-sm);
+    font-size: var(--flex-text-xs);
+  }
 }

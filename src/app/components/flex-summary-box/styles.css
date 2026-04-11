@@ -2,7 +2,6 @@
    Bordered callout with info-lighter background */
 
 .flex-summary-box {
-  font-family: var(--flex-font-sans);
   font-size: var(--flex-text-uswds);
   line-height: 1.5;
   color: var(--flex-color-text);
@@ -11,7 +10,7 @@
   border-radius: 0.25rem;
   padding: 1.5rem;
   position: relative;
-  margin-top: 1rem;
+  margin-block-start: 1rem;
 }
 
 .flex-summary-box__body {
@@ -19,7 +18,6 @@
 }
 
 .flex-summary-box__heading {
-  font-family: var(--flex-font-sans);
   font-size: 1.46rem;
   font-weight: 700;
   line-height: 1.1;
@@ -28,14 +26,14 @@
 
 .flex-summary-box__text {
   margin: 0;
-}
 
-.flex-summary-box__text ul,
-.flex-summary-box__text ol {
-  padding-left: 2ch;
-  margin: 0;
-}
+  ul,
+  ol {
+    padding-inline-start: 2ch;
+    margin: 0;
+  }
 
-.flex-summary-box__text li:last-child {
-  margin-bottom: 0;
+  li:last-child {
+    margin-block-end: 0;
+  }
 }

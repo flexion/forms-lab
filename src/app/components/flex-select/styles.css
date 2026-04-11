@@ -5,33 +5,31 @@
 
 /* Custom chevron icon */
 .flex-select {
-  height: var(--flex-control-height);
-  padding-right: 2rem;
+  block-size: var(--flex-control-height);
+  padding-inline-end: 2rem;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23565c65' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.5rem center;
   background-size: 10px 6px;
-}
 
-/* Multiple select — no chevron, auto height */
-.flex-select[multiple] {
-  height: auto;
-  background-image: none;
-  padding-right: 0;
-}
+  /* Multiple select — no chevron, auto height */
+  &[multiple] {
+    block-size: auto;
+    background-image: none;
+    padding-inline-end: 0;
+  }
 
-/* Error state */
-.flex-select[data-state="error"] {
-  border-width: 4px;
-  border-color: var(--flex-color-error);
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
+  /* Error state */
+  &[data-state="error"] {
+    border-width: 4px;
+    border-color: var(--flex-color-error);
+    padding-block: 4px;
+  }
 
-/* Option text overflow */
-.flex-select option {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  option {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 :root[data-theme="dark"] .flex-select {

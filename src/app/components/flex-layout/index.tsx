@@ -119,7 +119,17 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
         </Header>
         {props.sidebar ? (
           <div class="catalog-layout">
-            <aside class="catalog-sidebar">{props.sidebar}</aside>
+            <aside class="catalog-sidebar">
+              <details class="catalog-nav-toggle" open>
+                <summary>In this section</summary>
+                {props.sidebar}
+              </details>
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `(function(){var d=document.querySelector(".catalog-nav-toggle");function u(){if(innerWidth<=768)d.removeAttribute("open");else d.setAttribute("open","")}u();addEventListener("resize",u)}())`,
+                }}
+              />
+            </aside>
             <main>
               <div class="l-stack">{props.children}</div>
             </main>

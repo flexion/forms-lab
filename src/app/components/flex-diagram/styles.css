@@ -2,8 +2,8 @@
 
 .flex-diagram {
   display: block;
-  max-width: 100%;
-  height: auto;
+  max-inline-size: 100%;
+  block-size: auto;
   margin-block-end: var(--flex-space-lg);
 }
 
@@ -16,7 +16,6 @@
 
 .flex-diagram__node text {
   fill: var(--flex-color-text);
-  font-family: var(--flex-font-sans);
   font-size: 14px;
 }
 
@@ -47,7 +46,6 @@
 
 .flex-diagram__edge-label {
   fill: var(--flex-color-text-muted);
-  font-family: var(--flex-font-sans);
   font-size: 12px;
 }
 
@@ -66,7 +64,6 @@
 
 .flex-diagram__group-label {
   fill: var(--flex-color-text-muted);
-  font-family: var(--flex-font-sans);
   font-size: 12px;
   font-style: italic;
 }

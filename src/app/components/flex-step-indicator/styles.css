@@ -2,11 +2,10 @@
    Variants: no-labels, counters, small-counters, centered */
 
 .flex-step-indicator {
-  font-family: var(--flex-font-sans);
   font-size: var(--flex-text-uswds);
   line-height: 1.1;
   background-color: var(--flex-color-bg);
-  margin-bottom: 2rem;
+  margin-block-end: 2rem;
 }
 
 /* --- Segments --- */
@@ -22,44 +21,42 @@
 .flex-step-indicator__segment {
   flex: 1 1 0%;
   counter-increment: flex-step-indicator;
-  margin-left: 1px;
-  margin-right: 1px;
-  max-width: 15rem;
-  min-height: 0.5rem;
+  margin-inline-start: 1px;
+  margin-inline-end: 1px;
+  max-inline-size: 15rem;
+  min-block-size: 0.5rem;
   position: relative;
-}
 
-/* The colored bar for each segment */
-.flex-step-indicator__segment::after {
-  background-color: var(--flex-gray-40);
-  content: "";
-  display: block;
-  height: 0.5rem;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
+  /* The colored bar for each segment */
+  &::after {
+    background-color: var(--flex-gray-40);
+    content: "";
+    display: block;
+    block-size: 0.5rem;
+    inset-inline-start: 0;
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: 0;
+  }
 
-/* Complete segment — dark navy bar */
-.flex-step-indicator__segment[data-state="complete"]::after {
-  background-color: var(--flex-color-text);
-}
+  /* Complete segment — dark navy bar */
+  &[data-state="complete"]::after {
+    background-color: var(--flex-color-text);
+  }
 
-.flex-step-indicator__segment[data-state="complete"]
-  .flex-step-indicator__segment-label {
-  color: var(--flex-color-text);
-}
+  &[data-state="complete"] .flex-step-indicator__segment-label {
+    color: var(--flex-color-text);
+  }
 
-/* Current segment — accent blue bar */
-.flex-step-indicator__segment[data-state="current"]::after {
-  background-color: var(--flex-color-accent);
-}
+  /* Current segment — accent blue bar */
+  &[data-state="current"]::after {
+    background-color: var(--flex-color-accent);
+  }
 
-.flex-step-indicator__segment[data-state="current"]
-  .flex-step-indicator__segment-label {
-  color: var(--flex-color-accent);
-  font-weight: 700;
+  &[data-state="current"] .flex-step-indicator__segment-label {
+    color: var(--flex-color-accent);
+    font-weight: 700;
+  }
 }
 
 /* --- Segment Labels --- */
@@ -68,9 +65,9 @@
   color: var(--flex-gray-cool-60);
   display: block;
   font-size: var(--flex-text-uswds);
-  margin-top: calc(0.5rem + 0.5rem);
-  padding-right: 2rem;
-  text-align: left;
+  margin-block-start: calc(0.5rem + 0.5rem);
+  padding-inline-end: 2rem;
+  text-align: start;
 }
 
 /* --- Header --- */
@@ -82,16 +79,15 @@
 
 .flex-step-indicator__heading {
   color: var(--flex-color-text);
-  font-family: var(--flex-font-sans);
   font-size: 1.46rem;
   font-weight: 700;
   margin: 2rem 0 0;
 }
 
 .flex-step-indicator__current-step {
-  height: 2.5rem;
+  block-size: 2.5rem;
   border-radius: 99rem;
-  width: 2.5rem;
+  inline-size: 2.5rem;
   font-weight: 400;
   font-feature-settings:
     "tnum" 1,
@@ -104,7 +100,7 @@
 }
 
 .flex-step-indicator__heading-text {
-  margin-left: 0.5rem;
+  margin-inline-start: 0.5rem;
 }
 
 /* --- Variant: No Labels --- */
@@ -115,9 +111,9 @@
 }
 
 .flex-step-indicator[data-variant="no-labels"] .flex-step-indicator__segment {
-  margin-top: 0;
-  margin-left: 1px;
-  margin-right: 1px;
+  margin-block-start: 0;
+  margin-inline-start: 1px;
+  margin-inline-end: 1px;
 }
 
 .flex-step-indicator[data-variant="no-labels"]
@@ -130,18 +126,18 @@
 .flex-step-indicator[data-variant="counters"] .flex-step-indicator__segment,
 .flex-step-indicator[data-variant="small-counters"]
   .flex-step-indicator__segment {
-  margin-left: 0;
-  margin-right: 0;
-  margin-top: calc((2.5rem - 0.5rem) / 2 + 0.25rem);
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  margin-block-start: calc((2.5rem - 0.5rem) / 2 + 0.25rem);
 }
 
 .flex-step-indicator[data-variant="counters"]
   .flex-step-indicator__segment::before,
 .flex-step-indicator[data-variant="small-counters"]
   .flex-step-indicator__segment::before {
-  height: 2.5rem;
+  block-size: 2.5rem;
   border-radius: 99rem;
-  width: 2.5rem;
+  inline-size: 2.5rem;
   font-feature-settings:
     "tnum" 1,
     "kern" 1;
@@ -153,12 +149,12 @@
   content: counter(flex-step-indicator);
   display: block;
   font-weight: 700;
-  left: 0;
+  inset-inline-start: 0;
   line-height: 0.9;
   padding: calc((2.5rem - 2ex * 0.9) * 0.5);
   position: absolute;
   text-align: center;
-  top: calc((2.5rem - 0.5rem) / -2);
+  inset-block-start: calc((2.5rem - 0.5rem) / -2);
   z-index: 100;
 }
 
@@ -189,28 +185,28 @@
 
 .flex-step-indicator[data-variant="counters"]
   .flex-step-indicator__segment-label {
-  margin-top: calc((2.5rem + 0.5rem) / 2 + 0.5rem);
+  margin-block-start: calc((2.5rem + 0.5rem) / 2 + 0.5rem);
 }
 
 /* --- Variant: Small Counters --- */
 
 .flex-step-indicator[data-variant="small-counters"]
 .flex-step-indicator__segment {
-  margin-top: calc((1.5rem - 0.5rem) / 2 + 0.25rem);
+  margin-block-start: calc((1.5rem - 0.5rem) / 2 + 0.25rem);
 }
 
 .flex-step-indicator[data-variant="small-counters"]
   .flex-step-indicator__segment::before {
-  height: 1.5rem;
-  width: 1.5rem;
+  block-size: 1.5rem;
+  inline-size: 1.5rem;
   font-size: 0.93rem;
   padding: calc(0.25rem + 1px);
-  top: calc((1.5rem - 0.5rem) / -2);
+  inset-block-start: calc((1.5rem - 0.5rem) / -2);
 }
 
 .flex-step-indicator[data-variant="small-counters"]
   .flex-step-indicator__segment-label {
-  margin-top: calc((1.5rem + 0.5rem) / 2 + 0.5rem);
+  margin-block-start: calc((1.5rem + 0.5rem) / 2 + 0.5rem);
 }
 
 /* --- Variant: Centered --- */
@@ -218,5 +214,5 @@
 .flex-step-indicator[data-variant="centered"]
 .flex-step-indicator__segment-label {
   text-align: center;
-  padding-right: 0;
+  padding-inline-end: 0;
 }

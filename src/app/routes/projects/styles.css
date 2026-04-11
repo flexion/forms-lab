@@ -5,23 +5,23 @@
   flex-wrap: wrap;
   gap: var(--flex-space-lg);
   padding-block: var(--flex-space-sm);
-  border-bottom: 1px solid var(--flex-color-border);
+  border-block-end: 1px solid var(--flex-color-border);
   color: var(--flex-color-text-muted);
   font-size: var(--flex-text-sm);
-}
 
-.project-summary strong {
-  color: var(--flex-color-text);
+  strong {
+    color: var(--flex-color-text);
+  }
 }
 
 .project-back-link {
   font-size: var(--flex-text-sm);
   color: var(--flex-color-link);
   text-decoration: none;
-}
 
-.project-back-link:hover {
-  text-decoration: underline;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 /* Form layout page cards */
@@ -46,7 +46,7 @@
 .form-page-card__number {
   color: var(--flex-color-text-muted);
   font-size: var(--flex-text-sm);
-  min-width: 1.5rem;
+  min-inline-size: 1.5rem;
 }
 
 .form-page-card__body {
@@ -60,7 +60,7 @@
 .form-page-card__groups {
   color: var(--flex-color-text-muted);
   font-size: var(--flex-text-sm);
-  margin-top: var(--flex-space-3xs);
+  margin-block-start: var(--flex-space-3xs);
 }
 
 /* Condition indicator in spec tables */
@@ -77,8 +77,8 @@
 /* Fixture demo card buttons */
 .fixture-card {
   cursor: pointer;
-  text-align: left;
-  width: 100%;
+  text-align: start;
+  inline-size: 100%;
   border: 1px solid var(--flex-color-border);
   background: var(--flex-color-surface);
 }
@@ -93,8 +93,8 @@
   font-size: var(--flex-text-sm);
   padding: 0;
   text-decoration: underline;
-}
 
-.delete-confirm__trigger:hover {
-  color: var(--flex-color-error-dark);
+  &:hover {
+    color: var(--flex-color-error-dark);
+  }
 }

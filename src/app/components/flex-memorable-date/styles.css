@@ -17,7 +17,7 @@ flex-memorable-date {
   font-weight: 700;
   font-size: 1.34rem;
   padding: 0;
-  margin-bottom: 0.5rem;
+  margin-block-end: 0.5rem;
 }
 
 .flex-memorable-date__fields {
@@ -27,23 +27,23 @@ flex-memorable-date {
 
 .flex-memorable-date__field {
   flex: 0 1 auto;
-  margin-right: 1rem;
-  margin-top: 1rem;
-  width: fit-content;
+  margin-inline-end: 1rem;
+  margin-block-start: 1rem;
+  inline-size: fit-content;
+
+  /* Labels within memorable-date fields should not add extra top margin */
+  .flex-label {
+    margin-block-start: 0;
+  }
 }
 
 /* Month and day inputs: narrow (USWDS usa-form-group--month/day: 3rem) */
 .flex-memorable-date__field--month input,
 .flex-memorable-date__field--day input {
-  width: 3rem;
+  inline-size: 3rem;
 }
 
 /* Year input: wider (USWDS usa-form-group--year: 4.5rem) */
 .flex-memorable-date__field--year input {
-  width: 4.5rem;
-}
-
-/* Labels within memorable-date fields should not add extra top margin */
-.flex-memorable-date__field .flex-label {
-  margin-top: 0;
+  inline-size: 4.5rem;
 }

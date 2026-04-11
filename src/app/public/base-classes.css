@@ -14,10 +14,10 @@
   border-radius: 0;
   appearance: none;
   display: block;
-  width: 100%;
-  max-width: var(--flex-control-max-width);
+  inline-size: 100%;
+  max-inline-size: var(--flex-control-max-width);
   padding: var(--flex-control-padding);
-  margin-top: var(--flex-control-margin-top);
+  margin-block-start: var(--flex-control-margin-top);
 }
 
 .flex-control:focus-visible,
@@ -98,6 +98,4 @@
   background-color: var(--flex-color-text);
   mask-size: contain;
   mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
 }

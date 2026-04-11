@@ -1,6 +1,6 @@
 {
   "extends": ["stylelint-config-standard"],
-  "ignoreFiles": ["src/public/font-normalize.css", "dist/**"],
+  "ignoreFiles": ["src/app/public/font-normalize.css", "dist/**"],
   "plugins": ["stylelint-declaration-strict-value"],
   "rules": {
     "scale-unlimited/declaration-strict-value": [
@@ -24,6 +24,7 @@
           "white",
           "/^var\\(/",
           "/^color-mix\\(/",
+          "/^light-dark\\(/",
           "/^url\\(/",
           "0",
           "50%",
@@ -37,7 +38,7 @@
       }
     ],
     "at-rule-no-unknown": [true, {
-      "ignoreAtRules": ["layer", "property"]
+      "ignoreAtRules": ["layer", "property", "container"]
     }],
     "import-notation": null,
     "no-descending-specificity": null,
@@ -46,14 +47,7 @@
     "value-keyword-case": ["lower", {
       "ignoreKeywords": ["Helvetica", "Roboto", "Arial", "currentColor"]
     }],
-    "property-no-vendor-prefix": [true, {
-      "ignoreProperties": [
-        "-webkit-mask-image",
-        "-webkit-mask-size",
-        "-webkit-mask-repeat",
-        "-webkit-mask-position"
-      ]
-    }],
+    "property-no-vendor-prefix": true,
     "comment-empty-line-before": null,
     "rule-empty-line-before": null,
     "declaration-block-no-redundant-longhand-properties": null,
