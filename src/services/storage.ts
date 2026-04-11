@@ -85,6 +85,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
       name TEXT NOT NULL,
       description TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'extracting',
+      strategy TEXT NOT NULL DEFAULT 'sonnet',
       source_pdf BLOB NOT NULL,
       spec TEXT,
       form_spec TEXT,
@@ -96,12 +97,24 @@ export function createProjectStore(dbPath: string): ProjectStore {
     )
   `)
 
+  // Migration: Add strategy column if it doesn't exist
+  const columns = db.query('PRAGMA table_info(projects)').all() as Array<{
+    name: string
+  }>
+  const hasStrategy = columns.some((col) => col.name === 'strategy')
+  if (!hasStrategy) {
+    db.run(
+      'ALTER TABLE projects ADD COLUMN strategy TEXT NOT NULL DEFAULT "sonnet"',
+    )
+  }
+
   function rowToProject(row: Record<string, unknown>): StoredProject {
     return {
       id: row.id as string,
       name: row.name as string,
       description: row.description as string,
       status: row.status as ProjectStatus,
+      strategy: (row.strategy as string) || 'sonnet',
       sourcePdf: row.source_pdf as Buffer,
       spec: row.spec
         ? (JSON.parse(row.spec as string) as DataCollectionSpec)
@@ -124,12 +137,13 @@ export function createProjectStore(dbPath: string): ProjectStore {
       const id = crypto.randomUUID()
       const now = Math.floor(Date.now() / 1000)
       db.run(
-        `INSERT INTO projects (id, name, description, status, source_pdf, created_by, created_at, updated_at)
-         VALUES (?, ?, ?, 'extracting', ?, ?, ?, ?)`,
+        `INSERT INTO projects (id, name, description, status, strategy, source_pdf, created_by, created_at, updated_at)
+         VALUES (?, ?, ?, 'extracting', ?, ?, ?, ?, ?)`,
         [
           id,
           project.name,
           project.description,
+          project.strategy,
           project.sourcePdf,
           project.createdBy,
           now,

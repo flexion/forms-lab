@@ -4,12 +4,9 @@ import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { testDataSpec, testFormSpec } from '../../../test/forms/fixtures'
 import { Layout } from '../../design-system/components/flex-layout'
+import { createExtractorRegistry } from '../../services/extraction/registry'
 import { InMemoryFormSessionGateway } from '../../services/forms/session'
 import { InMemorySubmissionGateway } from '../../services/forms/submission'
-import {
-  createBedrockPdfExtractor,
-  createCachedPdfExtractor,
-} from '../../services/ingestion/pdf-extractor'
 import { createCacheStore, createProjectStore } from '../../services/storage'
 import { getBasePath, resolveUrl } from '../../shared/base-path'
 import { requireAuth, sessionReader } from './middleware/auth'
@@ -28,10 +25,7 @@ mkdirSync(dirname(cacheDbPath), { recursive: true })
 
 const projectStore = createProjectStore(projectDbPath)
 const cacheStore = createCacheStore(cacheDbPath)
-const extractor = createCachedPdfExtractor(
-  createBedrockPdfExtractor(),
-  cacheStore,
-)
+const extractorRegistry = createExtractorRegistry()
 
 // Apply session reader globally
 app.use('*', sessionReader())
@@ -131,7 +125,10 @@ app.route('/auth', auth)
 
 // Mount projects routes with auth guard
 app.use('/projects/*', requireAuth())
-app.route('/projects', createProjectRoutes(projectStore, extractor))
+app.route(
+  '/projects',
+  createProjectRoutes(projectStore, extractorRegistry, cacheStore),
+)
 
 // Form delivery routes (in-memory, using test fixtures for now)
 const sessionGateway = new InMemoryFormSessionGateway()

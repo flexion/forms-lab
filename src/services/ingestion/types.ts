@@ -40,6 +40,7 @@ export interface StoredProject {
   name: string
   description: string
   status: ProjectStatus
+  strategy: string
   sourcePdf: Buffer
   spec: DataCollectionSpec | null
   formSpec: FormSpec | null
@@ -53,6 +54,7 @@ export interface StoredProject {
 export interface NewProject {
   name: string
   description: string
+  strategy: string
   sourcePdf: Buffer
   createdBy: string
 }
