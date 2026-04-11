@@ -57,6 +57,7 @@ export function DiagramRenderer({ graph }: { graph: GraphDefinition }) {
       role="img"
       aria-labelledby={`${titleId} ${descId}`}
       viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+      width={svgWidth}
       xmlns="http://www.w3.org/2000/svg"
     >
       <title id={titleId}>{title}</title>
