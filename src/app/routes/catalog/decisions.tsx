@@ -13,6 +13,12 @@ import { Prose } from '../../components/flex-prose'
 import { TagList } from '../../components/flex-tag-list'
 import { getDecisionsSidebar } from './sidebar'
 
+const groupLabels: Record<string, string> = {
+  architecture: 'Architecture',
+  infrastructure: 'Infrastructure',
+  'design-system': 'Design System',
+}
+
 const decisions = new Hono()
 
 async function loadDecisions(): Promise<Record<string, Decision[]>> {
@@ -63,11 +69,11 @@ decisions.get('/', async (c) => {
         Decisions document what we chose, why, and what alternatives we
         considered. Organized by domain.
       </p>
-      <div class="l-stack">
+      <div class="l-stack" style="--stack-space: var(--flex-space-xl)">
         {Object.entries(groups).map(([group, items]) => (
-          <div key={group}>
-            <h2>{group}</h2>
-            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+          <section key={group}>
+            <p class="catalog-group-label">{groupLabels[group] || group}</p>
+            <div class="l-grid" style="--grid-min: 250px">
               {items.map((decision) => (
                 <ContentCard
                   key={decision.slug}
@@ -77,11 +83,10 @@ decisions.get('/', async (c) => {
                   )}
                 >
                   <StatusBadge status={decision.status} />
-                  <TagList tags={decision.tags} />
                 </ContentCard>
               ))}
             </div>
-          </div>
+          </section>
         ))}
       </div>
     </Layout>,
