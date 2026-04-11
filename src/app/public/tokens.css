@@ -1621,6 +1621,9 @@
   --flex-space-lg: 24px;
   --flex-space-xl: 32px;
 
+  /* Layout tokens */
+  --flex-content-max-width: 60rem;
+
   /* Typography tokens */
   --flex-radius-sm: 4px;
   --flex-radius-md: 8px;
@@ -1651,8 +1654,8 @@
   --flex-control-margin-top: 0.5rem;
   --flex-control-border: 1px solid var(--flex-color-text-muted); /* @uswds base-dark (#565c65) */
 
-  /* Breakpoints — CSS can't consume these in @media, so they're documentation.
-     Use these values directly in @media rules. */
-  --flex-bp-sm: 600px;
-  --flex-bp-md: 768px;
+  /* Breakpoints (for @media use — not consumable as var())
+     --flex-bp-sm: 37.5rem   (600px)
+     --flex-bp-md: 48rem     (768px)
+     --flex-bp-lg: 64rem     (1024px) */
 }

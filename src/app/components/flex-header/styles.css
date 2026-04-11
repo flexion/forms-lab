@@ -273,12 +273,6 @@ flex-header {
   }
 }
 
-@media (prefers-reduced-motion) {
-  .flex-header__nav.is-visible {
-    animation: none;
-  }
-}
-
 /* --- Theme toggle --- */
 
 .flex-theme-toggle {

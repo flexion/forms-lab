@@ -7,7 +7,7 @@ html {
 body {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-block-size: 100vh;
   color: var(--flex-color-text);
   background: var(--flex-color-bg);
 }
