@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test'
+import type { FormError } from '../../src/app/components/flex-form-error-summary'
 import { FormPageView } from '../../src/app/components/flex-form-page'
 import { resolveFormSpec } from '../../src/services/form-resolver'
 import type { FieldEntry, ResolvedPage } from '../../src/types/models'
@@ -11,7 +12,10 @@ describe('FormPageView', () => {
     resolvedPage: ResolvedPage,
     props: {
       actionUrl: string
+      currentPage: number
+      totalPages: number
       fields?: Record<string, FieldEntry>
+      errors?: FormError[]
       prevUrl?: string | null
     },
   ): string {
@@ -20,7 +24,10 @@ describe('FormPageView', () => {
         <FormPageView
           resolvedPage={resolvedPage}
           actionUrl={props.actionUrl}
+          currentPage={props.currentPage}
+          totalPages={props.totalPages}
           fields={props.fields ?? {}}
+          errors={props.errors ?? []}
           prevUrl={props.prevUrl ?? null}
         />
       ) as any
@@ -28,47 +35,99 @@ describe('FormPageView', () => {
   }
 
   it('renders page title', () => {
-    const html = render(resolved.pages[0], { actionUrl: '/test' })
+    const html = render(resolved.pages[0], {
+      actionUrl: '/test',
+      currentPage: 1,
+      totalPages: 3,
+    })
     expect(html).toContain('Personal Information')
   })
 
-  it('renders page description when present', () => {
-    const html = render(resolved.pages[0], { actionUrl: '/test' })
-    expect(html).toContain('Please provide your contact details.')
+  it('renders step text', () => {
+    const html = render(resolved.pages[0], {
+      actionUrl: '/test',
+      currentPage: 1,
+      totalPages: 3,
+    })
+    expect(html).toContain('Page 1 of 3')
   })
 
-  it('renders fields for the group', () => {
-    const html = render(resolved.pages[0], { actionUrl: '/test' })
-    expect(html).toContain('name="fullName"')
-    expect(html).toContain('name="email"')
-    expect(html).toContain('name="phone"')
+  it('wraps in flex-form with large size', () => {
+    const html = render(resolved.pages[0], {
+      actionUrl: '/test',
+      currentPage: 1,
+      totalPages: 3,
+    })
+    expect(html).toContain('class="flex-form"')
+    expect(html).toContain('data-size="large"')
   })
 
-  it('renders a submit button', () => {
-    const html = render(resolved.pages[0], { actionUrl: '/test' })
-    expect(html).toContain('type="submit"')
+  it('adds novalidate to form', () => {
+    const html = render(resolved.pages[0], {
+      actionUrl: '/test',
+      currentPage: 1,
+      totalPages: 3,
+    })
+    expect(html).toContain('novalidate')
   })
 
-  it('renders previous link when prevUrl is provided', () => {
+  it('renders error summary when errors present', () => {
+    const html = render(resolved.pages[0], {
+      actionUrl: '/test',
+      currentPage: 1,
+      totalPages: 3,
+      errors: [{ fieldId: 'fullName', message: 'Enter your full name' }],
+    })
+    expect(html).toContain('There is a problem')
+    expect(html).toContain('href="#fullName"')
+  })
+
+  it('does not render error summary when no errors', () => {
+    const html = render(resolved.pages[0], {
+      actionUrl: '/test',
+      currentPage: 1,
+      totalPages: 3,
+      errors: [],
+    })
+    expect(html).not.toContain('There is a problem')
+  })
+
+  it('renders Back link instead of Previous', () => {
     const html = render(resolved.pages[1], {
       actionUrl: '/test',
+      currentPage: 2,
+      totalPages: 3,
       prevUrl: '/prev',
     })
     expect(html).toContain('href="/prev"')
-    expect(html).toContain('Previous')
+    expect(html).toContain('Back')
   })
 
-  it('does not render previous link on first page', () => {
+  it('renders Continue button', () => {
     const html = render(resolved.pages[0], {
       actionUrl: '/test',
-      prevUrl: null,
+      currentPage: 1,
+      totalPages: 3,
     })
-    expect(html).not.toContain('Previous')
+    expect(html).toContain('Continue')
+    expect(html).toContain('type="submit"')
+  })
+
+  it('renders fields for the group', () => {
+    const html = render(resolved.pages[0], {
+      actionUrl: '/test',
+      currentPage: 1,
+      totalPages: 3,
+    })
+    expect(html).toContain('name="fullName"')
+    expect(html).toContain('name="email"')
   })
 
   it('renders form with POST method and action URL', () => {
     const html = render(resolved.pages[0], {
       actionUrl: '/submit-here',
+      currentPage: 1,
+      totalPages: 3,
     })
     expect(html).toContain('method="post"')
     expect(html).toContain('action="/submit-here"')
