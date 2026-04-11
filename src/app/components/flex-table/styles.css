@@ -13,6 +13,7 @@
   color: var(--flex-color-text);
   margin: 1.25rem 0;
   text-align: left;
+  width: 100%;
 }
 
 .flex-table caption {
