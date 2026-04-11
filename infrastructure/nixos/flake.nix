@@ -26,6 +26,8 @@
         ./modules/app.nix
         ./modules/deploy.nix
         ./modules/homepage.nix
+        ./modules/notify.nix
+        ./modules/notify-failure.nix
       ];
     };
 

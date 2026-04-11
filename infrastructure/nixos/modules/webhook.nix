@@ -15,6 +15,7 @@
       WorkingDirectory = "/srv/forms-lab";
       Restart = "on-failure";
       RestartSec = 5;
+      OnFailure = "forms-lab-notify-failure@%n.service";
     };
 
     # sops-nix decrypts the secret to a file containing the raw value.
