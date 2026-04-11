@@ -4,6 +4,7 @@ import { DiagramRenderer } from '../src/app/components/flex-diagram'
 import { dataModelGraph } from '../src/app/components/flex-diagram/diagrams/data-model'
 import { deploymentGraph } from '../src/app/components/flex-diagram/diagrams/deployment'
 import { systemOverviewGraph } from '../src/app/components/flex-diagram/diagrams/system-overview'
+import { softwareArchitectureGraph } from '../src/app/components/flex-diagram/diagrams/software-architecture'
 import { threatModelGraph } from '../src/app/components/flex-diagram/diagrams/threat-model'
 import type { GraphDefinition } from '../src/app/components/flex-diagram/types'
 
@@ -154,6 +155,30 @@ describe('threatModelGraph', () => {
   })
 })
 
+describe('softwareArchitectureGraph', () => {
+  it('defines the main codebase modules', () => {
+    const nodeIds = softwareArchitectureGraph.nodes.map((n) => n.id)
+    expect(nodeIds).toContain('app')
+    expect(nodeIds).toContain('webhook')
+    expect(nodeIds).toContain('services')
+    expect(nodeIds).toContain('lib')
+    expect(nodeIds).toContain('types')
+    expect(nodeIds).toContain('cli')
+  })
+
+  it('shows dependency edges', () => {
+    expect(softwareArchitectureGraph.edges.length).toBeGreaterThan(0)
+    const appEdges = softwareArchitectureGraph.edges.filter(
+      (e) => e.source === 'app',
+    )
+    expect(appEdges.length).toBeGreaterThan(0)
+  })
+
+  it('uses top-to-bottom layout', () => {
+    expect(softwareArchitectureGraph.direction).toBe('TB')
+  })
+})
+
 import app from '../src/app/server'
 
 describe('Architecture route with diagrams', () => {
@@ -188,5 +213,13 @@ describe('Architecture route with diagrams', () => {
     const body = await res.text()
     expect(body).toContain('class="flex-diagram"')
     expect(body).toContain('Threat Model')
+  })
+
+  it('renders a diagram on the software-architecture page', async () => {
+    const res = await app.request('/catalog/architecture/software-architecture')
+    expect(res.status).toBe(200)
+    const body = await res.text()
+    expect(body).toContain('class="flex-diagram"')
+    expect(body).toContain('Software Architecture')
   })
 })
