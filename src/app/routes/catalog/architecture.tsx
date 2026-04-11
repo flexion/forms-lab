@@ -10,6 +10,7 @@ import { DiagramRenderer } from '../../components/flex-diagram'
 import { dataModelGraph } from '../../components/flex-diagram/diagrams/data-model'
 import { deploymentGraph } from '../../components/flex-diagram/diagrams/deployment'
 import { systemOverviewGraph } from '../../components/flex-diagram/diagrams/system-overview'
+import { softwareArchitectureGraph } from '../../components/flex-diagram/diagrams/software-architecture'
 import { threatModelGraph } from '../../components/flex-diagram/diagrams/threat-model'
 import type { GraphDefinition } from '../../components/flex-diagram/types'
 import { Layout } from '../../components/flex-layout'
@@ -21,6 +22,7 @@ const diagramsBySlug: Record<string, GraphDefinition> = {
   'data-model': dataModelGraph,
   deployment: deploymentGraph,
   'threat-model': threatModelGraph,
+  'software-architecture': softwareArchitectureGraph,
 }
 
 const architecture = new Hono()
