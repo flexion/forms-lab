@@ -61,12 +61,12 @@ export const spec: ConformanceSpec = {
     {
       uswds: 'usa-form',
       flex: '.flex-form',
-      notes: 'Base form class with max-width constraint',
+      notes: 'Base form class with max-width 32em',
     },
     {
       uswds: 'usa-form--large',
       flex: 'data-size="large"',
-      notes: 'Wider form variant (30rem)',
+      notes: 'Wider form variant (46rem)',
     },
   ],
   verified: ['max-width', 'font-family', 'font-size', 'line-height'],
@@ -75,6 +75,85 @@ export const spec: ConformanceSpec = {
   fixtures: [
     formFixture('default form matches usa-form'),
     formFixture('large form matches usa-form--large', 'large'),
+    {
+      name: 'fieldset with legend',
+      uswds: (
+        <div>
+          <form class="usa-form" data-testid="target">
+            <fieldset class="usa-fieldset">
+              <legend class="usa-legend usa-legend--large">Contact info</legend>
+              <label class="usa-label" for="fs-input">
+                Name
+              </label>
+              <input
+                class="usa-input"
+                id="fs-input"
+                name="fs-input"
+                type="text"
+              />
+            </fieldset>
+          </form>
+        </div>
+      ).toString(),
+      flex: (
+        <div>
+          <form class="flex-form" data-testid="target">
+            <fieldset>
+              <legend>Contact info</legend>
+              <label class="flex-label" for="fs-input">
+                Name
+              </label>
+              <input
+                class="flex-input"
+                id="fs-input"
+                name="fs-input"
+                type="text"
+              />
+            </fieldset>
+          </form>
+        </div>
+      ).toString(),
+    },
+    {
+      name: 'form group error state',
+      uswds: (
+        <div>
+          <form class="usa-form" data-testid="target">
+            <div class="usa-form-group usa-form-group--error">
+              <label class="usa-label" for="err-input">
+                Name
+              </label>
+              <span class="usa-error-message">Name is required</span>
+              <input
+                class="usa-input usa-input--error"
+                id="err-input"
+                name="err-input"
+                type="text"
+              />
+            </div>
+          </form>
+        </div>
+      ).toString(),
+      flex: (
+        <div>
+          <form class="flex-form" data-testid="target">
+            <div class="flex-form-group" data-state="error">
+              <label class="flex-label" for="err-input">
+                Name
+              </label>
+              <span class="flex-error-message">Name is required</span>
+              <input
+                class="flex-input"
+                id="err-input"
+                name="err-input"
+                type="text"
+                data-state="error"
+              />
+            </div>
+          </form>
+        </div>
+      ).toString(),
+    },
   ],
   accessibilityFixtureHtml: `<main>
     <h1>Form Test</h1>
