@@ -1,3 +1,4 @@
+import { bedrockCredentials } from './commands/bedrock-credentials'
 import { deploy } from './commands/deploy'
 import { infra } from './commands/infra'
 import { nixos } from './commands/nixos'
@@ -17,6 +18,11 @@ export interface Command {
 }
 
 const commands: Command[] = [
+  {
+    name: 'bedrock-credentials',
+    description: 'Manage cross-account Bedrock SSO credentials',
+    run: bedrockCredentials,
+  },
   {
     name: 'sync-stories',
     description: 'Sync user stories from GitHub Issues',
