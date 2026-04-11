@@ -16,7 +16,7 @@ export const FormErrorSummary: FC<FormErrorSummaryProps> = ({ errors }) => {
     <div class="flex-form-error-summary" role="alert" tabindex={-1}>
       <h2>There is a problem</h2>
       <ul>
-        {errors.map(error => (
+        {errors.map((error) => (
           <li key={error.fieldId}>
             <a href={`#${error.fieldId}`}>{error.message}</a>
           </li>

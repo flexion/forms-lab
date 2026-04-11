@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-import { resolveUrl } from '../../../lib/base-path'
 import {
   countVisiblePages,
   findNextPage,
@@ -8,6 +7,7 @@ import {
 } from '../../../services/form-navigation'
 import { resolveFormSpec } from '../../../services/form-resolver'
 import { validateFields } from '../../../services/form-validation'
+import { resolveUrl } from '../../../shared/base-path'
 import type {
   DataCollectionSpec,
   FormSessionGateway,

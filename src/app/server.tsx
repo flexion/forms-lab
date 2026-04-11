@@ -3,7 +3,6 @@ import { dirname } from 'node:path'
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { testDataSpec, testFormSpec } from '../../test/forms/fixtures'
-import { getBasePath, resolveUrl } from '../lib/base-path'
 import { createCacheStore, createProjectStore } from '../services/database'
 import { InMemoryFormSessionGateway } from '../services/form-session'
 import {
@@ -11,6 +10,7 @@ import {
   createCachedPdfExtractor,
 } from '../services/pdf-extractor'
 import { InMemorySubmissionGateway } from '../services/submission'
+import { getBasePath, resolveUrl } from '../shared/base-path'
 import { Layout } from './components/flex-layout'
 import { requireAuth, sessionReader } from './middleware/auth'
 import auth from './routes/auth/index'

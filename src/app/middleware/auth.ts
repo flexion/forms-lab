@@ -1,11 +1,11 @@
 import { getCookie } from 'hono/cookie'
 import { createMiddleware } from 'hono/factory'
-import { resolveUrl } from '../../lib/base-path'
 import {
   COOKIE_NAME,
   decryptSession,
   type SessionUser,
 } from '../../lib/session'
+import { resolveUrl } from '../../shared/base-path'
 
 declare module 'hono' {
   interface ContextVariableMap {

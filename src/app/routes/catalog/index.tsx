@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
-import { resolveUrl } from '../../../lib/base-path'
 import { readMarkdownDir } from '../../../lib/markdown'
+import { resolveUrl } from '../../../shared/base-path'
 import { ContentCard } from '../../components/flex-card'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
 import { Layout } from '../../components/flex-layout'

@@ -1,6 +1,6 @@
 import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../fixtures/index'
-import { resolveUrl } from '../../../lib/base-path'
+import { resolveUrl } from '../../../shared/base-path'
 import type {
   DataCollectionSpec,
   FieldConfidence,

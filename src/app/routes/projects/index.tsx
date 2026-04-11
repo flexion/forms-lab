@@ -4,9 +4,9 @@ import {
   getFixture,
   loadFixturePdf,
 } from '../../../../fixtures/index'
-import { resolveUrl } from '../../../lib/base-path'
 import type { ProjectStore } from '../../../services/database'
 import type { PdfExtractor } from '../../../services/pdf-extractor'
+import { resolveUrl } from '../../../shared/base-path'
 import { Layout } from '../../components/flex-layout'
 import { NewProjectPage, ProjectDetail, ProjectList } from './components'
 

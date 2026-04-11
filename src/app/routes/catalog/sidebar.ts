@@ -1,4 +1,4 @@
-import { resolveUrl } from '../../../lib/base-path'
+import { resolveUrl } from '../../../shared/base-path'
 import type { Decision, Story } from '../../../types/models'
 import { getComponentsByCategory } from '../../components/registry'
 

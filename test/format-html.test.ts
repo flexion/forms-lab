@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { formatHtml } from '../src/lib/format-html'
+import { formatHtml } from '../src/shared/format-html'
 
 describe('formatHtml', () => {
   it('indents nested tags', () => {

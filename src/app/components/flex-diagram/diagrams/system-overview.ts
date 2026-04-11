@@ -1,4 +1,4 @@
-import { resolveUrl } from '../../../../lib/base-path'
+import { resolveUrl } from '../../../../shared/base-path'
 import type { GraphDefinition } from '../types'
 
 export const systemOverviewGraph: GraphDefinition = {

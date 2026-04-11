@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 import { deleteCookie, setCookie } from 'hono/cookie'
-import { resolveUrl } from '../../../lib/base-path'
 import {
   exchangeCodeForToken,
   fetchUserProfile,
@@ -10,6 +9,7 @@ import {
   COOKIE_NAME,
   encryptSession,
 } from '../../../lib/session'
+import { resolveUrl } from '../../../shared/base-path'
 
 const auth = new Hono()
 
