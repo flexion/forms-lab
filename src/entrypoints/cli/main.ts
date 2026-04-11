@@ -1,5 +1,6 @@
 import { bedrockCredentials } from './commands/bedrock-credentials'
 import { deploy } from './commands/deploy'
+import { evaluate } from './commands/evaluate'
 import { extract } from './commands/extract'
 import { infra } from './commands/infra'
 import { nixos } from './commands/nixos'
@@ -53,6 +54,11 @@ const commands: Command[] = [
     name: 'extract',
     description: 'Extract specs from PDFs and manage extraction cache',
     run: extract,
+  },
+  {
+    name: 'evaluate',
+    description: 'Run extraction evaluations and manage ground truth',
+    run: evaluate,
   },
   {
     name: 'setup-oauth',
