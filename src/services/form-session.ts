@@ -8,7 +8,11 @@ import type {
 export class InMemoryFormSessionGateway implements FormSessionGateway {
   private sessions = new Map<string, FormSession>()
 
-  createSession(specId: string, formSpecId: string, ownerId: string): FormSession {
+  createSession(
+    specId: string,
+    formSpecId: string,
+    ownerId: string,
+  ): FormSession {
     const session: FormSession = {
       id: crypto.randomUUID(),
       specId,
@@ -24,6 +28,10 @@ export class InMemoryFormSessionGateway implements FormSessionGateway {
 
   getSession(id: string): FormSession | null {
     return this.sessions.get(id) ?? null
+  }
+
+  listByOwner(ownerId: string): FormSession[] {
+    return [...this.sessions.values()].filter((s) => s.ownerId === ownerId)
   }
 
   writeFields(sessionId: string, fields: Record<string, FieldEntry>): void {

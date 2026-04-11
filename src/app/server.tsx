@@ -145,6 +145,7 @@ const forms = createFormRouter({
   sessionGateway,
   submissionGateway,
   getSpecs: (specId) => specRegistry.get(specId) ?? null,
+  listSpecs: () => [...specRegistry.values()],
 })
 
 app.route('/forms', forms)
