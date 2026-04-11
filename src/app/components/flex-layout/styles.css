@@ -18,7 +18,7 @@
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
   gap: var(--flex-space-lg);
-  inline-size: 960px;
+  inline-size: var(--flex-content-max-width);
   max-inline-size: 100%;
   margin-inline: auto;
   padding-inline: var(--flex-space-md);
@@ -72,7 +72,7 @@
   font-weight: 600;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .catalog-layout {
     grid-template-columns: 1fr;
   }

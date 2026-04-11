@@ -10,7 +10,7 @@
 /* --- Return to top --- */
 
 .flex-footer__return-to-top {
-  max-width: 960px;
+  max-inline-size: var(--flex-content-max-width);
   margin-inline: auto;
   padding-inline: var(--flex-space-md);
   padding-bottom: 1.25rem;
@@ -48,7 +48,7 @@
 
 .flex-footer__primary-container {
   margin-inline: auto;
-  max-width: 960px;
+  max-inline-size: var(--flex-content-max-width);
   padding-inline: var(--flex-space-md);
 }
 
@@ -74,7 +74,7 @@
 
 .flex-footer__nav {
   margin-inline: auto;
-  max-width: 960px;
+  max-inline-size: var(--flex-content-max-width);
   padding-inline: var(--flex-space-md);
 }
 
@@ -99,7 +99,7 @@
 
 .flex-footer__secondary-container {
   margin-inline: auto;
-  max-width: 960px;
+  max-inline-size: var(--flex-content-max-width);
   padding-inline: var(--flex-space-md);
   display: flex;
   justify-content: space-between;

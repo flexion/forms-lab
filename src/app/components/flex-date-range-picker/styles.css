@@ -12,7 +12,7 @@ flex-date-range-picker {
   margin-bottom: 1.5rem;
 }
 
-@media (min-width: 40em) {
+@media (min-width: 37.5rem) {
   flex-date-range-picker {
     display: flex;
     gap: 2rem;

@@ -24,7 +24,7 @@ flex-banner {
 
 .flex-banner__inner {
   margin-inline: auto;
-  max-width: 960px;
+  max-inline-size: var(--flex-content-max-width);
   padding-inline: var(--flex-space-md);
   display: flex;
   flex-wrap: wrap;
@@ -101,11 +101,8 @@ flex-banner {
   vertical-align: middle;
   background-color: var(--flex-color-link);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E");
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E");
   mask-size: contain;
-  -webkit-mask-size: contain;
   mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
   transition: transform 0.15s ease;
 }
 
@@ -117,7 +114,7 @@ flex-banner {
 
 .flex-banner__content {
   margin-inline: auto;
-  max-width: 960px;
+  max-inline-size: var(--flex-content-max-width);
   padding-inline: var(--flex-space-md);
   padding-block: 0.25rem 1rem;
   background-color: transparent;

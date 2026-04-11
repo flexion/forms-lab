@@ -110,7 +110,7 @@
 
 /* --- Modifier: stacked (mobile-friendly) --- */
 
-@media (max-width: 599px) {
+@media (max-width: 37.4375rem) {
   .flex-table[data-stacked] thead {
     display: none;
   }
