@@ -38,7 +38,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const specs = getSpecs(c.req.param('specId'))
     if (!specs) return c.notFound()
     return c.html(
-      <Layout title={specs.formSpec.title} currentPath="/forms">
+      <Layout user={c.get('user')} title={specs.formSpec.title} currentPath="/forms">
         <FormLanding
           formSpec={specs.formSpec}
           startUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions`)}
@@ -77,7 +77,7 @@ export function createFormRouter(deps: FormRouterDeps) {
           )
         : null
     return c.html(
-      <Layout title={resolved.pages[pageIndex].page.title} currentPath="/forms">
+      <Layout user={c.get('user')} title={resolved.pages[pageIndex].page.title} currentPath="/forms">
         <FormPageView
           resolvedPage={resolved.pages[pageIndex]}
           actionUrl={resolveUrl(
@@ -134,6 +134,7 @@ export function createFormRouter(deps: FormRouterDeps) {
           : null
       return c.html(
         <Layout
+          user={c.get('user')}
           title={`Error: ${resolvedPage.page.title}`}
           currentPath="/forms"
         >
@@ -176,7 +177,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     if (!session) return c.notFound()
     const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
     return c.html(
-      <Layout title="Review" currentPath="/forms">
+      <Layout user={c.get('user')} title="Review" currentPath="/forms">
         <FormReview
           resolved={resolved}
           fields={session.fields}
@@ -216,7 +217,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const submission = submissionGateway.getSubmission(submissionId)
     if (!submission) return c.notFound()
     return c.html(
-      <Layout title="Confirmation" currentPath="/forms">
+      <Layout user={c.get('user')} title="Confirmation" currentPath="/forms">
         <FormConfirmation submission={submission} />
       </Layout>,
     )
