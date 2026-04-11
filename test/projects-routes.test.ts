@@ -190,7 +190,7 @@ describe('POST /projects/:id/retry', () => {
     await new Promise((r) => setTimeout(r, 50))
     const updated = projectStore.get(project.id)
     // Status should be 'ready' since stub extractor resolves immediately
-    expect(updated!.status).toBe('ready')
+    expect(updated?.status).toBe('ready')
   })
 })
 
