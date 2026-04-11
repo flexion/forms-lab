@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
-import { runVisualConformance } from '../../../shared/test-helpers/conformance-runner'
-import { renderFlexFixture } from '../../../shared/test-helpers/render'
+import { runVisualConformance } from '../../test-helpers/conformance-runner'
+import { renderFlexFixture } from '../../test-helpers/render'
 import { spec } from './conformance-spec'
 
 const componentsJs = readFileSync(

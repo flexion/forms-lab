@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test'
 import {
   runAccessibilityAudit,
   runVisualConformance,
-} from '../../../shared/test-helpers/conformance-runner'
-import { renderFlexFixture } from '../../../shared/test-helpers/render'
+} from '../../test-helpers/conformance-runner'
+import { renderFlexFixture } from '../../test-helpers/render'
 import { spec } from './conformance-spec'
 
 // Spec-driven visual conformance and accessibility

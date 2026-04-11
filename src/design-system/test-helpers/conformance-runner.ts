@@ -1,9 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
-import type {
-  ConformanceSpec,
-  FixtureInteraction,
-} from '../../design-system/conformance/types'
+import type { ConformanceSpec, FixtureInteraction } from '../conformance/types'
 import { diff, extract } from '../visual-descriptor'
 import { expectMatch } from './assertions'
 import { renderFlexFixture, renderUswdsFixture } from './render'
