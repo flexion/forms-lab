@@ -61,6 +61,11 @@ export const FormPageView: FC<FormPageViewProps> = ({
           </button>
         </div>
       </form>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `(function(){var s=document.querySelector('.flex-form-error-summary');if(s)s.focus()})()`,
+        }}
+      />
     </Form>
   )
 }

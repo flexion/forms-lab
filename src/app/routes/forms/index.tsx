@@ -1,6 +1,11 @@
 import { Hono } from 'hono'
 import { resolveUrl } from '../../../lib/base-path'
-import { findNextPage, findPrevPage } from '../../../services/form-navigation'
+import {
+  countVisiblePages,
+  findNextPage,
+  findPrevPage,
+  visiblePageNumber,
+} from '../../../services/form-navigation'
 import { resolveFormSpec } from '../../../services/form-resolver'
 import { validateFields } from '../../../services/form-validation'
 import type {
@@ -10,6 +15,7 @@ import type {
   SubmissionGateway,
 } from '../../../types/models'
 import { FormConfirmation } from '../../components/flex-form-confirmation'
+import type { FormError } from '../../components/flex-form-error-summary'
 import { FormLanding } from '../../components/flex-form-landing'
 import { FormPageView } from '../../components/flex-form-page'
 import { FormReview } from '../../components/flex-form-review'
@@ -77,7 +83,10 @@ export function createFormRouter(deps: FormRouterDeps) {
           actionUrl={resolveUrl(
             `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`,
           )}
+          currentPage={visiblePageNumber(resolved, pageIndex, session.fields)}
+          totalPages={countVisiblePages(resolved, session.fields)}
           fields={session.fields}
+          errors={[]}
           prevUrl={prevUrl}
         />
       </Layout>,
@@ -110,6 +119,12 @@ export function createFormRouter(deps: FormRouterDeps) {
 
     if (hasErrors) {
       const mergedFields = { ...session.fields, ...validated }
+      const errors: FormError[] = Object.entries(validated)
+        .filter(([, entry]) => entry.errors && entry.errors.length > 0)
+        .map(([fieldId, entry]) => ({
+          fieldId,
+          message: (entry.errors as string[])[0],
+        }))
       const prev = findPrevPage(resolved, pageIndex, mergedFields)
       const prevUrl =
         prev !== null
@@ -118,13 +133,19 @@ export function createFormRouter(deps: FormRouterDeps) {
             )
           : null
       return c.html(
-        <Layout title={resolvedPage.page.title} currentPath="/forms">
+        <Layout
+          title={`Error: ${resolvedPage.page.title}`}
+          currentPath="/forms"
+        >
           <FormPageView
             resolvedPage={resolvedPage}
             actionUrl={resolveUrl(
               `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`,
             )}
+            currentPage={visiblePageNumber(resolved, pageIndex, mergedFields)}
+            totalPages={countVisiblePages(resolved, mergedFields)}
             fields={mergedFields}
+            errors={errors}
             prevUrl={prevUrl}
           />
         </Layout>,

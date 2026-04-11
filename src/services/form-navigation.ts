@@ -26,3 +26,26 @@ export function findPrevPage(
   }
   return null
 }
+
+export function countVisiblePages(
+  resolved: ResolvedForm,
+  fields: Record<string, FieldEntry>,
+): number {
+  return resolved.pages.filter((p) =>
+    evaluateCondition(p.page.condition, fields),
+  ).length
+}
+
+export function visiblePageNumber(
+  resolved: ResolvedForm,
+  pageIndex: number,
+  fields: Record<string, FieldEntry>,
+): number {
+  let count = 0
+  for (let i = 0; i <= pageIndex; i++) {
+    if (evaluateCondition(resolved.pages[i].page.condition, fields)) {
+      count++
+    }
+  }
+  return count
+}

@@ -152,6 +152,58 @@ describe('Form routes', () => {
     expect(html).toContain('is required')
   })
 
+  it('validation errors show error summary with links', async () => {
+    const app = createTestApp()
+    const createRes = await app.request('/forms/benefits-app/sessions', {
+      method: 'POST',
+    })
+    const location = createRes.headers.get('Location')
+    const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
+    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+
+    const res = await app.request(`${baseUrl}/pages/0`, {
+      method: 'POST',
+      body: new URLSearchParams({}),
+    })
+    const html = await res.text()
+    expect(html).toContain('There is a problem')
+    expect(html).toContain('href="#fullName"')
+    expect(html).toContain('href="#email"')
+  })
+
+  it('validation errors prefix page title with Error:', async () => {
+    const app = createTestApp()
+    const createRes = await app.request('/forms/benefits-app/sessions', {
+      method: 'POST',
+    })
+    const location = createRes.headers.get('Location')
+    const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
+    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+
+    const res = await app.request(`${baseUrl}/pages/0`, {
+      method: 'POST',
+      body: new URLSearchParams({}),
+    })
+    const html = await res.text()
+    expect(html).toContain(
+      '<title>Error: Personal Information | Forms Lab</title>',
+    )
+  })
+
+  it('renders step text on form pages', async () => {
+    const app = createTestApp()
+    const createRes = await app.request('/forms/benefits-app/sessions', {
+      method: 'POST',
+    })
+    const location = createRes.headers.get('Location')
+    const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
+    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+
+    const res = await app.request(`${baseUrl}/pages/0`)
+    const html = await res.text()
+    expect(html).toContain('Page 1 of 3')
+  })
+
   it('returns 404 for invalid session ID', async () => {
     const app = createTestApp()
     const res = await app.request('/forms/benefits-app/sessions/bad-id/pages/0')
