@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test'
-import { createCacheStore } from '../src/services/database'
 import {
   createCachedPdfExtractor,
   type PdfExtractor,
-} from '../src/services/pdf-extractor'
+} from '../src/services/ingestion/pdf-extractor'
+import { createCacheStore } from '../src/services/storage'
 import type { ExtractionResult } from '../src/types/models'
 
 const stubResult: ExtractionResult = {

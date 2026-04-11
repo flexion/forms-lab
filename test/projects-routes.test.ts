@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
 import { createProjectRoutes } from '../src/app/routes/projects/index'
-import { createProjectStore } from '../src/services/database'
-import type { PdfExtractor } from '../src/services/pdf-extractor'
+import type { PdfExtractor } from '../src/services/ingestion/pdf-extractor'
+import { createProjectStore } from '../src/services/storage'
 import type { ExtractionResult } from '../src/types/models'
 
 const stubResult: ExtractionResult = {

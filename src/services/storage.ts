@@ -1,12 +1,12 @@
 import { Database } from 'bun:sqlite'
+import type { DataCollectionSpec } from './data-collection/types'
+import type { FormSpec } from './forms/types'
 import type {
-  DataCollectionSpec,
   FieldConfidence,
-  FormSpec,
   NewProject,
   ProjectStatus,
   StoredProject,
-} from '../types/models'
+} from './ingestion/types'
 
 export interface CacheEntry {
   key: string

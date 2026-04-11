@@ -3,13 +3,13 @@ import { dirname } from 'node:path'
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { testDataSpec, testFormSpec } from '../../test/forms/fixtures'
-import { createCacheStore, createProjectStore } from '../services/database'
 import { InMemoryFormSessionGateway } from '../services/forms/session'
 import { InMemorySubmissionGateway } from '../services/forms/submission'
 import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
-} from '../services/pdf-extractor'
+} from '../services/ingestion/pdf-extractor'
+import { createCacheStore, createProjectStore } from '../services/storage'
 import { getBasePath, resolveUrl } from '../shared/base-path'
 import { Layout } from './components/flex-layout'
 import { requireAuth, sessionReader } from './middleware/auth'

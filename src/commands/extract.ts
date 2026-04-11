@@ -1,9 +1,9 @@
 import { resolve } from 'node:path'
-import { createCacheStore } from '../services/database'
 import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
-} from '../services/pdf-extractor'
+} from '../services/ingestion/pdf-extractor'
+import { createCacheStore } from '../services/storage'
 
 const pulumiDir = resolve(import.meta.dir, '../../infrastructure/pulumi')
 
