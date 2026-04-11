@@ -2,9 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { FormStepText } from '../../src/app/components/flex-form-step-text'
 
 function render(current: number, total: number): string {
-  return (
-    (<FormStepText current={current} total={total} />) as any
-  ).toString()
+  return ((<FormStepText current={current} total={total} />) as any).toString()
 }
 
 describe('FormStepText', () => {
