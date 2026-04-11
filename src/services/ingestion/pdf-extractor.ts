@@ -56,7 +56,13 @@ function parseJsonResponse<T>(
   return schema.parse(parsed)
 }
 
-export function createBedrockPdfExtractor(): PdfExtractor {
+export interface BedrockExtractorOptions {
+  model?: string
+}
+
+export function createBedrockPdfExtractor(
+  options?: BedrockExtractorOptions,
+): PdfExtractor {
   // Use AWS SSO profile if configured, otherwise fall back to default chain
   // (env vars, instance profile, etc.)
   const bedrockProfile = process.env.AWS_BEDROCK_PROFILE
@@ -71,9 +77,9 @@ export function createBedrockPdfExtractor(): PdfExtractor {
   return {
     async extract(
       pdf: Buffer,
-      options?: ExtractionOptions,
+      extractionOptions?: ExtractionOptions,
     ): Promise<ExtractionResult> {
-      const model = options?.model ?? DEFAULT_MODEL
+      const model = extractionOptions?.model ?? options?.model ?? DEFAULT_MODEL
 
       // Step 1: Extract DataCollectionSpec + confidence from PDF
       // Use generateText + manual JSON parsing because generateObject's
