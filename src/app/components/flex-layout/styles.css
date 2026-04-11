@@ -71,16 +71,12 @@
 }
 
 /* Collapsible sidebar toggle — uses native <details>/<summary>.
-   Wide: content always visible, summary hidden.
-   Narrow: collapsible, starts closed. */
+   Wide: content always visible (open attr), summary hidden.
+   Narrow: collapsible, starts closed via inline script. */
 
 .catalog-nav-toggle {
   > summary {
     display: none;
-  }
-
-  > :not(summary) {
-    display: block !important;
   }
 }
 
@@ -125,10 +121,6 @@
 
     &[open] > summary::before {
       transform: rotate(90deg);
-    }
-
-    > :not(summary) {
-      display: revert !important;
     }
   }
 }

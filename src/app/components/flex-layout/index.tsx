@@ -120,10 +120,15 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
         {props.sidebar ? (
           <div class="catalog-layout">
             <aside class="catalog-sidebar">
-              <details class="catalog-nav-toggle">
+              <details class="catalog-nav-toggle" open>
                 <summary>In this section</summary>
                 {props.sidebar}
               </details>
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `if(matchMedia("(max-width:48rem)").matches)document.querySelector(".catalog-nav-toggle").removeAttribute("open")`,
+                }}
+              />
             </aside>
             <main>
               <div class="l-stack">{props.children}</div>
