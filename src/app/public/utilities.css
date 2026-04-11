@@ -25,3 +25,47 @@
 .text-muted { color: var(--flex-color-text-muted); }
 .text-sm { font-size: var(--flex-text-sm); }
 .justify-between { justify-content: space-between; }
+
+/* High contrast — thicker borders, stronger text, no subtle distinctions */
+@media (prefers-contrast: more) {
+  :root {
+    --flex-color-text-muted: var(--flex-color-text);
+    --flex-color-border: var(--flex-color-text);
+  }
+
+  .flex-control,
+  .flex-input,
+  .flex-select,
+  .flex-textarea {
+    border-width: 2px;
+  }
+
+  .flex-button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Print — clean content-only output */
+@media print {
+  .flex-header,
+  .flex-footer,
+  .flex-banner,
+  .flex-theme-toggle,
+  .l-sidebar > :first-child {
+    display: none !important;
+  }
+
+  body {
+    color: #000;
+    background: #fff;
+  }
+
+  main {
+    max-inline-size: 100%;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+  }
+}
