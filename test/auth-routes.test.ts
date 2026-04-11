@@ -66,7 +66,7 @@ describe('Auth Routes', () => {
   describe('GET /auth/callback', () => {
     it('creates session and redirects for authorized user', async () => {
       const mockUser: GitHubUser = {
-        login: 'danielnaab',
+        login: 'testuser',
         name: 'Test User',
         avatar_url: 'https://example.com/avatar.png',
       }
@@ -162,7 +162,7 @@ describe('Auth Routes', () => {
 
     it('redirects to root when returnTo is not specified', async () => {
       const mockUser: GitHubUser = {
-        login: 'danielnaab',
+        login: 'testuser',
         name: 'Test User',
         avatar_url: 'https://example.com/avatar.png',
       }
