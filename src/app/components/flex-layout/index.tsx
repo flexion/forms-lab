@@ -1,5 +1,5 @@
 import type { Child, FC, PropsWithChildren } from 'hono/jsx'
-import type { SessionUser } from '../../../lib/session'
+import type { SessionUser } from '../../../services/auth/session'
 import { resolveUrl } from '../../../shared/base-path'
 import { Banner } from '../flex-banner'
 import {

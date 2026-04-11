@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
 import { requireAuth, sessionReader } from '../src/app/middleware/auth'
-import { COOKIE_NAME, encryptSession } from '../src/lib/session'
+import { COOKIE_NAME, encryptSession } from '../src/services/auth/session'
 
 describe('Auth Middleware', () => {
   describe('sessionReader', () => {

@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Hono } from 'hono'
 import { sessionReader } from '../src/app/middleware/auth'
 import authRoutes from '../src/app/routes/auth'
-import type { GitHubUser } from '../src/lib/github-oauth'
-import { COOKIE_NAME } from '../src/lib/session'
+import type { GitHubUser } from '../src/services/auth/github-oauth'
+import { COOKIE_NAME } from '../src/services/auth/session'
 
 describe('Auth Routes', () => {
   let app: Hono

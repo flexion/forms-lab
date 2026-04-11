@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { Layout } from '../src/app/components/flex-layout'
-import type { SessionUser } from '../src/lib/session'
+import type { SessionUser } from '../src/services/auth/session'
 
 describe('Layout with auth', () => {
   it('renders sign-in link when no user', () => {

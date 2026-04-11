@@ -1,8 +1,6 @@
-export interface SessionUser {
-  login: string
-  name: string
-  avatarUrl: string
-}
+import type { SessionUser } from './types'
+
+export type { SessionUser }
 
 export async function encryptSession(
   user: SessionUser,

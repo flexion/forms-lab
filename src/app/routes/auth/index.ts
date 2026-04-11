@@ -3,12 +3,12 @@ import { deleteCookie, setCookie } from 'hono/cookie'
 import {
   exchangeCodeForToken,
   fetchUserProfile,
-} from '../../../lib/github-oauth'
+} from '../../../services/auth/github-oauth'
 import {
   COOKIE_MAX_AGE,
   COOKIE_NAME,
   encryptSession,
-} from '../../../lib/session'
+} from '../../../services/auth/session'
 import { resolveUrl } from '../../../shared/base-path'
 
 const auth = new Hono()
