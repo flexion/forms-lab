@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
-import { DeploymentCard } from '../app/components/deployment-card'
+import { DeploymentTable } from '../app/components/deployment-table'
 import { Layout } from '../app/components/flex-layout'
 import { getDeploymentSummary } from '../services/deployment-metadata'
 
@@ -145,22 +145,11 @@ app.get('/', async (c) => {
           </div>
         </div>
 
-        {/* Deployment cards grid */}
-        {summary.deployments.length > 0 ? (
-          <div class="l-stack">
-            <h2>Active Deployments</h2>
-            <div class="l-grid">
-              {summary.deployments.map((deployment) => (
-                <DeploymentCard
-                  key={deployment.branch}
-                  deployment={deployment}
-                />
-              ))}
-            </div>
-          </div>
-        ) : (
-          <p>No branches currently deployed.</p>
-        )}
+        {/* Deployment table */}
+        <div class="l-stack">
+          <h2>Active Deployments</h2>
+          <DeploymentTable deployments={summary.deployments} />
+        </div>
       </Layout>,
     )
   } catch (error) {
