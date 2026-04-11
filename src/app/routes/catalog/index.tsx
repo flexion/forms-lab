@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { resolveUrl } from '../../../lib/base-path'
 import { readMarkdownDir } from '../../../lib/markdown'
 import { CatalogSidebar } from '../../components/flex-catalog-sidebar'
+import { ContentCard } from '../../components/flex-card'
 import { Layout } from '../../components/flex-layout'
 import architecture from './architecture'
 import decisions from './decisions'
@@ -63,46 +64,58 @@ catalog.get('/', async (c) => {
     >
       <h1>Catalog</h1>
       <p>
-        The catalog is the system's self-documentation: personas, stories,
-        architecture, decisions, and experiments.
+        An LLM-assisted forms platform for government forms. Data flows from
+        collection specs through form definitions to submissions.
       </p>
-      <div class="l-grid">
-        <div class="content-card">
-          <h2>
-            <a href={resolveUrl('/catalog/personas')}>Personas</a>
-          </h2>
-          <p>{personaFiles.length} personas</p>
-        </div>
-        <div class="content-card">
-          <h2>
-            <a href={resolveUrl('/catalog/decisions')}>Decisions</a>
-          </h2>
-          <p>{decisionCount} decisions</p>
-        </div>
-        <div class="content-card">
-          <h2>
-            <a href={resolveUrl('/catalog/architecture')}>Architecture</a>
-          </h2>
-          <p>{architectureFiles.length} documents</p>
-        </div>
-        <div class="content-card">
-          <h2>
-            <a href={resolveUrl('/catalog/stories')}>Stories</a>
-          </h2>
-          <p>{storyFiles.length} stories</p>
-        </div>
-        <div class="content-card">
-          <h2>
-            <a href={resolveUrl('/catalog/experiments')}>Experiments</a>
-          </h2>
-          <p>Coming soon</p>
-        </div>
-        <div class="content-card">
-          <h2>
-            <a href={resolveUrl('/catalog/design-system')}>Design System</a>
-          </h2>
-          <p>Tokens, components, and compositions</p>
-        </div>
+
+      <div class="l-stack" style="--stack-space: var(--flex-space-xl)">
+        <section>
+          <p class="catalog-group-label">The System</p>
+          <div class="l-grid" style="--grid-min: 280px">
+            <ContentCard
+              title="Architecture"
+              href={resolveUrl('/catalog/architecture')}
+              description="System overview, data model, deployment, threat model"
+            />
+            <ContentCard
+              title="Decisions"
+              href={resolveUrl('/catalog/decisions')}
+              description={`${decisionCount} decisions across architecture, infrastructure, design`}
+            />
+          </div>
+        </section>
+
+        <section>
+          <p class="catalog-group-label">The Work</p>
+          <div class="l-grid" style="--grid-min: 200px">
+            <ContentCard
+              title="Personas"
+              href={resolveUrl('/catalog/personas')}
+              description="Who the system serves"
+            />
+            <ContentCard
+              title="Stories"
+              href={resolveUrl('/catalog/stories')}
+              description="What's being built"
+            />
+            <ContentCard
+              title="Experiments"
+              href={resolveUrl('/catalog/experiments')}
+              description="What we're exploring"
+            />
+          </div>
+        </section>
+
+        <section>
+          <p class="catalog-group-label">The Craft</p>
+          <div class="l-grid">
+            <ContentCard
+              title="Design System"
+              href={resolveUrl('/catalog/design-system')}
+              description="Tokens, components, compositions, and visual language"
+            />
+          </div>
+        </section>
       </div>
     </Layout>,
   )
