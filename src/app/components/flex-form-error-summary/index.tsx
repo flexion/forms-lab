@@ -10,7 +10,7 @@ interface FormErrorSummaryProps {
 }
 
 export const FormErrorSummary: FC<FormErrorSummaryProps> = ({ errors }) => {
-  if (errors.length === 0) return <></>
+  if (errors.length === 0) return null
 
   return (
     <div class="flex-form-error-summary" role="alert" tabindex={-1}>
