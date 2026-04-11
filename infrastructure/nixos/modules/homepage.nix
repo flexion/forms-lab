@@ -19,7 +19,7 @@
       Environment = [
         "PORT=3000"
       ];
-      ExecStart = "${pkgs.bun}/bin/bun run src/homepage/main.ts";
+      ExecStart = "${pkgs.bun}/bin/bun run src/entrypoints/dashboard/main.ts";
       OnFailure = "forms-lab-notify-failure@%n.service";
     };
   };

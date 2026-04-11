@@ -20,7 +20,7 @@
     script = ''
       export SLACK_WEBHOOK_URL=$(cat ${config.sops.secrets.slack-webhook-url.path})
       export PORT=9001
-      exec ${pkgs.bun}/bin/bun run /srv/forms-lab/main/src/notify/main.ts
+      exec ${pkgs.bun}/bin/bun run /srv/forms-lab/main/src/entrypoints/notify/main.ts
     '';
   };
 }

@@ -203,12 +203,21 @@ Follows [meta-knowledge-base](https://github.com/danielnaab/meta-knowledge-base)
 
 ## Project Structure
 
-- `src/app/` — Web application (server, routes, components, public assets)
-- `src/webhook/` — GitHub webhook listener service
-- `src/lib/` — Shared utilities (markdown, base-path, test-helpers)
-- `src/services/` — Shared services (GitHub API client)
-- `src/types/` — Shared type definitions
-- `src/commands/` — CLI commands (sync-stories, infra, nixos, webhook)
+- `src/entrypoints/app/` — Forms platform web application (server, routes, middleware, public assets)
+- `src/entrypoints/dashboard/` — Deployment dashboard (homepage service)
+- `src/entrypoints/webhook/` — GitHub webhook listener service
+- `src/entrypoints/notify/` — Notification delivery server
+- `src/entrypoints/cli/` — CLI commands (sync-stories, infra, nixos, webhook, deploy)
+- `src/services/data-collection/` — Core domain model: what data to collect
+- `src/services/forms/` — Form resolution, delivery, sessions, submission
+- `src/services/ingestion/` — PDF to structured spec pipeline
+- `src/services/auth/` — Authentication and sessions (GitHub OAuth)
+- `src/services/deployment/` — Deploy orchestration and metadata
+- `src/services/notifications/` — Notification types and client
+- `src/services/content/` — Content rendering (markdown, catalog types)
+- `src/services/storage.ts` — Persistence layer (SQLite)
+- `src/design-system/` — UI components (flex-* component library, conformance, registry)
+- `src/shared/` — Pure utilities (base-path, format-html, test-helpers, visual-descriptor)
 - `infrastructure/pulumi/` — EC2 provisioning (Pulumi TypeScript)
 - `infrastructure/nixos/` — Server configuration (NixOS flake)
 - `catalog/` — Catalog content (personas, stories, decisions, architecture, experiments)

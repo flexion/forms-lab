@@ -13,7 +13,7 @@
       Group = "forms-lab";
       # %i is the instance name (branch name, with / replaced by -)
       WorkingDirectory = "/srv/forms-lab/%i";
-      ExecStart = "${pkgs.bun}/bin/bun run src/app/main.ts";
+      ExecStart = "${pkgs.bun}/bin/bun run src/entrypoints/app/main.ts";
       Restart = "on-failure";
       RestartSec = 5;
       OnFailure = "forms-lab-notify-failure@%n.service";
