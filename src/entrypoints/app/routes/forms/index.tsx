@@ -5,15 +5,22 @@ import { FormLanding } from '../../../../design-system/components/flex-form-land
 import { FormPageView } from '../../../../design-system/components/flex-form-page'
 import { FormReview } from '../../../../design-system/components/flex-form-review'
 import { Layout } from '../../../../design-system/components/flex-layout'
-import type { DataCollectionSpec } from '../../../../services/data-collection/types'
+import type {
+  DataCollectionSpec,
+  RequirementGroup,
+} from '../../../../services/data-collection/types'
 import {
   countVisiblePages,
   findNextPage,
   findPrevPage,
   visiblePageNumber,
 } from '../../../../services/forms/navigation'
-import { resolveFormSpec } from '../../../../services/forms/resolver'
+import {
+  evaluateCondition,
+  resolveFormSpec,
+} from '../../../../services/forms/resolver'
 import type {
+  FieldEntry,
   FormSessionGateway,
   FormSpec,
   SubmissionGateway,
@@ -29,6 +36,20 @@ interface FormRouterDeps {
     specId: string,
   ) => { dataSpec: DataCollectionSpec; formSpec: FormSpec } | null
   listSpecs: () => { dataSpec: DataCollectionSpec; formSpec: FormSpec }[]
+}
+
+function filterVisibleGroups(
+  groups: RequirementGroup[],
+  fields: Record<string, FieldEntry>,
+) {
+  return groups
+    .filter((g) => evaluateCondition(g.condition, fields))
+    .map((g) => ({
+      ...g,
+      requirements: g.requirements.filter((r) =>
+        evaluateCondition(r.condition, fields),
+      ),
+    }))
 }
 
 export function createFormRouter(deps: FormRouterDeps) {
@@ -199,7 +220,14 @@ export function createFormRouter(deps: FormRouterDeps) {
         currentPath="/forms"
       >
         <FormPageView
-          resolvedPage={resolved.pages[pageIndex]}
+          page={{
+            title: resolved.pages[pageIndex].page.title,
+            description: resolved.pages[pageIndex].page.description,
+            groups: filterVisibleGroups(
+              resolved.pages[pageIndex].groups,
+              session.fields,
+            ),
+          }}
           actionUrl={resolveUrl(
             `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`,
           )}
@@ -262,7 +290,11 @@ export function createFormRouter(deps: FormRouterDeps) {
           currentPath="/forms"
         >
           <FormPageView
-            resolvedPage={resolvedPage}
+            page={{
+              title: resolvedPage.page.title,
+              description: resolvedPage.page.description,
+              groups: filterVisibleGroups(resolvedPage.groups, mergedFields),
+            }}
             actionUrl={resolveUrl(
               `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`,
             )}

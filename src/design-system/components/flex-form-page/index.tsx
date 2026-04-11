@@ -1,24 +1,36 @@
 import type { FC } from 'hono/jsx'
-import { evaluateCondition } from '../../../services/forms/resolver'
-import type { FieldEntry, ResolvedPage } from '../../../services/forms/types'
 import { Form } from '../flex-form'
 import type { FormError } from '../flex-form-error-summary'
 import { FormErrorSummary } from '../flex-form-error-summary'
+import type { FormFieldEntry, FormFieldRequirement } from '../flex-form-field'
 import { FormField } from '../flex-form-field'
 import { FormStepText } from '../flex-form-step-text'
 
+interface FormPageGroup {
+  id: string
+  title: string
+  description?: string
+  requirements: FormFieldRequirement[]
+}
+
+interface FormPageData {
+  title: string
+  description?: string
+  groups: FormPageGroup[]
+}
+
 interface FormPageViewProps {
-  resolvedPage: ResolvedPage
+  page: FormPageData
   actionUrl: string
   currentPage: number
   totalPages: number
-  fields: Record<string, FieldEntry>
+  fields: Record<string, FormFieldEntry>
   errors: FormError[]
   prevUrl: string | null
 }
 
 export const FormPageView: FC<FormPageViewProps> = ({
-  resolvedPage,
+  page,
   actionUrl,
   currentPage,
   totalPages,
@@ -26,8 +38,6 @@ export const FormPageView: FC<FormPageViewProps> = ({
   errors,
   prevUrl,
 }) => {
-  const { page, groups } = resolvedPage
-
   return (
     <Form size="large">
       <FormStepText current={currentPage} total={totalPages} />
@@ -35,25 +45,19 @@ export const FormPageView: FC<FormPageViewProps> = ({
       {page.description && <p>{page.description}</p>}
       <FormErrorSummary errors={errors} />
       <form method="post" action={actionUrl} novalidate>
-        {groups.map((group) => {
-          if (!evaluateCondition(group.condition, fields)) return null
-          return (
-            <fieldset key={group.id}>
-              <legend>{group.title}</legend>
-              {group.description && <p>{group.description}</p>}
-              {group.requirements.map((req) => {
-                if (!evaluateCondition(req.condition, fields)) return null
-                return (
-                  <FormField
-                    key={req.id}
-                    requirement={req}
-                    entry={fields[req.fieldName]}
-                  />
-                )
-              })}
-            </fieldset>
-          )
-        })}
+        {page.groups.map((group) => (
+          <fieldset key={group.id}>
+            <legend>{group.title}</legend>
+            {group.description && <p>{group.description}</p>}
+            {group.requirements.map((req) => (
+              <FormField
+                key={req.fieldName}
+                requirement={req}
+                entry={fields[req.fieldName]}
+              />
+            ))}
+          </fieldset>
+        ))}
         <div class="l-cluster">
           {prevUrl && <a href={prevUrl}>Back</a>}
           <button type="submit" class="flex-button">

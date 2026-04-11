@@ -1,32 +1,49 @@
 import { describe, expect, it } from 'bun:test'
 import type { FormError } from '../../src/design-system/components/flex-form-error-summary'
+import type { FormFieldEntry } from '../../src/design-system/components/flex-form-field'
 import { FormPageView } from '../../src/design-system/components/flex-form-page'
-import { resolveFormSpec } from '../../src/services/forms/resolver'
-import type { FieldEntry, ResolvedPage } from '../../src/services/forms/types'
+import {
+  evaluateCondition,
+  resolveFormSpec,
+} from '../../src/services/forms/resolver'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 describe('FormPageView', () => {
   const resolved = resolveFormSpec(testFormSpec, testDataSpec)
 
   function render(
-    resolvedPage: ResolvedPage,
+    pageIndex: number,
     props: {
       actionUrl: string
       currentPage: number
       totalPages: number
-      fields?: Record<string, FieldEntry>
+      fields?: Record<string, FormFieldEntry>
       errors?: FormError[]
       prevUrl?: string | null
     },
   ): string {
+    const fields = props.fields ?? {}
+    const rp = resolved.pages[pageIndex]
+    const visibleGroups = rp.groups
+      .filter((g) => evaluateCondition(g.condition, fields))
+      .map((g) => ({
+        ...g,
+        requirements: g.requirements.filter((r) =>
+          evaluateCondition(r.condition, fields),
+        ),
+      }))
     return (
       (
         <FormPageView
-          resolvedPage={resolvedPage}
+          page={{
+            title: rp.page.title,
+            description: rp.page.description,
+            groups: visibleGroups,
+          }}
           actionUrl={props.actionUrl}
           currentPage={props.currentPage}
           totalPages={props.totalPages}
-          fields={props.fields ?? {}}
+          fields={fields}
           errors={props.errors ?? []}
           prevUrl={props.prevUrl ?? null}
         />
@@ -35,7 +52,7 @@ describe('FormPageView', () => {
   }
 
   it('renders page title', () => {
-    const html = render(resolved.pages[0], {
+    const html = render(0, {
       actionUrl: '/test',
       currentPage: 1,
       totalPages: 3,
@@ -44,7 +61,7 @@ describe('FormPageView', () => {
   })
 
   it('renders step text', () => {
-    const html = render(resolved.pages[0], {
+    const html = render(0, {
       actionUrl: '/test',
       currentPage: 1,
       totalPages: 3,
@@ -53,7 +70,7 @@ describe('FormPageView', () => {
   })
 
   it('wraps in flex-form with large size', () => {
-    const html = render(resolved.pages[0], {
+    const html = render(0, {
       actionUrl: '/test',
       currentPage: 1,
       totalPages: 3,
@@ -63,7 +80,7 @@ describe('FormPageView', () => {
   })
 
   it('adds novalidate to form', () => {
-    const html = render(resolved.pages[0], {
+    const html = render(0, {
       actionUrl: '/test',
       currentPage: 1,
       totalPages: 3,
@@ -72,7 +89,7 @@ describe('FormPageView', () => {
   })
 
   it('renders error summary when errors present', () => {
-    const html = render(resolved.pages[0], {
+    const html = render(0, {
       actionUrl: '/test',
       currentPage: 1,
       totalPages: 3,
@@ -83,7 +100,7 @@ describe('FormPageView', () => {
   })
 
   it('does not render error summary when no errors', () => {
-    const html = render(resolved.pages[0], {
+    const html = render(0, {
       actionUrl: '/test',
       currentPage: 1,
       totalPages: 3,
@@ -93,7 +110,7 @@ describe('FormPageView', () => {
   })
 
   it('renders Back link instead of Previous', () => {
-    const html = render(resolved.pages[1], {
+    const html = render(1, {
       actionUrl: '/test',
       currentPage: 2,
       totalPages: 3,
@@ -104,7 +121,7 @@ describe('FormPageView', () => {
   })
 
   it('renders Continue button', () => {
-    const html = render(resolved.pages[0], {
+    const html = render(0, {
       actionUrl: '/test',
       currentPage: 1,
       totalPages: 3,
@@ -114,7 +131,7 @@ describe('FormPageView', () => {
   })
 
   it('renders fields for the group', () => {
-    const html = render(resolved.pages[0], {
+    const html = render(0, {
       actionUrl: '/test',
       currentPage: 1,
       totalPages: 3,
@@ -124,7 +141,7 @@ describe('FormPageView', () => {
   })
 
   it('renders form with POST method and action URL', () => {
-    const html = render(resolved.pages[0], {
+    const html = render(0, {
       actionUrl: '/submit-here',
       currentPage: 1,
       totalPages: 3,
