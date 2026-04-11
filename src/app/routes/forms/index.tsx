@@ -4,9 +4,9 @@ import {
   findNextPage,
   findPrevPage,
   visiblePageNumber,
-} from '../../../services/form-navigation'
-import { resolveFormSpec } from '../../../services/form-resolver'
-import { validateFields } from '../../../services/form-validation'
+} from '../../../services/forms/navigation'
+import { resolveFormSpec } from '../../../services/forms/resolver'
+import { validateFields } from '../../../services/forms/validation'
 import { resolveUrl } from '../../../shared/base-path'
 import type {
   DataCollectionSpec,

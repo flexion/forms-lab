@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { findNextPage, findPrevPage } from '../../src/services/form-navigation'
-import { resolveFormSpec } from '../../src/services/form-resolver'
+import { findNextPage, findPrevPage } from '../../src/services/forms/navigation'
+import { resolveFormSpec } from '../../src/services/forms/resolver'
 import type { FieldEntry } from '../../src/types/models'
 import { conditionalPageFormSpec, testDataSpec, testFormSpec } from './fixtures'
 

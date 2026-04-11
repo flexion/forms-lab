@@ -1,5 +1,5 @@
-import type { FieldEntry, ResolvedForm } from '../types/models'
-import { evaluateCondition } from './form-resolver'
+import { evaluateCondition } from './resolver'
+import type { FieldEntry, ResolvedForm } from './types'
 
 export function findNextPage(
   resolved: ResolvedForm,

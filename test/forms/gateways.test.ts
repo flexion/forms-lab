@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
-import { InMemoryFormSessionGateway } from '../../src/services/form-session'
-import { InMemorySubmissionGateway } from '../../src/services/submission'
+import { InMemoryFormSessionGateway } from '../../src/services/forms/session'
+import { InMemorySubmissionGateway } from '../../src/services/forms/submission'
 
 describe('InMemoryFormSessionGateway', () => {
   let gateway: InMemoryFormSessionGateway

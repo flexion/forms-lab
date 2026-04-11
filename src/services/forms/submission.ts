@@ -1,4 +1,4 @@
-import type { Submission, SubmissionGateway } from '../types/models'
+import type { Submission, SubmissionGateway } from './types'
 
 export class InMemorySubmissionGateway implements SubmissionGateway {
   private submissions = new Map<string, Submission>()

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import {
   evaluateCondition,
   resolveFormSpec,
-} from '../../src/services/form-resolver'
+} from '../../src/services/forms/resolver'
 import type { FieldCondition, FieldEntry } from '../../src/types/models'
 import { testDataSpec, testFormSpec } from './fixtures'
 

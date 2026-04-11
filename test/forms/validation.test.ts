@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { validateFields } from '../../src/services/form-validation'
+import { validateFields } from '../../src/services/forms/validation'
 import type { DataRequirement, FieldEntry } from '../../src/types/models'
 
 describe('validateFields', () => {

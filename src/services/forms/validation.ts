@@ -1,5 +1,6 @@
-import type { DataRequirement, FieldEntry } from '../types/models'
-import { evaluateCondition } from './form-resolver'
+import type { DataRequirement } from '../data-collection/types'
+import { evaluateCondition } from './resolver'
+import type { FieldEntry } from './types'
 
 export function validateFields(
   formData: Record<string, string>,

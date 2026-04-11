@@ -3,7 +3,7 @@ import type {
   FormSession,
   FormSessionGateway,
   Submission,
-} from '../types/models'
+} from './types'
 
 export class InMemoryFormSessionGateway implements FormSessionGateway {
   private sessions = new Map<string, FormSession>()
