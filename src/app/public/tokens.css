@@ -170,11 +170,17 @@
   initial-value: 8px;
 }
 
+/* Color scheme — controls which value light-dark() resolves to */
+:root[data-theme="light"]  { color-scheme: light; }
+:root[data-theme="dark"]   { color-scheme: dark; }
+
 /* ============================================================================
    TIER 1: PALETTE TOKENS (:root values with @uswds provenance)
    ============================================================================ */
 
 :root {
+  color-scheme: light dark;
+
   /* @uswds usa-color-gray-1 */
   --flex-gray-1: #fcfcfc;
 
@@ -1571,67 +1577,41 @@
   /* Color tokens */
 
   /* Semantic color tokens — mapped to USWDS 3.13 default theme */
-  --flex-color-bg: var(--flex-white); /* @uswds white — page background */
-  --flex-color-bg-subtle: var(--flex-gray-5); /* @uswds base-lightest */
-  --flex-color-surface: var(--flex-white); /* white */
-  --flex-color-border: var(--flex-gray-cool-10); /* @uswds base-lighter */
-  --flex-color-text: var(--flex-gray-90); /* @uswds ink / base-darkest */
-  --flex-color-text-muted: var(--flex-gray-cool-60); /* @uswds base-dark */
-  --flex-color-ink: var(--flex-gray-cool-50); /* @uswds base */
-  --flex-color-table-header: var(--flex-gray-cool-10); /* @uswds base-lighter */
+  --flex-color-bg: light-dark(var(--flex-white), var(--flex-gray-90)); /* @uswds white — page background */
+  --flex-color-bg-subtle: light-dark(var(--flex-gray-5), var(--flex-gray-80)); /* @uswds base-lightest */
+  --flex-color-surface: light-dark(var(--flex-white), var(--flex-gray-80)); /* white */
+  --flex-color-border: light-dark(var(--flex-gray-cool-10), var(--flex-gray-70)); /* @uswds base-lighter */
+  --flex-color-text: light-dark(var(--flex-gray-90), var(--flex-gray-5)); /* @uswds ink / base-darkest */
+  --flex-color-text-muted: light-dark(var(--flex-gray-cool-60), var(--flex-gray-cool-30)); /* @uswds base-dark */
+  --flex-color-ink: light-dark(var(--flex-gray-cool-50), var(--flex-gray-cool-30)); /* @uswds base */
+  --flex-color-table-header: light-dark(var(--flex-gray-cool-10), var(--flex-gray-70)); /* @uswds base-lighter */
   --flex-color-on-accent: var(--flex-white); /* white */
-  --flex-color-accent: var(
-    --flex-blue-vivid-60
-  ); /* @uswds primary (blue-60v) */
+  --flex-color-accent: light-dark(var(--flex-blue-vivid-60), var(--flex-blue-30)); /* @uswds primary (blue-60v) */
 
   /* Link tokens */
-  --flex-color-link: var(--flex-blue-vivid-60); /* @uswds primary */
-  --flex-color-link-visited: var(--flex-violet-vivid-70); /* @uswds visited */
-  --flex-color-link-hover: var(--flex-blue-warm-vivid-70); /* @uswds primary-dark */
-  --flex-color-link-active: var(--flex-blue-warm-vivid-80); /* @uswds primary-darker */
+  --flex-color-link: light-dark(var(--flex-blue-vivid-60), var(--flex-blue-vivid-30)); /* @uswds primary */
+  --flex-color-link-visited: light-dark(var(--flex-violet-vivid-70), var(--flex-violet-vivid-30)); /* @uswds visited */
+  --flex-color-link-hover: light-dark(var(--flex-blue-warm-vivid-70), var(--flex-blue-vivid-20)); /* @uswds primary-dark */
+  --flex-color-link-active: light-dark(var(--flex-blue-warm-vivid-80), var(--flex-blue-vivid-10)); /* @uswds primary-darker */
 
   /* Focus token */
-  --flex-color-focus: var(--flex-blue-vivid-40); /* @uswds focus */
+  --flex-color-focus: light-dark(var(--flex-blue-vivid-40), var(--flex-blue-vivid-30)); /* @uswds focus */
 
   /* Tooltip tokens — inverted by design */
-  --flex-color-tooltip-bg: var(--flex-gray-90); /* dark bg */
-  --flex-color-tooltip-text: var(--flex-gray-5); /* light text */
-  --flex-color-info: var(--flex-cyan-vivid-30); /* @uswds info (cyan-30v) */
-  --flex-color-info-lighter: var(--flex-cyan-5); /* @uswds info-lighter */
-  --flex-color-success: var(
-    --flex-green-cool-vivid-40
-  ); /* @uswds success (green-cool-40v) */
-
-  --flex-color-success-lighter: var(
-    --flex-green-cool-5
-  ); /* @uswds success-lighter */
-
-  --flex-color-warning: var(
-    --flex-gold-vivid-20
-  ); /* @uswds warning (gold-20v) */
-
-  --flex-color-warning-lighter: var(
-    --flex-yellow-5
-  ); /* @uswds warning-lighter */
-
-  --flex-color-error: var(
-    --flex-red-warm-vivid-50
-  ); /* @uswds error (red-warm-50v) */
-
-  --flex-color-error-lighter: var(
-    --flex-red-warm-10
-  ); /* @uswds error-lighter */
-
-  --flex-color-emergency: var(
-    --flex-red-warm-vivid-60
-  ); /* @uswds emergency (red-warm-60v) — dark bg, white text */
-
+  --flex-color-tooltip-bg: light-dark(var(--flex-gray-90), var(--flex-gray-5)); /* dark bg */
+  --flex-color-tooltip-text: light-dark(var(--flex-gray-5), var(--flex-gray-90)); /* light text */
+  --flex-color-info: light-dark(var(--flex-cyan-vivid-30), var(--flex-cyan-vivid-20)); /* @uswds info (cyan-30v) */
+  --flex-color-info-lighter: light-dark(var(--flex-cyan-5), var(--flex-cyan-80)); /* @uswds info-lighter */
+  --flex-color-success: light-dark(var(--flex-green-cool-vivid-40), var(--flex-green-cool-vivid-20)); /* @uswds success (green-cool-40v) */
+  --flex-color-success-lighter: light-dark(var(--flex-green-cool-5), var(--flex-green-cool-80)); /* @uswds success-lighter */
+  --flex-color-warning: light-dark(var(--flex-gold-vivid-20), var(--flex-yellow-vivid-30)); /* @uswds warning (gold-20v) */
+  --flex-color-warning-lighter: light-dark(var(--flex-yellow-5), var(--flex-yellow-80)); /* @uswds warning-lighter */
+  --flex-color-error: light-dark(var(--flex-red-warm-vivid-50), var(--flex-red-vivid-20)); /* @uswds error (red-warm-50v) */
+  --flex-color-error-lighter: light-dark(var(--flex-red-warm-10), var(--flex-red-warm-80)); /* @uswds error-lighter */
+  --flex-color-emergency: var(--flex-red-warm-vivid-60); /* @uswds emergency (red-warm-60v) — dark bg, white text */
   --flex-color-disabled: var(--flex-gray-50); /* @uswds disabled */
   --flex-color-disabled-light: var(--flex-gray-40); /* @uswds disabled-light */
-  --flex-color-disabled-lighter: var(
-    --flex-gray-20
-  ); /* @uswds disabled-lighter */
-
+  --flex-color-disabled-lighter: var(--flex-gray-20); /* @uswds disabled-lighter */
   --flex-color-disabled-dark: var(--flex-gray-70); /* @uswds disabled-dark */
 
   /* Spacing tokens */
@@ -1675,73 +1655,4 @@
      Use these values directly in @media rules. */
   --flex-bp-sm: 600px;
   --flex-bp-md: 768px;
-}
-
-/* ============================================================================
-   DARK MODE: Semantic Token Overrides
-   Activated by [data-theme="dark"] (explicit) or [data-theme="auto"] + OS pref.
-   ============================================================================ */
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-
-  --flex-color-bg: var(--flex-gray-90);
-  --flex-color-surface: var(--flex-gray-80);
-  --flex-color-border: var(--flex-gray-70);
-  --flex-color-text: var(--flex-gray-5);
-  --flex-color-text-muted: var(--flex-gray-cool-30);
-  --flex-color-ink: var(--flex-gray-cool-30);
-  --flex-color-table-header: var(--flex-gray-70);
-  --flex-color-bg-subtle: var(--flex-gray-80);
-  --flex-color-accent: var(--flex-blue-30);
-  --flex-color-link: var(--flex-blue-vivid-30);
-  --flex-color-link-visited: var(--flex-violet-vivid-30);
-  --flex-color-link-hover: var(--flex-blue-vivid-20);
-  --flex-color-link-active: var(--flex-blue-vivid-10);
-  --flex-color-focus: var(--flex-blue-vivid-30);
-  --flex-color-tooltip-bg: var(--flex-gray-5);
-  --flex-color-tooltip-text: var(--flex-gray-90);
-  --flex-color-error: var(--flex-red-vivid-20);
-  --flex-color-success: var(--flex-green-cool-vivid-20);
-  --flex-color-info: var(--flex-cyan-vivid-20);
-  --flex-color-info-lighter: var(--flex-cyan-80);
-  --flex-color-warning: var(--flex-yellow-vivid-30);
-  --flex-color-warning-lighter: var(--flex-yellow-80);
-  --flex-color-error-lighter: var(--flex-red-warm-80);
-  --flex-color-success-lighter: var(--flex-green-cool-80);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root[data-theme="auto"] {
-    color-scheme: dark;
-
-    --flex-color-bg: var(--flex-gray-90);
-    --flex-color-surface: var(--flex-gray-80);
-    --flex-color-border: var(--flex-gray-70);
-    --flex-color-text: var(--flex-gray-5);
-    --flex-color-text-muted: var(--flex-gray-cool-30);
-    --flex-color-ink: var(--flex-gray-cool-30);
-    --flex-color-table-header: var(--flex-gray-70);
-    --flex-color-bg-subtle: var(--flex-gray-80);
-    --flex-color-accent: var(--flex-blue-30);
-    --flex-color-link: var(--flex-blue-vivid-30);
-    --flex-color-link-visited: var(--flex-violet-vivid-30);
-    --flex-color-link-hover: var(--flex-blue-vivid-20);
-    --flex-color-link-active: var(--flex-blue-vivid-10);
-    --flex-color-focus: var(--flex-blue-vivid-30);
-    --flex-color-tooltip-bg: var(--flex-gray-5);
-    --flex-color-tooltip-text: var(--flex-gray-90);
-    --flex-color-error: var(--flex-red-vivid-20);
-    --flex-color-success: var(--flex-green-cool-vivid-20);
-    --flex-color-info: var(--flex-cyan-vivid-20);
-    --flex-color-info-lighter: var(--flex-cyan-80);
-    --flex-color-warning: var(--flex-yellow-vivid-30);
-    --flex-color-warning-lighter: var(--flex-yellow-80);
-    --flex-color-error-lighter: var(--flex-red-warm-80);
-    --flex-color-success-lighter: var(--flex-green-cool-80);
-  }
-}
-
-:root[data-theme="light"] {
-  color-scheme: light;
 }
