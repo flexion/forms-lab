@@ -18,6 +18,8 @@
             nodejs_22
             gh
             caddy
+            pulumi
+            pulumiPackages.pulumi-language-nodejs
           ];
 
           shellHook = ''
