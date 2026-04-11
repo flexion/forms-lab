@@ -67,5 +67,7 @@
 @import "../components/flex-in-page-nav/styles.css" layer(block);
 @import "../components/flex-tab-group/styles.css" layer(block);
 
+@import "../routes/projects/styles.css" layer(block);
+
 /* Utility */
 @import "./utilities.css" layer(utility);
