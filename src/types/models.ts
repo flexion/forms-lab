@@ -29,6 +29,7 @@ export interface DataRequirement {
   choices?: string[]
   validation?: ValidationRule[]
   condition?: FieldCondition
+  displayWidth?: '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 }
 
 export type FieldType =
