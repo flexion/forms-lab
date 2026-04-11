@@ -47,6 +47,10 @@
 
 /* Print — clean content-only output */
 @media print {
+  :root {
+    color-scheme: light !important;
+  }
+
   .flex-header,
   .flex-footer,
   .flex-banner,
@@ -56,8 +60,12 @@
   }
 
   body {
-    color: #000;
     background: #fff;
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
 
   main {
