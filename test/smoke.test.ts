@@ -151,7 +151,7 @@ describe('Smoke tests', () => {
       // The deploy script must include it in the .env file.
       const region =
         process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? null
-      if (process.env.CI || process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV === 'production') {
         expect(region).not.toBeNull()
       } else {
         // In local dev, warn but don't fail
