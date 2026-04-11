@@ -16,5 +16,5 @@ export const dataModelGraph: GraphDefinition = {
     { source: 'form-project', target: 'collection-spec', label: 'contains' },
     { source: 'form-project', target: 'form-spec', label: 'contains' },
   ],
-  direction: 'LR',
+  direction: 'TB',
 }
