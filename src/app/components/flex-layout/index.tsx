@@ -119,7 +119,12 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
         </Header>
         {props.sidebar ? (
           <div class="catalog-layout">
-            <aside class="catalog-sidebar">{props.sidebar}</aside>
+            <aside class="catalog-sidebar">
+              <details class="catalog-nav-toggle">
+                <summary>In this section</summary>
+                {props.sidebar}
+              </details>
+            </aside>
             <main>
               <div class="l-stack">{props.children}</div>
             </main>

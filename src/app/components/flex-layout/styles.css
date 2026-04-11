@@ -70,6 +70,20 @@
   }
 }
 
+/* Collapsible sidebar toggle — uses native <details>/<summary>.
+   Wide: content always visible, summary hidden.
+   Narrow: collapsible, starts closed. */
+
+.catalog-nav-toggle {
+  > summary {
+    display: none;
+  }
+
+  > :not(summary) {
+    display: block !important;
+  }
+}
+
 @media (max-width: 48rem) {
   .catalog-layout {
     grid-template-columns: 1fr;
@@ -84,5 +98,37 @@
     border-block-end: 1px solid var(--flex-color-border);
     padding-block-end: var(--flex-space-md);
     margin-block-end: var(--flex-space-md);
+  }
+
+  .catalog-nav-toggle {
+    > summary {
+      display: block;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: var(--flex-text-base);
+      color: var(--flex-color-accent);
+      padding-block: var(--flex-space-sm);
+      list-style: none;
+
+      &::marker {
+        display: none;
+      }
+
+      &::before {
+        content: "\25B6\FE0E";
+        display: inline-block;
+        margin-inline-end: var(--flex-space-xs);
+        font-size: 0.7em;
+        transition: transform 0.15s;
+      }
+    }
+
+    &[open] > summary::before {
+      transform: rotate(90deg);
+    }
+
+    > :not(summary) {
+      display: revert !important;
+    }
   }
 }
