@@ -1,9 +1,14 @@
 import type { FC } from 'hono/jsx'
-import type { FormSpec } from '../../../services/forms/types'
 import { Form } from '../flex-form'
 
+interface FormLandingSpec {
+  title: string
+  description?: string
+  pages: { length: number }
+}
+
 interface FormLandingProps {
-  formSpec: FormSpec
+  formSpec: FormLandingSpec
   startUrl: string
 }
 

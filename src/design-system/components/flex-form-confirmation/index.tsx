@@ -1,10 +1,14 @@
 import type { FC } from 'hono/jsx'
-import type { Submission } from '../../../services/forms/types'
 import { Alert } from '../flex-alert'
 import { Form } from '../flex-form'
 
+interface FormSubmissionSummary {
+  id: string
+  submittedAt: string
+}
+
 interface FormConfirmationProps {
-  submission: Submission
+  submission: FormSubmissionSummary
 }
 
 function formatDate(isoString: string): string {
