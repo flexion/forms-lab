@@ -98,7 +98,7 @@ auth.get('/callback', async (c) => {
 
     // TODO: Replace with org membership check once OAuth app is approved
     // Temporary allowlist for development
-    const allowedUsers = ['danielnaab']
+    const allowedUsers = (process.env.ALLOWED_USERS ?? 'danielnaab').split(',')
     if (!allowedUsers.includes(ghUser.login)) {
       console.log(`Authorization failed for user: ${ghUser.login}`)
       return c.redirect(resolveUrl('/?error=unauthorized'))
