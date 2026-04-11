@@ -31,7 +31,9 @@ describe('Form routes', () => {
     expect(res.status).toBe(200)
     const html = await res.text()
     expect(html).toContain('Benefits Application Form')
-    expect(html).toContain('Start Form')
+    expect(html).toContain('Start now')
+    expect(html).toContain('class="flex-form"')
+    expect(html).toContain('3 sections')
   })
 
   it('GET /forms/nonexistent returns 404', async () => {
@@ -129,7 +131,8 @@ describe('Form routes', () => {
     const confirmRes = await app.request(confirmLocation)
     expect(confirmRes.status).toBe(200)
     const confirmHtml = await confirmRes.text()
-    expect(confirmHtml).toContain('Submission Received')
+    expect(confirmHtml).toContain('Your form has been submitted')
+    expect(confirmHtml).toContain('flex-alert')
   })
 
   it('validation errors re-render the page', async () => {
