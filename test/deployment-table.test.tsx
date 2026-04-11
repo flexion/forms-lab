@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import {
+  DeploymentTable,
   getCombinedHealthLabel,
   getCombinedHealthStatus,
   relativeTime,
@@ -107,5 +108,107 @@ describe('relativeTime', () => {
       Date.now() - 2 * 24 * 60 * 60 * 1000,
     ).toISOString()
     expect(relativeTime(twoDaysAgo)).toBe('2d ago')
+  })
+})
+
+describe('DeploymentTable', () => {
+  it('renders empty message when no deployments', () => {
+    const html = DeploymentTable({ deployments: [] })?.toString() ?? ''
+    expect(html).toContain('No branches currently deployed')
+  })
+
+  it('renders header row with column labels', () => {
+    const deployment = makeDeployment('main', '2026-04-10T00:00:00Z')
+    const html =
+      DeploymentTable({ deployments: [deployment] })?.toString() ?? ''
+
+    expect(html).toContain('Branch')
+    expect(html).toContain('Last Updated')
+    expect(html).toContain('Commit')
+    expect(html).toContain('PR')
+    expect(html).toContain('Health')
+  })
+
+  it('renders branch name linked to deployment URL', () => {
+    const deployment = makeDeployment('feature-x', '2026-04-10T00:00:00Z')
+    const html =
+      DeploymentTable({ deployments: [deployment] })?.toString() ?? ''
+
+    expect(html).toContain('href="/feature-x/"')
+    expect(html).toContain('feature-x')
+  })
+
+  it('renders commit SHA linked to GitHub', () => {
+    const deployment = makeDeployment('main', '2026-04-10T00:00:00Z')
+    const html =
+      DeploymentTable({ deployments: [deployment] })?.toString() ?? ''
+
+    expect(html).toContain('abc123')
+    expect(html).toContain(
+      'href="https://github.com/flexion/forms-lab/commit/abc123"',
+    )
+  })
+
+  it('renders combined health badge as Healthy for running+healthy', () => {
+    const deployment = makeDeployment('main', '2026-04-10T00:00:00Z')
+    const html =
+      DeploymentTable({ deployments: [deployment] })?.toString() ?? ''
+
+    expect(html).toContain('Healthy')
+  })
+
+  it('renders combined health badge as Failed for failed service', () => {
+    const deployment = makeDeployment('main', '2026-04-10T00:00:00Z')
+    deployment.service.status = 'failed'
+    const html =
+      DeploymentTable({ deployments: [deployment] })?.toString() ?? ''
+
+    expect(html).toContain('Failed')
+  })
+
+  it('renders "No PR" when no pull request', () => {
+    const deployment = makeDeployment('main', '2026-04-10T00:00:00Z')
+    const html =
+      DeploymentTable({ deployments: [deployment] })?.toString() ?? ''
+
+    expect(html).toContain('No PR')
+  })
+
+  it('renders PR number and status when pull request exists', () => {
+    const deployment = makeDeployment('feature-x', '2026-04-10T00:00:00Z')
+    deployment.pullRequest = {
+      number: 42,
+      title: 'Add feature X',
+      url: 'https://github.com/flexion/forms-lab/pull/42',
+      status: 'open',
+    }
+    const html =
+      DeploymentTable({ deployments: [deployment] })?.toString() ?? ''
+
+    expect(html).toContain('#42')
+    expect(html).toContain(
+      'href="https://github.com/flexion/forms-lab/pull/42"',
+    )
+    expect(html).toContain('open')
+  })
+
+  it('renders health error in detail section', () => {
+    const deployment = makeDeployment('main', '2026-04-10T00:00:00Z')
+    deployment.health.status = 'unhealthy'
+    deployment.health.error = 'HTTP 502 Bad Gateway'
+    const html =
+      DeploymentTable({ deployments: [deployment] })?.toString() ?? ''
+
+    expect(html).toContain('Health error')
+    expect(html).toContain('HTTP 502 Bad Gateway')
+  })
+
+  it('renders multiple deployments as multiple rows', () => {
+    const d1 = makeDeployment('branch-a', '2026-04-10T00:00:00Z')
+    const d2 = makeDeployment('branch-b', '2026-04-09T00:00:00Z')
+    const html = DeploymentTable({ deployments: [d1, d2] })?.toString() ?? ''
+
+    expect(html).toContain('branch-a')
+    expect(html).toContain('branch-b')
   })
 })
