@@ -24,3 +24,4 @@
 
 .text-muted { color: var(--flex-color-text-muted); }
 .text-sm { font-size: var(--flex-text-sm); }
+.justify-between { justify-content: space-between; }

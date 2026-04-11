@@ -74,6 +74,15 @@
   white-space: nowrap;
 }
 
+/* Fixture demo card buttons */
+.fixture-card {
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  border: 1px solid var(--flex-color-border);
+  background: var(--flex-color-surface);
+}
+
 /* Delete confirmation */
 .delete-confirm__trigger {
   color: var(--flex-color-error);

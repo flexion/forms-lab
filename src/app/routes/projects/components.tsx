@@ -12,7 +12,7 @@ export const ProjectList: FC<{ projects: StoredProject[] }> = ({
   projects,
 }) => (
   <div class="l-stack">
-    <div class="l-cluster" style="justify-content: space-between;">
+    <div class="l-cluster justify-between">
       <h1>My Projects</h1>
       <a href={resolveUrl('/projects/new')} class="flex-button">
         New Project
@@ -109,16 +109,10 @@ export const NewProjectPage: FC<{ fixtures: DemoFixture[] }> = ({
         {fixtures.map((f) => (
           <form method="post" action={resolveUrl('/projects')}>
             <input type="hidden" name="fixture" value={f.slug} />
-            <button
-              type="submit"
-              class="flex-card"
-              style="cursor: pointer; text-align: left; width: 100%; border: 1px solid var(--flex-gray-cool-20); background: var(--flex-white);"
-            >
+            <button type="submit" class="flex-card fixture-card">
               <div class="l-stack" style="gap: var(--flex-space-2xs);">
                 <strong>{f.name}</strong>
-                <span style="color: var(--flex-gray-cool-50); font-size: var(--flex-text-sm);">
-                  {f.description}
-                </span>
+                <span class="text-muted text-sm">{f.description}</span>
               </div>
             </button>
           </form>
