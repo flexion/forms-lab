@@ -8,11 +8,12 @@ import type {
 export class InMemoryFormSessionGateway implements FormSessionGateway {
   private sessions = new Map<string, FormSession>()
 
-  createSession(specId: string, formSpecId: string): FormSession {
+  createSession(specId: string, formSpecId: string, ownerId: string): FormSession {
     const session: FormSession = {
       id: crypto.randomUUID(),
       specId,
       formSpecId,
+      ownerId,
       fields: {},
       status: 'active',
       createdAt: new Date().toISOString(),
@@ -45,6 +46,7 @@ export class InMemoryFormSessionGateway implements FormSessionGateway {
       id: crypto.randomUUID(),
       specId: session.specId,
       formSpecId: session.formSpecId,
+      ownerId: session.ownerId,
       data,
       submittedAt: new Date().toISOString(),
     }

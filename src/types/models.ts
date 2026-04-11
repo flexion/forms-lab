@@ -93,6 +93,7 @@ export interface FormSession {
   id: string
   specId: string
   formSpecId: string
+  ownerId: string
   fields: Record<string, FieldEntry>
   status: 'active' | 'submitted'
   createdAt: string
@@ -107,6 +108,7 @@ export interface Submission {
   id: string
   specId: string
   formSpecId: string
+  ownerId: string
   data: Record<string, unknown>
   submittedAt: string
 }
@@ -114,7 +116,7 @@ export interface Submission {
 // --- Persistence Gateways ---
 
 export interface FormSessionGateway {
-  createSession(specId: string, formSpecId: string): FormSession
+  createSession(specId: string, formSpecId: string, ownerId: string): FormSession
   getSession(id: string): FormSession | null
   writeFields(sessionId: string, fields: Record<string, FieldEntry>): void
   submit(sessionId: string): Submission

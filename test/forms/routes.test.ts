@@ -9,10 +9,41 @@ const specRegistry = new Map([
   [testDataSpec.id, { dataSpec: testDataSpec, formSpec: testFormSpec }],
 ])
 
+const TEST_USER = {
+  login: 'testuser',
+  name: 'Test User',
+  avatarUrl: '',
+}
+
 function createTestApp() {
   const sessionGateway = new InMemoryFormSessionGateway()
   const submissionGateway = new InMemorySubmissionGateway()
   const app = new Hono()
+  // Simulate authenticated user for all requests
+  app.use('*', async (c, next) => {
+    c.set('user', TEST_USER)
+    await next()
+  })
+  app.route(
+    '/forms',
+    createFormRouter({
+      sessionGateway,
+      submissionGateway,
+      getSpecs: (specId) => specRegistry.get(specId) ?? null,
+    }),
+  )
+  return app
+}
+
+function createUnauthTestApp() {
+  const sessionGateway = new InMemoryFormSessionGateway()
+  const submissionGateway = new InMemorySubmissionGateway()
+  const app = new Hono()
+  // No user set — unauthenticated
+  app.use('*', async (c, next) => {
+    c.set('user', null)
+    await next()
+  })
   app.route(
     '/forms',
     createFormRouter({
@@ -259,5 +290,23 @@ describe('Form routes', () => {
       method: 'POST',
     })
     expect(submitRes2.status).toBe(409)
+  })
+
+  it('unauthenticated users are redirected from session routes', async () => {
+    const app = createUnauthTestApp()
+    const res = await app.request('/forms/benefits-app/sessions', {
+      method: 'POST',
+    })
+    expect(res.status).toBe(302)
+    const location = res.headers.get('Location')
+    expect(location).toContain('/auth/signin')
+  })
+
+  it('landing page is accessible without auth', async () => {
+    const app = createUnauthTestApp()
+    const res = await app.request('/forms/benefits-app')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('Benefits Application Form')
   })
 })
