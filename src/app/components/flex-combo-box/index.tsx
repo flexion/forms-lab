@@ -71,6 +71,7 @@ export const ComboBox: FC<ComboBoxProps> = ({
         {/* biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: ARIA combobox pattern requires role="listbox" on ul */}
         <ul class="flex-combo-box__list" id={listId} role="listbox" hidden>
           {options.map((opt) => (
+            // biome-ignore lint/a11y/useAriaPropsSupportedByRole: aria-selected is valid on li with implicit role="option" from parent role="listbox" (ARIA combobox pattern)
             <li
               key={opt.value}
               class="flex-combo-box__option"

@@ -47,10 +47,7 @@ export const FormField: FC<FormFieldProps> = ({ requirement, entry }) => {
   const width = displayWidth ?? DEFAULT_WIDTHS[fieldType]
 
   return (
-    <div
-      class="flex-form-group"
-      data-state={hasError ? 'error' : undefined}
-    >
+    <div class="flex-form-group" data-state={hasError ? 'error' : undefined}>
       <div class="l-stack" style="--stack-space: var(--flex-space-xs)">
         {fieldType !== 'boolean' && fieldType !== 'date' && (
           <Label htmlFor={fieldName} optional={!required}>
