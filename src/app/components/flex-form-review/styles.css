@@ -1,0 +1,24 @@
+/* flex-summary-list — review page answer rows */
+.flex-summary-list {
+  margin: 0;
+  padding: 0;
+}
+
+.flex-summary-list__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--flex-space-md);
+  padding: var(--flex-space-sm) 0;
+  border-bottom: 1px solid var(--flex-color-border);
+}
+
+.flex-summary-list__key {
+  font-weight: 700;
+  flex: 0 0 auto;
+  max-width: 50%;
+}
+
+.flex-summary-list__value {
+  text-align: right;
+  margin: 0;
+}
