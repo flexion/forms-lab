@@ -1,37 +1,43 @@
 .flex-icon {
   display: inline-block;
-  width: 1em;
-  height: 1em;
+  inline-size: 1em;
+  block-size: 1em;
   fill: currentColor;
   vertical-align: middle;
   overflow: hidden;
-}
 
-.flex-icon[data-size="3"] {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-.flex-icon[data-size="4"] {
-  width: 2rem;
-  height: 2rem;
-}
-.flex-icon[data-size="5"] {
-  width: 2.5rem;
-  height: 2.5rem;
-}
-.flex-icon[data-size="6"] {
-  width: 3rem;
-  height: 3rem;
-}
-.flex-icon[data-size="7"] {
-  width: 3.5rem;
-  height: 3.5rem;
-}
-.flex-icon[data-size="8"] {
-  width: 4rem;
-  height: 4rem;
-}
-.flex-icon[data-size="9"] {
-  width: 4.5rem;
-  height: 4.5rem;
+  &[data-size="3"] {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+  }
+
+  &[data-size="4"] {
+    inline-size: 2rem;
+    block-size: 2rem;
+  }
+
+  &[data-size="5"] {
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+  }
+
+  &[data-size="6"] {
+    inline-size: 3rem;
+    block-size: 3rem;
+  }
+
+  &[data-size="7"] {
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+  }
+
+  &[data-size="8"] {
+    inline-size: 4rem;
+    block-size: 4rem;
+  }
+
+  &[data-size="9"] {
+    inline-size: 4.5rem;
+    block-size: 4.5rem;
+  }
 }

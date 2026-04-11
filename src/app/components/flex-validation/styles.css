@@ -6,31 +6,29 @@
 /* --- Inline validation message --- */
 
 .flex-validation {
-  font-family: var(--flex-font-sans);
   font-size: var(--flex-text-uswds);
   line-height: 1.5;
-  margin-top: var(--flex-space-xs);
-}
+  margin-block-start: var(--flex-space-xs);
 
-.flex-validation[data-state="error"] .flex-validation__message {
-  color: var(--flex-color-error);
-  font-weight: 700;
-}
+  &[data-state="error"] .flex-validation__message {
+    color: var(--flex-color-error);
+    font-weight: 700;
+  }
 
-.flex-validation[data-state="success"] .flex-validation__message {
-  color: var(--flex-color-success);
-  font-weight: 700;
+  &[data-state="success"] .flex-validation__message {
+    color: var(--flex-color-success);
+    font-weight: 700;
+  }
 }
 
 /* --- Validation summary --- */
 
 .flex-validation-summary {
-  font-family: var(--flex-font-sans);
   font-size: var(--flex-text-uswds);
   line-height: 1.5;
-  border-left: 0.25rem solid var(--flex-color-error);
+  border-inline-start: 0.25rem solid var(--flex-color-error);
   padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
+  margin-block-end: 1.5rem;
 }
 
 .flex-validation-summary__heading {
@@ -42,21 +40,21 @@
 
 .flex-validation-summary__list {
   margin: 0;
-  padding-left: 0;
+  padding-inline-start: 0;
   list-style: none;
-}
 
-.flex-validation-summary__list li {
-  margin-bottom: 0.25rem;
-}
+  li {
+    margin-block-end: 0.25rem;
+  }
 
-.flex-validation-summary__list a {
-  color: var(--flex-color-error);
-  text-decoration: underline;
-}
+  a {
+    color: var(--flex-color-error);
+    text-decoration: underline;
 
-.flex-validation-summary__list a:hover {
-  text-decoration: none;
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }
 
 /* --- Checklist pattern --- */
@@ -65,29 +63,28 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-family: var(--flex-font-sans);
   font-size: var(--flex-text-uswds);
   line-height: 1.5;
 }
 
 .flex-checklist__item {
   text-indent: -2.5rem;
-  margin-left: 2.5rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0;
-}
+  margin-inline-start: 2.5rem;
+  margin-block-start: 0.5rem;
+  margin-block-end: 0;
 
-.flex-checklist__item::before {
-  content: " ";
-  display: inline-block;
-  height: 1rem;
-  margin-left: -0.25rem;
-  margin-right: 0.75rem;
-  width: 2rem;
-}
+  &::before {
+    content: " ";
+    display: inline-block;
+    block-size: 1rem;
+    margin-inline-start: -0.25rem;
+    margin-inline-end: 0.75rem;
+    inline-size: 2rem;
+  }
 
-.flex-checklist__item[data-state="checked"]::before {
-  content: "\2713";
-  color: var(--flex-color-success);
-  font-weight: 700;
+  &[data-state="checked"]::before {
+    content: "\2713";
+    color: var(--flex-color-success);
+    font-weight: 700;
+  }
 }

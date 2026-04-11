@@ -3,8 +3,8 @@
 .flex-label {
   font-weight: normal;
   display: block;
-  margin-top: 1.5rem;
-  max-width: var(--flex-control-max-width);
+  margin-block-start: 1.5rem;
+  max-inline-size: var(--flex-control-max-width);
 }
 
 .flex-label__required {

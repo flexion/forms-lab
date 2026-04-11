@@ -5,53 +5,51 @@
    States: disabled, readonly */
 
 .flex-input {
-  height: var(--flex-control-height);
-}
+  block-size: var(--flex-control-height);
 
-.flex-input[readonly] {
-  background-color: var(--flex-color-bg);
-}
+  &[readonly] {
+    background-color: var(--flex-color-bg);
+  }
 
-/* --- State: error --- */
+  /* --- State: error --- */
 
-.flex-input[data-state="error"] {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
+  &[data-state="error"] {
+    padding-block: 4px;
+  }
 
-/* --- State: success --- */
+  /* --- State: success --- */
 
-.flex-input[data-state="success"] {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
+  &[data-state="success"] {
+    padding-block: 4px;
+  }
 
-/* --- Width variants --- */
+  /* --- Width variants --- */
 
-.flex-input[data-width="2xs"] {
-  max-width: 5ex;
-}
+  &[data-width="2xs"] {
+    max-inline-size: 5ex;
+  }
 
-.flex-input[data-width="xs"] {
-  max-width: 9ex;
-}
+  &[data-width="xs"] {
+    max-inline-size: 9ex;
+  }
 
-.flex-input[data-width="sm"] {
-  max-width: 13ex;
-}
+  &[data-width="sm"] {
+    max-inline-size: 13ex;
+  }
 
-.flex-input[data-width="md"] {
-  max-width: 20ex;
-}
+  &[data-width="md"] {
+    max-inline-size: 20ex;
+  }
 
-.flex-input[data-width="lg"] {
-  max-width: 30ex;
-}
+  &[data-width="lg"] {
+    max-inline-size: 30ex;
+  }
 
-.flex-input[data-width="xl"] {
-  max-width: 40ex;
-}
+  &[data-width="xl"] {
+    max-inline-size: 40ex;
+  }
 
-.flex-input[data-width="2xl"] {
-  max-width: 50ex;
+  &[data-width="2xl"] {
+    max-inline-size: 50ex;
+  }
 }

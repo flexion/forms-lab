@@ -3,20 +3,18 @@
    States: error, success, disabled */
 
 .flex-textarea {
-  min-height: 160px;
+  min-block-size: 160px;
   resize: vertical;
-}
 
-/* --- State: error --- */
+  /* --- State: error --- */
 
-.flex-textarea[data-state="error"] {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
+  &[data-state="error"] {
+    padding-block: 4px;
+  }
 
-/* --- State: success --- */
+  /* --- State: success --- */
 
-.flex-textarea[data-state="success"] {
-  padding-top: 4px;
-  padding-bottom: 4px;
+  &[data-state="success"] {
+    padding-block: 4px;
+  }
 }
