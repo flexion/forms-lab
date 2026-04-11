@@ -303,6 +303,18 @@ async function getMockDeploymentSummary(): Promise<DeploymentSummary> {
 }
 
 /**
+ * Sort deployments by commit date, most recent first
+ */
+export function sortDeploymentsByDate(
+  deployments: DeploymentInfo[],
+): DeploymentInfo[] {
+  return [...deployments].sort(
+    (a, b) =>
+      new Date(b.commit.date).getTime() - new Date(a.commit.date).getTime(),
+  )
+}
+
+/**
  * Get all deployment info with summary statistics
  */
 export async function getDeploymentSummary(): Promise<DeploymentSummary> {
@@ -331,6 +343,6 @@ export async function getDeploymentSummary(): Promise<DeploymentSummary> {
     totalDeployments: deployments.length,
     healthyDeployments,
     failedDeployments,
-    deployments,
+    deployments: sortDeploymentsByDate(deployments),
   }
 }
