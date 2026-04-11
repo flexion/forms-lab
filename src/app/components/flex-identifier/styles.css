@@ -2,12 +2,11 @@
    Agency identification with logos, required links, and disclaimers */
 
 .flex-identifier {
-  font-family: var(--flex-font-sans);
   font-size: 1.06rem;
   line-height: 1.3;
   color: var(--flex-white);
   background-color: var(--flex-gray-90);
-  padding-bottom: 1rem;
+  padding-block-end: 1rem;
 }
 
 /* --- Container --- */
@@ -21,8 +20,7 @@
 /* --- Sections --- */
 
 .flex-identifier__section {
-  padding-bottom: 1rem;
-  padding-top: 1rem;
+  padding-block: 1rem;
 }
 
 .flex-identifier__section--masthead .flex-identifier__container {
@@ -34,29 +32,29 @@
 
 .flex-identifier__logos {
   display: flex;
-  margin-right: 1rem;
+  margin-inline-end: 1rem;
 }
 
 .flex-identifier__logo {
   text-decoration: none;
-  height: 3rem;
+  block-size: 3rem;
   display: block;
-}
 
-.flex-identifier__logo + .flex-identifier__logo {
-  margin-left: 0.5rem;
+  & + & {
+    margin-inline-start: 0.5rem;
+  }
 }
 
 .flex-identifier__logo-img {
-  height: 100%;
-  width: auto;
+  block-size: 100%;
+  inline-size: auto;
 }
 
 /* --- Identity --- */
 
 .flex-identifier__identity {
   flex: 1 1 0%;
-  margin-top: 0;
+  margin-block-start: 0;
 }
 
 .flex-identifier__identity-disclaimer,
@@ -71,25 +69,24 @@
 
 .flex-identifier__identity-disclaimer {
   font-weight: 700;
-}
 
-.flex-identifier__identity-disclaimer a,
-.flex-identifier__identity-disclaimer a:visited {
-  color: var(--flex-gray-cool-10);
-}
+  & a,
+  & a:visited {
+    color: var(--flex-gray-cool-10);
+  }
 
-.flex-identifier__identity-disclaimer a:active,
-.flex-identifier__identity-disclaimer a:hover {
-  color: var(--flex-gray-5);
+  & a:active,
+  & a:hover {
+    color: var(--flex-gray-5);
+  }
 }
 
 /* --- Required links --- */
 
 .flex-identifier__required-links-list {
   list-style-type: none;
-  padding-left: 0;
-  margin-bottom: 0;
-  margin-top: 0;
+  padding-inline-start: 0;
+  margin-block: 0;
   column-count: 2;
   column-gap: 2rem;
   column-fill: balance;
@@ -103,11 +100,11 @@
 
 .flex-identifier__required-links-list-item {
   break-inside: avoid;
-  margin-bottom: 0.5rem;
-}
+  margin-block-end: 0.5rem;
 
-.flex-identifier__required-links-list-item:last-child {
-  margin-bottom: 0;
+  &:last-child {
+    margin-block-end: 0;
+  }
 }
 
 .flex-identifier__required-link,
@@ -130,13 +127,13 @@
 .flex-identifier__section--usagov a {
   color: var(--flex-gray-cool-10);
   font-weight: 700;
-}
 
-.flex-identifier__section--usagov a:visited {
-  color: var(--flex-gray-cool-10);
-}
+  &:visited {
+    color: var(--flex-gray-cool-10);
+  }
 
-.flex-identifier__section--usagov a:active,
-.flex-identifier__section--usagov a:hover {
-  color: var(--flex-gray-5);
+  &:active,
+  &:hover {
+    color: var(--flex-gray-5);
+  }
 }

@@ -4,19 +4,18 @@
 
 flex-combo-box {
   display: block;
-  max-width: var(--flex-control-max-width);
+  max-inline-size: var(--flex-control-max-width);
 }
 
 .flex-combo-box__wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  margin-top: var(--flex-control-margin-top);
+  margin-block-start: var(--flex-control-margin-top);
 }
 
 /* Input — extends form control base styles */
 .flex-combo-box__input {
-  font-family: var(--flex-font-sans);
   font-size: var(--flex-text-uswds);
   line-height: 1.3;
   color: var(--flex-color-text);
@@ -25,28 +24,27 @@ flex-combo-box {
   border-radius: 0;
   appearance: none;
   display: block;
-  width: 100%;
-  height: var(--flex-control-height);
+  inline-size: 100%;
+  block-size: var(--flex-control-height);
   padding: var(--flex-control-padding);
-  padding-right: 4.5rem;
-  margin-top: 0;
-}
+  padding-inline-end: 4.5rem;
+  margin-block-start: 0;
 
-.flex-combo-box__input:focus-visible {
-  outline: var(--flex-focus-ring);
-  outline-offset: var(--flex-focus-offset-inset);
+  &:focus-visible {
+    outline: var(--flex-focus-ring);
+    outline-offset: var(--flex-focus-offset-inset);
+  }
 }
 
 /* Toggle and clear buttons — positioned inside input */
 .flex-combo-box__toggle,
 .flex-combo-box__clear {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  inset-block: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
+  inline-size: 2.25rem;
   padding: 0;
   background: transparent;
   border: none;
@@ -55,17 +53,17 @@ flex-combo-box {
 }
 
 .flex-combo-box__toggle {
-  right: 0;
-  border-left: 1px solid var(--flex-color-ink);
+  inset-inline-end: 0;
+  border-inline-start: 1px solid var(--flex-color-ink);
 }
 
 .flex-combo-box__clear {
-  right: 2.25rem;
-  border-left: 1px solid var(--flex-color-ink);
-}
+  inset-inline-end: 2.25rem;
+  border-inline-start: 1px solid var(--flex-color-ink);
 
-.flex-combo-box__clear[hidden] {
-  display: none;
+  &[hidden] {
+    display: none;
+  }
 }
 
 .flex-combo-box__toggle:hover,
@@ -75,65 +73,62 @@ flex-combo-box {
 
 .flex-combo-box__toggle .flex-icon,
 .flex-combo-box__clear .flex-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
 }
 
 /* Dropdown list */
 .flex-combo-box__list {
   position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
+  inset-block-start: 100%;
+  inset-inline: 0;
   z-index: 100;
-  max-height: 12.1em;
+  max-block-size: 12.1em;
   overflow-y: auto;
   margin: 0;
   padding: 0;
   list-style: none;
   background-color: var(--flex-color-surface);
   border: 1px solid var(--flex-color-ink);
-  border-top: none;
-}
+  border-block-start: none;
 
-.flex-combo-box__list[hidden] {
-  display: none;
+  &[hidden] {
+    display: none;
+  }
 }
 
 /* Options */
 .flex-combo-box__option {
   padding: 0.5rem;
-  font-family: var(--flex-font-sans);
   font-size: var(--flex-text-uswds);
   line-height: 1.3;
   color: var(--flex-color-text);
   cursor: pointer;
-}
 
-.flex-combo-box__option:hover {
-  background-color: var(--flex-blue-vivid-60);
-  color: var(--flex-white);
-}
+  &:hover {
+    background-color: var(--flex-blue-vivid-60);
+    color: var(--flex-white);
+  }
 
-.flex-combo-box__option[data-focused] {
-  background-color: var(--flex-blue-vivid-60);
-  color: var(--flex-white);
-}
+  &[data-focused] {
+    background-color: var(--flex-blue-vivid-60);
+    color: var(--flex-white);
+  }
 
-.flex-combo-box__option[aria-selected="true"] {
-  background-color: var(--flex-blue-vivid-60);
-  color: var(--flex-white);
-  font-weight: 700;
-}
+  &[aria-selected="true"] {
+    background-color: var(--flex-blue-vivid-60);
+    color: var(--flex-white);
+    font-weight: 700;
+  }
 
-.flex-combo-box__option[hidden] {
-  display: none;
+  &[hidden] {
+    display: none;
+  }
 }
 
 /* No results message */
 .flex-combo-box__no-results {
   padding: 0.5rem;
-  font-family: var(--flex-font-sans);
   font-size: var(--flex-text-uswds);
   line-height: 1.3;
   color: var(--flex-color-text-muted);
