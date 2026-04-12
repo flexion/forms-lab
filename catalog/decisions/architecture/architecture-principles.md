@@ -21,12 +21,12 @@ This had concrete costs:
 
 ## Decision
 
-Four principles, mechanically enforced where cheap, named so they can be discussed and amended:
+Four principles, mechanically enforced where cheap, named so they can be discussed and amended. Each principle captures a design philosophy; the options it preserves are downstream consequences.
 
-- **P1 — Intent over mechanism.** Directory and file names reveal purpose, not implementation. *Enables changing the implementation without moving or renaming files.*
-- **P2 — Dependency flows one way.** `shared → services → entrypoints`; `shared → design-system → entrypoints`. *Enables changing tactical code without risking strategic code.* Mechanically enforced.
-- **P3 — Services own their types.** Each service directory has a `types.ts`; cross-boundary types live with the upstream owner. *Enables services to evolve independently.*
-- **P4 — Presentation is stateless.** Design-system components receive ready-to-render data. *Enables swapping UI without touching logic.*
+- **P1 — Intent over mechanism.** Directory and file names reveal purpose, not implementation. *The point is legibility and domain organization* — the tree reads as the domain, not as the framework.
+- **P2 — Dependency flows one way.** `shared → services → entrypoints`; `shared → design-system → entrypoints`. *The point is cognitive isolation* — each layer can be understood without knowing its callers, and direction encodes stability. Mechanically enforced.
+- **P3 — Services own their types.** Each service directory has a `types.ts`; cross-boundary types live with the upstream owner. *The point is clear authority* — where a type lives answers "who decides when this changes?"
+- **P4 — Presentation is stateless.** Design-system components receive ready-to-render data. *The point is separating "what to show" from "how to show it"* — components describe appearance, callers decide.
 
 The directory structure that follows:
 

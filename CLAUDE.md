@@ -196,10 +196,10 @@ See [PR #25](https://github.com/flexion/forms-lab/pull/25) for the pattern:
 
 The codebase is shaped by four architectural principles that exist to keep evolution cheap and safe. Before adding or moving code, read [catalog/architecture/software-architecture.md](catalog/architecture/software-architecture.md).
 
-- **P1 — Intent over mechanism.** Enables changing implementation without moving files.
-- **P2 — Dependency flows one way.** `shared → services/design-system → entrypoints`. Enables changing tactical code without risking strategic code. Enforced by `test/architecture/dependency-rule.test.ts`.
-- **P3 — Services own their types.** Enables services to evolve independently.
-- **P4 — Presentation is stateless.** Enables swapping UI without touching logic.
+- **P1 — Intent over mechanism.** Names reveal domain, not framework. The tree should read as the business purpose of the system.
+- **P2 — Dependency flows one way.** `shared → services/design-system → entrypoints`. Each layer is understood without knowing its callers; direction encodes stability. Enforced by `test/architecture/dependency-rule.test.ts`.
+- **P3 — Services own their types.** Where a type lives answers "who decides when this changes?"
+- **P4 — Presentation is stateless.** Components describe appearance; callers decide. Logic and data belong to the caller.
 
 When adopting a third-party dependency, explicitly choose: isolate it (contain to one layer) or embrace it (accept a future refactoring cost). See "Dependencies and externalities" in the architecture doc.
 

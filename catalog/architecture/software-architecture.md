@@ -17,9 +17,11 @@ If you're about to add code, read the principles first. The directory structure 
 
 Directory and file names reveal what a thing is *for*, not what it is *built with*.
 
-*Enables changing the implementation without moving or renaming files.* Swapping Bedrock for a different LLM provider doesn't relocate the ingestion service. Replacing markdown-it doesn't rename `services/content/markdown.ts`. The file stays where it is because its purpose — "turn a PDF into a spec," "render markdown" — stays the same.
+*The point is legibility and domain organization.* A reader — human or agent — navigates the code by what things do, not by what they're built with. Opening `src/` should match the business purpose of the system, not the framework it runs on. Each name points at a domain concept the reader can grasp without opening the file.
 
-**Worked example:** PDF extraction lives in `services/ingestion/`, not `services/llm-client/`. We currently use Bedrock, but that's an implementation detail.
+**Worked example:** PDF extraction lives in `services/ingestion/`, not `services/llm-client/`. We currently use Bedrock, but that's an implementation detail — a reader looking for "how do we turn PDFs into specs?" finds it under its domain name.
+
+*A consequence:* implementation changes don't force renames. Swapping markdown-it doesn't rename `services/content/markdown.ts`. That's a side effect of the naming being domain-shaped, not the reason for it.
 
 ### P2 — Dependency flows one way
 
@@ -30,29 +32,35 @@ shared → services → entrypoints
 shared → design-system → entrypoints
 ```
 
-*Enables changing tactical code without risking strategic code.* Redesigning a route can't break a service. Changing a component can't break a type contract. The reasoning burden collapses: if you're in `services/`, you only need to know `shared/` exists — you never need to know who calls you.
+*The point is cognitive isolation.* By forcing dependencies in one direction, each layer can be understood on its own. If you're in `services/`, you only need to know what's below you in the graph — you never need to know who calls you. The direction also encodes stability: things that change often depend on things that are stable, never the reverse. Reversing a dependency means two files change instead of one; cycles mean the whole graph must be understood at once.
 
-**Worked example:** When `flex-form-page` was decoupled from `services/forms/resolver`, we didn't pass `evaluateCondition` as a prop. We moved the call up into the route. The component became dumber, the route became smarter, but the dependency arrow only points one way.
+**Worked example:** When `flex-form-page` was decoupled from `services/forms/resolver`, we didn't pass `evaluateCondition` as a prop. We moved the call up into the route. The component became dumber, the route became smarter, but the dependency arrow still only points one way.
 
 **Enforcement:** `test/architecture/dependency-rule.test.ts` encodes this as an executable contract. Violations fail CI with a specific file:line.
+
+*A consequence:* tactical code (routes, components) can change without risking strategic code (types, domain services).
 
 ### P3 — Services own their types
 
 Each service directory has a `types.ts` that defines the shapes it owns. Cross-boundary types live in whichever service is upstream of the relationship.
 
-*Enables services to evolve independently.* Changing the forms domain model doesn't force a change to data-collection. Where a type lives answers "who decides when this can change?" A grab-bag type file is owned by nobody, which means it can't safely change.
+*The point is clear authority.* Where a type lives answers "who decides when this changes?" A type in `services/forms/types.ts` is owned by the forms domain — changes to it are a forms-domain decision. Types in a grab-bag file are owned by nobody, which means changes become political. Explicit ownership lets changes ripple along an explicit dependency edge instead of through negotiation.
 
-**Worked example:** `DataCollectionSpec` lives in `services/data-collection/types.ts` because data-collection is the authoritative definition. `services/forms/types.ts` imports it because forms is downstream. `services/ingestion/types.ts` also imports it because ingestion produces data-collection specs.
+**Worked example:** `DataCollectionSpec` lives in `services/data-collection/types.ts` because data-collection is the authoritative definition. `services/forms/types.ts` imports it because forms is downstream. `services/ingestion/types.ts` also imports it because ingestion produces data-collection specs. When data-collection needs to change, the change radiates outward from one authoritative source.
+
+*A consequence:* services evolve independently because ownership is explicit.
 
 ### P4 — Presentation is stateless
 
 Design-system components receive ready-to-render data. Logic happens in routes. Components take props; they don't import services, fetch data, or compute conditions.
 
-*Enables swapping UI without touching logic.* A new conversational interface could be built on the existing services with zero service changes. A stateless component is trivially testable, trivially reusable, and trivially correct.
+*The point is separating "what to show" from "how to show it."* Components describe appearance — they don't fetch, compute, decide, or coordinate. Logic and data belong to the caller. You can reason about a component by reading only the component, without tracing where its data came from or what decisions were made upstream.
 
-**Worked example:** `flex-form-page` previously called `evaluateCondition` inline. Now it receives `page: FormPageData` with groups and fields already filtered by the route. The HTML output is identical; the reasoning burden dropped.
+**Worked example:** `flex-form-page` previously called `evaluateCondition` inline. Now it receives `page: FormPageData` with groups and fields already filtered by the route. The HTML output is identical, but the component can now be understood without also understanding the condition evaluator.
 
 **Partial enforcement:** P2's test makes stateful components structurally difficult (design-system can't import from services). P4 is the stricter version of the same constraint.
+
+*A consequence:* UI can be swapped without touching logic, and logic can be tested without a DOM.
 
 ## Structure (derived from the principles)
 
