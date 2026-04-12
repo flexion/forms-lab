@@ -150,9 +150,11 @@ tags: [architecture, codebase, principles]
 
 # Software Architecture
 
-How the Forms Lab codebase is organized, and why. This doc names the four principles that shape the code. The directory structure is a consequence of the principles, not the other way around.
+## Goal
 
-If you're about to add code, read the principles first. If a situation doesn't fit, see "When principles conflict" at the bottom.
+The goal is to evolve this system cheaply and safely over time. The principles below exist to keep that evolution cheap and safe by preserving options at every level — tactical parts can change without risking strategic parts.
+
+If you're about to add code, read the principles first. The directory structure is a consequence of the principles, not the other way around. If a situation doesn't fit, see "When principles conflict" near the bottom.
 
 ## Principles
 
@@ -160,9 +162,9 @@ If you're about to add code, read the principles first. If a situation doesn't f
 
 Directory and file names reveal what a thing is *for*, not what it is *built with*.
 
-**Rationale:** Organizing by technology forces re-reading every time the implementation changes. A reader should predict where something lives from its purpose alone.
+*Enables changing the implementation without moving or renaming files.* Swapping Bedrock for a different LLM provider doesn't relocate the ingestion service. Replacing markdown-it doesn't rename `services/content/markdown.ts`. The file stays where it is because its purpose — "turn a PDF into a spec," "render markdown" — stays the same.
 
-**Worked example:** PDF extraction lives in `services/ingestion/`, not `services/llm-client/`, because the intent is "turn a PDF into a spec." We currently use Bedrock, but that's an implementation detail — the file wouldn't move if we switched providers.
+**Worked example:** PDF extraction lives in `services/ingestion/`, not `services/llm-client/`. We currently use Bedrock, but that's an implementation detail.
 
 ### P2 — Dependency flows one way
 
@@ -173,17 +175,17 @@ shared → services → entrypoints
 shared → design-system → entrypoints
 ```
 
-**Rationale:** The rule collapses reader thinking. If you're in `services/`, you only need to know `shared/` exists. You never need to know who calls you. Reversing a dependency means two files change instead of one; cycles mean the whole graph must be understood at once.
+*Enables changing tactical code without risking strategic code.* Redesigning a route can't break a service. Changing a component can't break a type contract. The reasoning burden collapses: if you're in `services/`, you only need to know `shared/` exists — you never need to know who calls you.
 
 **Worked example:** When `flex-form-page` was decoupled from `services/forms/resolver`, we didn't pass `evaluateCondition` as a prop. We moved the call up into the route. The component became dumber, the route became smarter, but the dependency arrow only points one way.
 
-**Enforcement:** `test/architecture/dependency-rule.test.ts` encodes this principle as a test. Violations fail CI with a specific file:line.
+**Enforcement:** `test/architecture/dependency-rule.test.ts` encodes this as an executable contract. Violations fail CI with a specific file:line.
 
 ### P3 — Services own their types
 
 Each service directory has a `types.ts` that defines the shapes it owns. Cross-boundary types live in whichever service is upstream of the relationship.
 
-**Rationale:** Where a type lives answers "who decides when this can change?" A type in `services/forms/types.ts` is owned by the forms domain. A grab-bag type file is owned by nobody, which means it can't safely change.
+*Enables services to evolve independently.* Changing the forms domain model doesn't force a change to data-collection. Where a type lives answers "who decides when this can change?" A grab-bag type file is owned by nobody, which means it can't safely change.
 
 **Worked example:** `DataCollectionSpec` lives in `services/data-collection/types.ts` because data-collection is the authoritative definition. `services/forms/types.ts` imports it because forms is downstream. `services/ingestion/types.ts` also imports it because ingestion produces data-collection specs.
 
@@ -191,7 +193,7 @@ Each service directory has a `types.ts` that defines the shapes it owns. Cross-b
 
 Design-system components receive ready-to-render data. Logic happens in routes. Components take props; they don't import services, fetch data, or compute conditions.
 
-**Rationale:** A stateless component is trivially testable, trivially reusable, and trivially correct. A component that reaches into services is coupled to the service layer's current shape — when the service changes, the component breaks in ways that aren't visible from the component file alone.
+*Enables swapping UI without touching logic.* A new conversational interface could be built on the existing services with zero service changes. A stateless component is trivially testable, trivially reusable, and trivially correct.
 
 **Worked example:** `flex-form-page` previously called `evaluateCondition` inline. Now it receives `page: FormPageData` with groups and fields already filtered by the route. The HTML output is identical; the reasoning burden dropped.
 
@@ -225,19 +227,35 @@ Runnable processes — the composition root. Routes and commands import services
 
 Currently: `app/` (forms platform web app), `dashboard/` (deployment dashboard), `webhook/` (GitHub event listener), `notify/` (notification delivery), `cli/` (command-line interface).
 
+## Dependencies and externalities
+
+The dependency rule (P2) constrains internal imports between layers. It does not constrain third-party imports within a file. When adopting an external dependency, you explicitly choose:
+
+- **Isolate it.** Contain it to a single layer or file so it can be swapped without touching the rest of the codebase. Example: `markdown-it` lives only in `services/content/markdown.ts`.
+- **Embrace it.** Accept that the dependency is woven through the code and that a future swap would be a refactoring effort. Example: `hono/jsx` types appear in every design-system component. We accept this because we're not planning to swap JSX runtimes.
+
+Neither choice is wrong. What matters is that the choice is explicit. Drifting into embrace without noticing is the failure mode.
+
+**Current state:**
+
+- **Isolated:** USWDS (design-system only), Bedrock (`services/ingestion/` only), `better-sqlite3` (`services/storage.ts` only), `markdown-it` (`services/content/markdown.ts` only)
+- **Embraced:** `hono/jsx` (design-system components), Hono routing (entrypoints), Bun (runtime)
+
+When adding a new dependency, note the choice in the commit or ADR that introduces it. Future axes of change are cheaper to plan for when they're visible.
+
 ## When principles conflict
 
 Sometimes a situation doesn't fit cleanly. Default rules:
 
 1. **If a situation fits an existing principle, follow it.** Most situations are covered.
 2. **If two principles conflict, default to P2.** P2 is the cheap constraint — move logic up toward the entrypoint. Almost all conflicts between P4 and something else resolve by making the component dumber and the caller smarter.
-3. **If no principle fits, or if following one produces an obviously wrong result, propose an ADR amendment.** Do not silently diverge. See `catalog/decisions/architecture/screaming-architecture.md` for the template.
+3. **If no principle fits, or if following one produces an obviously wrong result, propose an ADR amendment.** Do not silently diverge. See `catalog/decisions/architecture/architecture-principles.md` for the template.
 
 The principles are not sacred. They are tracked. An ADR amendment is a legitimate move.
 
 ## Sources
 
-- [Screaming architecture ADR](../decisions/architecture/screaming-architecture.md) — provenance for P1–P4
+- [Architecture Principles ADR](../decisions/architecture/architecture-principles.md) — provenance for P1–P4
 - [Hono on Bun decision](../decisions/architecture/hono-on-bun.md)
 - [Git as persistence decision](../decisions/architecture/git-as-persistence.md)
 - [Data model](data-model.md) — domain types in detail
@@ -270,14 +288,14 @@ ADR amendment.
 
 ---
 
-### Task 3: Write the screaming-architecture ADR
+### Task 3: Write the architecture-principles ADR
 
 **Files:**
-- Create: `catalog/decisions/architecture/screaming-architecture.md`
+- Create: `catalog/decisions/architecture/architecture-principles.md`
 
 - [ ] **Step 1: Create the ADR file**
 
-Create `catalog/decisions/architecture/screaming-architecture.md` with this exact content:
+Create `catalog/decisions/architecture/architecture-principles.md` with this exact content:
 
 ```markdown
 ---
@@ -286,45 +304,42 @@ tags: [architecture, structure, principles]
 decided: 2026-04-11
 ---
 
-# Screaming Architecture for the src/ Tree
+# Architecture Principles
 
-Reorganize `src/` into four intent-revealing layers (`shared`, `services`, `design-system`, `entrypoints`) with a one-way dependency rule.
+Establish four named principles (P1–P4) and a four-layer `src/` structure (`shared`, `services`, `design-system`, `entrypoints`) to make architecture evolution cheap and safe.
 
 ## Context
 
-The original `src/` was organized by technical layer: `src/app/`, `src/lib/`, `src/services/`, `src/types/`, `src/webhook/`, `src/commands/`. Opening the directory told you "this is a Hono app with some utilities" — it didn't tell you what the system did, what processes it ran, or where domain boundaries were. Types were in a single monolithic `models.ts`. The dependency rule, such as it was, lived only in prose.
+The original `src/` was organized by technical layer: `src/app/`, `src/lib/`, `src/services/`, `src/types/`, `src/webhook/`, `src/commands/`. Opening the directory told you "this is a Hono app with some utilities" — it didn't tell you what the system did, what processes it ran, or where domain boundaries were. Types lived in a monolithic `models.ts`. The dependency rule, such as it was, lived only in prose.
 
 This had concrete costs:
 - New code had no obvious home, so similar things ended up in inconsistent places
 - Domain changes rippled unpredictably because cross-boundary types had no owner
-- An agent reading the tree had to read files to understand what the system did
+- Agents and humans reading the tree had to read files to understand what the system did
 - The dependency rule was advisory, not enforced — violations accumulated
+- Third-party dependencies crept into places that prevented swapping them later
 
 ## Decision
 
-Reorganize into four top-level directories named by intent:
+Four principles, mechanically enforced where cheap, named so they can be discussed and amended:
+
+- **P1 — Intent over mechanism.** Directory and file names reveal purpose, not implementation. *Enables changing the implementation without moving or renaming files.*
+- **P2 — Dependency flows one way.** `shared → services → entrypoints`; `shared → design-system → entrypoints`. *Enables changing tactical code without risking strategic code.* Mechanically enforced.
+- **P3 — Services own their types.** Each service directory has a `types.ts`; cross-boundary types live with the upstream owner. *Enables services to evolve independently.*
+- **P4 — Presentation is stateless.** Design-system components receive ready-to-render data. *Enables swapping UI without touching logic.*
+
+The directory structure that follows:
 
 - **`src/shared/`** — pure utilities, no domain knowledge, zero internal deps
 - **`src/services/`** — core domain services, each owning its types (`auth`, `content`, `data-collection`, `deployment`, `forms`, `ingestion`, `notifications`, plus `storage.ts`)
 - **`src/design-system/`** — UI components (peer to services, not a dependent)
 - **`src/entrypoints/`** — runnable processes as composition roots (`app`, `dashboard`, `webhook`, `notify`, `cli`)
 
-Enforce a one-way dependency rule:
-```
-shared → services → entrypoints
-shared → design-system → entrypoints
-```
+Decompose the monolithic `src/types/models.ts` into service-owned `types.ts` files so P3 is structurally true.
 
-Decompose the monolithic `src/types/models.ts` into service-owned `types.ts` files.
+P1 is what the industry sometimes calls "screaming architecture" — the idea that opening `src/` should scream what the system does, not what it's built with. That concept was the entry point for this work, but the final framework is broader: the dependency rule, type ownership, and presentation statelessness are not part of the screaming-architecture idea alone.
 
-Four principles follow from this decision:
-
-- **P1 — Intent over mechanism** (names reveal purpose)
-- **P2 — Dependency flows one way** (mechanically enforced)
-- **P3 — Services own their types** (authoritative ownership)
-- **P4 — Presentation is stateless** (components receive ready-to-render data)
-
-See [software-architecture.md](../../architecture/software-architecture.md) for the principles in detail.
+See [software-architecture.md](../../architecture/software-architecture.md) for the principles in detail with worked examples.
 
 ## Alternatives considered
 
@@ -343,7 +358,8 @@ See [software-architecture.md](../../architecture/software-architecture.md) for 
 - Dependency rule is mechanically checkable (`test/architecture/dependency-rule.test.ts`).
 - Services own their types, so changes ripple along explicit dependency edges.
 - Agents and humans can predict where new code goes from its purpose alone.
-- Design system components are reusable by construction — they can't depend on services.
+- Design-system components are reusable by construction — they can't depend on services.
+- The four principles give agents and humans a vocabulary for discussing architectural choices rather than debating cases one at a time.
 
 **Negative:**
 - File moves touched ~450 files across 21 commits on this branch.
@@ -352,15 +368,31 @@ See [software-architecture.md](../../architecture/software-architecture.md) for 
 
 **Accepted:**
 - Form-specific components (`flex-form-field`, `flex-form-page`, etc.) live in `design-system/` rather than `entrypoints/app/`. Defended because the design system serves the forms platform — form components are core, not incidental. They define local prop types instead of importing from services.
-- Some conformance tests and visual-regression helpers in `design-system/test-helpers/` violate the dependency rule by importing design-system types. These are test infrastructure, not runtime code, and they were moved from `shared/test-helpers/` to `design-system/test-helpers/` to keep runtime `shared/` at zero internal deps.
+- Some conformance tests and visual-regression helpers in `design-system/test-helpers/` reference design-system types. These are test infrastructure, not runtime code, and they were moved from `shared/test-helpers/` to `design-system/test-helpers/` to keep runtime `shared/` at zero internal deps.
+
+## Known limits
+
+**The dependency rule constrains internal imports but not third-party ones.** A service file could `import { Hono } from 'hono'` and the dependency rule test would pass. The rule prevents internal entanglement, not external coupling.
+
+We handle external dependencies with an explicit discipline — described in the architecture doc's "Dependencies and externalities" section — where each new dependency is either isolated (contained to one layer or file) or knowingly embraced (accepted as woven through the code, with a future swap treated as a refactoring effort).
+
+At the time of this decision:
+
+- **Isolated:** USWDS (design-system only), Bedrock (`services/ingestion/` only), `better-sqlite3` (`services/storage.ts` only), `markdown-it` (`services/content/markdown.ts` only)
+- **Embraced:** `hono/jsx` (design-system components), Hono routing (entrypoints), Bun (runtime)
+
+The `hono/jsx` embrace is the most consequential: if we later wanted to swap JSX runtimes, every design-system component would change. We accept this because no swap is planned, and the cost of isolating `hono/jsx` now would exceed the cost of a future refactoring when it's actually needed.
+
+This discipline is not enforced by a rule. It is enforced by the expectation that dependency adoption is a decision, not a drift. If we later find violations of this discipline, we can promote it to a rule with its own test — OEA-style, responding to smells rather than pre-building enforcement.
 
 ## Sources
 
-- [notes/2026-04-11-screaming-architecture/design.md](https://github.com/flexion/forms-lab/blob/main/notes/2026-04-11-screaming-architecture/design.md) — original design
-- [notes/2026-04-11-screaming-architecture/plan.md](https://github.com/flexion/forms-lab/blob/main/notes/2026-04-11-screaming-architecture/plan.md) — 12-task implementation plan
+- [notes/2026-04-11-screaming-architecture/design.md](https://github.com/flexion/forms-lab/blob/main/notes/2026-04-11-screaming-architecture/design.md) — original restructuring design
+- [notes/2026-04-11-screaming-architecture/plan.md](https://github.com/flexion/forms-lab/blob/main/notes/2026-04-11-screaming-architecture/plan.md) — 12-task restructuring plan
 - [notes/2026-04-11-screaming-architecture/dependency-fixes-design.md](https://github.com/flexion/forms-lab/blob/main/notes/2026-04-11-screaming-architecture/dependency-fixes-design.md) — design for decoupling components from services
 - [notes/2026-04-11-screaming-architecture/dependency-fixes-plan.md](https://github.com/flexion/forms-lab/blob/main/notes/2026-04-11-screaming-architecture/dependency-fixes-plan.md) — 8-task plan for the decoupling work
-- [notes/2026-04-11-screaming-architecture/principles-design.md](https://github.com/flexion/forms-lab/blob/main/notes/2026-04-11-screaming-architecture/principles-design.md) — this work
+- [notes/2026-04-11-screaming-architecture/principles-design.md](https://github.com/flexion/forms-lab/blob/main/notes/2026-04-11-screaming-architecture/principles-design.md) — design for this principles presentation
+- [notes/2026-04-11-screaming-architecture/principles-plan.md](https://github.com/flexion/forms-lab/blob/main/notes/2026-04-11-screaming-architecture/principles-plan.md) — plan for this principles presentation
 ```
 
 - [ ] **Step 2: Run checks**
@@ -374,13 +406,18 @@ Expected: all tests pass. The decisions route auto-discovers files in `catalog/d
 - [ ] **Step 3: Commit**
 
 ```bash
-git add catalog/decisions/architecture/screaming-architecture.md
-git commit -m "docs(decisions): add screaming architecture ADR
+git add catalog/decisions/architecture/architecture-principles.md
+git commit -m "docs(decisions): add architecture principles ADR
 
-Add an architectural decision record documenting the screaming
-architecture restructuring and the four principles (P1-P4) that shape
-the codebase. Names alternatives considered (by-feature, three-layer,
-move-form-components-out) and the tradeoffs accepted.
+Establish the four named principles (P1-P4) and four-layer src/
+structure as an architectural decision with alternatives, consequences,
+and known limits. Screaming architecture (P1) was the entry point;
+the final framework also includes the dependency rule, type ownership,
+and presentation statelessness.
+
+Known limits section names the invasive species gap honestly: the
+dependency rule doesn't constrain third-party imports. Includes the
+isolate-or-embrace discipline and current state of external deps.
 
 Provides provenance for software-architecture.md.
 "
@@ -638,7 +675,7 @@ import type { GraphDefinition } from '../types'
 export const softwareArchitectureGraph: GraphDefinition = {
   title: 'Software Architecture',
   description:
-    'Four layers with one-way dependencies (P2). shared has no internal dependencies. services and design-system are peers, both depending only on shared. entrypoints is the composition root — it wires services, design-system, and shared together. See the software architecture doc for the principles (P1-P4) that shape this structure.',
+    'Four layers with one-way dependencies. shared has no internal dependencies. services and design-system are peers, both depending only on shared. entrypoints is the composition root — it wires services, design-system, and shared together. This structure is a consequence of four architecture principles (P1-P4) documented in the software architecture doc: intent over mechanism, dependency flows one way, services own their types, and presentation is stateless.',
   nodes: [
     {
       id: 'entrypoints',
@@ -725,16 +762,18 @@ In `CLAUDE.md`, locate the `## Architecture` section. After the existing bullet 
 ```markdown
 ## Principles
 
-The codebase is shaped by four named principles. Before adding or moving code, read [catalog/architecture/software-architecture.md](catalog/architecture/software-architecture.md).
+The codebase is shaped by four architectural principles that exist to keep evolution cheap and safe. Before adding or moving code, read [catalog/architecture/software-architecture.md](catalog/architecture/software-architecture.md).
 
-- **P1 — Intent over mechanism.** Directory names reveal purpose, not implementation.
-- **P2 — Dependency flows one way.** `shared → services/design-system → entrypoints`. Enforced by `test/architecture/dependency-rule.test.ts`.
-- **P3 — Services own their types.** Each service has a `types.ts`; cross-boundary types live with the upstream owner.
-- **P4 — Presentation is stateless.** Design-system components receive ready-to-render data.
+- **P1 — Intent over mechanism.** Enables changing implementation without moving files.
+- **P2 — Dependency flows one way.** `shared → services/design-system → entrypoints`. Enables changing tactical code without risking strategic code. Enforced by `test/architecture/dependency-rule.test.ts`.
+- **P3 — Services own their types.** Enables services to evolve independently.
+- **P4 — Presentation is stateless.** Enables swapping UI without touching logic.
 
-When a situation doesn't fit a principle, see the "When principles conflict" section in the architecture doc — propose an ADR amendment rather than silently diverging.
+When adopting a third-party dependency, explicitly choose: isolate it (contain to one layer) or embrace it (accept a future refactoring cost). See "Dependencies and externalities" in the architecture doc.
 
-Provenance: [catalog/decisions/architecture/screaming-architecture.md](catalog/decisions/architecture/screaming-architecture.md).
+When a situation doesn't fit a principle, propose an ADR amendment rather than silently diverging. See "When principles conflict" in the architecture doc.
+
+Provenance: [catalog/decisions/architecture/architecture-principles.md](catalog/decisions/architecture/architecture-principles.md).
 ```
 
 Place this section immediately after `## Architecture` and before `## Documentation Governance`.
