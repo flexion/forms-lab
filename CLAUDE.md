@@ -192,6 +192,21 @@ See [PR #25](https://github.com/flexion/forms-lab/pull/25) for the pattern:
 - **CLI:** `bun run cli <command>` for operational tasks
 - **CSS:** Two-tier tokens (USWDS 3.13), cascade layers, Bun.build() at build time, serveStatic
 
+## Principles
+
+The codebase is shaped by four architectural principles that exist to keep evolution cheap and safe. Before adding or moving code, read [catalog/architecture/software-architecture.md](catalog/architecture/software-architecture.md).
+
+- **P1 — Intent over mechanism.** Enables changing implementation without moving files.
+- **P2 — Dependency flows one way.** `shared → services/design-system → entrypoints`. Enables changing tactical code without risking strategic code. Enforced by `test/architecture/dependency-rule.test.ts`.
+- **P3 — Services own their types.** Enables services to evolve independently.
+- **P4 — Presentation is stateless.** Enables swapping UI without touching logic.
+
+When adopting a third-party dependency, explicitly choose: isolate it (contain to one layer) or embrace it (accept a future refactoring cost). See "Dependencies and externalities" in the architecture doc.
+
+When a situation doesn't fit a principle, propose an ADR amendment rather than silently diverging. See "When principles conflict" in the architecture doc.
+
+Provenance: [catalog/decisions/architecture/architecture-principles.md](catalog/decisions/architecture/architecture-principles.md).
+
 ## Documentation Governance
 
 Follows [meta-knowledge-base](https://github.com/danielnaab/meta-knowledge-base) conventions:
