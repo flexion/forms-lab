@@ -11,7 +11,7 @@ let
     # Use a unique working directory per run so a stale or mis-owned
     # leftover can never wedge the next deploy.
     WORK_DIR=$(${pkgs.coreutils}/bin/mktemp -d /tmp/forms-lab-deploy.XXXXXX)
-    trap 'rm -rf "$WORK_DIR"' EXIT
+    trap '${pkgs.coreutils}/bin/rm -rf "$WORK_DIR"' EXIT
 
     cd "$WORK_DIR"
     ${pkgs.git}/bin/git clone https://github.com/flexion/forms-lab.git repo
@@ -28,10 +28,10 @@ let
     fi
 
     # Deploy main branch app via the standard deploy script
-    forms-lab-deploy main "$SHA"
+    ${deployScript}/bin/forms-lab-deploy main "$SHA"
 
     # Health check
-    sleep 2
+    ${pkgs.coreutils}/bin/sleep 2
     ${pkgs.curl}/bin/curl -f http://localhost:3000/health || exit 1
 
     echo "Main deployment complete"
