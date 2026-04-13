@@ -96,6 +96,12 @@ designSystem.get('/', (c) => {
       description:
         'Accessibility-first guidance for charts, graphs, maps, and infographics.',
     },
+    {
+      title: 'Layout',
+      href: resolveUrl('/catalog/design-system/layout'),
+      description:
+        'Page layouts (content, sidebar-start, sidebar-end), breakout tracks, and container contracts that guide layouts toward correctness by default.',
+    },
   ]
 
   return c.html(
@@ -839,6 +845,301 @@ designSystem.get('/:slug', async (c) => {
               USWDS Data Visualizations documentation
             </a>
             .
+          </p>
+        </section>
+      </Layout>,
+    )
+  }
+
+  if (slug === 'layout') {
+    const sidebarData = getDesignSystemSidebar('/catalog/design-system/layout')
+    const sidebar = <CatalogSidebar sections={sidebarData} />
+
+    return c.html(
+      <Layout
+        title="Layout — Design System"
+        sidebar={sidebar}
+        currentPath="/catalog"
+        user={c.get('user')}
+      >
+        <h1>Layout</h1>
+
+        <section class="l-stack">
+          <h2>Two-tier model</h2>
+          <p>
+            The layout system operates in two tiers. Tier 1 is the{' '}
+            <strong>page layout</strong> — the top-level structural skeleton
+            that defines how the page is divided into regions (header, main
+            content, sidebar, footer). Tier 2 is <strong>compositions</strong> —
+            layout primitives such as <code class="flex-mono">l-stack</code>,{' '}
+            <code class="flex-mono">l-cluster</code>, and{' '}
+            <code class="flex-mono">l-grid</code> that operate <em>within</em>{' '}
+            those regions.
+          </p>
+          <p>Two rules govern this model:</p>
+          <ul>
+            <li>
+              Every page picks <strong>exactly one</strong> page layout class.
+            </li>
+            <li>Page layouts never nest inside one another.</li>
+          </ul>
+          <p>
+            Compositions may nest freely within regions. Page layouts may not.
+          </p>
+        </section>
+
+        <section class="l-stack">
+          <h2>Page layouts</h2>
+
+          <div class="l-stack">
+            <h3>
+              <code class="flex-mono">l-page-content</code>
+            </h3>
+            <p>
+              A centered single-column layout. The main content area is
+              constrained to a readable line length and centered in the
+              viewport. There is no sidebar.
+            </p>
+            <p>
+              <strong>When to use:</strong> Use for focused, reading-heavy pages
+              — documentation, articles, form completion flows — where a sidebar
+              would distract from the primary task. Most catalog pages use this
+              layout.
+            </p>
+            <p>
+              Apply the class to the <code class="flex-mono">main</code> element
+              directly. The page-level site chrome (header, footer) lives
+              outside the page layout.
+            </p>
+            <pre>
+              <code>{`<main class="l-page-content">
+  <h1>Title</h1>
+  <p>Body.</p>
+  <figure class="l-feature">Wider element</figure>
+</main>`}</code>
+            </pre>
+          </div>
+
+          <div class="l-stack">
+            <h3>
+              <code class="flex-mono">l-page-sidebar-start</code>
+            </h3>
+            <p>
+              A two-column layout with a navigation sidebar on the{' '}
+              <strong>left</strong> (start) and main content on the right. At
+              narrow viewports the sidebar collapses and may be toggled open.
+            </p>
+            <p>
+              <strong>When to use:</strong> Use when the page belongs to a
+              section with persistent secondary navigation — catalog pages,
+              multi-step wizards with a step list, or admin dashboards. The
+              sidebar communicates hierarchy and position within a larger
+              structure.
+            </p>
+            <p>
+              Apply the class to a wrapper <code class="flex-mono">div</code>{' '}
+              with exactly two children:{' '}
+              <code class="flex-mono">.l-page-sidebar</code> and{' '}
+              <code class="flex-mono">.l-page-main</code>. The page-level site
+              chrome lives outside the wrapper.
+            </p>
+            <pre>
+              <code>{`<div class="l-page-sidebar-start">
+  <aside class="l-page-sidebar">
+    <nav>...</nav>
+  </aside>
+  <main class="l-page-main">
+    <h1>Title</h1>
+    <p>Body.</p>
+    <figure class="l-feature">Wider element</figure>
+  </main>
+</div>`}</code>
+            </pre>
+          </div>
+
+          <div class="l-stack">
+            <h3>
+              <code class="flex-mono">l-page-sidebar-end</code>
+            </h3>
+            <p>
+              A two-column layout with a contextual sidebar on the{' '}
+              <strong>right</strong> (end) and main content on the left. At
+              narrow viewports the sidebar collapses below the main content.
+            </p>
+            <p>
+              <strong>When to use:</strong> Use for contextual supplemental
+              content that enhances but does not drive navigation — help text,
+              related links, table of contents for the current page, or a
+              persistent preview panel. The content reads left-to-right with the
+              sidebar as an aside.
+            </p>
+            <p>
+              Same wrapper pattern as{' '}
+              <code class="flex-mono">l-page-sidebar-start</code>: a{' '}
+              <code class="flex-mono">div</code> with{' '}
+              <code class="flex-mono">.l-page-main</code> first and{' '}
+              <code class="flex-mono">.l-page-sidebar</code> second.
+            </p>
+            <pre>
+              <code>{`<div class="l-page-sidebar-end">
+  <main class="l-page-main">
+    <h1>Title</h1>
+    <p>Body.</p>
+    <figure class="l-feature">Wider element</figure>
+  </main>
+  <aside class="l-page-sidebar">
+    <nav>...</nav>
+  </aside>
+</div>`}</code>
+            </pre>
+          </div>
+        </section>
+
+        <section class="l-stack">
+          <h2>Breakout tracks</h2>
+          <p>
+            Within a page layout, content can break out of the default readable
+            line-length constraint using width track classes. Breakout classes (
+            <code class="flex-mono">.l-popout</code>,{' '}
+            <code class="flex-mono">.l-feature</code>,{' '}
+            <code class="flex-mono">.l-full</code>) apply to direct children of{' '}
+            <code class="flex-mono">.l-page-content</code> or{' '}
+            <code class="flex-mono">.l-page-main</code>. For the single-column{' '}
+            <code class="flex-mono">l-page-content</code> layout, that is the
+            page layout element itself. For the sidebar layouts, that is the
+            inner <code class="flex-mono">.l-page-main</code> inside the{' '}
+            <code class="flex-mono">.l-page-sidebar-start</code> or{' '}
+            <code class="flex-mono">.l-page-sidebar-end</code> wrapper.
+          </p>
+          <ul>
+            <li>
+              <strong>content (default)</strong> — Stays within the readable
+              measure. No extra class needed.
+            </li>
+            <li>
+              <code class="flex-mono">l-popout</code> — Adds up to ~2rem on each
+              side beyond the content track; good for wide tables and card
+              groups.
+            </li>
+            <li>
+              <code class="flex-mono">l-feature</code> — Adds up to ~5rem on
+              each side beyond the content track; useful for hero sections and
+              wide images.
+            </li>
+            <li>
+              <code class="flex-mono">l-full</code> — Edge-to-edge across the
+              full page width with no horizontal padding.
+            </li>
+          </ul>
+          <p>
+            Width variants are available via the{' '}
+            <code class="flex-mono">data-width</code> attribute on{' '}
+            <code class="flex-mono">.l-page-content</code> or{' '}
+            <code class="flex-mono">.l-page-main</code>. It overrides{' '}
+            <code class="flex-mono">--flex-content-default</code> so the
+            content-track width cascades to all descendants:{' '}
+            <code class="flex-mono">data-width="narrow"</code> tightens the
+            measure for short-form content;{' '}
+            <code class="flex-mono">data-width="wide"</code> relaxes it for
+            data-dense views.
+          </p>
+        </section>
+
+        <section class="l-stack">
+          <h2>Container contract</h2>
+          <p>
+            The page layouts define named CSS containers that components can
+            query via <code class="flex-mono">@container</code>. The{' '}
+            <code class="flex-mono">page-content</code> named container is set
+            up on every page layout — it lives on{' '}
+            <code class="flex-mono">.l-page-content</code> and on{' '}
+            <code class="flex-mono">.l-page-main</code> inside sidebar layouts.
+            The <code class="flex-mono">page-sidebar</code> named container
+            exists only when one of the sidebar layouts is used (it is set up on{' '}
+            <code class="flex-mono">
+              .l-page-sidebar-start &gt; .l-page-sidebar
+            </code>{' '}
+            and{' '}
+            <code class="flex-mono">
+              .l-page-sidebar-end &gt; .l-page-sidebar
+            </code>
+            ).
+          </p>
+          <pre>
+            <code>{`/* Adapt to the content region width, not the viewport */
+@container page-content (max-width: 600px) {
+  .my-component { flex-direction: column; }
+}`}</code>
+          </pre>
+          <p>
+            This means a component placed in a narrower content region behaves
+            correctly regardless of viewport width — it responds to its actual
+            container.
+          </p>
+        </section>
+
+        <section class="l-stack">
+          <h2>
+            The <code class="flex-mono">l-switcher</code> composition
+          </h2>
+          <p>
+            The <code class="flex-mono">l-switcher</code> composition is a
+            responsive row that automatically collapses to a vertical stack when
+            the container is too narrow to display items side by side. It is the
+            preferred pattern for form field groups where two or three short
+            fields logically belong on the same row.
+          </p>
+          <pre>
+            <code>{`<div class="l-switcher" style="--threshold: 30rem;">
+  <div>
+    <label for="first-name">First name</label>
+    <input id="first-name" type="text" />
+  </div>
+  <div>
+    <label for="last-name">Last name</label>
+    <input id="last-name" type="text" />
+  </div>
+</div>`}</code>
+          </pre>
+          <p>
+            The threshold at which the switcher collapses is controlled by the{' '}
+            <code class="flex-mono">--threshold</code> custom property (default:
+            30rem). Gap between items is controlled by{' '}
+            <code class="flex-mono">--switcher-space</code> (defaults to{' '}
+            <code class="flex-mono">--flex-space-md</code>). Uses the Every
+            Layout flexbox trick — no media queries or container queries
+            required. Children switch modes based on the switcher's own
+            available width, which makes it safe to use inside any parent
+            layout.
+          </p>
+        </section>
+
+        <section class="l-stack">
+          <h2>What this system does NOT provide</h2>
+          <p>
+            To keep the layout system predictable and prevent misuse, the
+            following patterns are intentionally absent:
+          </p>
+          <ul>
+            <li>A 12-column grid system</li>
+            <li>
+              Breakpoint-prefixed column span classes (e.g.{' '}
+              <code class="flex-mono">md:col-span-6</code>)
+            </li>
+            <li>
+              Named grid areas that components are expected to fill by
+              convention
+            </li>
+            <li>
+              Utility classes for arbitrary widths or margins on layout regions
+            </li>
+            <li>Nested page layouts</li>
+            <li>A fixed navigation rail or app-shell chrome component</li>
+          </ul>
+          <p>
+            If you need something from this list, open a catalog decision
+            document first. Introducing ad-hoc layout utilities without a
+            decision record leads to drift that is hard to reverse.
           </p>
         </section>
       </Layout>,

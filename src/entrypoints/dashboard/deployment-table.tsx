@@ -249,7 +249,7 @@ export function DeploymentTable({
   }
 
   return (
-    <div class="deployment-table">
+    <div class="l-feature deployment-table">
       <div class="deployment-table__header" aria-hidden="true">
         <span class="deployment-table__cell" />
         <span class="deployment-table__cell">Branch</span>

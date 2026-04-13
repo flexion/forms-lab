@@ -211,4 +211,12 @@ describe('DeploymentTable', () => {
     expect(html).toContain('branch-a')
     expect(html).toContain('branch-b')
   })
+
+  it('root element has l-feature and deployment-table classes when populated', () => {
+    const deployment = makeDeployment('main', '2026-04-10T00:00:00Z')
+    const html =
+      DeploymentTable({ deployments: [deployment] })?.toString() ?? ''
+
+    expect(html).toContain('class="l-feature deployment-table"')
+  })
 })

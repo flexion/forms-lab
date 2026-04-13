@@ -23,6 +23,7 @@
   counter-increment: flex-step-indicator;
   margin-inline-start: 1px;
   margin-inline-end: 1px;
+  /* stylelint-disable-next-line declaration-property-value-allowed-list -- Per-step label width cap. */
   max-inline-size: 15rem;
   min-block-size: 0.5rem;
   position: relative;

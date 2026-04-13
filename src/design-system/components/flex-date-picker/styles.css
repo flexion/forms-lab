@@ -70,6 +70,7 @@ flex-date-picker {
   inset-inline-end: 0;
   z-index: 400;
   inline-size: 100%;
+  /* stylelint-disable-next-line declaration-property-value-allowed-list -- Calendar popup intrinsic width (7 day columns). */
   max-inline-size: 20rem;
   background-color: var(--flex-gray-5);
   border: 1px solid var(--flex-color-ink);

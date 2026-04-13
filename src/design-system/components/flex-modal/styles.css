@@ -15,12 +15,14 @@ flex-modal {
 
   &[data-size="large"] {
     & .flex-modal__content {
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- Modal size variants are component-intrinsic sizes, not content-width. */
       max-inline-size: 55rem;
     }
 
     & .flex-modal__main {
       padding-block: 1.25rem 4rem;
       inline-size: 100%;
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- Modal size variants are component-intrinsic sizes, not content-width. */
       max-inline-size: 40rem;
     }
   }
@@ -38,6 +40,7 @@ flex-modal {
   flex-direction: column-reverse;
   background: var(--flex-color-surface);
   border-radius: 0.5rem;
+  /* stylelint-disable-next-line declaration-property-value-allowed-list -- Modal size variants are component-intrinsic sizes, not content-width. */
   max-inline-size: 30rem;
   inline-size: 100%;
   max-block-size: calc(100vh - 3rem);

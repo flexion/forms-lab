@@ -1622,7 +1622,18 @@
   --flex-space-xl: 32px;
 
   /* Layout tokens */
+  --flex-content-narrow: 45ch;
+  --flex-content-default: 60rem;
+  --flex-content-wide: 85ch;
   --flex-content-max-width: 60rem;
+  --flex-sidebar-width: 15rem;
+  --flex-sidebar-max-offset: 120px; /* header + breathing room above sticky sidebar */
+
+  /* Breakpoint tokens (documentation + @container style() queries).
+     Media queries use the raw values; these are the single source of truth. */
+  --flex-bp-sm: 37.5rem;
+  --flex-bp-md: 48rem;
+  --flex-bp-lg: 64rem;
 
   /* Typography tokens */
   --flex-radius-sm: 4px;

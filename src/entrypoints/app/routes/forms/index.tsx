@@ -85,16 +85,26 @@ export function createFormRouter(deps: FormRouterDeps) {
           {allSpecs.length === 0 ? (
             <p>No forms available.</p>
           ) : (
-            <ul class="l-stack">
-              {allSpecs.map(({ dataSpec, formSpec }) => (
-                <li key={dataSpec.id}>
-                  <a href={resolveUrl(`/forms/${dataSpec.id}`)}>
-                    <strong>{formSpec.title}</strong>
-                  </a>
-                  {formSpec.description && <p>{formSpec.description}</p>}
-                </li>
-              ))}
-            </ul>
+            <table class="flex-table" data-variant="borderless">
+              <thead>
+                <tr>
+                  <th scope="col">Form</th>
+                  <th scope="col">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allSpecs.map(({ dataSpec, formSpec }) => (
+                  <tr key={dataSpec.id}>
+                    <th scope="row">
+                      <a href={resolveUrl(`/forms/${dataSpec.id}`)}>
+                        {formSpec.title}
+                      </a>
+                    </th>
+                    <td>{formSpec.description ?? ''}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </Layout>,

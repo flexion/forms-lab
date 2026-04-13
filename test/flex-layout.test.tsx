@@ -84,3 +84,34 @@ describe('Layout sidebar', () => {
     expect(html).toContain('catalog-nav-toggle')
   })
 })
+
+describe('Layout — catalog shell uses l-page-sidebar-start', () => {
+  it('emits l-page-sidebar-start on the catalog wrapper when a sidebar is provided', () => {
+    const result = Layout({
+      title: 'Test',
+      sidebar: <nav data-testid="nav">nav</nav>,
+      currentPath: '/catalog',
+      children: <p>Body</p>,
+    })
+    const html = result?.toString() ?? ''
+
+    expect(html).toContain('class="l-page-sidebar-start"')
+    expect(html).toContain('l-page-sidebar')
+    expect(html).toContain('catalog-sidebar')
+    expect(html).toContain('class="l-page-main"')
+    expect(html).not.toContain('class="catalog-layout"')
+  })
+})
+
+describe('Layout — non-sidebar shell uses l-page-content', () => {
+  it('emits l-page-content on the main element when no sidebar is provided', () => {
+    const html = (
+      <Layout title="Test" currentPath="/">
+        <p>Body</p>
+      </Layout>
+    ).toString()
+
+    expect(html).toContain('<main class="l-page-content">')
+    expect(html).not.toContain('class="l-center"')
+  })
+})
