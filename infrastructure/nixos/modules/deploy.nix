@@ -1,6 +1,38 @@
 { config, pkgs, ... }:
 
 let
+  deployMainScript = pkgs.writeShellScriptBin "forms-lab-deploy-main" ''
+    set -euo pipefail
+
+    SHA="$1"
+
+    echo "Starting main deployment at $SHA..."
+
+    cd /tmp
+    rm -rf forms-lab-deploy
+    ${pkgs.git}/bin/git clone https://github.com/flexion/forms-lab.git forms-lab-deploy
+    cd forms-lab-deploy
+    ${pkgs.git}/bin/git checkout "$SHA"
+
+    # Check if nixos config changed since last deployment
+    if ! ${pkgs.diffutils}/bin/diff -qr infrastructure/nixos /etc/nixos >/dev/null 2>&1; then
+      echo "NixOS config changed, rebuilding..."
+      ${pkgs.rsync}/bin/rsync -av infrastructure/nixos/ /etc/nixos/
+      /run/wrappers/bin/sudo nixos-rebuild switch --flake /etc/nixos#forms-lab
+    else
+      echo "No NixOS config changes"
+    fi
+
+    # Deploy main branch app via the standard deploy script
+    forms-lab-deploy main "$SHA"
+
+    # Health check
+    sleep 2
+    ${pkgs.curl}/bin/curl -f http://localhost:3000/health || exit 1
+
+    echo "Main deployment complete"
+  '';
+
   deployScript = pkgs.writeShellScriptBin "forms-lab-deploy" ''
     set -euo pipefail
 
@@ -153,10 +185,11 @@ CADDYEOF
   '';
 in
 {
-  environment.systemPackages = [ deployScript ];
+  environment.systemPackages = [ deployScript deployMainScript ];
 
-  # Make the deploy script available at the expected path
+  # Make the deploy scripts available at expected paths
   system.activationScripts.deployLink = ''
     ln -sf ${deployScript}/bin/forms-lab-deploy /srv/forms-lab/deploy.sh
+    ln -sf ${deployMainScript}/bin/forms-lab-deploy-main /srv/forms-lab/deploy-main.sh
   '';
 }
