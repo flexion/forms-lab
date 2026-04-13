@@ -19,7 +19,7 @@ import {
   renderMarkdown,
 } from '../../../../services/content/markdown'
 import { resolveUrl } from '../../../../shared/base-path'
-import { getCatalogSidebar } from './sidebar'
+import { getArchitectureSidebar } from './sidebar'
 
 const diagramsBySlug: Record<string, GraphDefinition> = {
   'system-overview': systemOverviewGraph,
@@ -29,18 +29,32 @@ const diagramsBySlug: Record<string, GraphDefinition> = {
   'software-architecture': softwareArchitectureGraph,
 }
 
+interface ArchitectureDocSummary {
+  slug: string
+  title: string
+  status: string
+}
+
+async function loadArchitectureDocs(): Promise<ArchitectureDocSummary[]> {
+  const archDir = join(process.cwd(), 'catalog', 'architecture')
+  try {
+    const files = await readMarkdownDir(archDir)
+    return files.map((file) => ({
+      slug: file.filename,
+      title: file.content.split('\n')[0]?.replace(/^#\s+/, '') || file.filename,
+      status: file.frontmatter.status || 'draft',
+    }))
+  } catch {
+    return []
+  }
+}
+
 const architecture = new Hono()
 
 architecture.get('/', async (c) => {
-  const archDir = join(process.cwd(), 'catalog', 'architecture')
-  let files: Awaited<ReturnType<typeof readMarkdownDir>> = []
-  try {
-    files = await readMarkdownDir(archDir)
-  } catch {
-    // directory may not exist
-  }
+  const docs = await loadArchitectureDocs()
 
-  const sidebarData = getCatalogSidebar('/catalog/architecture')
+  const sidebarData = getArchitectureSidebar(docs, '/catalog/architecture')
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
@@ -53,21 +67,16 @@ architecture.get('/', async (c) => {
       <h1>Architecture</h1>
       <p>System documentation describing how Forms Lab works.</p>
       <div class="l-stack">
-        {files.map((file) => {
-          const title =
-            file.content.split('\n')[0]?.replace(/^#\s+/, '') || file.filename
-          const status = file.frontmatter.status || 'draft'
-          return (
-            <ContentCard
-              key={file.filename}
-              title={title}
-              href={resolveUrl(`/catalog/architecture/${file.filename}`)}
-            >
-              <StatusBadge status={status} />
-            </ContentCard>
-          )
-        })}
-        {files.length === 0 && (
+        {docs.map((doc) => (
+          <ContentCard
+            key={doc.slug}
+            title={doc.title}
+            href={resolveUrl(`/catalog/architecture/${doc.slug}`)}
+          >
+            <StatusBadge status={doc.status} />
+          </ContentCard>
+        ))}
+        {docs.length === 0 && (
           <p class="flex-empty">No architecture documents yet.</p>
         )}
       </div>
@@ -79,7 +88,9 @@ architecture.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
   const filePath = join(process.cwd(), 'catalog', 'architecture', `${slug}.md`)
 
-  const sidebarData = getCatalogSidebar('/catalog/architecture')
+  const docs = await loadArchitectureDocs()
+  const currentPath = `/catalog/architecture/${slug}`
+  const sidebarData = getArchitectureSidebar(docs, currentPath)
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   try {

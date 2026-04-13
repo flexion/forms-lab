@@ -192,6 +192,39 @@ export function getDecisionsSidebar(
 }
 
 /**
+ * Contextual sidebar for architecture pages.
+ * Shows a "← Back to Catalog" link, an "All Docs" link, and
+ * one link per architecture doc under them.
+ */
+export function getArchitectureSidebar(
+  docs: Array<{ slug: string; title: string }>,
+  currentPath?: string,
+) {
+  return [
+    {
+      title: 'Architecture',
+      items: [
+        {
+          label: '\u2190 Back to Catalog',
+          href: resolveUrl('/catalog'),
+          current: false,
+        },
+        {
+          label: 'All Docs',
+          href: resolveUrl('/catalog/architecture'),
+          current: currentPath === '/catalog/architecture',
+        },
+        ...docs.map((doc) => ({
+          label: doc.title,
+          href: resolveUrl(`/catalog/architecture/${doc.slug}`),
+          current: currentPath === `/catalog/architecture/${doc.slug}`,
+        })),
+      ],
+    },
+  ]
+}
+
+/**
  * Contextual sidebar for stories pages.
  */
 export function getStoriesSidebar(stories: Story[], currentPath?: string) {
