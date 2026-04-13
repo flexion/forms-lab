@@ -33,12 +33,13 @@ let
   '';
 in
 {
-  environment.systemPackages = [ entrypointWrapper ];
-
-  # Export the wrapper path for other modules to reference
   options.flexion.entrypointWrapper = lib.mkOption {
     type = lib.types.package;
     default = entrypointWrapper;
     description = "The forms-lab entrypoint wrapper script package";
+  };
+
+  config = {
+    environment.systemPackages = [ entrypointWrapper ];
   };
 }
