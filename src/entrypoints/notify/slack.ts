@@ -7,12 +7,16 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export function formatSlackMessage(event: NotifyEvent): object {
+  const titleText = event.url
+    ? `*[${event.type}]* <${event.url}|${event.title}>`
+    : `*[${event.type}]* ${event.title}`
+
   const blocks: object[] = [
     {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `*[${event.type}]* ${event.title}`,
+        text: titleText,
       },
     },
   ]

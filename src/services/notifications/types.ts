@@ -6,6 +6,7 @@ export interface NotifyEvent {
   status: NotifyStatus
   details?: string
   timestamp?: string
+  url?: string
 }
 
 const VALID_STATUSES: Set<string> = new Set(['success', 'failure', 'info'])
@@ -46,6 +47,10 @@ export function validateEvent(
 
   if (typeof obj.details === 'string') {
     event.details = obj.details
+  }
+
+  if (typeof obj.url === 'string') {
+    event.url = obj.url
   }
 
   return { valid: true, event }

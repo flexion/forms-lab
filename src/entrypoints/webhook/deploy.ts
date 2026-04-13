@@ -49,9 +49,13 @@ export interface DeployWithStatusOptions {
   hostname?: string
 }
 
-export async function deployMainBranch(sha: string): Promise<DeployResult> {
+export async function deployMainBranch(
+  sha: string,
+  hostname?: string,
+): Promise<DeployResult> {
   const script =
     process.env.DEPLOY_MAIN_SCRIPT || '/srv/forms-lab/deploy-main.sh'
+  const deployedUrl = hostname ? `https://${hostname}/` : undefined
 
   try {
     const proc = Bun.spawn([script, sha], {
@@ -81,6 +85,7 @@ export async function deployMainBranch(sha: string): Promise<DeployResult> {
       type: 'deploy.success',
       title: `Main deployment succeeded at ${sha.slice(0, 7)}`,
       status: 'success',
+      url: deployedUrl,
     })
     return { success: true, stdout, stderr }
   } catch (err) {
@@ -131,12 +136,17 @@ export async function triggerDeployWithStatus(
 
   const result = await triggerDeploy(branch, sha)
 
+  const environmentUrl = hostname
+    ? `https://${hostname}/${safeBranch}/`
+    : undefined
+
   if (result.success) {
     notifyEvent({
       type: 'deploy.success',
       title: `Deployed \`${branch}\` at ${sha.slice(0, 7)}`,
       status: 'success',
       details: result.stdout?.split('\n').pop() || undefined,
+      url: environmentUrl,
     })
   } else {
     notifyEvent({
@@ -150,9 +160,6 @@ export async function triggerDeployWithStatus(
   if (deploymentId) {
     try {
       if (result.success) {
-        const environmentUrl = hostname
-          ? `https://${hostname}/${safeBranch}/`
-          : undefined
         await githubClient.createDeploymentStatus(
           owner,
           repo,
