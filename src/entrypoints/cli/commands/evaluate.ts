@@ -4,9 +4,7 @@ import { runEvaluation } from '../../../services/evaluation/harness'
 import { pdfFieldExtractionKind } from '../../../services/evaluation/kinds/pdf-field-extraction'
 import { evaluationRunSchema } from '../../../services/evaluation/schemas'
 import { createExtractorRegistry } from '../../../services/extraction/registry'
-import {
-  createCachedPdfExtractor,
-} from '../../../services/ingestion/pdf-extractor'
+import { createCachedPdfExtractor } from '../../../services/ingestion/pdf-extractor'
 import { createCacheStore } from '../../../services/storage'
 
 function printUsage(): void {
@@ -58,7 +56,9 @@ export async function evaluate(args: string[]): Promise<number> {
           ? args[strategyIdx + 1]
           : 'opus-baseline'
 
-      const { loadFixtureForEvaluation } = await import('../../../../fixtures/index')
+      const { loadFixtureForEvaluation } = await import(
+        '../../../../fixtures/index'
+      )
       const fixture = loadFixtureForEvaluation(slug)
       if (!fixture) {
         console.error(`Unknown fixture: ${slug}`)

@@ -27,8 +27,11 @@ export interface DataRequirement {
   choices?: string[]
   validation?: ValidationRule[]
   condition?: FieldCondition
+  sensitivity?: SensitivityLevel
   displayWidth?: '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 }
+
+export type SensitivityLevel = 'low' | 'medium' | 'high' | 'pii'
 
 export type FieldType =
   | 'text'

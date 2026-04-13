@@ -1,5 +1,5 @@
-import type { DataCollectionSpec } from '../../types/models'
-import type { PdfExtractor } from '../pdf-extractor'
+import type { DataCollectionSpec } from '../data-collection/types'
+import type { PdfExtractor } from '../ingestion/pdf-extractor'
 import type { ExtractionOutput } from './kinds/pdf-field-extraction'
 import type { EvaluationKind, RunResult } from './types'
 

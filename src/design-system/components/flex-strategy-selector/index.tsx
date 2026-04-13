@@ -1,10 +1,20 @@
 import type { FC } from 'hono/jsx'
-import { resolveUrl } from '../../../lib/base-path'
-import type { StrategyListItem } from '../../../services/strategy-registry'
+import { resolveUrl } from '../../../shared/base-path'
 import { StatusBadge } from '../flex-badge'
 
+interface StrategyItem {
+  id: string
+  metadata: {
+    name: string
+    description: string
+    status: 'baseline' | 'experimental' | 'production'
+    catalogPath?: string
+    metrics?: Record<string, number>
+  }
+}
+
 interface StrategySelectorProps {
-  strategies: StrategyListItem[]
+  strategies: StrategyItem[]
   defaultId: string
   name: string
 }

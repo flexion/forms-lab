@@ -117,7 +117,7 @@ experiments.get('/:kind', async (c) => {
           currentPath="/catalog"
           user={c.get('user')}
         >
-          <Prose content={file.content} />
+          <Prose html={renderMarkdown(file.content)} />
           <p style="margin-top: var(--flex-space-lg);">
             <a href={resolveUrl('/catalog/experiments')}>
               ← Back to Experiments
@@ -168,7 +168,7 @@ experiments.get('/:kind', async (c) => {
         currentPath="/catalog"
         user={c.get('user')}
       >
-        <Prose content={suite.content} />
+        <Prose html={renderMarkdown(suite.content)} />
 
         {runSummaries.length > 0 && (
           <>
@@ -249,7 +249,7 @@ experiments.get('/:kind', async (c) => {
           currentPath="/catalog"
           user={c.get('user')}
         >
-          <Prose content={file.content} />
+          <Prose html={renderMarkdown(file.content)} />
           <p style="margin-top: var(--flex-space-lg);">
             <a href={resolveUrl('/catalog/experiments')}>
               ← Back to Experiments

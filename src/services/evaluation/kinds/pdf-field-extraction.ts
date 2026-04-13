@@ -1,8 +1,8 @@
 import type {
   DataCollectionSpec,
   DataRequirement,
-  FieldConfidence,
-} from '../../../types/models'
+} from '../../data-collection/types'
+import type { FieldConfidence } from '../../ingestion/types'
 import type { CaseMetrics, EvaluationKind, SummaryMetrics } from '../types'
 
 /**

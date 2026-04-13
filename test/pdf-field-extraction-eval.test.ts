@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'bun:test'
-import { pdfFieldExtractionKind } from '../src/services/evaluation/kinds/pdf-field-extraction'
 import type {
   DataCollectionSpec,
-  FieldConfidence,
   FieldType,
   SensitivityLevel,
-} from '../src/types/models'
+} from '../src/services/data-collection/types'
+import { pdfFieldExtractionKind } from '../src/services/evaluation/kinds/pdf-field-extraction'
+import type { FieldConfidence } from '../src/services/ingestion/types'
 
 function makeSpec(
   fields: Array<{

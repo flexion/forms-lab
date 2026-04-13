@@ -1,5 +1,6 @@
 import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../../fixtures/index'
+import { StrategySelector } from '../../../../design-system/components/flex-strategy-selector'
 import type { DataCollectionSpec } from '../../../../services/data-collection/types'
 import type { FormSpec } from '../../../../services/forms/types'
 import type {
@@ -8,7 +9,6 @@ import type {
 } from '../../../../services/ingestion/types'
 import type { StrategyListItem } from '../../../../services/strategy-registry'
 import { resolveUrl } from '../../../../shared/base-path'
-import { StrategySelector } from '../../../../design-system/components/flex-strategy-selector'
 
 export const ProjectList: FC<{ projects: StoredProject[] }> = ({
   projects,
