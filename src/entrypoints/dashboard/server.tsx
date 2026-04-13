@@ -145,11 +145,9 @@ app.get('/', async (c) => {
           </div>
         </div>
 
-        {/* Deployment table */}
-        <div class="l-stack">
-          <h2>Active Deployments</h2>
-          <DeploymentTable deployments={summary.deployments} />
-        </div>
+        {/* Deployment table — direct children of l-page-content so l-feature selector matches */}
+        <h2>Active Deployments</h2>
+        <DeploymentTable deployments={summary.deployments} />
       </Layout>,
     )
   } catch (error) {

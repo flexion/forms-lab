@@ -3,7 +3,7 @@
 
 flex-file-input {
   display: block;
-  max-inline-size: 30rem;
+  max-inline-size: var(--flex-control-max-width);
   inline-size: 100%;
 }
 

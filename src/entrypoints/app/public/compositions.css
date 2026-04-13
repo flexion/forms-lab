@@ -55,3 +55,14 @@
   gap: var(--grid-space, var(--flex-space-md));
   container-type: inline-size;
 }
+
+.l-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--switcher-space, var(--flex-space-md));
+}
+
+.l-switcher > * {
+  flex-grow: 1;
+  flex-basis: calc((var(--threshold, 30rem) - 100%) * 999);
+}

@@ -4,5 +4,6 @@
 
 flex-time-picker {
   display: block;
+  /* stylelint-disable-next-line declaration-property-value-allowed-list -- Time-list column intrinsic width. */
   max-inline-size: 10rem;
 }

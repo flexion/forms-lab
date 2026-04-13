@@ -10,6 +10,7 @@
 
 /* Compositions */
 @import "./compositions.css" layer(composition);
+@import "./page-layouts.css" layer(composition);
 
 /* Base */
 @import "./base.css" layer(base);

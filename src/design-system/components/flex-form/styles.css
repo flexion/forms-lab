@@ -5,9 +5,11 @@
 .flex-form {
   font-size: var(--flex-text-uswds);
   line-height: 1.3;
+  /* stylelint-disable-next-line declaration-property-value-allowed-list -- USWDS usa-form intrinsic width. */
   max-inline-size: 32em;
 
   &[data-size="large"] {
+    /* stylelint-disable-next-line declaration-property-value-allowed-list -- USWDS usa-form--large intrinsic width. */
     max-inline-size: 46rem;
   }
 

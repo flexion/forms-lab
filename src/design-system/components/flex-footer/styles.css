@@ -117,7 +117,7 @@
 }
 
 .flex-footer__logo-img {
-  max-inline-size: 3rem;
+  block-size: 3rem;
 }
 
 .flex-footer__logo-heading {
@@ -180,7 +180,7 @@
 
 .flex-footer:not([data-variant]) .flex-footer__logo-img,
 .flex-footer[data-variant="slim"] .flex-footer__logo-img {
-  max-inline-size: 3rem;
+  block-size: 3rem;
 }
 
 .flex-footer:not([data-variant]) .flex-footer__contact-info,

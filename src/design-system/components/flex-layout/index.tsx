@@ -108,8 +108,8 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           )}
         </Header>
         {props.sidebar ? (
-          <div class="catalog-layout">
-            <aside class="catalog-sidebar">
+          <div class="l-page-sidebar-start">
+            <aside class="l-page-sidebar catalog-sidebar">
               <details class="catalog-nav-toggle" open>
                 <summary>In this section</summary>
                 {props.sidebar}
@@ -120,14 +120,10 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
                 }}
               />
             </aside>
-            <main>
-              <div class="l-stack">{props.children}</div>
-            </main>
+            <main class="l-page-main">{props.children}</main>
           </div>
         ) : (
-          <main class="l-center">
-            <div class="l-stack">{props.children}</div>
-          </main>
+          <main class="l-page-content">{props.children}</main>
         )}
         <Footer variant="slim">
           <FooterReturnToTop />

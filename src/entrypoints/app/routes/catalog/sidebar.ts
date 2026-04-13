@@ -130,6 +130,11 @@ export function getDesignSystemSidebar(currentPath?: string) {
           href: resolveUrl('/catalog/design-system/data-visualizations'),
           current: currentPath === '/catalog/design-system/data-visualizations',
         },
+        {
+          label: 'Layout',
+          href: resolveUrl('/catalog/design-system/layout'),
+          current: currentPath === '/catalog/design-system/layout',
+        },
       ],
     },
     ...Object.entries(grouped).map(([category, components]) => ({

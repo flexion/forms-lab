@@ -1,0 +1,147 @@
+/* Page layouts are Tier 1 of the layout system. They define the top-level
+   structure of a page with opinionated proportions. They are top-level only
+   and are never nested inside another page layout or a composition.
+   The cascade layer (composition) is applied at the @import site in styles.css. */
+
+/* Shared breakout track grid. Used by l-page-content directly and by the
+   main content region of sidebar page layouts.
+   Named lines define four tracks: content, popout, feature, full.
+   Children default to the content track; opt into wider tracks with
+   .l-popout, .l-feature, or .l-full. */
+.l-page-content,
+.l-page-main {
+  display: grid;
+  /* Nine-column grid. Each pair of tracks around the content column collapses
+     to zero on narrow viewports via minmax(0, N). Named lines:
+       full-start | gutter | feature-start | feature-gutter | popout-start |
+       popout-gutter | content-start | CONTENT | content-end | popout-gutter |
+       popout-end | feature-gutter | feature-end | gutter | full-end */
+  grid-template-columns:
+    [full-start] minmax(var(--flex-space-md), 1fr)
+    [feature-start] minmax(0, 5rem)
+    [popout-start] minmax(0, 2rem)
+    [content-start]
+    min(var(--flex-content-default), calc(100% - var(--flex-space-md) * 2))
+    [content-end]
+    minmax(0, 2rem) [popout-end]
+    minmax(0, 5rem) [feature-end]
+    minmax(var(--flex-space-md), 1fr) [full-end];
+  row-gap: var(--flex-space-md);
+  container-type: inline-size;
+  container-name: page-content;
+}
+
+.l-page-content > *,
+.l-page-main > * {
+  grid-column: content;
+  min-inline-size: 0;
+}
+
+.l-page-content > .l-popout,
+.l-page-main > .l-popout {
+  grid-column: popout;
+}
+
+.l-page-content > .l-feature,
+.l-page-main > .l-feature {
+  grid-column: feature;
+}
+
+.l-page-content > .l-full,
+.l-page-main > .l-full {
+  grid-column: full;
+}
+
+/* Top-level single-column pages need their own padding-block.
+   Sidebar layouts already apply padding-block on their wrapper element,
+   so this rule is intentionally scoped to l-page-content only. */
+.l-page-content {
+  padding-block: var(--flex-space-lg);
+}
+
+/* Narrow and wide content-track variants.
+   Overriding --flex-content-default on the page layout root changes
+   the default track width for all descendants. */
+.l-page-content[data-width="narrow"],
+.l-page-main[data-width="narrow"] {
+  --flex-content-default: var(--flex-content-narrow);
+}
+
+.l-page-content[data-width="wide"],
+.l-page-main[data-width="wide"] {
+  --flex-content-default: var(--flex-content-wide);
+}
+
+.l-page-sidebar-start {
+  display: grid;
+  grid-template-columns: var(--flex-sidebar-width) minmax(0, 1fr);
+  gap: var(--flex-space-lg);
+  padding-block: var(--flex-space-lg);
+}
+
+.l-page-sidebar-start > .l-page-sidebar {
+  position: sticky;
+  z-index: 1;
+  inset-block-start: var(--flex-space-md);
+  max-block-size: calc(100vh - var(--flex-sidebar-max-offset));
+  overflow-y: auto;
+  padding-inline-start: var(--flex-space-md);
+  container-type: inline-size;
+  container-name: page-sidebar;
+}
+
+.l-page-sidebar-start > .l-page-main {
+  /* The breakout grid is inherited from the shared .l-page-main rule at the
+     top of this file. min-inline-size: 0 here prevents the inner grid from
+     blowing out the outer two-column grid when long content (URLs, code)
+     refuses to shrink. */
+  min-inline-size: 0;
+}
+
+@media (max-width: 48rem) {
+  .l-page-sidebar-start {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .l-page-sidebar-start > .l-page-sidebar {
+    position: static;
+    max-block-size: none;
+    overflow-y: visible;
+    padding-inline-start: var(--flex-space-md);
+    padding-inline-end: var(--flex-space-md);
+    border-block-end: 1px solid var(--flex-color-border);
+    padding-block-end: var(--flex-space-md);
+  }
+}
+
+.l-page-sidebar-end {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--flex-sidebar-width);
+  gap: var(--flex-space-lg);
+  padding-block: var(--flex-space-lg);
+}
+
+.l-page-sidebar-end > .l-page-main {
+  /* See .l-page-sidebar-start > .l-page-main above for why min-inline-size
+     is pinned. */
+  min-inline-size: 0;
+}
+
+.l-page-sidebar-end > .l-page-sidebar {
+  padding-inline-end: var(--flex-space-md);
+  container-type: inline-size;
+  container-name: page-sidebar;
+}
+
+@media (max-width: 48rem) {
+  .l-page-sidebar-end {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .l-page-sidebar-end > .l-page-sidebar {
+    padding-inline-start: var(--flex-space-md);
+    padding-inline-end: var(--flex-space-md);
+    border-block-start: 1px solid var(--flex-color-border);
+    padding-block-start: var(--flex-space-md);
+  }
+}

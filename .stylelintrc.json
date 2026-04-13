@@ -37,6 +37,42 @@
         "message": "Use a design token (--flex-*, --font-*, --text-*) instead of a hard-coded value"
       }
     ],
+    "declaration-property-value-allowed-list": {
+      "max-inline-size": [
+        "/^var\\(--flex-content-/",
+        "/^var\\(--flex-control-/",
+        "none",
+        "100%",
+        "auto",
+        "unset",
+        "min-content",
+        "max-content",
+        "fit-content",
+        "/^min\\(/",
+        "/^max\\(/",
+        "/^clamp\\(/",
+        "/^calc\\(/",
+        "/^\\d+(\\.\\d+)?ex$/",
+        "/^\\d+(\\.\\d+)?%$/"
+      ],
+      "max-width": [
+        "/^var\\(--flex-content-/",
+        "/^var\\(--flex-control-/",
+        "none",
+        "100%",
+        "auto",
+        "unset",
+        "min-content",
+        "max-content",
+        "fit-content",
+        "/^min\\(/",
+        "/^max\\(/",
+        "/^clamp\\(/",
+        "/^calc\\(/",
+        "/^\\d+(\\.\\d+)?ex$/",
+        "/^\\d+(\\.\\d+)?%$/"
+      ]
+    },
     "at-rule-no-unknown": [true, {
       "ignoreAtRules": ["layer", "property", "container"]
     }],
