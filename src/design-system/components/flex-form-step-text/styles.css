@@ -1,0 +1,10 @@
+/* flex-form-step-text — page progress caption
+   Modeled after USWDS usa-step-indicator__heading-counter */
+.flex-form-step-text {
+  display: block;
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+  font-weight: normal;
+  margin-bottom: var(--flex-space-xs);
+}

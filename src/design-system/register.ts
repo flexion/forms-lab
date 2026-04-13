@@ -1,0 +1,20 @@
+// Interactive component client scripts are imported here.
+// Each import triggers customElements.define() for that component.
+// This file is built into dist/components.js and loaded on every page.
+import './components/flex-accordion/client'
+import './components/flex-banner/client'
+import './components/flex-character-count/client'
+import './components/flex-file-input/client'
+import './components/flex-input-mask/client'
+import './components/flex-header/client'
+import './components/flex-language-selector/client'
+import './components/flex-memorable-date/client'
+import './components/flex-modal/client'
+import './components/flex-range-slider/client'
+import './components/flex-tooltip/client'
+import './components/flex-combo-box/client'
+import './components/flex-date-picker/client'
+import './components/flex-date-range-picker/client'
+import './components/flex-time-picker/client'
+import './components/flex-in-page-nav/client'
+import './components/flex-tab-group/client'

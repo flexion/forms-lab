@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
-import { createProjectRoutes } from '../src/app/routes/projects/index'
-import { createProjectStore } from '../src/services/database'
-import type { PdfExtractor } from '../src/services/pdf-extractor'
-import type { ExtractionResult } from '../src/types/models'
+import { createProjectRoutes } from '../src/entrypoints/app/routes/projects/index'
+import type { PdfExtractor } from '../src/services/ingestion/pdf-extractor'
+import type { ExtractionResult } from '../src/services/ingestion/types'
+import { createProjectStore } from '../src/services/storage'
 
 const stubResult: ExtractionResult = {
   spec: {
@@ -17,8 +17,6 @@ const stubResult: ExtractionResult = {
     specId: 'spec-1',
     title: 'Test Form',
     pages: [],
-    createdAt: '2026-04-09',
-    updatedAt: '2026-04-09',
   },
   confidence: [],
 }
@@ -277,11 +275,8 @@ describe('Project detail - ready state', () => {
             id: 'page-1',
             title: 'Personal Information',
             groups: ['g1'],
-            deliveryMode: 'conversational',
           },
         ],
-        createdAt: '2026-04-11',
-        updatedAt: '2026-04-11',
       },
       confidence: [
         { fieldId: 'f1', confidence: 0.95 },
@@ -370,8 +365,6 @@ describe('Confidence indicators', () => {
         specId: 'spec-1',
         title: 'Test',
         pages: [],
-        createdAt: '',
-        updatedAt: '',
       },
       confidence: [
         { fieldId: 'low-conf', confidence: 0.3, flags: ['ambiguous-type'] },

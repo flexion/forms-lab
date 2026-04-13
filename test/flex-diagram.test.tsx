@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
-import { DiagramRenderer } from '../src/app/components/flex-diagram'
-import { dataModelGraph } from '../src/app/components/flex-diagram/diagrams/data-model'
-import { deploymentGraph } from '../src/app/components/flex-diagram/diagrams/deployment'
-import { softwareArchitectureGraph } from '../src/app/components/flex-diagram/diagrams/software-architecture'
-import { systemOverviewGraph } from '../src/app/components/flex-diagram/diagrams/system-overview'
-import { threatModelGraph } from '../src/app/components/flex-diagram/diagrams/threat-model'
-import type { GraphDefinition } from '../src/app/components/flex-diagram/types'
+import { DiagramRenderer } from '../src/design-system/components/flex-diagram'
+import { dataModelGraph } from '../src/design-system/components/flex-diagram/diagrams/data-model'
+import { deploymentGraph } from '../src/design-system/components/flex-diagram/diagrams/deployment'
+import { softwareArchitectureGraph } from '../src/design-system/components/flex-diagram/diagrams/software-architecture'
+import { systemOverviewGraph } from '../src/design-system/components/flex-diagram/diagrams/system-overview'
+import { threatModelGraph } from '../src/design-system/components/flex-diagram/diagrams/threat-model'
+import type { GraphDefinition } from '../src/design-system/components/flex-diagram/types'
 
 const simple: GraphDefinition = {
   title: 'Test Diagram',
@@ -156,22 +156,20 @@ describe('threatModelGraph', () => {
 })
 
 describe('softwareArchitectureGraph', () => {
-  it('defines the main codebase modules', () => {
+  it('defines the four architecture layers', () => {
     const nodeIds = softwareArchitectureGraph.nodes.map((n) => n.id)
-    expect(nodeIds).toContain('app')
-    expect(nodeIds).toContain('webhook')
+    expect(nodeIds).toContain('entrypoints')
     expect(nodeIds).toContain('services')
-    expect(nodeIds).toContain('lib')
-    expect(nodeIds).toContain('types')
-    expect(nodeIds).toContain('cli')
+    expect(nodeIds).toContain('design-system')
+    expect(nodeIds).toContain('shared')
   })
 
-  it('shows dependency edges', () => {
+  it('shows dependency edges from entrypoints', () => {
     expect(softwareArchitectureGraph.edges.length).toBeGreaterThan(0)
-    const appEdges = softwareArchitectureGraph.edges.filter(
-      (e) => e.source === 'app',
+    const entrypointEdges = softwareArchitectureGraph.edges.filter(
+      (e) => e.source === 'entrypoints',
     )
-    expect(appEdges.length).toBeGreaterThan(0)
+    expect(entrypointEdges.length).toBeGreaterThan(0)
   })
 
   it('uses top-to-bottom layout', () => {
@@ -179,7 +177,7 @@ describe('softwareArchitectureGraph', () => {
   })
 })
 
-import app from '../src/app/server'
+import app from '../src/entrypoints/app/server'
 
 describe('Architecture route with diagrams', () => {
   it('renders a diagram on the system-overview page', async () => {

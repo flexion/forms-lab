@@ -5,8 +5,8 @@
  */
 import { describe, expect, it } from 'bun:test'
 import { demoFixtures, getFixture, loadFixturePdf } from '../fixtures/index'
-import app from '../src/app/server'
-import { COOKIE_NAME, encryptSession } from '../src/lib/session'
+import app from '../src/entrypoints/app/server'
+import { COOKIE_NAME, encryptSession } from '../src/services/auth/session'
 
 const SESSION_SECRET = 'test-secret-key-32-bytes-long!'
 
@@ -137,7 +137,7 @@ describe('Smoke tests', () => {
   describe('PDF extractor configuration', () => {
     it('BedrockPdfExtractor can be instantiated', async () => {
       const { createBedrockPdfExtractor } = await import(
-        '../src/services/pdf-extractor'
+        '../src/services/ingestion/pdf-extractor'
       )
       // Should not throw — construction is lazy, no AWS calls yet
       const extractor = createBedrockPdfExtractor()

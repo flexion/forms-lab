@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'bun:test'
-import { getBasePath, resolveUrl } from '../src/lib/base-path'
+import { getBasePath, resolveUrl } from '../src/shared/base-path'
 
 describe('getBasePath', () => {
   const originalEnv = process.env.BASE_PATH

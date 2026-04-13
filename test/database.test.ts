@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { createCacheStore, createProjectStore } from '../src/services/database'
+import { createCacheStore, createProjectStore } from '../src/services/storage'
 
 describe('CacheStore', () => {
   it('returns null for missing key', () => {
@@ -115,8 +115,6 @@ describe('ProjectStore', () => {
         specId: 's1',
         title: 'Form',
         pages: [],
-        createdAt: '',
-        updatedAt: '',
       },
       confidence: [{ fieldId: 'f1', confidence: 0.9 }],
     })

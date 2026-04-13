@@ -3,7 +3,7 @@ import {
   parseDeleteEvent,
   parsePushEvent,
   verifySignature,
-} from '../src/webhook/handler'
+} from '../src/entrypoints/webhook/handler'
 
 describe('verifySignature', () => {
   const secret = 'test-secret'

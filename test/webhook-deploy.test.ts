@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
-import type { GitHubClient } from '../src/services/github'
 import {
   deployMainBranch,
   triggerDeploy,
   triggerDeployWithStatus,
-} from '../src/webhook/deploy'
+} from '../src/entrypoints/webhook/deploy'
+import type { GitHubClient } from '../src/services/deployment/github'
 
 describe('triggerDeploy', () => {
   const _originalEnv = process.env.DEPLOY_SCRIPT

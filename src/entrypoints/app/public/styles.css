@@ -1,0 +1,77 @@
+/* Cascade layer order — specificity is controlled by declaration order here */
+@layer reset, tokens, composition, base, block, utility;
+
+/* Reset */
+@import "./reset.css" layer(reset);
+@import "./font-normalize.css" layer(reset);
+
+/* Tokens */
+@import "./tokens.css" layer(tokens);
+
+/* Compositions */
+@import "./compositions.css" layer(composition);
+
+/* Base */
+@import "./base.css" layer(base);
+@import "./base-classes.css" layer(base);
+
+/* Block — component styles */
+@import "../../../design-system/components/flex-accordion/styles.css" layer(block);
+@import "../../../design-system/components/flex-alert/styles.css" layer(block);
+@import "../../../design-system/components/flex-icon/styles.css" layer(block);
+@import "../../../design-system/components/flex-layout/styles.css" layer(block);
+@import "../../../design-system/components/flex-badge/styles.css" layer(block);
+@import "../../../design-system/components/flex-card/styles.css" layer(block);
+@import "../../../design-system/components/flex-prose/styles.css" layer(block);
+@import "../../../design-system/components/flex-button/styles.css" layer(block);
+@import "../../../design-system/components/flex-label/styles.css" layer(block);
+@import "../../../design-system/components/flex-text-input/styles.css" layer(block);
+@import "../../../design-system/components/flex-textarea/styles.css" layer(block);
+@import "../../../design-system/components/flex-error-message/styles.css" layer(block);
+@import "../../../design-system/components/flex-tag/styles.css" layer(block);
+@import "../../../design-system/components/flex-link/styles.css" layer(block);
+@import "../../../design-system/components/flex-list/styles.css" layer(block);
+@import "../../../design-system/components/flex-collection/styles.css" layer(block);
+@import "../../../design-system/components/flex-table/styles.css" layer(block);
+@import "../../../design-system/components/flex-breadcrumb/styles.css" layer(block);
+@import "../../../design-system/components/flex-side-navigation/styles.css" layer(block);
+@import "../../../design-system/components/flex-pagination/styles.css" layer(block);
+@import "../../../design-system/components/flex-search/styles.css" layer(block);
+@import "../../../design-system/components/flex-checkbox/styles.css" layer(block);
+@import "../../../design-system/components/flex-radio/styles.css" layer(block);
+@import "../../../design-system/components/flex-select/styles.css" layer(block);
+@import "../../../design-system/components/flex-button-group/styles.css" layer(block);
+@import "../../../design-system/components/flex-footer/styles.css" layer(block);
+@import "../../../design-system/components/flex-header/styles.css" layer(block);
+@import "../../../design-system/components/flex-banner/styles.css" layer(block);
+@import "../../../design-system/components/flex-identifier/styles.css" layer(block);
+@import "../../../design-system/components/flex-form/styles.css" layer(block);
+@import "../../../design-system/components/flex-form-review/styles.css" layer(block);
+@import "../../../design-system/components/flex-form-step-text/styles.css" layer(block);
+@import "../../../design-system/components/flex-form-error-summary/styles.css" layer(block);
+@import "../../../design-system/components/flex-validation/styles.css" layer(block);
+@import "../../../design-system/components/flex-input-prefix-suffix/styles.css" layer(block);
+@import "../../../design-system/components/flex-site-alert/styles.css" layer(block);
+@import "../../../design-system/components/flex-summary-box/styles.css" layer(block);
+@import "../../../design-system/components/flex-step-indicator/styles.css" layer(block);
+@import "../../../design-system/components/flex-process-list/styles.css" layer(block);
+@import "../../../design-system/components/flex-character-count/styles.css" layer(block);
+@import "../../../design-system/components/flex-memorable-date/styles.css" layer(block);
+@import "../../../design-system/components/flex-input-mask/styles.css" layer(block);
+@import "../../../design-system/components/flex-range-slider/styles.css" layer(block);
+@import "../../../design-system/components/flex-file-input/styles.css" layer(block);
+@import "../../../design-system/components/flex-language-selector/styles.css" layer(block);
+@import "../../../design-system/components/flex-modal/styles.css" layer(block);
+@import "../../../design-system/components/flex-tooltip/styles.css" layer(block);
+@import "../../../design-system/components/flex-combo-box/styles.css" layer(block);
+@import "../../../design-system/components/flex-date-picker/styles.css" layer(block);
+@import "../../../design-system/components/flex-date-range-picker/styles.css" layer(block);
+@import "../../../design-system/components/flex-time-picker/styles.css" layer(block);
+@import "../../../design-system/components/flex-in-page-nav/styles.css" layer(block);
+@import "../../../design-system/components/flex-tab-group/styles.css" layer(block);
+@import "../../../design-system/components/flex-diagram/styles.css" layer(block);
+@import "../../dashboard/deployment-table.css" layer(block);
+@import "../routes/projects/styles.css" layer(block);
+
+/* Utility */
+@import "./utilities.css" layer(utility);

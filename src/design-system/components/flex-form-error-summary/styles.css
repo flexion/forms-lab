@@ -1,0 +1,31 @@
+/* flex-form-error-summary — GOV.UK error summary pattern */
+.flex-form-error-summary {
+  border-left: 0.25rem solid var(--flex-color-error);
+  padding: var(--flex-space-lg);
+  margin-bottom: var(--flex-space-lg);
+}
+
+.flex-form-error-summary:focus {
+  outline: var(--flex-focus-ring);
+  outline-offset: var(--flex-focus-offset);
+}
+
+.flex-form-error-summary h2 {
+  font-size: 1.17rem;
+  font-weight: 700;
+  margin: 0 0 var(--flex-space-sm) 0;
+}
+
+.flex-form-error-summary ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.flex-form-error-summary li {
+  margin-bottom: var(--flex-space-xs);
+}
+
+.flex-form-error-summary a {
+  color: var(--flex-color-error);
+  font-weight: 700;
+}

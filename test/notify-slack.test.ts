@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
-import { formatSlackMessage, postToSlack } from '../src/notify/slack'
-import type { NotifyEvent } from '../src/notify/types'
-import { validateEvent } from '../src/notify/types'
+import {
+  formatSlackMessage,
+  postToSlack,
+} from '../src/entrypoints/notify/slack'
+import type { NotifyEvent } from '../src/services/notifications/types'
+import { validateEvent } from '../src/services/notifications/types'
 
 describe('validateEvent', () => {
   it('accepts a valid event with all fields', () => {

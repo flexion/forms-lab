@@ -44,6 +44,33 @@ let
 
     # Install and build
     ${pkgs.bun}/bin/bun install
+
+    # Bootstrap guard: verify deploy.json entrypoints exist before building
+    if [ -f "$BRANCH_DIR/deploy.json" ]; then
+      echo "Validating deploy.json entrypoints..."
+      if [ "$BRANCH" = "main" ]; then
+        ROLES="app dashboard webhook notify"
+      else
+        ROLES="app"
+      fi
+      for ROLE in $ROLES; do
+        EP=$(${pkgs.jq}/bin/jq -r ".entrypoints[\"$ROLE\"] // empty" "$BRANCH_DIR/deploy.json")
+        if [ -z "$EP" ]; then
+          echo "ERROR: deploy.json has no entrypoint for role '$ROLE'"
+          exit 1
+        fi
+        if [ ! -f "$BRANCH_DIR/$EP" ]; then
+          echo "ERROR: deploy.json entry '$ROLE' points to '$EP'"
+          echo "       but that file does not exist in $BRANCH_DIR/"
+          echo "       This usually means the branch needs to be rebased on main."
+          exit 1
+        fi
+      done
+      echo "All entrypoints validated."
+    else
+      echo "WARNING: No deploy.json found in $BRANCH_DIR — skipping entrypoint validation"
+    fi
+
     ${pkgs.bun}/bin/bun run build
 
     # Assign port — read from ports.json or assign next available
