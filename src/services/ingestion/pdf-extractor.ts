@@ -21,13 +21,14 @@ function cacheKey(pdf: Buffer, model: string): string {
 export function createCachedPdfExtractor(
   inner: PdfExtractor,
   cacheStore: CacheStore,
+  cacheModel?: string,
 ): PdfExtractor {
   return {
     async extract(
       pdf: Buffer,
       options?: ExtractionOptions,
     ): Promise<ExtractionResult> {
-      const model = options?.model ?? DEFAULT_MODEL
+      const model = options?.model ?? cacheModel ?? DEFAULT_MODEL
       const key = cacheKey(pdf, model)
 
       const cached = cacheStore.get(key)
@@ -56,7 +57,13 @@ function parseJsonResponse<T>(
   return schema.parse(parsed)
 }
 
-export function createBedrockPdfExtractor(): PdfExtractor {
+export interface BedrockExtractorOptions {
+  model?: string
+}
+
+export function createBedrockPdfExtractor(
+  options?: BedrockExtractorOptions,
+): PdfExtractor {
   // Use AWS SSO profile if configured, otherwise fall back to default chain
   // (env vars, instance profile, etc.)
   const bedrockProfile = process.env.AWS_BEDROCK_PROFILE
@@ -71,16 +78,16 @@ export function createBedrockPdfExtractor(): PdfExtractor {
   return {
     async extract(
       pdf: Buffer,
-      options?: ExtractionOptions,
+      extractionOptions?: ExtractionOptions,
     ): Promise<ExtractionResult> {
-      const model = options?.model ?? DEFAULT_MODEL
+      const model = extractionOptions?.model ?? options?.model ?? DEFAULT_MODEL
 
       // Step 1: Extract DataCollectionSpec + confidence from PDF
       // Use generateText + manual JSON parsing because generateObject's
       // tool-use mode returns empty objects on Bedrock.
       const extraction = await generateText({
         model: bedrock(model),
-        maxOutputTokens: 16384,
+        maxOutputTokens: 32768,
         messages: [
           {
             role: 'user',
@@ -147,7 +154,7 @@ Guidelines:
       // Step 2: Generate default FormSpec from extracted spec
       const formSpecResult = await generateText({
         model: bedrock(model),
-        maxOutputTokens: 4096,
+        maxOutputTokens: 8192,
         messages: [
           {
             role: 'user',

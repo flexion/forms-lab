@@ -1,11 +1,22 @@
 import { join } from 'node:path'
 import { readFileSync } from 'node:fs'
+import type { FixtureManifest } from '../src/services/evaluation/schemas'
+import type { DataCollectionSpec } from '../src/types/models'
 
 export interface DemoFixture {
   slug: string
   name: string
   description: string
   filename: string
+}
+
+export interface LoadedFixture {
+  slug: string
+  name: string
+  description: string
+  pdf: Buffer
+  manifest: FixtureManifest
+  groundTruth?: DataCollectionSpec
 }
 
 export const demoFixtures: DemoFixture[] = [
@@ -25,4 +36,39 @@ export function getFixture(slug: string): DemoFixture | undefined {
 export function loadFixturePdf(fixture: DemoFixture): Buffer {
   const fixturesDir = join(import.meta.dir)
   return readFileSync(join(fixturesDir, fixture.filename)) as Buffer
+}
+
+export function loadFixtureForEvaluation(slug: string): LoadedFixture | null {
+  const fixture = getFixture(slug)
+  if (!fixture) return null
+
+  const fixturesDir = join(import.meta.dir)
+  const pdf = readFileSync(join(fixturesDir, fixture.filename)) as Buffer
+  const manifest = JSON.parse(
+    readFileSync(join(fixturesDir, slug, 'manifest.json'), 'utf-8'),
+  ) as FixtureManifest
+
+  let groundTruth: DataCollectionSpec | undefined
+  try {
+    groundTruth = JSON.parse(
+      readFileSync(join(fixturesDir, slug, 'ground-truth.json'), 'utf-8'),
+    ) as DataCollectionSpec
+  } catch {
+    // Not yet generated
+  }
+
+  return {
+    slug,
+    name: fixture.name,
+    description: fixture.description,
+    pdf,
+    manifest,
+    groundTruth,
+  }
+}
+
+export function loadAllFixturesForEvaluation(): LoadedFixture[] {
+  return demoFixtures
+    .map((f) => loadFixtureForEvaluation(f.slug))
+    .filter((f): f is LoadedFixture => f !== null)
 }

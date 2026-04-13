@@ -34,17 +34,20 @@ describe('ProjectStore', () => {
     const project = store.create({
       name: 'Pardon Application',
       description: 'Presidential pardon form',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('fake-pdf'),
       createdBy: 'testuser',
     })
     expect(project.id).toBeDefined()
     expect(project.name).toBe('Pardon Application')
     expect(project.status).toBe('extracting')
+    expect(project.strategy).toBe('sonnet')
     expect(project.createdBy).toBe('testuser')
 
     const retrieved = store.get(project.id)
     expect(retrieved).not.toBeNull()
     expect(retrieved?.name).toBe('Pardon Application')
+    expect(retrieved?.strategy).toBe('sonnet')
     expect(Buffer.from(retrieved!.sourcePdf).toString()).toBe('fake-pdf')
   })
 
@@ -58,18 +61,21 @@ describe('ProjectStore', () => {
     store.create({
       name: 'Project A',
       description: 'A',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('a'),
       createdBy: 'alice',
     })
     store.create({
       name: 'Project B',
       description: 'B',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('b'),
       createdBy: 'bob',
     })
     store.create({
       name: 'Project C',
       description: 'C',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('c'),
       createdBy: 'alice',
     })
@@ -90,6 +96,7 @@ describe('ProjectStore', () => {
     const project = store.create({
       name: 'Delete Me',
       description: 'Test',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'testuser',
     })
@@ -103,6 +110,7 @@ describe('ProjectStore', () => {
     const project = store.create({
       name: 'Test',
       description: 'Test',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'user',
     })

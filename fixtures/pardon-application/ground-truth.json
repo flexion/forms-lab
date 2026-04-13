@@ -1,0 +1,1613 @@
+{
+  "id": "application-for-pardon-after-completion-of-sentence",
+  "title": "Application for Pardon After Completion of Sentence",
+  "description": "United States Department of Justice, Office of the Pardon Attorney application for presidential pardon after completion of sentence. Applies to convictions under federal law, D.C. Code, or Uniform Code of Military Justice.",
+  "groups": [
+    {
+      "id": "background-information",
+      "title": "A. Background Information",
+      "description": "We need to know who is applying for pardon, to confirm your identity, and to be sure any background investigation is accurate.",
+      "requirements": [
+        {
+          "id": "first-name",
+          "fieldName": "firstName",
+          "label": "First name",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "middle-name",
+          "fieldName": "middleName",
+          "label": "Middle name (if you have one)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "last-name",
+          "fieldName": "lastName",
+          "label": "Last name",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "conviction-first-name",
+          "fieldName": "convictionFirstName",
+          "label": "First name at time of conviction (if different)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "conviction-middle-name",
+          "fieldName": "convictionMiddleName",
+          "label": "Middle name at time of conviction (if different)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "conviction-last-name",
+          "fieldName": "convictionLastName",
+          "label": "Last name at time of conviction (if different)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "other-names",
+          "fieldName": "otherNames",
+          "label": "Other names (married, maiden, aliases, etc.)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "social-security-number",
+          "fieldName": "socialSecurityNumber",
+          "label": "Social security number",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "date-of-birth",
+          "fieldName": "dateOfBirth",
+          "label": "Date of birth (Month, Day, Year)",
+          "fieldType": "date",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "country-of-birth",
+          "fieldName": "countryOfBirth",
+          "label": "Country where you were born",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "city-state-of-birth",
+          "fieldName": "cityStateOfBirth",
+          "label": "City and state where you were born",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "citizenship",
+          "fieldName": "citizenship",
+          "label": "Citizenship",
+          "fieldType": "choice",
+          "required": true,
+          "helpText": "U.S. citizen by birth, U.S. naturalized citizen, or Other nationality",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "other-nationality",
+          "fieldName": "otherNationality",
+          "label": "Other nationality (if applicable)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "parent-1-full-name",
+          "fieldName": "parent1FullName",
+          "label": "Parent #1's full name (maiden name in parentheses)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "parent-2-full-name",
+          "fieldName": "parent2FullName",
+          "label": "Parent #2's full name (maiden name in parentheses)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "contact-information",
+      "title": "Contact Information",
+      "description": "Email is the best way to contact you.",
+      "requirements": [
+        {
+          "id": "street-address",
+          "fieldName": "streetAddress",
+          "label": "Street address",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "apartment-unit",
+          "fieldName": "apartmentUnit",
+          "label": "Apartment/Unit",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "city-state",
+          "fieldName": "cityState",
+          "label": "City, State",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "zip-code",
+          "fieldName": "zipCode",
+          "label": "Zip code",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "email-address",
+          "fieldName": "emailAddress",
+          "label": "Your email address or email of a trusted person",
+          "fieldType": "email",
+          "required": true,
+          "helpText": "If you do not have email, you can give the email of a person you trust, or your phone number.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "phone-number",
+          "fieldName": "phoneNumber",
+          "label": "Phone number",
+          "fieldType": "phone",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "attorney-name",
+          "fieldName": "attorneyName",
+          "label": "Name of attorney helping with this application",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "attorney-contact",
+          "fieldName": "attorneyContact",
+          "label": "Attorney's email address and phone number",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "medium"
+        }
+      ]
+    },
+    {
+      "id": "previous-applications",
+      "title": "Previous Applications",
+      "requirements": [
+        {
+          "id": "has-previous-application",
+          "fieldName": "hasPreviousApplication",
+          "label": "Have you applied for federal commutation or pardon before?",
+          "fieldType": "boolean",
+          "required": true,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "previous-application-date",
+          "fieldName": "previousApplicationDate",
+          "label": "Date applied (month/year)",
+          "fieldType": "date",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "previous-decision-date",
+          "fieldName": "previousDecisionDate",
+          "label": "Date of decision (month/year)",
+          "fieldType": "date",
+          "required": false,
+          "sensitivity": "medium"
+        }
+      ]
+    },
+    {
+      "id": "sex-and-race",
+      "title": "Sex and Race",
+      "description": "This information is for statistical data collection purposes.",
+      "requirements": [
+        {
+          "id": "is-hispanic-latino",
+          "fieldName": "isHispanicLatino",
+          "label": "Are you Hispanic or Latino?",
+          "fieldType": "boolean",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "race",
+          "fieldName": "race",
+          "label": "Race (select all that apply)",
+          "fieldType": "choice",
+          "required": true,
+          "helpText": "Alaska Native or American Indian, Asian, Black or African American, Native Hawaiian or Other Pacific Islander, White, Other",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "sex",
+          "fieldName": "sex",
+          "label": "Sex",
+          "fieldType": "choice",
+          "required": true,
+          "helpText": "Female or Male",
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "family-information",
+      "title": "Family Information",
+      "description": "For this section, it would be helpful to have dates for your marriage, divorce, and children's birth dates (if applicable).",
+      "requirements": [
+        {
+          "id": "marital-status",
+          "fieldName": "maritalStatus",
+          "label": "Current marital status",
+          "fieldType": "choice",
+          "required": true,
+          "helpText": "Civil union/domestic partnership, Divorced, Married, Never Married, Separated, Widowed",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "spouse-partner-name",
+          "fieldName": "spousePartnerName",
+          "label": "Spouse / partner name",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "date-of-marriage",
+          "fieldName": "dateOfMarriage",
+          "label": "Date of marriage or civil union/domestic partnership",
+          "fieldType": "date",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "place-of-marriage",
+          "fieldName": "placeOfMarriage",
+          "label": "Place of marriage or civil union/domestic partnership",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "child-full-name",
+          "fieldName": "childFullName",
+          "label": "Full name of child or dependent",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "child-date-of-birth",
+          "fieldName": "childDateOfBirth",
+          "label": "Date of birth (child or dependent)",
+          "fieldType": "date",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "child-other-parent-names",
+          "fieldName": "childOtherParentNames",
+          "label": "Name(s) of other parent(s)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "child-custody",
+          "fieldName": "childCustody",
+          "label": "Do you have custody? (Y/N)",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "former-spouse-name",
+          "fieldName": "formerSpouseName",
+          "label": "Former spouse or partner name",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "former-spouse-phone",
+          "fieldName": "formerSpousePhone",
+          "label": "Former spouse or partner phone number",
+          "fieldType": "phone",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "former-marriage-date",
+          "fieldName": "formerMarriageDate",
+          "label": "Date of marriage or civil union/domestic partnership (former)",
+          "fieldType": "date",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "former-divorce-date",
+          "fieldName": "formerDivorceDate",
+          "label": "Date of divorce",
+          "fieldType": "date",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "former-marriage-place",
+          "fieldName": "formerMarriagePlace",
+          "label": "Place of marriage or civil union/domestic partnership (former)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "former-divorce-place",
+          "fieldName": "formerDivorcePlace",
+          "label": "Place of divorce",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "family-additional-pages",
+          "fieldName": "familyAdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "reasons-for-seeking-pardon",
+      "title": "B. Reasons for Seeking Pardon",
+      "description": "We need to understand how your conviction has affected your life and what you hope pardon will change or improve.",
+      "requirements": [
+        {
+          "id": "reasons-for-pardon",
+          "fieldName": "reasonsForPardon",
+          "label": "What are your reasons for seeking pardon?",
+          "fieldType": "longText",
+          "required": true,
+          "helpText": "The more specific you can be, the better. You may want to include: How your life would change if granted pardon, Challenges that you have faced because of your conviction. If you have ever been denied a job, license, or other opportunity because of your conviction, attaching denial letters or related documents will help us review your application.",
+          "sensitivity": "high"
+        },
+        {
+          "id": "reasons-additional-pages",
+          "fieldName": "reasonsAdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "community-activities",
+      "title": "C. Community Activities",
+      "description": "How have you been involved in your community since your conviction? Community can include family, neighborhood, city, prison community, or organizations and associations.",
+      "requirements": [
+        {
+          "id": "community-activity-description",
+          "fieldName": "communityActivityDescription",
+          "label": "Description of activity",
+          "fieldType": "longText",
+          "required": false,
+          "helpText": "Examples: Assisting in extracurricular and education-related activities of children and grandchildren, providing support to community members, providing care to an aging relative, service with a civic or religious organization, involvement in the prison community.",
+          "sensitivity": "medium"
+        },
+        {
+          "id": "community-activity-dates",
+          "fieldName": "communityActivityDates",
+          "label": "Approximate start and end dates (year to year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "community-activity-contact-names",
+          "fieldName": "communityActivityContactNames",
+          "label": "Who can tell us about your participation in the above activities? Name(s)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "community-activity-contact-info",
+          "fieldName": "communityActivityContactInfo",
+          "label": "Contact information for activity references",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "community-activity-reasons",
+          "fieldName": "communityActivityReasons",
+          "label": "Is there anything you would like us to know about your reasons for engaging in community activities?",
+          "fieldType": "longText",
+          "required": false,
+          "helpText": "If you have not been able to participate in these activities, you can let us know why here.",
+          "sensitivity": "medium"
+        },
+        {
+          "id": "community-additional-pages",
+          "fieldName": "communityAdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "educational-and-licensing-opportunities",
+      "title": "D. Educational and Licensing Opportunities",
+      "description": "What educational or licensing opportunities have you had? These can be programs you have started or completed, including courses you completed and licenses you earned while incarcerated.",
+      "requirements": [
+        {
+          "id": "school-program-name",
+          "fieldName": "schoolProgramName",
+          "label": "School or program name",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "subject-studied-degree",
+          "fieldName": "subjectStudiedDegree",
+          "label": "Subject studied and degree or certification received",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "education-dates-attended",
+          "fieldName": "educationDatesAttended",
+          "label": "Approximate dates attended (month/year to month/year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "license-type",
+          "fieldName": "licenseType",
+          "label": "License Type",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "license-date-issued",
+          "fieldName": "licenseDateIssued",
+          "label": "Approximate date issued (year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "education-denial-program-name",
+          "fieldName": "educationDenialProgramName",
+          "label": "School or program name or license type (denied or ineligible)",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "If you have had trouble getting into educational programs or receiving licenses because of a criminal record.",
+          "sensitivity": "medium"
+        },
+        {
+          "id": "education-denial-details",
+          "fieldName": "educationDenialDetails",
+          "label": "Details of educational or licensing denial",
+          "fieldType": "longText",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "education-denial-date",
+          "fieldName": "educationDenialDate",
+          "label": "Approximate date of denial or when informed not eligible (year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "education-additional-pages",
+          "fieldName": "educationAdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "places-lived",
+      "title": "E. Places Lived",
+      "description": "Where have you lived in the last three years? Do not use P.O. Boxes. Give apartment/unit numbers. Do not leave any gaps in dates.",
+      "requirements": [
+        {
+          "id": "previous-street-address",
+          "fieldName": "previousStreetAddress",
+          "label": "Street address",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "previous-apartment-unit",
+          "fieldName": "previousApartmentUnit",
+          "label": "Apartment/Unit",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "previous-city-state",
+          "fieldName": "previousCityState",
+          "label": "City, state",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "previous-zip-code",
+          "fieldName": "previousZipCode",
+          "label": "Zip code",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "previous-dates-living",
+          "fieldName": "previousDatesLiving",
+          "label": "Approximate dates living there (month/year to month/year)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "homelessness-dates",
+          "fieldName": "homelessnessDates",
+          "label": "If you are experiencing homelessness or have in the past, note the dates (month/year to month/year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        }
+      ]
+    },
+    {
+      "id": "military-service",
+      "title": "F. Military Service",
+      "requirements": [
+        {
+          "id": "military-not-applicable",
+          "fieldName": "militaryNotApplicable",
+          "label": "Not applicable (no military service)",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "military-dates-of-service",
+          "fieldName": "militaryDatesOfService",
+          "label": "Dates of service",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "military-branches",
+          "fieldName": "militaryBranches",
+          "label": "Branch(es)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "military-serial-number",
+          "fieldName": "militarySerialNumber",
+          "label": "Serial number",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "military-discharge-type",
+          "fieldName": "militaryDischargeType",
+          "label": "Type of discharge",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "military-service-details",
+          "fieldName": "militaryServiceDetails",
+          "label": "Tell us briefly about your military service",
+          "fieldType": "longText",
+          "required": false,
+          "helpText": "For example, any tours of duty, time overseas or in active combat, disciplinary sanctions or military criminal proceedings taken against you, commendations or medals awarded to you, or other notable achievements. If available, attach a copy of your DD-214.",
+          "sensitivity": "medium"
+        },
+        {
+          "id": "military-additional-pages",
+          "fieldName": "militaryAdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "job-history",
+      "title": "G. Job History",
+      "description": "Where have you worked in the last seven years? Include full and part-time jobs. If applicable, include jobs while incarcerated. Do not leave any gaps in dates.",
+      "requirements": [
+        {
+          "id": "current-employer",
+          "fieldName": "currentEmployer",
+          "label": "Current employer",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "current-employer-type",
+          "fieldName": "currentEmployerType",
+          "label": "Type of business (current employer)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "current-position",
+          "fieldName": "currentPosition",
+          "label": "Position (current)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "current-job-start-date",
+          "fieldName": "currentJobStartDate",
+          "label": "Month/year started (current job)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "current-employer-street-address",
+          "fieldName": "currentEmployerStreetAddress",
+          "label": "Employer street address",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "current-employer-city-state",
+          "fieldName": "currentEmployerCityState",
+          "label": "Employer city, state",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "current-employer-zip-code",
+          "fieldName": "currentEmployerZipCode",
+          "label": "Employer zip code",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "current-supervisor-name-phone",
+          "fieldName": "currentSupervisorNamePhone",
+          "label": "Supervisor name and phone number (current job)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "previous-employer-name",
+          "fieldName": "previousEmployerName",
+          "label": "Previous employer name",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "previous-employer-type",
+          "fieldName": "previousEmployerType",
+          "label": "Type of business (previous employer)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "previous-position",
+          "fieldName": "previousPosition",
+          "label": "Position (previous employer)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "previous-employer-address-phone",
+          "fieldName": "previousEmployerAddressPhone",
+          "label": "Employer address and phone number (previous)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "previous-employer-dates",
+          "fieldName": "previousEmployerDates",
+          "label": "Approximate dates worked (month/year to month/year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "unemployment-details",
+          "fieldName": "unemploymentDetails",
+          "label": "If you are currently unemployed or have been in the past, give the dates and share how you supported yourself during that time",
+          "fieldType": "longText",
+          "required": false,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "criminal-record-employment-impact",
+          "fieldName": "criminalRecordEmploymentImpact",
+          "label": "If your criminal record has affected your ability to find work, give details here",
+          "fieldType": "longText",
+          "required": false,
+          "helpText": "If you received a rejection letter or termination notice because of your conviction, you can attach a copy.",
+          "sensitivity": "high"
+        },
+        {
+          "id": "job-misconduct-details",
+          "fieldName": "jobMisconductDetails",
+          "label": "If you have been fired, accused of misconduct at a job, or given an unsatisfactory job performance rating, give details here",
+          "fieldType": "longText",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "job-additional-pages",
+          "fieldName": "jobAdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "sobriety-and-substance-use",
+      "title": "H. Sobriety and Substance Use",
+      "description": "We know that many people have struggled with substance use and that this can be difficult to discuss. Your honest reflection is helpful to us.",
+      "requirements": [
+        {
+          "id": "substance-use-not-applicable",
+          "fieldName": "substanceUseNotApplicable",
+          "label": "Not applicable (no substance use struggles)",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "substance-type",
+          "fieldName": "substanceType",
+          "label": "Type of drug or alcohol",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "substance-frequency",
+          "fieldName": "substanceFrequency",
+          "label": "How often were you using?",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "substance-use-dates",
+          "fieldName": "substanceUseDates",
+          "label": "Approximate dates used (month/year to month/year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "substance-use-diagnosis",
+          "fieldName": "substanceUseDiagnosis",
+          "label": "Diagnosis (substance use disorder)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "substance-use-diagnosis-date",
+          "fieldName": "substanceUseDiagnosisDate",
+          "label": "Date of diagnosis (month/year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "treatment-facility-name",
+          "fieldName": "treatmentFacilityName",
+          "label": "Facility/counselor/doctor name",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "treatment-dates",
+          "fieldName": "treatmentDates",
+          "label": "When did you attend? (month/year to month/year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "treatment-street-address",
+          "fieldName": "treatmentStreetAddress",
+          "label": "Treatment facility street address",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "treatment-suite-no",
+          "fieldName": "treatmentSuiteNo",
+          "label": "Suite no.",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "treatment-city-state",
+          "fieldName": "treatmentCityState",
+          "label": "Treatment facility city, state",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "treatment-zip-code",
+          "fieldName": "treatmentZipCode",
+          "label": "Treatment facility zip code",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "treatment-phone-number",
+          "fieldName": "treatmentPhoneNumber",
+          "label": "Treatment facility phone number",
+          "fieldType": "phone",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "treatment-email-address",
+          "fieldName": "treatmentEmailAddress",
+          "label": "Treatment facility email address",
+          "fieldType": "email",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "sobriety-length",
+          "fieldName": "sobrietyLength",
+          "label": "How long have you been sober? (Days, months, or years)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "sobriety-additional-info",
+          "fieldName": "sobrietyAdditionalInfo",
+          "label": "Is there anything else you would like to share about your history with sobriety and substance use?",
+          "fieldType": "longText",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "sobriety-additional-pages",
+          "fieldName": "sobrietyAdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "financial-information",
+      "title": "I. Financial Information",
+      "description": "We know that criminal convictions may affect some people's ability to get a job and may carry heavy financial penalties, making it harder to keep up with necessary expenses. A credit report will be reviewed if a background investigation is started.",
+      "requirements": [
+        {
+          "id": "debt-description",
+          "fieldName": "debtDescription",
+          "label": "Description of debt that is late or in default",
+          "fieldType": "longText",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "debt-amount",
+          "fieldName": "debtAmount",
+          "label": "Approximately how much is the debt?",
+          "fieldType": "currency",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "bankruptcy-court",
+          "fieldName": "bankruptcyCourt",
+          "label": "Court where bankruptcy filed",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "bankruptcy-year-outcome",
+          "fieldName": "bankruptcyYearOutcome",
+          "label": "Approximate year bankruptcy filed and outcome",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "bankruptcy-discharge-amount",
+          "fieldName": "bankruptcyDischargeAmount",
+          "label": "Approximately how much debt did you want to discharge?",
+          "fieldType": "currency",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "financial-additional-info",
+          "fieldName": "financialAdditionalInfo",
+          "label": "Is there anything else you would like to share about your experience with finances since your conviction?",
+          "fieldType": "longText",
+          "required": false,
+          "helpText": "This may include information on why you are unable to pay the above debts or filed for bankruptcy and any plans to catch up on payments for any debts that are late or in default.",
+          "sensitivity": "high"
+        },
+        {
+          "id": "financial-additional-pages",
+          "fieldName": "financialAdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "case-background",
+      "title": "J. Case Background and Other Criminal History",
+      "description": "We need to make sure we have the correct case and understand your offense conduct. It also gives you a chance to explain any other criminal history that may appear in a background investigation.",
+      "requirements": [
+        {
+          "id": "attaching-case-documents",
+          "fieldName": "attachingCaseDocuments",
+          "label": "Check here if you are attaching any case documents (presentence report, judgment, statement of reasons, indictment/information, case docket report)",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "pleaded-guilty",
+          "fieldName": "pleadedGuilty",
+          "label": "Did you plead guilty?",
+          "fieldType": "boolean",
+          "required": true,
+          "sensitivity": "high"
+        },
+        {
+          "id": "offense-dates",
+          "fieldName": "offenseDates",
+          "label": "Approximate date(s) of offense (month/year to month/year)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "high"
+        },
+        {
+          "id": "sentencing-date",
+          "fieldName": "sentencingDate",
+          "label": "Approximate date you were sentenced (month/year)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "high"
+        },
+        {
+          "id": "court-of-prosecution",
+          "fieldName": "courtOfProsecution",
+          "label": "Court where you were prosecuted (D.C. Superior Court, military court, or name of U.S. District Court)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "high"
+        },
+        {
+          "id": "case-number",
+          "fieldName": "caseNumber",
+          "label": "Case number",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "high"
+        },
+        {
+          "id": "conviction-charge",
+          "fieldName": "convictionCharge",
+          "label": "Of what were you convicted?",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "high"
+        },
+        {
+          "id": "prison-sentence",
+          "fieldName": "prisonSentence",
+          "label": "Prison sentence (months or years)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "prison-release-date",
+          "fieldName": "prisonReleaseDate",
+          "label": "Approximate date you were released from prison, community confinement, or home detention (month/year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "probation-supervised-release-sentence",
+          "fieldName": "probationSupervisedReleaseSentence",
+          "label": "Sentence for probation or supervised release (months or years)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "probation-completion-date",
+          "fieldName": "probationCompletionDate",
+          "label": "Approximate date you completed your term of probation or supervised release (month/year)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "assessment-amount",
+          "fieldName": "assessmentAmount",
+          "label": "Assessment amount",
+          "fieldType": "currency",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "fine-amount",
+          "fieldName": "fineAmount",
+          "label": "Fine amount",
+          "fieldType": "currency",
+          "required": false,
+          "sensitivity": "high"
+        },
+        {
+          "id": "restitution-amount",
+          "fieldName": "restitutionAmount",
+          "label": "Restitution amount",
+          "fieldType": "currency",
+          "required": false,
+          "sensitivity": "high"
+        }
+      ]
+    },
+    {
+      "id": "offense-conduct-description",
+      "title": "Offense Conduct Description",
+      "description": "We want to hear from you, in your own words. We are specifically looking for information that is NOT in the public record of your case.",
+      "requirements": [
+        {
+          "id": "offense-conduct-narrative",
+          "fieldName": "offenseConductNarrative",
+          "label": "Tell us about your conduct for which you were convicted",
+          "fieldType": "longText",
+          "required": true,
+          "helpText": "What was your role in the offense? How, when, and why did you get involved? What actions did you take in connection with the offense? Include all actions, even if you pleaded guilty to only specific conduct, counts, or portions of the full criminal activity.",
+          "sensitivity": "high"
+        },
+        {
+          "id": "accept-responsibility",
+          "fieldName": "acceptResponsibility",
+          "label": "Do you accept responsibility for your conduct? Explain why or why not.",
+          "fieldType": "longText",
+          "required": true,
+          "sensitivity": "high"
+        },
+        {
+          "id": "offense-conduct-additional-pages",
+          "fieldName": "offenseConductAdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "other-criminal-history",
+      "title": "Other Criminal History",
+      "description": "Your criminal history will be reviewed as part of any background investigation. List any other arrests or convictions that may appear on your criminal history record, if any, including juvenile and expunged records.",
+      "requirements": [
+        {
+          "id": "other-criminal-history-narrative",
+          "fieldName": "otherCriminalHistoryNarrative",
+          "label": "Tell us about any other criminal history",
+          "fieldType": "longText",
+          "required": false,
+          "helpText": "List any other arrests or convictions that may appear on your criminal history record, including juvenile and expunged records, and give any information you would like us to know about them.",
+          "sensitivity": "high"
+        },
+        {
+          "id": "other-criminal-history-additional-pages",
+          "fieldName": "otherCriminalHistoryAdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "certification-and-personal-oath",
+      "title": "K. Certification and Personal Oath",
+      "description": "We need your signature to know that you are submitting the pardon application willingly and that you have answered the questions accurately, to the best of your ability.",
+      "requirements": [
+        {
+          "id": "oath-day",
+          "fieldName": "oathDay",
+          "label": "Day (of submission)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "oath-month",
+          "fieldName": "oathMonth",
+          "label": "Month (of submission)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "oath-year",
+          "fieldName": "oathYear",
+          "label": "Year (of submission)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "applicant-signature",
+          "fieldName": "applicantSignature",
+          "label": "Your signature",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "authorization-for-release-of-information",
+      "title": "L. Authorization for Release of Information",
+      "description": "The authorization lets us and any investigators get information and documentation about your life. If we need information about medical or mental health history, we will ask you for a separate authorization.",
+      "requirements": [
+        {
+          "id": "release-signature",
+          "fieldName": "releaseSignature",
+          "label": "Signature (sign in ink)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "release-full-name",
+          "fieldName": "releaseFullName",
+          "label": "Full Name (type or print legibly)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "release-date-signed",
+          "fieldName": "releaseDateSigned",
+          "label": "Date Signed",
+          "fieldType": "date",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "release-other-names",
+          "fieldName": "releaseOtherNames",
+          "label": "Other Names Used",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "release-street-address",
+          "fieldName": "releaseStreetAddress",
+          "label": "Street Address",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "release-city",
+          "fieldName": "releaseCity",
+          "label": "City",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "release-state",
+          "fieldName": "releaseState",
+          "label": "State",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "release-zip-code",
+          "fieldName": "releaseZipCode",
+          "label": "ZIP Code",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "release-phone-number",
+          "fieldName": "releasePhoneNumber",
+          "label": "Home Telephone Number (include area code)",
+          "fieldType": "phone",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "release-ssn",
+          "fieldName": "releaseSsn",
+          "label": "Social Security Number",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "letter-of-support-1",
+      "title": "M. Letter of Support #1",
+      "description": "We need at least three letters. Primary references cannot be related to you by blood or marriage and must be willing to be interviewed during a background investigation.",
+      "requirements": [
+        {
+          "id": "support-1-primary-reference",
+          "fieldName": "support1PrimaryReference",
+          "label": "Primary reference (select exactly 3)",
+          "fieldType": "boolean",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-1-petitioner-name",
+          "fieldName": "support1PetitionerName",
+          "label": "Name of petitioner (on behalf of)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-1-years-known",
+          "fieldName": "support1YearsKnown",
+          "label": "I have personally known the petitioner for ___ years",
+          "fieldType": "number",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-1-statement",
+          "fieldName": "support1Statement",
+          "label": "In support of this pardon petition, I state the below",
+          "fieldType": "longText",
+          "required": true,
+          "helpText": "How you know the individual, what you know of their reputation and conduct since their conviction, and their personal and professional activities, including at work, at home, and in the community.",
+          "sensitivity": "medium"
+        },
+        {
+          "id": "support-1-additional-pages",
+          "fieldName": "support1AdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-1-signature",
+          "fieldName": "support1Signature",
+          "label": "Signature",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-1-print-name",
+          "fieldName": "support1PrintName",
+          "label": "Print Name",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-1-date",
+          "fieldName": "support1Date",
+          "label": "Date",
+          "fieldType": "date",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-1-address",
+          "fieldName": "support1Address",
+          "label": "Address",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-1-phone",
+          "fieldName": "support1Phone",
+          "label": "Phone number",
+          "fieldType": "phone",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-1-email",
+          "fieldName": "support1Email",
+          "label": "Email address",
+          "fieldType": "email",
+          "required": true,
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "letter-of-support-2",
+      "title": "M. Letter of Support #2",
+      "requirements": [
+        {
+          "id": "support-2-primary-reference",
+          "fieldName": "support2PrimaryReference",
+          "label": "Primary reference (select exactly 3)",
+          "fieldType": "boolean",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-2-petitioner-name",
+          "fieldName": "support2PetitionerName",
+          "label": "Name of petitioner (on behalf of)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-2-years-known",
+          "fieldName": "support2YearsKnown",
+          "label": "I have personally known the petitioner for ___ years",
+          "fieldType": "number",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-2-statement",
+          "fieldName": "support2Statement",
+          "label": "In support of this pardon petition, I state the below",
+          "fieldType": "longText",
+          "required": true,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "support-2-additional-pages",
+          "fieldName": "support2AdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-2-signature",
+          "fieldName": "support2Signature",
+          "label": "Signature",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-2-print-name",
+          "fieldName": "support2PrintName",
+          "label": "Print Name",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-2-date",
+          "fieldName": "support2Date",
+          "label": "Date",
+          "fieldType": "date",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-2-address",
+          "fieldName": "support2Address",
+          "label": "Address",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-2-phone",
+          "fieldName": "support2Phone",
+          "label": "Phone number",
+          "fieldType": "phone",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-2-email",
+          "fieldName": "support2Email",
+          "label": "Email address",
+          "fieldType": "email",
+          "required": true,
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "letter-of-support-3",
+      "title": "M. Letter of Support #3",
+      "requirements": [
+        {
+          "id": "support-3-primary-reference",
+          "fieldName": "support3PrimaryReference",
+          "label": "Primary reference (select exactly 3)",
+          "fieldType": "boolean",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-3-petitioner-name",
+          "fieldName": "support3PetitionerName",
+          "label": "Name of petitioner (on behalf of)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-3-years-known",
+          "fieldName": "support3YearsKnown",
+          "label": "I have personally known the petitioner for ___ years",
+          "fieldType": "number",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-3-statement",
+          "fieldName": "support3Statement",
+          "label": "In support of this pardon petition, I state the below",
+          "fieldType": "longText",
+          "required": true,
+          "sensitivity": "medium"
+        },
+        {
+          "id": "support-3-additional-pages",
+          "fieldName": "support3AdditionalPages",
+          "label": "Check here if you are attaching additional pages",
+          "fieldType": "boolean",
+          "required": false,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-3-signature",
+          "fieldName": "support3Signature",
+          "label": "Signature",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-3-print-name",
+          "fieldName": "support3PrintName",
+          "label": "Print Name",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-3-date",
+          "fieldName": "support3Date",
+          "label": "Date",
+          "fieldType": "date",
+          "required": true,
+          "sensitivity": "low"
+        },
+        {
+          "id": "support-3-address",
+          "fieldName": "support3Address",
+          "label": "Address",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-3-phone",
+          "fieldName": "support3Phone",
+          "label": "Phone number",
+          "fieldType": "phone",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "support-3-email",
+          "fieldName": "support3Email",
+          "label": "Email address",
+          "fieldType": "email",
+          "required": true,
+          "sensitivity": "pii"
+        }
+      ]
+    }
+  ]
+}

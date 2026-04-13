@@ -3,7 +3,8 @@ import { Hono } from 'hono'
 import { createProjectRoutes } from '../src/entrypoints/app/routes/projects/index'
 import type { PdfExtractor } from '../src/services/ingestion/pdf-extractor'
 import type { ExtractionResult } from '../src/services/ingestion/types'
-import { createProjectStore } from '../src/services/storage'
+import { createCacheStore, createProjectStore } from '../src/services/storage'
+import { StrategyRegistry } from '../src/services/strategy-registry'
 
 const stubResult: ExtractionResult = {
   spec: {
@@ -21,21 +22,39 @@ const stubResult: ExtractionResult = {
   confidence: [],
 }
 
-function createTestApp() {
-  const projectStore = createProjectStore(':memory:')
-  const extractor: PdfExtractor = {
+function createStubExtractor(): PdfExtractor {
+  return {
     async extract(): Promise<ExtractionResult> {
       return stubResult
     },
   }
+}
+
+function createTestApp() {
+  const projectStore = createProjectStore(':memory:')
+  const cacheStore = createCacheStore(':memory:')
+  const extractorRegistry = new StrategyRegistry<PdfExtractor>()
+  extractorRegistry.register({
+    id: 'sonnet',
+    metadata: {
+      name: 'Test Sonnet',
+      description: 'Test stub',
+      status: 'production',
+      courseTopics: [],
+    },
+    create: createStubExtractor,
+  })
   const app = new Hono()
   // Simulate auth by setting user in context
   app.use('*', async (c, next) => {
     c.set('user', { login: 'testuser', name: 'Test User', avatarUrl: '' })
     await next()
   })
-  app.route('/projects', createProjectRoutes(projectStore, extractor))
-  return { app, projectStore, extractor }
+  app.route(
+    '/projects',
+    createProjectRoutes(projectStore, extractorRegistry, cacheStore),
+  )
+  return { app, projectStore, extractorRegistry }
 }
 
 describe('GET /projects', () => {
@@ -53,6 +72,7 @@ describe('GET /projects', () => {
     const p = projectStore.create({
       name: 'Pardon App',
       description: 'Test',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'testuser',
     })
@@ -114,6 +134,7 @@ describe('GET /projects/:id', () => {
     const project = projectStore.create({
       name: 'Test',
       description: 'Test',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'testuser',
     })
@@ -128,6 +149,7 @@ describe('GET /projects/:id', () => {
     const project = projectStore.create({
       name: 'Test Form',
       description: 'Test',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'testuser',
     })
@@ -156,6 +178,7 @@ describe('GET /projects/:id (error state)', () => {
     const project = projectStore.create({
       name: 'Failed Project',
       description: 'Test',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'testuser',
     })
@@ -177,6 +200,7 @@ describe('POST /projects/:id/retry', () => {
     const project = projectStore.create({
       name: 'Retry Test',
       description: 'Test',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'testuser',
     })
@@ -201,6 +225,7 @@ describe('POST /projects/:id/delete', () => {
     const project = projectStore.create({
       name: 'Delete Test',
       description: 'Test',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'testuser',
     })
@@ -229,6 +254,7 @@ describe('Project detail - ready state', () => {
     const project = projectStore.create({
       name: 'Summary Test',
       description: 'Test',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'testuser',
     })
@@ -328,6 +354,7 @@ describe('Confidence indicators', () => {
     const project = projectStore.create({
       name: 'Confidence Test',
       description: 'Test',
+      strategy: 'sonnet',
       sourcePdf: Buffer.from('pdf'),
       createdBy: 'testuser',
     })

@@ -1,11 +1,17 @@
 import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../../fixtures/index'
+import { StrategySelector } from '../../../../design-system/components/flex-strategy-selector'
+import {
+  Tab,
+  TabGroup,
+} from '../../../../design-system/components/flex-tab-group'
 import type { DataCollectionSpec } from '../../../../services/data-collection/types'
 import type { FormSpec } from '../../../../services/forms/types'
 import type {
   FieldConfidence,
   StoredProject,
 } from '../../../../services/ingestion/types'
+import type { StrategyListItem } from '../../../../services/strategy-registry'
 import { resolveUrl } from '../../../../shared/base-path'
 
 export const ProjectList: FC<{ projects: StoredProject[] }> = ({
@@ -97,37 +103,61 @@ export const ProjectList: FC<{ projects: StoredProject[] }> = ({
   </div>
 )
 
-export const NewProjectPage: FC<{ fixtures: DemoFixture[] }> = ({
-  fixtures,
-}) => (
+export const NewProjectPage: FC<{
+  fixtures: DemoFixture[]
+  strategies: StrategyListItem[]
+  defaultId: string
+}> = ({ fixtures, strategies, defaultId }) => (
   <div class="l-stack">
     <h1>New Project</h1>
 
-    <section class="l-stack">
-      <h2>Start from a demo form</h2>
-      <div class="l-grid">
-        {fixtures.map((f) => (
-          <form method="post" action={resolveUrl('/projects')}>
-            <input type="hidden" name="fixture" value={f.slug} />
-            <button type="submit" class="flex-card fixture-card">
-              <div class="l-stack" style="gap: var(--flex-space-2xs);">
-                <strong>{f.name}</strong>
-                <span class="text-muted text-sm">{f.description}</span>
-              </div>
+    <TabGroup label="Project creation method">
+      <Tab title="Demo form">
+        <form method="post" action={resolveUrl('/projects')} class="l-stack">
+          <p class="text-muted">
+            Choose a sample government form to see extraction in action.
+          </p>
+          <div class="l-grid">
+            {fixtures.map((f) => (
+              <label key={f.slug} class="fixture-card-label">
+                <input
+                  type="radio"
+                  name="fixture"
+                  value={f.slug}
+                  class="fixture-card-input"
+                  required
+                />
+                <div class="flex-card fixture-card">
+                  <div class="l-stack" style="gap: var(--flex-space-2xs);">
+                    <strong>{f.name}</strong>
+                    <span class="text-muted text-sm">{f.description}</span>
+                  </div>
+                </div>
+              </label>
+            ))}
+          </div>
+          <StrategySelector
+            strategies={strategies}
+            defaultId={defaultId}
+            name="strategy"
+          />
+          <div>
+            <button type="submit" class="flex-button">
+              Create Project
             </button>
-          </form>
-        ))}
-      </div>
-    </section>
-
-    <section class="l-stack">
-      <h2>Upload your own PDF</h2>
-      <form
-        method="post"
-        action={resolveUrl('/projects')}
-        enctype="multipart/form-data"
-      >
-        <div class="l-stack">
+          </div>
+        </form>
+      </Tab>
+      <Tab title="Upload PDF">
+        <form
+          method="post"
+          action={resolveUrl('/projects')}
+          enctype="multipart/form-data"
+          class="l-stack"
+        >
+          <p class="text-muted">
+            Upload your own government PDF form for field extraction.
+          </p>
           <flex-file-input>
             <label class="flex-label" for="pdf-upload">
               PDF form
@@ -151,14 +181,19 @@ export const NewProjectPage: FC<{ fixtures: DemoFixture[] }> = ({
             </div>
             <div class="flex-file-input__preview-area" />
           </flex-file-input>
+          <StrategySelector
+            strategies={strategies}
+            defaultId={defaultId}
+            name="strategy"
+          />
           <div>
             <button type="submit" class="flex-button">
               Upload and Extract
             </button>
           </div>
-        </div>
-      </form>
-    </section>
+        </form>
+      </Tab>
+    </TabGroup>
   </div>
 )
 
@@ -238,6 +273,11 @@ const ReadyView: FC<{ project: StoredProject }> = ({ project }) => {
         <span>
           <strong>{lowConfCount}</strong> low confidence
         </span>
+      </div>
+      <div class="project-provenance">
+        <p class="text-muted text-sm">
+          Extracted using <strong>{project.strategy}</strong>
+        </p>
       </div>
       {project.spec && (
         <SpecViewer spec={project.spec} confidence={project.confidence ?? []} />
