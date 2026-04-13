@@ -97,6 +97,18 @@ export const spec: ConformanceSpec = {
       flex: '.flex-header__overlay',
       notes: 'Mobile nav background overlay',
     },
+    {
+      uswds: 'usa-accordion__button (as disclosure trigger)',
+      flex: '.flex-header__user-trigger',
+      notes:
+        'Profile dropdown trigger — USWDS uses accordion button semantics for submenus; ours uses a menu-button disclosure for account actions',
+    },
+    {
+      uswds: 'usa-nav__submenu',
+      flex: '.flex-header__user-panel',
+      notes:
+        'Disclosure panel containing user identity, theme preference, and sign out',
+    },
   ],
   verified: [
     'background-color',
@@ -189,6 +201,26 @@ export const spec: ConformanceSpec = {
     {
       description:
         'Resize across breakpoint while nav is open resets mobile nav state',
+      tested: true,
+    },
+    {
+      description:
+        'User-menu trigger click toggles aria-expanded and the panel hidden attribute',
+      tested: true,
+    },
+    {
+      description:
+        'Escape key closes the user menu and returns focus to the trigger',
+      tested: true,
+    },
+    {
+      description:
+        'Outside click closes the user menu without stealing focus',
+      tested: true,
+    },
+    {
+      description:
+        'Crossing to the mobile breakpoint force-closes the user menu disclosure',
       tested: true,
     },
   ],
