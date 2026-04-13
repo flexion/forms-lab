@@ -19,6 +19,11 @@
   font-size: 14px;
 }
 
+.flex-diagram__node-sublabel {
+  fill: var(--flex-color-text-muted);
+  font-size: 11px;
+}
+
 /* Linked nodes */
 .flex-diagram a .flex-diagram__node rect {
   stroke: var(--flex-color-accent);

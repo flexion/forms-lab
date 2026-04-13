@@ -125,6 +125,7 @@ export function DiagramRenderer({ graph }: { graph: GraphDefinition }) {
         const x = nodeData.x - nodeData.width / 2
         const y = nodeData.y - nodeData.height / 2
 
+        const labelY = node.sublabel ? nodeData.y - 4 : nodeData.y + 5
         const rect = (
           <g class="flex-diagram__node">
             <rect
@@ -140,12 +141,23 @@ export function DiagramRenderer({ graph }: { graph: GraphDefinition }) {
             />
             <text
               x={nodeData.x}
-              y={nodeData.y + 5}
+              y={labelY}
               text-anchor="middle"
               dominant-baseline="middle"
             >
               {node.label}
             </text>
+            {node.sublabel && (
+              <text
+                x={nodeData.x}
+                y={nodeData.y + 14}
+                text-anchor="middle"
+                dominant-baseline="middle"
+                class="flex-diagram__node-sublabel"
+              >
+                {node.sublabel}
+              </text>
+            )}
           </g>
         )
 

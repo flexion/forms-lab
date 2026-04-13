@@ -1,6 +1,8 @@
 export interface DiagramNode {
   id: string
   label: string
+  /** Short secondary line rendered under the label in smaller text */
+  sublabel?: string
   description?: string
   href?: string
   group?: string
