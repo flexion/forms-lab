@@ -177,11 +177,11 @@ export const HeaderUserMenu: FC<HeaderUserMenuProps> = ({
             <div class="flex-header__user-login">@{user.login}</div>
           </div>
         </div>
-        <div class="flex-header__user-divider" role="separator" />
+        <hr class="flex-header__user-divider" />
         <div class="flex-header__user-theme">
           <ThemeToggle />
         </div>
-        <div class="flex-header__user-divider" role="separator" />
+        <hr class="flex-header__user-divider" />
         <form
           method="post"
           action={signoutAction}

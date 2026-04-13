@@ -250,7 +250,9 @@ test.describe('flex-header user menu', () => {
     await expect(trigger).toHaveAttribute('aria-expanded', 'true')
 
     // Click somewhere outside the menu root but not on a link
-    await page.locator('.flex-header__inner').click({ position: { x: 10, y: 10 } })
+    await page
+      .locator('.flex-header__inner')
+      .click({ position: { x: 10, y: 10 } })
 
     await expect(trigger).toHaveAttribute('aria-expanded', 'false')
   })

@@ -45,10 +45,7 @@ class FlexHeaderElement extends HTMLElement {
     this.closeBtn?.removeEventListener('click', this.handleCloseClick)
     document.removeEventListener('keydown', this.handleKeydown)
     this.mediaQuery?.removeEventListener('change', this.handleBreakpointChange)
-    this.userTrigger?.removeEventListener(
-      'click',
-      this.handleUserTriggerClick,
-    )
+    this.userTrigger?.removeEventListener('click', this.handleUserTriggerClick)
     document.removeEventListener('click', this.handleUserOutsideClick, true)
     document.removeEventListener('keydown', this.handleUserKeydown)
     this.removeOverlay()

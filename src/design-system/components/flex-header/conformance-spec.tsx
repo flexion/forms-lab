@@ -214,8 +214,7 @@ export const spec: ConformanceSpec = {
       tested: true,
     },
     {
-      description:
-        'Outside click closes the user menu without stealing focus',
+      description: 'Outside click closes the user menu without stealing focus',
       tested: true,
     },
     {
