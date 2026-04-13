@@ -6,6 +6,7 @@
   systemd.services."forms-lab-app@" = {
     description = "Forms Lab App - %i";
     after = [ "network.target" ];
+    onFailure = [ "forms-lab-notify-failure@%n.service" ];
 
     serviceConfig = {
       Type = "simple";
@@ -16,7 +17,6 @@
       ExecStart = "${config.flexion.entrypointWrapper}/bin/forms-lab-entrypoint app /srv/forms-lab/%i";
       Restart = "on-failure";
       RestartSec = 5;
-      OnFailure = "forms-lab-notify-failure@%n.service";
 
       # Environment loaded from a per-branch env file written by deploy script
       EnvironmentFile = "/srv/forms-lab/%i/.env";
