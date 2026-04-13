@@ -19,7 +19,7 @@
       Environment = [
         "PORT=3000"
       ];
-      ExecStart = "${pkgs.bun}/bin/bun run src/entrypoints/dashboard/main.ts";
+      ExecStart = "${config.flexion.entrypointWrapper}/bin/forms-lab-entrypoint dashboard /srv/forms-lab/main";
       OnFailure = "forms-lab-notify-failure@%n.service";
     };
   };

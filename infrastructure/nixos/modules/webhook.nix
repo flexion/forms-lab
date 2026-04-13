@@ -26,7 +26,7 @@
       export DEPLOY_HOSTNAME=ec2-34-197-222-16.compute-1.amazonaws.com
       export PORT=9000
       export DEPLOY_SCRIPT=/srv/forms-lab/deploy.sh
-      exec ${pkgs.bun}/bin/bun run /srv/forms-lab/main/src/entrypoints/webhook/main.ts
+      exec ${config.flexion.entrypointWrapper}/bin/forms-lab-entrypoint webhook /srv/forms-lab/main
     '';
   };
 }
