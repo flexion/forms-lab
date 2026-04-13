@@ -108,14 +108,15 @@ This is the biggest change of the three but also the one that *structurally* mak
 **Catches:** the scenario where the structural fix (P3) isn't in yet.
 **Why P4:** during the transition, incidents can still happen. Writing down the exact recovery sequence means the next person (or agent) doesn't have to rediscover it.
 
-Create `notes/runbooks/nixos-path-migration.md` with the sequence I used tonight:
+Create `notes/runbooks/nixos-path-migration.md` with the sequence I used:
 
-1. NixOS rebuild on the server via SSH
-2. SSH to server, cd `/srv/forms-lab/main`, git fetch the branch ref, `git reset --hard`
-3. `bun install && bun run build`
-4. `systemctl restart forms-lab-homepage forms-lab-webhook forms-lab-notify`
-5. Stop all failing branch services: `systemctl list-units 'forms-lab-app@*' --all | awk '$4!="running"{print $1}' | xargs systemctl stop`
-6. Verify the branch app is running and the URL returns 200
+1. NixOS rebuild on the server via SSH.
+2. As `forms-lab` user (not root), cd `/srv/forms-lab/main`, git fetch the branch ref, `git reset --hard`. **Never run git commands as root against `/srv/forms-lab/repo.git` or its worktrees** — new objects end up owned by root and the webhook (which runs as `forms-lab`) can no longer unpack new pushes. Use `sudo -u forms-lab git ...` for any manual recovery.
+3. As `forms-lab`: `bun install && bun run build`.
+4. As root: `systemctl restart forms-lab-homepage forms-lab-webhook forms-lab-notify`.
+5. Stop all failing branch services: `systemctl list-units 'forms-lab-app@*' --all | awk '$4!="running"{print $1}' | xargs systemctl stop`.
+6. Verify the branch app is running and the URL returns 200.
+7. If webhook deploys start failing with "insufficient permission for adding an object to repository database," it means root-owned git objects leaked into the bare repo. Fix with `chown -R forms-lab:forms-lab /srv/forms-lab/repo.git /srv/forms-lab/main` (and any other worktrees touched).
 
 Also document the known collateral: branch deployments for other branches will be broken until they rebase.
 
