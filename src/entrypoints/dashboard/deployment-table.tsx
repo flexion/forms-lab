@@ -239,6 +239,27 @@ function DeploymentRow({ deployment }: { deployment: DeploymentInfo }) {
   )
 }
 
+function SectionHeader({ title, count }: { title: string; count: number }) {
+  return (
+    <div
+      class="deployment-table__section"
+      style={{
+        padding: 'var(--flex-space-sm) var(--flex-space-md)',
+        backgroundColor: 'var(--flex-color-bg-subtle)',
+        borderTop: '2px solid var(--flex-color-border)',
+        borderBottom: '1px solid var(--flex-color-border)',
+        fontWeight: '600',
+        fontSize: 'var(--flex-text-sm)',
+        color: 'var(--flex-color-text-muted)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+      }}
+    >
+      {title} ({count})
+    </div>
+  )
+}
+
 export function DeploymentTable({
   deployments,
 }: {
@@ -261,6 +282,62 @@ export function DeploymentTable({
       {deployments.map((deployment) => (
         <DeploymentRow key={deployment.branch} deployment={deployment} />
       ))}
+    </div>
+  )
+}
+
+export function GroupedDeploymentTable({
+  issues,
+  active,
+  inactive,
+}: {
+  issues: DeploymentInfo[]
+  active: DeploymentInfo[]
+  inactive: DeploymentInfo[]
+}) {
+  const totalDeployments = issues.length + active.length + inactive.length
+
+  if (totalDeployments === 0) {
+    return <p>No branches currently deployed.</p>
+  }
+
+  return (
+    <div class="deployment-table">
+      <div class="deployment-table__header" aria-hidden="true">
+        <span class="deployment-table__cell" />
+        <span class="deployment-table__cell">Branch</span>
+        <span class="deployment-table__cell">Last Updated</span>
+        <span class="deployment-table__cell">Commit</span>
+        <span class="deployment-table__cell">PR</span>
+        <span class="deployment-table__cell">Health</span>
+      </div>
+
+      {issues.length > 0 && (
+        <>
+          <SectionHeader title="Issues" count={issues.length} />
+          {issues.map((deployment) => (
+            <DeploymentRow key={deployment.branch} deployment={deployment} />
+          ))}
+        </>
+      )}
+
+      {active.length > 0 && (
+        <>
+          <SectionHeader title="Active Deployments" count={active.length} />
+          {active.map((deployment) => (
+            <DeploymentRow key={deployment.branch} deployment={deployment} />
+          ))}
+        </>
+      )}
+
+      {inactive.length > 0 && (
+        <>
+          <SectionHeader title="Inactive" count={inactive.length} />
+          {inactive.map((deployment) => (
+            <DeploymentRow key={deployment.branch} deployment={deployment} />
+          ))}
+        </>
+      )}
     </div>
   )
 }

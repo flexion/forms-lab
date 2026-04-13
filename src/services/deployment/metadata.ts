@@ -310,6 +310,42 @@ export function sortDeploymentsByDate(
   )
 }
 
+export interface GroupedDeployments {
+  issues: DeploymentInfo[]
+  active: DeploymentInfo[]
+  inactive: DeploymentInfo[]
+}
+
+/**
+ * Group deployments by status for display
+ */
+export function groupDeploymentsByStatus(
+  deployments: DeploymentInfo[],
+): GroupedDeployments {
+  const issues: DeploymentInfo[] = []
+  const active: DeploymentInfo[] = []
+  const inactive: DeploymentInfo[] = []
+
+  for (const deployment of deployments) {
+    if (
+      deployment.service.status === 'failed' ||
+      deployment.health.status === 'unhealthy'
+    ) {
+      issues.push(deployment)
+    } else if (deployment.service.status === 'running') {
+      active.push(deployment)
+    } else {
+      inactive.push(deployment)
+    }
+  }
+
+  return {
+    issues: sortDeploymentsByDate(issues),
+    active: sortDeploymentsByDate(active),
+    inactive: sortDeploymentsByDate(inactive),
+  }
+}
+
 /**
  * Get all deployment info with summary statistics
  */
