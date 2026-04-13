@@ -29,8 +29,8 @@ test.describe('l-page-content', () => {
     expect(
       Math.abs((headingBox?.x ?? 0) + (headingBox?.width ?? 0) / 2 - center),
     ).toBeLessThan(2)
-    expect(headingBox?.width ?? 0).toBeGreaterThan(500)
-    expect(headingBox?.width ?? 0).toBeLessThan(700)
+    expect(headingBox?.width ?? 0).toBeGreaterThan(700)
+    expect(headingBox?.width ?? 0).toBeLessThan(900)
   })
 
   test('places l-feature wider than content track', async ({ page }) => {
@@ -172,10 +172,10 @@ test.describe('l-page-sidebar-start', () => {
       (sidebarBox?.y ?? 0) + (sidebarBox?.height ?? 0),
     ).toBeLessThanOrEqual((mainBox?.y ?? 0) + 1)
 
-    // Main is not offset by the sidebar column; it starts near the left edge
-    // (proving the media query actually fired to collapse the outer grid,
-    // not that the content just wrapped)
-    expect(mainBox?.x ?? 0).toBeLessThan(20)
+    // In collapsed single-column mode, main fills most of the viewport width
+    // (proving the media query fired, not that content just wrapped into a
+    // narrow column next to the sidebar)
+    expect(mainBox?.width ?? 0).toBeGreaterThan(400)
   })
 
   test('main content uses breakout tracks inside sidebar layout', async ({
@@ -246,8 +246,7 @@ test.describe('l-page-sidebar-end', () => {
       (sidebarBox?.y ?? 0) + 1,
     )
 
-    // Main is not offset from the left edge (proving the collapse media query
-    // fired rather than ordinary flex wrap)
-    expect(mainBox?.x ?? 0).toBeLessThan(20)
+    // In collapsed single-column mode, main fills most of the viewport width
+    expect(mainBox?.width ?? 0).toBeGreaterThan(400)
   })
 })

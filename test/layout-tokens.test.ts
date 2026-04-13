@@ -7,7 +7,7 @@ describe('layout tokens', () => {
 
   it('declares content-width tokens', () => {
     expect(css).toContain('--flex-content-narrow: 45ch')
-    expect(css).toContain('--flex-content-default: 65ch')
+    expect(css).toContain('--flex-content-default: 50rem')
     expect(css).toContain('--flex-content-wide: 85ch')
   })
 
@@ -21,9 +21,7 @@ describe('layout tokens', () => {
     expect(css).toContain('--flex-bp-lg: 64rem')
   })
 
-  it('keeps --flex-content-max-width as a deprecated alias', () => {
-    expect(css).toContain(
-      '--flex-content-max-width: var(--flex-content-default)',
-    )
+  it('declares --flex-content-max-width as page-level max-width', () => {
+    expect(css).toContain('--flex-content-max-width: 60rem')
   })
 })
