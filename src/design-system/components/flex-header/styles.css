@@ -367,6 +367,54 @@ flex-header {
     font-weight: 700;
     color: var(--flex-color-accent);
   }
+
+  /* User menu becomes an inline utility section inside the slide-in panel */
+  .flex-header__user-menu {
+    display: contents;
+  }
+
+  .flex-header__user-trigger {
+    display: none;
+  }
+
+  .flex-header__user-panel,
+  .flex-header__user-panel[hidden] {
+    display: block;
+    position: static;
+    inset: auto;
+    min-inline-size: 0;
+    background: transparent;
+    border: 0;
+    border-block-start: 2px solid var(--flex-color-border);
+    border-radius: 0;
+    box-shadow: none;
+    padding: var(--flex-space-md) 0 0;
+    margin-block-start: var(--flex-space-sm);
+    order: 99;
+  }
+
+  .flex-header__user-identity {
+    padding-inline: 0;
+  }
+
+  .flex-header__user-theme {
+    padding-inline: 0;
+  }
+
+  .flex-header__user-signout {
+    padding-inline: 0;
+  }
+
+  /* Signed-out parallel: theme toggle as a utility section at the bottom of the panel */
+  .flex-header__nav > .flex-theme-toggle {
+    order: 99;
+    margin-inline-start: 0;
+    padding-inline-start: 0;
+    padding-block-start: var(--flex-space-md);
+    margin-block-start: var(--flex-space-sm);
+    border-block-start: 2px solid var(--flex-color-border);
+    inline-size: 100%;
+  }
 }
 
 @keyframes flex-header-slidein {
