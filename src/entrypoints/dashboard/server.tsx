@@ -59,7 +59,6 @@ app.get('/', async (c) => {
           triggers a deployment.
         </p>
 
-        {/* Summary statistics */}
         <div
           class="l-grid"
           style={{
@@ -145,7 +144,6 @@ app.get('/', async (c) => {
           </div>
         </div>
 
-        {/* Deployment table — direct children of l-page-content so l-feature selector matches */}
         <h2>Active Deployments</h2>
         <DeploymentTable deployments={summary.deployments} />
       </Layout>,

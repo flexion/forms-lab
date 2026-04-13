@@ -120,10 +120,14 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
                 }}
               />
             </aside>
-            <main class="l-page-main">{props.children}</main>
+            <main class="l-page-main">
+              <div class="l-stack">{props.children}</div>
+            </main>
           </div>
         ) : (
-          <main class="l-page-content">{props.children}</main>
+          <main class="l-page-content">
+            <div class="l-stack">{props.children}</div>
+          </main>
         )}
         <Footer variant="slim">
           <FooterReturnToTop />
