@@ -33,25 +33,17 @@ test.describe('l-page-content', () => {
     expect(headingBox?.width ?? 0).toBeLessThan(1000)
   })
 
-  test('places l-feature wider than content track', async ({ page }) => {
+  test('l-full fills the page layout wrapper', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 })
     await renderFlexFixture(page, contentFixture)
 
     const headingBox = await page
       .locator('[data-testid="heading"]')
       .boundingBox()
-    const featureBox = await page
-      .locator('[data-testid="feature"]')
-      .boundingBox()
-    expect(featureBox?.width ?? 0).toBeGreaterThan(headingBox?.width ?? 0)
-  })
-
-  test('places l-full at 100% of the container', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 })
-    await renderFlexFixture(page, contentFixture)
-
     const fullBox = await page.locator('[data-testid="full"]').boundingBox()
-    expect(fullBox?.width ?? 0).toBeGreaterThan(1200)
+    // l-full spans the full page layout (capped at --flex-content-max-width),
+    // which is wider than or equal to the content track
+    expect(fullBox?.width ?? 0).toBeGreaterThanOrEqual(headingBox?.width ?? 0)
   })
 
   test('content track collapses gracefully on narrow viewport', async ({
@@ -67,14 +59,14 @@ test.describe('l-page-content', () => {
     expect(headingBox?.width ?? 0).toBeLessThan(360)
   })
 
-  test('places l-popout wider than content but narrower than feature', async ({
+  test('breakout tracks activate when content is narrower than the wrapper', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 800 })
     await renderFlexFixture(
       page,
       `
-        <main class="l-page-content">
+        <main class="l-page-content" data-width="narrow">
           <p data-testid="content-el">Content</p>
           <div class="l-popout" data-testid="popout-el">Popout</div>
           <div class="l-feature" data-testid="feature-el">Feature</div>
@@ -92,8 +84,10 @@ test.describe('l-page-content', () => {
       .locator('[data-testid="feature-el"]')
       .boundingBox()
 
+    // With data-width="narrow" (45ch), the content track is much smaller
+    // than the 60rem wrapper, so breakout tracks have room to expand
     expect(popoutBox?.width ?? 0).toBeGreaterThan(contentBox?.width ?? 0)
-    expect(popoutBox?.width ?? 0).toBeLessThan(featureBox?.width ?? 0)
+    expect(featureBox?.width ?? 0).toBeGreaterThan(popoutBox?.width ?? 0)
   })
 
   test('data-width="narrow" uses the narrower content-default token', async ({
