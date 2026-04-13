@@ -21,8 +21,8 @@ let
     # Check if nixos config changed since last deployment
     if ! ${pkgs.diffutils}/bin/diff -qr infrastructure/nixos /etc/nixos >/dev/null 2>&1; then
       echo "NixOS config changed, rebuilding..."
-      ${pkgs.rsync}/bin/rsync -av infrastructure/nixos/ /etc/nixos/
-      /run/wrappers/bin/sudo nixos-rebuild switch --flake /etc/nixos#forms-lab
+      /run/wrappers/bin/sudo ${pkgs.rsync}/bin/rsync -av --delete infrastructure/nixos/ /etc/nixos/
+      /run/wrappers/bin/sudo ${pkgs.nixos-rebuild}/bin/nixos-rebuild switch --flake /etc/nixos#forms-lab
     else
       echo "No NixOS config changes"
     fi
