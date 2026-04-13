@@ -30,7 +30,7 @@
 .flex-strategy-selector__option {
   display: block;
   position: relative;
-  padding: var(--flex-space-sm);
+  padding: var(--flex-space-md);
   border: 2px solid var(--flex-color-border);
   border-radius: var(--flex-radius-sm);
   background: var(--flex-color-surface);

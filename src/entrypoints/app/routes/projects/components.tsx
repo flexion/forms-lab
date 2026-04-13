@@ -1,6 +1,10 @@
 import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../../fixtures/index'
 import { StrategySelector } from '../../../../design-system/components/flex-strategy-selector'
+import {
+  Tab,
+  TabGroup,
+} from '../../../../design-system/components/flex-tab-group'
 import type { DataCollectionSpec } from '../../../../services/data-collection/types'
 import type { FormSpec } from '../../../../services/forms/types'
 import type {
@@ -107,49 +111,53 @@ export const NewProjectPage: FC<{
   <div class="l-stack">
     <h1>New Project</h1>
 
-    <section class="l-stack">
-      <h2>Start from a demo form</h2>
-      <form method="post" action={resolveUrl('/projects')} class="l-stack">
-        <div class="l-grid">
-          {fixtures.map((f) => (
-            <label key={f.slug} class="fixture-card-label">
-              <input
-                type="radio"
-                name="fixture"
-                value={f.slug}
-                class="fixture-card-input"
-                required
-              />
-              <div class="flex-card fixture-card">
-                <div class="l-stack" style="gap: var(--flex-space-2xs);">
-                  <strong>{f.name}</strong>
-                  <span class="text-muted text-sm">{f.description}</span>
+    <TabGroup label="Project creation method">
+      <Tab title="Demo form">
+        <form method="post" action={resolveUrl('/projects')} class="l-stack">
+          <p class="text-muted">
+            Choose a sample government form to see extraction in action.
+          </p>
+          <div class="l-grid">
+            {fixtures.map((f) => (
+              <label key={f.slug} class="fixture-card-label">
+                <input
+                  type="radio"
+                  name="fixture"
+                  value={f.slug}
+                  class="fixture-card-input"
+                  required
+                />
+                <div class="flex-card fixture-card">
+                  <div class="l-stack" style="gap: var(--flex-space-2xs);">
+                    <strong>{f.name}</strong>
+                    <span class="text-muted text-sm">{f.description}</span>
+                  </div>
                 </div>
-              </div>
-            </label>
-          ))}
-        </div>
-        <StrategySelector
-          strategies={strategies}
-          defaultId={defaultId}
-          name="strategy"
-        />
-        <div>
-          <button type="submit" class="flex-button">
-            Create Project
-          </button>
-        </div>
-      </form>
-    </section>
-
-    <section class="l-stack">
-      <h2>Upload your own PDF</h2>
-      <form
-        method="post"
-        action={resolveUrl('/projects')}
-        enctype="multipart/form-data"
-      >
-        <div class="l-stack">
+              </label>
+            ))}
+          </div>
+          <StrategySelector
+            strategies={strategies}
+            defaultId={defaultId}
+            name="strategy"
+          />
+          <div>
+            <button type="submit" class="flex-button">
+              Create Project
+            </button>
+          </div>
+        </form>
+      </Tab>
+      <Tab title="Upload PDF">
+        <form
+          method="post"
+          action={resolveUrl('/projects')}
+          enctype="multipart/form-data"
+          class="l-stack"
+        >
+          <p class="text-muted">
+            Upload your own government PDF form for field extraction.
+          </p>
           <flex-file-input>
             <label class="flex-label" for="pdf-upload">
               PDF form
@@ -183,9 +191,9 @@ export const NewProjectPage: FC<{
               Upload and Extract
             </button>
           </div>
-        </div>
-      </form>
-    </section>
+        </form>
+      </Tab>
+    </TabGroup>
   </div>
 )
 
