@@ -257,6 +257,7 @@ flex-header {
   block-size: 1px;
   background: var(--flex-color-border);
   margin-block: var(--flex-space-xs);
+  border: 0;
 }
 
 .flex-header__user-theme {
