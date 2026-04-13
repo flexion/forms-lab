@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { renderFlexFixture } from '../../../lib/test-helpers/render'
+import { renderFlexFixture } from '../../test-helpers/render'
 
 const sidebarFixture = `
 <aside class="catalog-sidebar">
