@@ -70,25 +70,43 @@ The four top-level directories under `src/`:
 
 Pure utilities with no domain knowledge. Zero internal dependencies — the base case for P2.
 
-Currently: `base-path.ts` (multi-tenant URL resolution), `format-html.ts` (HTML pretty-printer), `types/markdown-it-task-lists.d.ts` (third-party type declaration).
+- **`base-path.ts`** — Multi-tenant URL resolution for subpath-deployed branches.
+- **`format-html.ts`** — HTML pretty-printer used in catalog rendering and tests.
+- **`types/markdown-it-task-lists.d.ts`** — Third-party type declaration.
 
 ### `src/services/`
 
 Core domain services. Each service directory has a `types.ts` (P3) and one or more implementation files. Services depend only on `shared/` and other services (no cycles).
 
-Currently: `auth/`, `content/`, `data-collection/`, `deployment/`, `forms/`, `ingestion/`, `notifications/`, plus `storage.ts` at the directory root.
+- **`auth/`** — GitHub OAuth flow, encrypted session cookies, `SessionUser` type.
+- **`content/`** — Markdown parsing and rendering; catalog content types (`Persona`, `Decision`, `Story`, etc.).
+- **`data-collection/`** — The core domain model: what data a form collects. `DataCollectionSpec`, `DataRequirement`, field types, validation rules, conditions.
+- **`deployment/`** — GitHub API client and deployment metadata (branch state, commit info, PR status).
+- **`forms/`** — Form resolution, validation, navigation, sessions, and submission. `FormSpec`, `ResolvedForm`, `FormSession`.
+- **`ingestion/`** — PDF → structured spec extraction pipeline. Uses Bedrock (Claude) to parse PDFs into `DataCollectionSpec`s.
+- **`notifications/`** — Notification event types and Slack client used by the deploy pipeline.
+- **`storage.ts`** — SQLite persistence layer (flat file, intentionally not a directory).
 
 ### `src/design-system/`
 
 UI components. Peer to services — depends on `shared/` but not on services (P4). Components receive ready-to-render data as props.
 
-Currently: `components/flex-*/` (60+ components), `conformance/`, `test-helpers/`, `visual-descriptor/`, `register.ts`, `registry.ts`, `types.ts`.
+- **`components/flex-*/`** — 60+ USWDS-conformant components, each in its own directory with `index.tsx`, `styles.css`, `meta.ts`, and optional `examples.tsx` and `conformance-spec.tsx`.
+- **`conformance/`** — Type definitions for visual conformance specs shared across components.
+- **`test-helpers/`** — Shared test utilities for conformance and visual regression tests.
+- **`visual-descriptor/`** — Style extraction and diffing used by conformance tests.
+- **`register.ts`** — Client-side hydration entry point.
+- **`registry.ts`**, **`types.ts`** — Component metadata registry used by the design system catalog page.
 
 ### `src/entrypoints/`
 
 Runnable processes — the composition root. Routes and commands import services, pass data to components, return responses. This is where integration complexity lives.
 
-Currently: `app/` (forms platform web app), `dashboard/` (deployment dashboard), `webhook/` (GitHub event listener), `notify/` (notification delivery), `cli/` (command-line interface).
+- **`app/`** — The forms platform web application. Hono server with routes for catalog, forms, projects, and auth. Serves at `/<branch>/` on deployed branches.
+- **`dashboard/`** — The deployment dashboard served at `/`, showing branch status and health.
+- **`webhook/`** — GitHub webhook listener that verifies HMAC and triggers the deploy script on push events.
+- **`notify/`** — Notification delivery server that receives events from the webhook and deploy pipeline and posts to Slack.
+- **`cli/`** — Operational command-line tool (`bun run cli <command>`) for infra management, story sync, deployment, and OAuth setup.
 
 ## Dependencies and externalities
 
