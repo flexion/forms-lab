@@ -49,7 +49,7 @@ interface ExtractionOutput {
 }
 
 describe('pdfFieldExtractionKind', () => {
-  it('scores perfect extraction with 100% metrics', () => {
+  it('scores perfect extraction with 100% metrics', async () => {
     const groundTruth = makeSpec([
       {
         id: 'f1',
@@ -88,13 +88,13 @@ describe('pdfFieldExtractionKind', () => {
         { fieldId: 'f2', confidence: 0.9 },
       ],
     }
-    const result = pdfFieldExtractionKind.score(output, groundTruth)
+    const result = await pdfFieldExtractionKind.score(output, groundTruth)
     expect(result.metrics.fieldRecall).toBe(1.0)
     expect(result.metrics.fieldPrecision).toBe(1.0)
     expect(result.metrics.typeAccuracy).toBe(1.0)
   })
 
-  it('detects missed fields (low recall)', () => {
+  it('detects missed fields (low recall)', async () => {
     const groundTruth = makeSpec([
       {
         id: 'f1',
@@ -116,13 +116,13 @@ describe('pdfFieldExtractionKind', () => {
       ]),
       confidence: [],
     }
-    const result = pdfFieldExtractionKind.score(output, groundTruth)
+    const result = await pdfFieldExtractionKind.score(output, groundTruth)
     expect(result.metrics.fieldRecall).toBeCloseTo(1 / 3, 2)
     expect(result.metrics.fieldPrecision).toBe(1.0)
     expect(result.details.missed).toEqual(['email', 'phone'])
   })
 
-  it('detects hallucinated fields (low precision)', () => {
+  it('detects hallucinated fields (low precision)', async () => {
     const groundTruth = makeSpec([
       {
         id: 'f1',
@@ -149,13 +149,13 @@ describe('pdfFieldExtractionKind', () => {
       ]),
       confidence: [],
     }
-    const result = pdfFieldExtractionKind.score(output, groundTruth)
+    const result = await pdfFieldExtractionKind.score(output, groundTruth)
     expect(result.metrics.fieldRecall).toBe(1.0)
     expect(result.metrics.fieldPrecision).toBeCloseTo(1 / 3, 2)
     expect(result.details.extra).toEqual(['middleName', 'suffix'])
   })
 
-  it('detects type mismatches', () => {
+  it('detects type mismatches', async () => {
     const groundTruth = makeSpec([
       { id: 'f1', fieldName: 'phone', label: 'Phone', fieldType: 'phone' },
       { id: 'f2', fieldName: 'email', label: 'Email', fieldType: 'email' },
@@ -167,11 +167,11 @@ describe('pdfFieldExtractionKind', () => {
       ]),
       confidence: [],
     }
-    const result = pdfFieldExtractionKind.score(output, groundTruth)
+    const result = await pdfFieldExtractionKind.score(output, groundTruth)
     expect(result.metrics.typeAccuracy).toBe(0.5)
   })
 
-  it('matches fields by normalized label when fieldName differs', () => {
+  it('matches fields by normalized label when fieldName differs', async () => {
     const groundTruth = makeSpec([
       {
         id: 'f1',
@@ -191,11 +191,11 @@ describe('pdfFieldExtractionKind', () => {
       ]),
       confidence: [],
     }
-    const result = pdfFieldExtractionKind.score(output, groundTruth)
+    const result = await pdfFieldExtractionKind.score(output, groundTruth)
     expect(result.metrics.fieldRecall).toBe(1.0)
   })
 
-  it('measures sensitivity accuracy', () => {
+  it('measures sensitivity accuracy', async () => {
     const groundTruth = makeSpec([
       {
         id: 'f1',
@@ -231,11 +231,11 @@ describe('pdfFieldExtractionKind', () => {
       ]),
       confidence: [],
     }
-    const result = pdfFieldExtractionKind.score(output, groundTruth)
+    const result = await pdfFieldExtractionKind.score(output, groundTruth)
     expect(result.metrics.sensitivityAccuracy).toBe(0.5)
   })
 
-  it('measures group accuracy', () => {
+  it('measures group accuracy', async () => {
     const groundTruth = makeSpec([
       {
         id: 'f1',
@@ -271,7 +271,7 @@ describe('pdfFieldExtractionKind', () => {
       ]),
       confidence: [],
     }
-    const result = pdfFieldExtractionKind.score(output, groundTruth)
+    const result = await pdfFieldExtractionKind.score(output, groundTruth)
     expect(result.metrics.groupAccuracy).toBe(0.5)
   })
 

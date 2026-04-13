@@ -116,10 +116,10 @@ export const pdfFieldExtractionKind: EvaluationKind<
   description:
     'Evaluates PDF field extraction accuracy using deterministic field matching',
 
-  score(
+  async score(
     output: ExtractionOutput,
     groundTruth: DataCollectionSpec,
-  ): CaseMetrics {
+  ): Promise<CaseMetrics> {
     const extractedFields = flattenFields(output.spec)
     const groundTruthFields = flattenFields(groundTruth)
     const matches = matchFields(extractedFields, groundTruthFields)

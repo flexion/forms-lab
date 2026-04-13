@@ -1,7 +1,7 @@
 export interface EvaluationKind<TOutput, TGroundTruth> {
   id: string
   description: string
-  score(output: TOutput, groundTruth: TGroundTruth): CaseMetrics
+  score(output: TOutput, groundTruth: TGroundTruth): Promise<CaseMetrics>
   summarize(cases: CaseMetrics[]): SummaryMetrics
 }
 

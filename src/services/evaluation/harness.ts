@@ -29,7 +29,7 @@ export async function runEvaluation(options: RunOptions): Promise<RunResult> {
       spec: extractionResult.spec,
       confidence: extractionResult.confidence,
     }
-    const caseMetrics = kind.score(output, fixture.groundTruth)
+    const caseMetrics = await kind.score(output, fixture.groundTruth)
     cases.push({
       fixture: fixture.slug,
       metrics: caseMetrics.metrics,
