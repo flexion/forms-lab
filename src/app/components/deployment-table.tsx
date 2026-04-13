@@ -61,28 +61,28 @@ function HealthBadge({ deployment }: { deployment: DeploymentInfo }) {
   > = {
     healthy: {
       bg: 'var(--flex-color-success-lighter)',
-      text: 'var(--flex-color-success-darker)',
+      text: 'var(--flex-color-success)',
       border: 'var(--flex-color-success)',
     },
     unhealthy: {
       bg: 'var(--flex-color-error-lighter)',
-      text: 'var(--flex-color-error-darker)',
+      text: 'var(--flex-color-error)',
       border: 'var(--flex-color-error)',
     },
     failed: {
       bg: 'var(--flex-color-error-lighter)',
-      text: 'var(--flex-color-error-darker)',
+      text: 'var(--flex-color-error)',
       border: 'var(--flex-color-error)',
     },
     unknown: {
       bg: 'var(--flex-color-warning-lighter)',
-      text: 'var(--flex-color-warning-darker)',
+      text: 'var(--flex-color-warning)',
       border: 'var(--flex-color-warning)',
     },
     inactive: {
-      bg: 'var(--flex-color-base-lighter)',
+      bg: 'var(--flex-color-bg-subtle)',
       text: 'var(--flex-color-text-muted)',
-      border: 'var(--flex-color-base)',
+      border: 'var(--flex-color-border)',
     },
   }
 
@@ -117,18 +117,18 @@ function PRCell({
   > = {
     open: {
       bg: 'var(--flex-color-success-lighter)',
-      text: 'var(--flex-color-success-darker)',
+      text: 'var(--flex-color-success)',
       border: 'var(--flex-color-success)',
     },
     merged: {
-      bg: 'var(--flex-color-base-darker)',
-      text: 'var(--flex-color-white)',
-      border: 'var(--flex-color-base-darker)',
+      bg: 'var(--flex-color-text)',
+      text: 'var(--flex-color-bg)',
+      border: 'var(--flex-color-text)',
     },
     closed: {
-      bg: 'var(--flex-color-base-lighter)',
+      bg: 'var(--flex-color-bg-subtle)',
       text: 'var(--flex-color-text-muted)',
-      border: 'var(--flex-color-base)',
+      border: 'var(--flex-color-border)',
     },
   }
 

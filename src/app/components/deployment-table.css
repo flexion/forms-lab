@@ -1,7 +1,7 @@
 .deployment-table {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--flex-color-base-lighter);
+  border: 1px solid var(--flex-color-border);
   border-radius: var(--flex-radius-md);
   overflow: hidden;
 }
@@ -10,12 +10,12 @@
 .deployment-table__header {
   display: grid;
   grid-template-columns: 1.5rem 1.5fr 1fr 2.5fr 1fr 1fr;
-  gap: var(--flex-space-2);
-  padding: var(--flex-space-2) var(--flex-space-3);
-  background-color: var(--flex-color-base-lightest);
-  border-bottom: 2px solid var(--flex-color-base-lighter);
+  gap: var(--flex-space-sm);
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  background-color: var(--flex-color-bg-subtle);
+  border-bottom: 2px solid var(--flex-color-border);
   font-size: var(--flex-text-xs);
-  font-weight: var(--flex-font-weight-bold);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--flex-color-text-muted);
@@ -23,7 +23,7 @@
 
 /* Each deployment row */
 .deployment-table__row {
-  border-bottom: 1px solid var(--flex-color-base-lighter);
+  border-bottom: 1px solid var(--flex-color-border);
 }
 
 .deployment-table__row:last-child {
@@ -31,19 +31,19 @@
 }
 
 .deployment-table__row:nth-child(even) .deployment-table__summary {
-  background-color: var(--flex-color-base-lightest);
+  background-color: var(--flex-color-bg-subtle);
 }
 
 /* Summary (the visible row) */
 .deployment-table__summary {
   display: grid;
   grid-template-columns: 1.5rem 1.5fr 1fr 2.5fr 1fr 1fr;
-  gap: var(--flex-space-2);
-  padding: var(--flex-space-2) var(--flex-space-3);
+  gap: var(--flex-space-sm);
+  padding: var(--flex-space-md) var(--flex-space-md);
   align-items: center;
   cursor: pointer;
   list-style: none;
-  font-size: var(--flex-text-sm);
+  font-size: var(--flex-text-uswds);
 }
 
 .deployment-table__summary::-webkit-details-marker {
@@ -67,20 +67,24 @@
 }
 
 .deployment-table__summary:hover {
-  background-color: var(--flex-color-primary-lightest);
+  background-color: color-mix(
+    in srgb,
+    var(--flex-color-link) 8%,
+    transparent
+  );
 }
 
 /* Cells */
 .deployment-table__cell {
   display: flex;
   align-items: center;
-  gap: var(--flex-space-1);
+  gap: var(--flex-space-xs);
   min-width: 0;
 }
 
 /* Branch name */
 .deployment-table__branch {
-  font-weight: var(--flex-font-weight-semibold);
+  font-weight: 600;
   overflow-wrap: break-word;
 }
 
@@ -102,7 +106,7 @@
 
 /* Links */
 .deployment-table__link {
-  color: var(--flex-color-primary);
+  color: var(--flex-color-link);
   text-decoration: none;
 }
 
@@ -120,7 +124,7 @@
 .deployment-table__pr {
   display: inline-flex;
   align-items: center;
-  gap: var(--flex-space-1);
+  gap: var(--flex-space-xs);
 }
 
 /* Tags (health badges + PR status) */
@@ -128,8 +132,8 @@
   display: inline-flex;
   align-items: center;
   padding: 2px 8px;
-  font-size: var(--flex-text-2xs);
-  font-weight: var(--flex-font-weight-bold);
+  font-size: var(--flex-text-xs);
+  font-weight: 700;
   border: 1px solid;
   border-radius: var(--flex-radius-md);
   text-transform: uppercase;
@@ -139,22 +143,22 @@
 
 /* Expandable detail section */
 .deployment-table__detail {
-  padding: var(--flex-space-2) var(--flex-space-3);
-  padding-left: var(--flex-space-5);
-  background-color: var(--flex-color-base-lightest);
-  border-top: 1px solid var(--flex-color-base-lighter);
-  font-size: var(--flex-text-sm);
+  padding: var(--flex-space-md) var(--flex-space-md);
+  padding-left: var(--flex-space-xl);
+  background-color: var(--flex-color-bg-subtle);
+  border-top: 1px solid var(--flex-color-border);
+  font-size: var(--flex-text-base);
 }
 
 .deployment-table__detail-list {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: var(--flex-space-1) var(--flex-space-3);
+  gap: var(--flex-space-xs) var(--flex-space-md);
   margin: 0;
 }
 
 .deployment-table__detail-list dt {
-  font-weight: var(--flex-font-weight-semibold);
+  font-weight: 600;
   color: var(--flex-color-text-muted);
 }
 
@@ -175,7 +179,7 @@
   .deployment-table__summary {
     display: flex;
     flex-direction: column;
-    gap: var(--flex-space-1);
+    gap: var(--flex-space-xs);
     align-items: flex-start;
   }
 
@@ -190,7 +194,7 @@
   .deployment-table__cell::before {
     content: attr(data-label);
     font-size: var(--flex-text-xs);
-    font-weight: var(--flex-font-weight-bold);
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--flex-color-text-muted);
@@ -199,7 +203,7 @@
   }
 
   .deployment-table__detail {
-    padding-left: var(--flex-space-3);
+    padding-left: var(--flex-space-md);
   }
 
   .deployment-table__detail-list {

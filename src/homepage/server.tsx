@@ -64,20 +64,20 @@ app.get('/', async (c) => {
           class="l-grid"
           style={{
             '--grid-min': '200px',
-            '--grid-space': 'var(--flex-space-2)',
-            marginTop: 'var(--flex-space-4)',
-            marginBottom: 'var(--flex-space-4)',
+            '--grid-space': 'var(--flex-space-sm)',
+            marginTop: 'var(--flex-space-lg)',
+            marginBottom: 'var(--flex-space-lg)',
           }}
         >
           <div
             class="content-card"
-            style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
+            style={{ textAlign: 'center', padding: 'var(--flex-space-md)' }}
           >
             <div
               style={{
-                fontSize: 'var(--flex-text-2xl)',
-                fontWeight: 'var(--flex-font-weight-bold)',
-                color: 'var(--flex-color-primary)',
+                fontSize: '2rem',
+                fontWeight: '700',
+                color: 'var(--flex-color-link)',
               }}
             >
               {summary.totalDeployments}
@@ -86,7 +86,7 @@ app.get('/', async (c) => {
               style={{
                 fontSize: 'var(--flex-text-sm)',
                 color: 'var(--flex-color-text-muted)',
-                marginTop: 'var(--flex-space-1)',
+                marginTop: 'var(--flex-space-xs)',
               }}
             >
               Total Deployments
@@ -95,12 +95,12 @@ app.get('/', async (c) => {
 
           <div
             class="content-card"
-            style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
+            style={{ textAlign: 'center', padding: 'var(--flex-space-md)' }}
           >
             <div
               style={{
-                fontSize: 'var(--flex-text-2xl)',
-                fontWeight: 'var(--flex-font-weight-bold)',
+                fontSize: '2rem',
+                fontWeight: '700',
                 color: 'var(--flex-color-success)',
               }}
             >
@@ -110,7 +110,7 @@ app.get('/', async (c) => {
               style={{
                 fontSize: 'var(--flex-text-sm)',
                 color: 'var(--flex-color-text-muted)',
-                marginTop: 'var(--flex-space-1)',
+                marginTop: 'var(--flex-space-xs)',
               }}
             >
               Healthy
@@ -119,12 +119,12 @@ app.get('/', async (c) => {
 
           <div
             class="content-card"
-            style={{ textAlign: 'center', padding: 'var(--flex-space-3)' }}
+            style={{ textAlign: 'center', padding: 'var(--flex-space-md)' }}
           >
             <div
               style={{
-                fontSize: 'var(--flex-text-2xl)',
-                fontWeight: 'var(--flex-font-weight-bold)',
+                fontSize: '2rem',
+                fontWeight: '700',
                 color:
                   summary.failedDeployments > 0
                     ? 'var(--flex-color-error)'
@@ -137,7 +137,7 @@ app.get('/', async (c) => {
               style={{
                 fontSize: 'var(--flex-text-sm)',
                 color: 'var(--flex-color-text-muted)',
-                marginTop: 'var(--flex-space-1)',
+                marginTop: 'var(--flex-space-xs)',
               }}
             >
               Failed
