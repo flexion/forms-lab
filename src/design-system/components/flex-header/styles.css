@@ -170,21 +170,131 @@ flex-header {
   inset-block-end: -0.25rem;
 }
 
-/* --- Auth items --- */
+/* --- User menu (signed-in profile dropdown) --- */
 
-.flex-header__user-info {
-  gap: 0.5rem;
+.flex-header__user-menu {
+  position: relative;
+  margin-inline-start: auto;
+  padding-inline-start: var(--flex-space-sm);
+}
+
+.flex-header__user-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--flex-space-xs);
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--flex-color-text);
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--flex-color-border);
+    background: rgb(0 0 0 / 3%);
+  }
+
+  &:focus-visible {
+    outline: 0.25rem solid var(--flex-color-focus);
+    outline-offset: 2px;
+  }
 }
 
 .flex-header__avatar {
   border-radius: 50%;
+  display: block;
 }
 
-.flex-header__signout-btn {
-  background: none;
-  border: none;
+.flex-header__avatar--lg {
+  inline-size: 3rem;
+  block-size: 3rem;
+}
+
+.flex-header__user-caret {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  color: var(--flex-color-text-muted);
+}
+
+.flex-header__user-panel {
+  position: absolute;
+  inset-block-start: calc(100% + var(--flex-space-xs));
+  inset-inline-end: 0;
+  min-inline-size: 16rem;
+  background: var(--flex-color-surface);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-md);
+  box-shadow: var(--flex-shadow-md);
+  padding: var(--flex-space-sm) 0;
+  z-index: 500;
+}
+
+.flex-header__user-panel[hidden] {
+  display: none;
+}
+
+.flex-header__user-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-sm);
+  padding: var(--flex-space-sm) var(--flex-space-md);
+}
+
+.flex-header__user-name {
+  font-weight: 700;
+  color: var(--flex-color-text);
+  line-height: 1.2;
+}
+
+.flex-header__user-login {
+  font-size: 0.85rem;
+  color: var(--flex-color-text-muted);
+  line-height: 1.2;
+}
+
+.flex-header__user-divider {
+  block-size: 1px;
+  background: var(--flex-color-border);
+  margin-block: var(--flex-space-xs);
+  border: 0;
+}
+
+.flex-header__user-theme {
+  padding: var(--flex-space-xs) var(--flex-space-md);
+}
+
+/* Inside the panel the theme toggle is the full row, not an auto-margin widget */
+.flex-header__user-theme .flex-theme-toggle {
+  margin-inline-start: 0;
+  padding-inline-start: 0;
+}
+
+.flex-header__user-signout {
+  padding: 0 var(--flex-space-md) var(--flex-space-xs);
+}
+
+.flex-header__user-signout-btn {
+  inline-size: 100%;
+  background: transparent;
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  font: inherit;
+  font-weight: 700;
+  color: var(--flex-color-text);
   cursor: pointer;
-  font-family: inherit;
+
+  &:hover {
+    background: var(--flex-color-accent);
+    color: var(--flex-color-on-accent);
+    border-color: var(--flex-color-accent);
+  }
+
+  &:focus-visible {
+    outline: 0.25rem solid var(--flex-color-focus);
+    outline-offset: 2px;
+  }
 }
 
 /* --- Overlay (mobile backdrop) --- */
@@ -219,6 +329,7 @@ flex-header {
     border-inline-end: 0;
     display: none;
     flex-direction: column;
+    justify-content: flex-start;
     overflow-y: auto;
     padding: 1rem;
     inline-size: 15rem;
@@ -258,6 +369,54 @@ flex-header {
     font-weight: 700;
     color: var(--flex-color-accent);
   }
+
+  /* User menu becomes an inline utility section inside the slide-in panel */
+  .flex-header__user-menu {
+    display: contents;
+  }
+
+  .flex-header__user-trigger {
+    display: none;
+  }
+
+  .flex-header__user-panel,
+  .flex-header__user-panel[hidden] {
+    display: block;
+    position: static;
+    inset: auto;
+    min-inline-size: 0;
+    background: transparent;
+    border: 0;
+    border-block-start: 2px solid var(--flex-color-border);
+    border-radius: 0;
+    box-shadow: none;
+    padding: var(--flex-space-md) 0 0;
+    margin-block-start: var(--flex-space-sm);
+    order: 99;
+  }
+
+  .flex-header__user-identity {
+    padding-inline: 0;
+  }
+
+  .flex-header__user-theme {
+    padding-inline: 0;
+  }
+
+  .flex-header__user-signout {
+    padding-inline: 0;
+  }
+
+  /* Signed-out parallel: theme toggle as a utility section at the bottom of the panel */
+  .flex-header__nav > .flex-theme-toggle {
+    order: 99;
+    margin-inline-start: 0;
+    padding-inline-start: 0;
+    padding-block-start: var(--flex-space-md);
+    margin-block-start: var(--flex-space-sm);
+    border-block-start: 2px solid var(--flex-color-border);
+    inline-size: 100%;
+  }
 }
 
 @keyframes flex-header-slidein {
@@ -272,11 +431,11 @@ flex-header {
 
 /* --- Theme toggle --- */
 
-.flex-theme-toggle {
+.flex-header__nav > .flex-theme-toggle {
   display: flex;
   align-items: center;
   margin-inline-start: auto;
-  padding-inline-start: 0.5rem;
+  padding-inline-start: var(--flex-space-sm);
   flex-shrink: 0;
 }
 

@@ -1,5 +1,11 @@
 import type { Child, FC } from 'hono/jsx'
 
+export interface HeaderUser {
+  login: string
+  name: string
+  avatarUrl: string
+}
+
 export interface HeaderNavItemProps {
   href: string
   label: string
@@ -115,11 +121,97 @@ export const ThemeToggle: FC = () => {
   )
 }
 
+export interface HeaderUserMenuProps {
+  user: HeaderUser
+  signoutAction: string
+  menuId?: string
+}
+
+const CaretIcon: FC = () => (
+  <svg
+    class="flex-header__user-caret"
+    viewBox="0 0 12 12"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M2 4l4 4 4-4z" fill="currentColor" />
+  </svg>
+)
+
+export const HeaderUserMenu: FC<HeaderUserMenuProps> = ({
+  user,
+  signoutAction,
+  menuId = 'header-user-menu',
+}) => {
+  return (
+    <div class="flex-header__user-menu" data-header-user-menu>
+      <button
+        type="button"
+        class="flex-header__user-trigger"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-controls={menuId}
+      >
+        <img
+          src={user.avatarUrl}
+          alt=""
+          width="32"
+          height="32"
+          class="flex-header__avatar"
+        />
+        <span class="u-visually-hidden">Account menu for {user.name}</span>
+        <CaretIcon />
+      </button>
+      <div
+        class="flex-header__user-panel"
+        id={menuId}
+        role="menu"
+        aria-label={`Account menu for ${user.name}`}
+        hidden
+      >
+        <div class="flex-header__user-identity" role="presentation">
+          <img
+            src={user.avatarUrl}
+            alt=""
+            width="48"
+            height="48"
+            class="flex-header__avatar flex-header__avatar--lg"
+          />
+          <div class="flex-header__user-identity-text">
+            <div class="flex-header__user-name">{user.name}</div>
+            <div class="flex-header__user-login">@{user.login}</div>
+          </div>
+        </div>
+        <hr class="flex-header__user-divider" />
+        <div class="flex-header__user-theme">
+          <ThemeToggle />
+        </div>
+        <hr class="flex-header__user-divider" />
+        <form
+          method="post"
+          action={signoutAction}
+          class="flex-header__user-signout"
+        >
+          <button
+            type="submit"
+            role="menuitem"
+            class="flex-header__user-signout-btn"
+          >
+            Sign out
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 interface HeaderProps {
   logoText?: string
   logoHref?: string
   navId?: string
   navLabel?: string
+  user?: HeaderUser | null
+  signoutAction?: string
   children?: Child
 }
 
@@ -128,6 +220,8 @@ export const Header: FC<HeaderProps> = ({
   logoHref = '/',
   navId = 'header-nav',
   navLabel = 'Primary navigation',
+  user,
+  signoutAction,
   children,
 }) => {
   return (
@@ -155,8 +249,12 @@ export const Header: FC<HeaderProps> = ({
             Close
           </button>
           <ul class="flex-header__nav-list">{children}</ul>
+          {user && signoutAction ? (
+            <HeaderUserMenu user={user} signoutAction={signoutAction} />
+          ) : (
+            <ThemeToggle />
+          )}
         </nav>
-        <ThemeToggle />
       </div>
     </flex-header>
   )

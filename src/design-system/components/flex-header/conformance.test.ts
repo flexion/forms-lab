@@ -150,3 +150,125 @@ test.describe('flex-header mobile menu', () => {
     expect(overflowAfter).toBe('')
   })
 })
+
+function headerWithUserMenuHtml() {
+  return `<flex-header class="flex-header">
+    <div class="flex-header__inner">
+      <div class="flex-header__logo">
+        <a href="/" class="flex-header__logo-link">
+          <span class="flex-header__logo-text">Forms Lab</span>
+        </a>
+      </div>
+      <button type="button" class="flex-header__menu-btn" aria-expanded="false" aria-controls="header-nav">Menu</button>
+      <nav class="flex-header__nav" id="header-nav" aria-label="Primary navigation">
+        <button type="button" class="flex-header__close-btn" aria-controls="header-nav">Close</button>
+        <ul class="flex-header__nav-list">
+          <li class="flex-header__nav-item">
+            <a href="/catalog" class="flex-header__nav-link">Catalog</a>
+          </li>
+        </ul>
+        <div class="flex-header__user-menu" data-header-user-menu>
+          <button type="button" class="flex-header__user-trigger"
+                  aria-haspopup="menu" aria-expanded="false"
+                  aria-controls="header-user-menu">
+            <img src="https://example.com/avatar.png" alt=""
+                 width="32" height="32" class="flex-header__avatar">
+            <span class="u-visually-hidden">Account menu for Test User</span>
+          </button>
+          <div class="flex-header__user-panel" id="header-user-menu"
+               role="menu" aria-label="Account menu for Test User" hidden>
+            <div class="flex-header__user-identity">
+              <img src="https://example.com/avatar.png" alt="" width="48" height="48"
+                   class="flex-header__avatar flex-header__avatar--lg">
+              <div>
+                <div class="flex-header__user-name">Test User</div>
+                <div class="flex-header__user-login">@testuser</div>
+              </div>
+            </div>
+            <form method="post" action="/auth/signout" class="flex-header__user-signout">
+              <button type="submit" role="menuitem" class="flex-header__user-signout-btn">Sign out</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </flex-header>
+  <script>${componentsJs}</script>`
+}
+
+async function renderDesktopHeader(page: import('@playwright/test').Page) {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await renderFlexFixture(page, headerWithUserMenuHtml())
+  await page.waitForFunction(() => customElements.get('flex-header'))
+}
+
+test.describe('flex-header user menu', () => {
+  test('trigger click toggles aria-expanded and panel hidden attribute', async ({
+    page,
+  }) => {
+    await renderDesktopHeader(page)
+
+    const trigger = page.locator('.flex-header__user-trigger')
+    const panel = page.locator('.flex-header__user-panel')
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    await expect(panel).toHaveAttribute('hidden', '')
+
+    await trigger.click()
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await expect(panel).not.toHaveAttribute('hidden', '')
+
+    await trigger.click()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    await expect(panel).toHaveAttribute('hidden', '')
+  })
+
+  test('Escape closes the menu and returns focus to the trigger', async ({
+    page,
+  }) => {
+    await renderDesktopHeader(page)
+    const trigger = page.locator('.flex-header__user-trigger')
+
+    await trigger.click()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    await page.keyboard.press('Escape')
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    const focusedClass = await page.evaluate(
+      () => document.activeElement?.className,
+    )
+    expect(focusedClass).toContain('flex-header__user-trigger')
+  })
+
+  test('outside click closes the menu', async ({ page }) => {
+    await renderDesktopHeader(page)
+    const trigger = page.locator('.flex-header__user-trigger')
+
+    await trigger.click()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    // Click somewhere outside the menu root but not on a link
+    await page
+      .locator('.flex-header__inner')
+      .click({ position: { x: 10, y: 10 } })
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  test('crossing to mobile viewport force-closes the menu', async ({
+    page,
+  }) => {
+    await renderDesktopHeader(page)
+    const trigger = page.locator('.flex-header__user-trigger')
+
+    await trigger.click()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    // Shrink to mobile width to fire the breakpoint change
+    await page.setViewportSize({ width: 375, height: 667 })
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+})
