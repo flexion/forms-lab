@@ -16,6 +16,9 @@ function printUsage(): void {
   )
   console.log('  run <strategy-id>      Run a strategy against the test suite')
   console.log(
+    '    --scorer <type>      Scoring method: deterministic (default) or llm-judge',
+  )
+  console.log(
     '  compare                Run all strategies and produce comparison',
   )
   console.log(
@@ -119,6 +122,19 @@ export async function evaluate(args: string[]): Promise<number> {
         return 1
       }
 
+      const scorerIdx = args.indexOf('--scorer')
+      const scorerType =
+        scorerIdx !== -1 && args[scorerIdx + 1]
+          ? args[scorerIdx + 1]
+          : 'deterministic'
+
+      if (scorerType !== 'deterministic' && scorerType !== 'llm-judge') {
+        console.error(
+          'Invalid scorer. Use: --scorer deterministic (default) or --scorer llm-judge',
+        )
+        return 1
+      }
+
       const { loadAllFixturesForEvaluation } = await import(
         '../../../../fixtures/index'
       )
@@ -155,13 +171,29 @@ export async function evaluate(args: string[]): Promise<number> {
         strategyMeta.metadata.modelId,
       )
 
+      let kind = pdfFieldExtractionKind
+      if (scorerType === 'llm-judge') {
+        const { createBedrockFieldJudge } = await import(
+          '../../../services/evaluation/judge'
+        )
+        const { createLlmJudgeKind } = await import(
+          '../../../services/evaluation/kinds/pdf-field-extraction-judge'
+        )
+        const { OPUS_MODEL_ID } = await import(
+          '../../../services/extraction/models'
+        )
+        const judge = createBedrockFieldJudge(OPUS_MODEL_ID)
+        kind = createLlmJudgeKind(judge)
+        console.log('Using LLM judge (Opus) for semantic field matching')
+      }
+
       console.log(`Running evaluation: ${strategyMeta.metadata.name}`)
       console.log(`Fixtures: ${withGT.length}`)
 
       const manifest = withGT[0].manifest
       const start = Date.now()
       const result = await runEvaluation({
-        kind: pdfFieldExtractionKind,
+        kind: kind,
         extractor,
         fixtures: withGT
           .filter(
@@ -209,11 +241,14 @@ export async function evaluate(args: string[]): Promise<number> {
     case 'compare': {
       const registry = createExtractorRegistry()
       const strategies = registry.list()
+      const scorerArgs = args.filter(
+        (a, i) => a === '--scorer' || (i > 0 && args[i - 1] === '--scorer'),
+      )
 
       console.log('Running all strategies...\n')
       for (const s of strategies) {
         console.log(`--- ${s.metadata.name} ---`)
-        await evaluate(['run', s.id])
+        await evaluate(['run', s.id, ...scorerArgs])
         console.log()
       }
 
