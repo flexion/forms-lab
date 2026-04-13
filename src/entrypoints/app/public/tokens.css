@@ -1628,6 +1628,7 @@
   --flex-radius-sm: 4px;
   --flex-radius-md: 8px;
   --flex-radius-bubble: 14px;
+  --flex-shadow-md: 0 4px 12px rgb(0 0 0 / 15%);
   --flex-font-sans:
     "Source Sans Pro Web", "Helvetica Neue", Helvetica, Roboto, Arial,
     sans-serif; /* @uswds font-sans */
