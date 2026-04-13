@@ -1,5 +1,4 @@
 import type { Child, FC, PropsWithChildren } from 'hono/jsx'
-import type { SessionUser } from '../../../services/auth/session'
 import { resolveUrl } from '../../../shared/base-path'
 import { Banner } from '../flex-banner'
 import {
@@ -9,13 +8,13 @@ import {
   FooterReturnToTop,
   FooterSecondary,
 } from '../flex-footer'
-import { Header, HeaderNavItem } from '../flex-header'
+import { Header, HeaderNavItem, type HeaderUser } from '../flex-header'
 
 interface LayoutProps {
   title?: string
   sidebar?: Child
   currentPath?: string
-  user?: SessionUser | null
+  user?: HeaderUser | null
 }
 
 export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {

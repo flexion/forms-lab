@@ -1,6 +1,5 @@
 import type { FC } from 'hono/jsx'
-import type { SessionUser } from '../../../lib/session'
-import { Header, HeaderNavItem } from './index'
+import { Header, HeaderNavItem, type HeaderUser } from './index'
 
 export const Default: FC = () => (
   <Header>
@@ -16,7 +15,7 @@ export const WithCurrentPage: FC = () => (
   </Header>
 )
 
-const exampleUser: SessionUser = {
+const exampleUser: HeaderUser = {
   login: 'danielnaab',
   name: 'Daniel Naab',
   avatarUrl: 'https://github.com/danielnaab.png',

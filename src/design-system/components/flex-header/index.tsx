@@ -1,5 +1,10 @@
 import type { Child, FC } from 'hono/jsx'
-import type { SessionUser } from '../../../services/auth/session'
+
+export interface HeaderUser {
+  login: string
+  name: string
+  avatarUrl: string
+}
 
 export interface HeaderNavItemProps {
   href: string
@@ -117,7 +122,7 @@ export const ThemeToggle: FC = () => {
 }
 
 export interface HeaderUserMenuProps {
-  user: SessionUser
+  user: HeaderUser
   signoutAction: string
   menuId?: string
 }
@@ -205,7 +210,7 @@ interface HeaderProps {
   logoHref?: string
   navId?: string
   navLabel?: string
-  user?: SessionUser | null
+  user?: HeaderUser | null
   signoutAction?: string
   children?: Child
 }
