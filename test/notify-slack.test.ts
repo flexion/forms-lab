@@ -14,6 +14,7 @@ describe('validateEvent', () => {
       status: 'success',
       details: 'Branch deployed in 42s',
       timestamp: '2026-04-11T12:00:00Z',
+      url: 'https://example.com/',
     })
 
     expect(result.valid).toBe(true)
@@ -23,6 +24,20 @@ describe('validateEvent', () => {
       expect(result.event.status).toBe('success')
       expect(result.event.details).toBe('Branch deployed in 42s')
       expect(result.event.timestamp).toBe('2026-04-11T12:00:00Z')
+      expect(result.event.url).toBe('https://example.com/')
+    }
+  })
+
+  it('omits url when not a string', () => {
+    const result = validateEvent({
+      type: 'x',
+      title: 'y',
+      status: 'info',
+      url: 42,
+    })
+    expect(result.valid).toBe(true)
+    if (result.valid) {
+      expect(result.event.url).toBeUndefined()
     }
   })
 
@@ -167,6 +182,31 @@ describe('formatSlackMessage', () => {
       (b) => b.type === 'context',
     )
     expect(contextBlocks).toHaveLength(2) // details + timestamp
+  })
+
+  it('renders title as mrkdwn link when url present', () => {
+    const msg = formatSlackMessage({
+      ...baseEvent,
+      url: 'https://example.com/main/',
+    }) as {
+      attachments: Array<{
+        blocks: Array<{ type: string; text?: { type: string; text: string } }>
+      }>
+    }
+    const section = msg.attachments[0].blocks.find((b) => b.type === 'section')
+    expect(section?.text?.text).toBe(
+      '*[deploy.success]* <https://example.com/main/|Deployed main>',
+    )
+  })
+
+  it('renders plain title when url absent', () => {
+    const msg = formatSlackMessage(baseEvent) as {
+      attachments: Array<{
+        blocks: Array<{ type: string; text?: { type: string; text: string } }>
+      }>
+    }
+    const section = msg.attachments[0].blocks.find((b) => b.type === 'section')
+    expect(section?.text?.text).toBe('*[deploy.success]* Deployed main')
   })
 })
 

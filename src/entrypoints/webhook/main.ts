@@ -73,7 +73,7 @@ app.post('/', async (c) => {
 
   // Handle main branch deployment (includes NixOS config updates)
   if (push.branch === 'main') {
-    deployMainBranch(push.sha).catch((err) => {
+    deployMainBranch(push.sha, hostname).catch((err) => {
       console.error('Main deployment failed:', err)
     })
     return c.json(
