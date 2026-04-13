@@ -29,8 +29,8 @@ test.describe('l-page-content', () => {
     expect(
       Math.abs((headingBox?.x ?? 0) + (headingBox?.width ?? 0) / 2 - center),
     ).toBeLessThan(2)
-    expect(headingBox?.width ?? 0).toBeGreaterThan(700)
-    expect(headingBox?.width ?? 0).toBeLessThan(900)
+    expect(headingBox?.width ?? 0).toBeGreaterThan(900)
+    expect(headingBox?.width ?? 0).toBeLessThan(1000)
   })
 
   test('places l-feature wider than content track', async ({ page }) => {

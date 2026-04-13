@@ -7,7 +7,7 @@ describe('layout tokens', () => {
 
   it('declares content-width tokens', () => {
     expect(css).toContain('--flex-content-narrow: 45ch')
-    expect(css).toContain('--flex-content-default: 50rem')
+    expect(css).toContain('--flex-content-default: 60rem')
     expect(css).toContain('--flex-content-wide: 85ch')
   })
 

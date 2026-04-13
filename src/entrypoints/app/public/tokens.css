@@ -1623,7 +1623,7 @@
 
   /* Layout tokens */
   --flex-content-narrow: 45ch;
-  --flex-content-default: 50rem;
+  --flex-content-default: 60rem;
   --flex-content-wide: 85ch;
   --flex-content-max-width: 60rem;
   --flex-sidebar-width: 15rem;
