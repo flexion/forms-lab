@@ -86,6 +86,15 @@ architecture.get('/', async (c) => {
 
 architecture.get('/:slug', async (c) => {
   const slug = c.req.param('slug')
+
+  // Redirect URLs with a trailing .md to the canonical slug form
+  if (slug.endsWith('.md')) {
+    return c.redirect(
+      resolveUrl(`/catalog/architecture/${slug.slice(0, -3)}`),
+      301,
+    )
+  }
+
   const filePath = join(process.cwd(), 'catalog', 'architecture', `${slug}.md`)
 
   const docs = await loadArchitectureDocs()

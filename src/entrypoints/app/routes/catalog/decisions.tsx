@@ -99,6 +99,15 @@ decisions.get('/', async (c) => {
 
 decisions.get('/:group/:slug', async (c) => {
   const { group, slug } = c.req.param()
+
+  // Redirect URLs with a trailing .md to the canonical slug form
+  if (slug.endsWith('.md')) {
+    return c.redirect(
+      resolveUrl(`/catalog/decisions/${group}/${slug.slice(0, -3)}`),
+      301,
+    )
+  }
+
   const filePath = join(
     process.cwd(),
     'catalog',
