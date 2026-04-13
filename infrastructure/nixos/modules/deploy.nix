@@ -8,10 +8,14 @@ let
 
     echo "Starting main deployment at $SHA..."
 
-    cd /tmp
-    rm -rf forms-lab-deploy
-    ${pkgs.git}/bin/git clone https://github.com/flexion/forms-lab.git forms-lab-deploy
-    cd forms-lab-deploy
+    # Use a unique working directory per run so a stale or mis-owned
+    # leftover can never wedge the next deploy.
+    WORK_DIR=$(${pkgs.coreutils}/bin/mktemp -d /tmp/forms-lab-deploy.XXXXXX)
+    trap 'rm -rf "$WORK_DIR"' EXIT
+
+    cd "$WORK_DIR"
+    ${pkgs.git}/bin/git clone https://github.com/flexion/forms-lab.git repo
+    cd repo
     ${pkgs.git}/bin/git checkout "$SHA"
 
     # Check if nixos config changed since last deployment
