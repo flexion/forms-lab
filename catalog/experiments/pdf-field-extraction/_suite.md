@@ -25,7 +25,18 @@ Measures how completely and accurately extraction strategies identify form field
 
 Generated using Claude Opus 4.6 as reference oracle. Ground truth specs are reviewed for obvious errors before use.
 
+## Scoring Methods
+
+### LLM Judge (primary)
+
+Uses Claude Opus 4.6 to semantically match extracted fields against ground truth. Handles naming variations (synonyms, prefixes, word order) that deterministic matching misses. Each match includes a confidence score and reasoning.
+
+### Deterministic (baseline)
+
+Exact fieldName match + normalized label match. Fast and reproducible but systematically undercounts performance when models use different naming conventions than ground truth. Haiku recall jumps from 61% to 74% when switching from deterministic to LLM judge scoring -- the delta itself demonstrates why evaluation methodology matters.
+
 ## Course Topics
 
 - Evaluation and benchmarking (Chapter 3)
 - Model selection (Chapter 6)
+- LLM-as-judge evaluation methodology

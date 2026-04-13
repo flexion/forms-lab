@@ -1,9 +1,9 @@
 {
-  "kind": "pdf-field-extraction",
+  "kind": "pdf-field-extraction-llm-judge",
   "implementation": "opus-baseline",
   "specVersion": "2026-04-11",
   "status": "current",
-  "timestamp": "2026-04-11T16:34:28.512Z",
+  "timestamp": "2026-04-13T14:53:52.945Z",
   "model": "Claude Opus 4.6",
   "summary": {
     "fieldRecall": 1,
@@ -27,7 +27,1096 @@
         "extra": [],
         "totalGroundTruth": 181,
         "totalExtracted": 181,
-        "totalMatched": 181
+        "totalMatched": 181,
+        "judgeMatches": [
+          {
+            "groundTruthFieldName": "firstName",
+            "extractedFieldName": "firstName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "middleName",
+            "extractedFieldName": "middleName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "lastName",
+            "extractedFieldName": "lastName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "convictionFirstName",
+            "extractedFieldName": "convictionFirstName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "convictionMiddleName",
+            "extractedFieldName": "convictionMiddleName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "convictionLastName",
+            "extractedFieldName": "convictionLastName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "otherNames",
+            "extractedFieldName": "otherNames",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "socialSecurityNumber",
+            "extractedFieldName": "socialSecurityNumber",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "dateOfBirth",
+            "extractedFieldName": "dateOfBirth",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "countryOfBirth",
+            "extractedFieldName": "countryOfBirth",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "cityStateOfBirth",
+            "extractedFieldName": "cityStateOfBirth",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "citizenship",
+            "extractedFieldName": "citizenship",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "otherNationality",
+            "extractedFieldName": "otherNationality",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "parent1FullName",
+            "extractedFieldName": "parent1FullName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "parent2FullName",
+            "extractedFieldName": "parent2FullName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "streetAddress",
+            "extractedFieldName": "streetAddress",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "apartmentUnit",
+            "extractedFieldName": "apartmentUnit",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "cityState",
+            "extractedFieldName": "cityState",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "zipCode",
+            "extractedFieldName": "zipCode",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "emailAddress",
+            "extractedFieldName": "emailAddress",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "phoneNumber",
+            "extractedFieldName": "phoneNumber",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "attorneyName",
+            "extractedFieldName": "attorneyName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "attorneyContact",
+            "extractedFieldName": "attorneyContact",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "hasPreviousApplication",
+            "extractedFieldName": "hasPreviousApplication",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousApplicationDate",
+            "extractedFieldName": "previousApplicationDate",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousDecisionDate",
+            "extractedFieldName": "previousDecisionDate",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "isHispanicLatino",
+            "extractedFieldName": "isHispanicLatino",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "race",
+            "extractedFieldName": "race",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "sex",
+            "extractedFieldName": "sex",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "maritalStatus",
+            "extractedFieldName": "maritalStatus",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "spousePartnerName",
+            "extractedFieldName": "spousePartnerName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "dateOfMarriage",
+            "extractedFieldName": "dateOfMarriage",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "placeOfMarriage",
+            "extractedFieldName": "placeOfMarriage",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "childFullName",
+            "extractedFieldName": "childFullName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "childDateOfBirth",
+            "extractedFieldName": "childDateOfBirth",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "childOtherParentNames",
+            "extractedFieldName": "childOtherParentNames",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "childCustody",
+            "extractedFieldName": "childCustody",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "formerSpouseName",
+            "extractedFieldName": "formerSpouseName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "formerSpousePhone",
+            "extractedFieldName": "formerSpousePhone",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "formerMarriageDate",
+            "extractedFieldName": "formerMarriageDate",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "formerDivorceDate",
+            "extractedFieldName": "formerDivorceDate",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "formerMarriagePlace",
+            "extractedFieldName": "formerMarriagePlace",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "formerDivorcePlace",
+            "extractedFieldName": "formerDivorcePlace",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "familyAdditionalPages",
+            "extractedFieldName": "familyAdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "reasonsForPardon",
+            "extractedFieldName": "reasonsForPardon",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "reasonsAdditionalPages",
+            "extractedFieldName": "reasonsAdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "communityActivityDescription",
+            "extractedFieldName": "communityActivityDescription",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "communityActivityDates",
+            "extractedFieldName": "communityActivityDates",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "communityActivityContactNames",
+            "extractedFieldName": "communityActivityContactNames",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "communityActivityContactInfo",
+            "extractedFieldName": "communityActivityContactInfo",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "communityActivityReasons",
+            "extractedFieldName": "communityActivityReasons",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "communityAdditionalPages",
+            "extractedFieldName": "communityAdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "schoolProgramName",
+            "extractedFieldName": "schoolProgramName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "subjectStudiedDegree",
+            "extractedFieldName": "subjectStudiedDegree",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "educationDatesAttended",
+            "extractedFieldName": "educationDatesAttended",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "licenseType",
+            "extractedFieldName": "licenseType",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "licenseDateIssued",
+            "extractedFieldName": "licenseDateIssued",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "educationDenialProgramName",
+            "extractedFieldName": "educationDenialProgramName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "educationDenialDetails",
+            "extractedFieldName": "educationDenialDetails",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "educationDenialDate",
+            "extractedFieldName": "educationDenialDate",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "educationAdditionalPages",
+            "extractedFieldName": "educationAdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousStreetAddress",
+            "extractedFieldName": "previousStreetAddress",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousApartmentUnit",
+            "extractedFieldName": "previousApartmentUnit",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousCityState",
+            "extractedFieldName": "previousCityState",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousZipCode",
+            "extractedFieldName": "previousZipCode",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousDatesLiving",
+            "extractedFieldName": "previousDatesLiving",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "homelessnessDates",
+            "extractedFieldName": "homelessnessDates",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "militaryNotApplicable",
+            "extractedFieldName": "militaryNotApplicable",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "militaryDatesOfService",
+            "extractedFieldName": "militaryDatesOfService",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "militaryBranches",
+            "extractedFieldName": "militaryBranches",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "militarySerialNumber",
+            "extractedFieldName": "militarySerialNumber",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "militaryDischargeType",
+            "extractedFieldName": "militaryDischargeType",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "militaryServiceDetails",
+            "extractedFieldName": "militaryServiceDetails",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "militaryAdditionalPages",
+            "extractedFieldName": "militaryAdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "currentEmployer",
+            "extractedFieldName": "currentEmployer",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "currentEmployerType",
+            "extractedFieldName": "currentEmployerType",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "currentPosition",
+            "extractedFieldName": "currentPosition",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "currentJobStartDate",
+            "extractedFieldName": "currentJobStartDate",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "currentEmployerStreetAddress",
+            "extractedFieldName": "currentEmployerStreetAddress",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "currentEmployerCityState",
+            "extractedFieldName": "currentEmployerCityState",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "currentEmployerZipCode",
+            "extractedFieldName": "currentEmployerZipCode",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "currentSupervisorNamePhone",
+            "extractedFieldName": "currentSupervisorNamePhone",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousEmployerName",
+            "extractedFieldName": "previousEmployerName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousEmployerType",
+            "extractedFieldName": "previousEmployerType",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousPosition",
+            "extractedFieldName": "previousPosition",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousEmployerAddressPhone",
+            "extractedFieldName": "previousEmployerAddressPhone",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "previousEmployerDates",
+            "extractedFieldName": "previousEmployerDates",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "unemploymentDetails",
+            "extractedFieldName": "unemploymentDetails",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "criminalRecordEmploymentImpact",
+            "extractedFieldName": "criminalRecordEmploymentImpact",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "jobMisconductDetails",
+            "extractedFieldName": "jobMisconductDetails",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "jobAdditionalPages",
+            "extractedFieldName": "jobAdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "substanceUseNotApplicable",
+            "extractedFieldName": "substanceUseNotApplicable",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "substanceType",
+            "extractedFieldName": "substanceType",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "substanceFrequency",
+            "extractedFieldName": "substanceFrequency",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "substanceUseDates",
+            "extractedFieldName": "substanceUseDates",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "substanceUseDiagnosis",
+            "extractedFieldName": "substanceUseDiagnosis",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "substanceUseDiagnosisDate",
+            "extractedFieldName": "substanceUseDiagnosisDate",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "treatmentFacilityName",
+            "extractedFieldName": "treatmentFacilityName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "treatmentDates",
+            "extractedFieldName": "treatmentDates",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "treatmentStreetAddress",
+            "extractedFieldName": "treatmentStreetAddress",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "treatmentSuiteNo",
+            "extractedFieldName": "treatmentSuiteNo",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "treatmentCityState",
+            "extractedFieldName": "treatmentCityState",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "treatmentZipCode",
+            "extractedFieldName": "treatmentZipCode",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "treatmentPhoneNumber",
+            "extractedFieldName": "treatmentPhoneNumber",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "treatmentEmailAddress",
+            "extractedFieldName": "treatmentEmailAddress",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "sobrietyLength",
+            "extractedFieldName": "sobrietyLength",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "sobrietyAdditionalInfo",
+            "extractedFieldName": "sobrietyAdditionalInfo",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "sobrietyAdditionalPages",
+            "extractedFieldName": "sobrietyAdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "debtDescription",
+            "extractedFieldName": "debtDescription",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "debtAmount",
+            "extractedFieldName": "debtAmount",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "bankruptcyCourt",
+            "extractedFieldName": "bankruptcyCourt",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "bankruptcyYearOutcome",
+            "extractedFieldName": "bankruptcyYearOutcome",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "bankruptcyDischargeAmount",
+            "extractedFieldName": "bankruptcyDischargeAmount",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "financialAdditionalInfo",
+            "extractedFieldName": "financialAdditionalInfo",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "financialAdditionalPages",
+            "extractedFieldName": "financialAdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "attachingCaseDocuments",
+            "extractedFieldName": "attachingCaseDocuments",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "pleadedGuilty",
+            "extractedFieldName": "pleadedGuilty",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "offenseDates",
+            "extractedFieldName": "offenseDates",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "sentencingDate",
+            "extractedFieldName": "sentencingDate",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "courtOfProsecution",
+            "extractedFieldName": "courtOfProsecution",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "caseNumber",
+            "extractedFieldName": "caseNumber",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "convictionCharge",
+            "extractedFieldName": "convictionCharge",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "prisonSentence",
+            "extractedFieldName": "prisonSentence",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "prisonReleaseDate",
+            "extractedFieldName": "prisonReleaseDate",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "probationSupervisedReleaseSentence",
+            "extractedFieldName": "probationSupervisedReleaseSentence",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "probationCompletionDate",
+            "extractedFieldName": "probationCompletionDate",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "assessmentAmount",
+            "extractedFieldName": "assessmentAmount",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "fineAmount",
+            "extractedFieldName": "fineAmount",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "restitutionAmount",
+            "extractedFieldName": "restitutionAmount",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "offenseConductNarrative",
+            "extractedFieldName": "offenseConductNarrative",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "acceptResponsibility",
+            "extractedFieldName": "acceptResponsibility",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "offenseConductAdditionalPages",
+            "extractedFieldName": "offenseConductAdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "otherCriminalHistoryNarrative",
+            "extractedFieldName": "otherCriminalHistoryNarrative",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "otherCriminalHistoryAdditionalPages",
+            "extractedFieldName": "otherCriminalHistoryAdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "oathDay",
+            "extractedFieldName": "oathDay",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "oathMonth",
+            "extractedFieldName": "oathMonth",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "oathYear",
+            "extractedFieldName": "oathYear",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "applicantSignature",
+            "extractedFieldName": "applicantSignature",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "releaseSignature",
+            "extractedFieldName": "releaseSignature",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "releaseFullName",
+            "extractedFieldName": "releaseFullName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "releaseDateSigned",
+            "extractedFieldName": "releaseDateSigned",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "releaseOtherNames",
+            "extractedFieldName": "releaseOtherNames",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "releaseStreetAddress",
+            "extractedFieldName": "releaseStreetAddress",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "releaseCity",
+            "extractedFieldName": "releaseCity",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "releaseState",
+            "extractedFieldName": "releaseState",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "releaseZipCode",
+            "extractedFieldName": "releaseZipCode",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "releasePhoneNumber",
+            "extractedFieldName": "releasePhoneNumber",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "releaseSsn",
+            "extractedFieldName": "releaseSsn",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1PrimaryReference",
+            "extractedFieldName": "support1PrimaryReference",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1PetitionerName",
+            "extractedFieldName": "support1PetitionerName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1YearsKnown",
+            "extractedFieldName": "support1YearsKnown",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1Statement",
+            "extractedFieldName": "support1Statement",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1AdditionalPages",
+            "extractedFieldName": "support1AdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1Signature",
+            "extractedFieldName": "support1Signature",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1PrintName",
+            "extractedFieldName": "support1PrintName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1Date",
+            "extractedFieldName": "support1Date",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1Address",
+            "extractedFieldName": "support1Address",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1Phone",
+            "extractedFieldName": "support1Phone",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support1Email",
+            "extractedFieldName": "support1Email",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2PrimaryReference",
+            "extractedFieldName": "support2PrimaryReference",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2PetitionerName",
+            "extractedFieldName": "support2PetitionerName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2YearsKnown",
+            "extractedFieldName": "support2YearsKnown",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2Statement",
+            "extractedFieldName": "support2Statement",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2AdditionalPages",
+            "extractedFieldName": "support2AdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2Signature",
+            "extractedFieldName": "support2Signature",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2PrintName",
+            "extractedFieldName": "support2PrintName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2Date",
+            "extractedFieldName": "support2Date",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2Address",
+            "extractedFieldName": "support2Address",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2Phone",
+            "extractedFieldName": "support2Phone",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support2Email",
+            "extractedFieldName": "support2Email",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3PrimaryReference",
+            "extractedFieldName": "support3PrimaryReference",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3PetitionerName",
+            "extractedFieldName": "support3PetitionerName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3YearsKnown",
+            "extractedFieldName": "support3YearsKnown",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3Statement",
+            "extractedFieldName": "support3Statement",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3AdditionalPages",
+            "extractedFieldName": "support3AdditionalPages",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3Signature",
+            "extractedFieldName": "support3Signature",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3PrintName",
+            "extractedFieldName": "support3PrintName",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3Date",
+            "extractedFieldName": "support3Date",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3Address",
+            "extractedFieldName": "support3Address",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3Phone",
+            "extractedFieldName": "support3Phone",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          },
+          {
+            "groundTruthFieldName": "support3Email",
+            "extractedFieldName": "support3Email",
+            "confidence": 1,
+            "reasoning": "Exact match"
+          }
+        ],
+        "scorer": "llm-judge"
       }
     }
   ]
