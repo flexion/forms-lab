@@ -50,46 +50,14 @@ export interface DeployWithStatusOptions {
 }
 
 export async function deployMainBranch(sha: string): Promise<DeployResult> {
+  const script =
+    process.env.DEPLOY_MAIN_SCRIPT || '/srv/forms-lab/deploy-main.sh'
+
   try {
-    const proc = Bun.spawn(
-      [
-        'bash',
-        '-c',
-        `
-      set -e
-      cd /tmp
-      rm -rf forms-lab-deploy
-      git clone https://github.com/flexion/forms-lab.git forms-lab-deploy
-      cd forms-lab-deploy
-      git checkout ${sha}
-
-      # Check if nixos config changed since last deployment
-      if ! diff -qr infrastructure/nixos /etc/nixos >/dev/null 2>&1; then
-        echo "NixOS config changed, rebuilding..."
-        rsync -av infrastructure/nixos/ /etc/nixos/
-        nixos-rebuild switch --flake /etc/nixos#forms-lab
-      else
-        echo "No NixOS config changes"
-      fi
-
-      # Deploy main branch app
-      forms-lab-deploy main ${sha}
-
-      # Restart homepage service
-      systemctl restart forms-lab-homepage.service
-
-      # Health check
-      sleep 2
-      curl -f http://localhost:3000/health || exit 1
-
-      echo "Main deployment complete"
-    `,
-      ],
-      {
-        stdout: 'pipe',
-        stderr: 'pipe',
-      },
-    )
+    const proc = Bun.spawn([script, sha], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+    })
 
     const [stdout, stderr] = await Promise.all([
       new Response(proc.stdout).text(),

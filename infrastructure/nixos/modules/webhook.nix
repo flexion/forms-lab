@@ -5,6 +5,7 @@
     description = "Forms Lab GitHub Webhook Listener";
     wantedBy = [ "multi-user.target" ];
     after = [ "network.target" ];
+    onFailure = [ "forms-lab-notify-failure@%n.service" ];
 
     path = with pkgs; [ git openssh bun ];
 
@@ -15,7 +16,6 @@
       WorkingDirectory = "/srv/forms-lab";
       Restart = "on-failure";
       RestartSec = 5;
-      OnFailure = "forms-lab-notify-failure@%n.service";
     };
 
     # sops-nix decrypts the secret to a file containing the raw value.

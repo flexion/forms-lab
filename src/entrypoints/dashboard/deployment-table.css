@@ -12,13 +12,39 @@
   grid-template-columns: 1.5rem 1.5fr 1fr 2.5fr 1fr 1fr;
   gap: var(--flex-space-sm);
   padding: var(--flex-space-sm) var(--flex-space-md);
-  background-color: var(--flex-color-bg-subtle);
+  background-color: var(--flex-color-bg);
   border-bottom: 2px solid var(--flex-color-border);
   font-size: var(--flex-text-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--flex-color-text-muted);
+}
+
+/* Section headers */
+.deployment-table__section {
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  background-color: var(--flex-color-bg);
+  border-top: 2px solid var(--flex-color-border);
+  border-bottom: 1px solid var(--flex-color-border);
+  border-left: 4px solid var(--flex-color-border);
+  font-weight: 600;
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.deployment-table__section--issues {
+  border-left-color: var(--flex-color-error);
+}
+
+.deployment-table__section--active {
+  border-left-color: var(--flex-color-link);
+}
+
+.deployment-table__section--inactive {
+  border-left-color: var(--flex-color-border);
 }
 
 /* Each deployment row */

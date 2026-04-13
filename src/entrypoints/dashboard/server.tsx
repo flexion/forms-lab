@@ -1,8 +1,11 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { Layout } from '../../design-system/components/flex-layout'
-import { getDeploymentSummary } from '../../services/deployment/metadata'
-import { DeploymentTable } from './deployment-table'
+import {
+  getDeploymentSummary,
+  groupDeploymentsByStatus,
+} from '../../services/deployment/metadata'
+import { GroupedDeploymentTable } from './deployment-table'
 
 const app = new Hono()
 
@@ -144,8 +147,12 @@ app.get('/', async (c) => {
           </div>
         </div>
 
-        <h2>Active Deployments</h2>
-        <DeploymentTable deployments={summary.deployments} />
+        <div class="l-stack">
+          <h2>Deployments</h2>
+          <GroupedDeploymentTable
+            {...groupDeploymentsByStatus(summary.deployments)}
+          />
+        </div>
       </Layout>,
     )
   } catch (error) {

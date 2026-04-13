@@ -6,6 +6,7 @@
     description = "Forms Lab Homepage - Deployment Dashboard";
     wantedBy = [ "multi-user.target" ];
     after = [ "network.target" ];
+    onFailure = [ "forms-lab-notify-failure@%n.service" ];
 
     path = with pkgs; [ bun ];
 
@@ -20,7 +21,6 @@
         "PORT=3000"
       ];
       ExecStart = "${config.flexion.entrypointWrapper}/bin/forms-lab-entrypoint dashboard /srv/forms-lab/main";
-      OnFailure = "forms-lab-notify-failure@%n.service";
     };
   };
 }
