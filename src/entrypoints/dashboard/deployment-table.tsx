@@ -239,21 +239,18 @@ function DeploymentRow({ deployment }: { deployment: DeploymentInfo }) {
   )
 }
 
-function SectionHeader({ title, count }: { title: string; count: number }) {
+function SectionHeader({
+  title,
+  count,
+  variant,
+}: {
+  title: string
+  count: number
+  variant: 'issues' | 'active' | 'inactive'
+}) {
   return (
     <div
-      class="deployment-table__section"
-      style={{
-        padding: 'var(--flex-space-sm) var(--flex-space-md)',
-        backgroundColor: 'var(--flex-color-bg-subtle)',
-        borderTop: '2px solid var(--flex-color-border)',
-        borderBottom: '1px solid var(--flex-color-border)',
-        fontWeight: '600',
-        fontSize: 'var(--flex-text-sm)',
-        color: 'var(--flex-color-text-muted)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em',
-      }}
+      class={`deployment-table__section deployment-table__section--${variant}`}
     >
       {title} ({count})
     </div>
@@ -314,7 +311,11 @@ export function GroupedDeploymentTable({
 
       {issues.length > 0 && (
         <>
-          <SectionHeader title="Issues" count={issues.length} />
+          <SectionHeader
+            title="Issues"
+            count={issues.length}
+            variant="issues"
+          />
           {issues.map((deployment) => (
             <DeploymentRow key={deployment.branch} deployment={deployment} />
           ))}
@@ -323,7 +324,11 @@ export function GroupedDeploymentTable({
 
       {active.length > 0 && (
         <>
-          <SectionHeader title="Active Deployments" count={active.length} />
+          <SectionHeader
+            title="Active Deployments"
+            count={active.length}
+            variant="active"
+          />
           {active.map((deployment) => (
             <DeploymentRow key={deployment.branch} deployment={deployment} />
           ))}
@@ -332,7 +337,11 @@ export function GroupedDeploymentTable({
 
       {inactive.length > 0 && (
         <>
-          <SectionHeader title="Inactive" count={inactive.length} />
+          <SectionHeader
+            title="Inactive"
+            count={inactive.length}
+            variant="inactive"
+          />
           {inactive.map((deployment) => (
             <DeploymentRow key={deployment.branch} deployment={deployment} />
           ))}
