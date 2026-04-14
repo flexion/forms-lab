@@ -64,7 +64,7 @@ describe('Smoke tests', () => {
       const res = await authenticatedRequest('/')
       expect(res.status).toBe(200)
       const html = await res.text()
-      expect(html).toContain('My Projects')
+      expect(html).toContain('Welcome back')
     })
   })
 
@@ -75,7 +75,7 @@ describe('Smoke tests', () => {
       const html = await res.text()
       expect(html).toContain('New Project')
       expect(html).toContain('pardon-application')
-      expect(html).toContain('Upload PDF')
+      expect(html).toContain('Upload your own PDF')
     })
 
     it('POST /new with fixture creates a project and redirects', async () => {
