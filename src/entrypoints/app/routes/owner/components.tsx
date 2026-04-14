@@ -928,7 +928,7 @@ export const LandingPage: FC = () => (
 
     <section class="l-stack">
       <h2>How it works</h2>
-      <ol class="l-stack" style="padding-left: var(--flex-space-l);">
+      <ol class="l-stack" style="list-style-position: inside; padding-left: 0;">
         <li>
           <strong>Upload</strong> a government PDF form
         </li>
