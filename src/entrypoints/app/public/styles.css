@@ -74,6 +74,7 @@
 @import "../../dashboard/deployment-table.css" layer(block);
 @import "../../../design-system/components/flex-strategy-selector/styles.css" layer(block);
 @import "../routes/projects/styles.css" layer(block);
+@import "../routes/owner/edit/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);
