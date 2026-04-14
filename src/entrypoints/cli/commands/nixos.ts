@@ -11,6 +11,9 @@ function printUsage(): void {
   console.log(
     '  status                        Show running services and health',
   )
+  console.log(
+    '  logs <service> [--follow]     Show logs for a service (e.g., app@story-3-pdf-upload)',
+  )
 }
 
 async function getHostname(): Promise<string | null> {
@@ -158,6 +161,45 @@ export async function nixos(args: string[]): Promise<number> {
           'list-units',
           'forms-lab-*',
           '--no-pager',
+        ],
+        { stdio: ['inherit', 'inherit', 'inherit'] },
+      )
+      return await proc.exited
+    }
+
+    case 'logs': {
+      const hostname = await getHostname()
+      if (!hostname) {
+        console.error('Could not get hostname from Pulumi outputs')
+        return 1
+      }
+      const service = args[1]
+      if (!service) {
+        console.error('Usage: bun run cli nixos logs <service> [--follow]')
+        console.error('Examples:')
+        console.error('  bun run cli nixos logs app@story-3-pdf-upload')
+        console.error('  bun run cli nixos logs app@main --follow')
+        console.error('  bun run cli nixos logs webhook --follow')
+        return 1
+      }
+      const unitName = service.startsWith('forms-lab-')
+        ? `${service}.service`
+        : `forms-lab-${service}.service`
+      const follow = args.includes('--follow') || args.includes('-f')
+      const journalArgs = [
+        'journalctl',
+        '-u',
+        unitName,
+        '--no-pager',
+        ...(follow ? ['-f'] : ['-n', '100']),
+      ]
+      const proc = Bun.spawn(
+        [
+          'ssh',
+          '-o',
+          'StrictHostKeyChecking=no',
+          `root@${hostname}`,
+          ...journalArgs,
         ],
         { stdio: ['inherit', 'inherit', 'inherit'] },
       )
