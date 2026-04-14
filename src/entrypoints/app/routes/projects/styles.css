@@ -119,7 +119,7 @@
   border-bottom: 1px solid var(--flex-color-border);
 }
 
-/* Repository navigation tabs */
+/* Repository navigation tabs — matches flex-tab-group conventions */
 .repo-nav {
   border-block-end: 1px solid var(--flex-color-border);
 }
@@ -134,22 +134,32 @@
 
 .repo-nav__link {
   display: block;
-  padding: var(--flex-space-xs) var(--flex-space-md);
+  padding: var(--flex-space-sm) var(--flex-space-md);
   color: var(--flex-color-text-muted);
   text-decoration: none;
-  font-size: var(--flex-text-sm);
-  border-block-end: 2px solid transparent;
-  margin-block-end: -1px;
+  font-size: var(--flex-text-uswds);
+  font-weight: 700;
+  border: 1px solid transparent;
+  border-block-end: none;
+  position: relative;
+  inset-block-start: 1px;
 }
 
 .repo-nav__link:hover {
   color: var(--flex-color-text);
 }
 
+.repo-nav__link:focus-visible {
+  outline: var(--flex-focus-ring);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
 .repo-nav__link--current {
   color: var(--flex-color-text);
-  font-weight: 700;
-  border-block-end-color: var(--flex-color-primary);
+  border-color: var(--flex-color-border);
+  background: var(--flex-color-bg);
+  border-block-end-color: var(--flex-color-bg);
 }
 
 /* Clone URL bar with copy button */
@@ -164,27 +174,33 @@
 
 .clone-bar__url {
   flex: 1;
-  padding: var(--flex-space-2xs) var(--flex-space-sm);
-  font-size: var(--flex-text-sm);
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  font-size: var(--flex-text-uswds);
   word-break: break-all;
   user-select: all;
 }
 
 .clone-bar__copy {
-  padding: var(--flex-space-2xs) var(--flex-space-sm);
+  padding: var(--flex-space-sm) var(--flex-space-md);
   border: none;
   border-inline-start: 1px solid var(--flex-color-border);
   background: var(--flex-color-surface);
-  color: var(--flex-color-text-muted);
+  color: var(--flex-color-link);
   font: inherit;
-  font-size: var(--flex-text-sm);
+  font-size: var(--flex-text-uswds);
+  font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .clone-bar__copy:hover {
   background: var(--flex-color-surface-hover);
-  color: var(--flex-color-text);
+  color: var(--flex-color-link-hover);
+}
+
+.clone-bar__copy:focus-visible {
+  outline: var(--flex-focus-ring);
+  outline-offset: -2px;
 }
 
 /* Delete confirmation */
