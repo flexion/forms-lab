@@ -45,13 +45,11 @@ describe('FormProjectRepo', () => {
 
       const content = await repo.readFile('proj', 'HEAD', 'hello.txt')
       expect(content).not.toBeNull()
-      // biome-ignore lint/style/noNonNullAssertion: guarded by toBeNull above
-      expect(content!.toString()).toBe('Hello, world!')
+      expect(content?.toString()).toBe('Hello, world!')
 
       const json = await repo.readFile('proj', 'HEAD', 'data.json')
       expect(json).not.toBeNull()
-      // biome-ignore lint/style/noNonNullAssertion: guarded by toBeNull above
-      expect(json!.toString()).toBe('{"key":"value"}')
+      expect(json?.toString()).toBe('{"key":"value"}')
     })
 
     it('returns null for missing file', async () => {
@@ -83,13 +81,11 @@ describe('FormProjectRepo', () => {
 
       const first = await repo.readFile('proj', 'HEAD', 'first.txt')
       expect(first).not.toBeNull()
-      // biome-ignore lint/style/noNonNullAssertion: guarded by toBeNull above
-      expect(first!.toString()).toBe('first')
+      expect(first?.toString()).toBe('first')
 
       const second = await repo.readFile('proj', 'HEAD', 'second.txt')
       expect(second).not.toBeNull()
-      // biome-ignore lint/style/noNonNullAssertion: guarded by toBeNull above
-      expect(second!.toString()).toBe('second')
+      expect(second?.toString()).toBe('second')
     })
 
     it('handles nested paths', async () => {
@@ -112,8 +108,7 @@ describe('FormProjectRepo', () => {
         'src/components/button.tsx',
       )
       expect(content).not.toBeNull()
-      // biome-ignore lint/style/noNonNullAssertion: guarded by toBeNull above
-      expect(content!.toString()).toBe('export const Button = () => {}')
+      expect(content?.toString()).toBe('export const Button = () => {}')
     })
 
     it('handles binary content (PDF)', async () => {
@@ -131,8 +126,7 @@ describe('FormProjectRepo', () => {
 
       const content = await repo.readFile('proj', 'HEAD', 'doc.pdf')
       expect(content).not.toBeNull()
-      // biome-ignore lint/style/noNonNullAssertion: guarded by toBeNull above
-      expect(Buffer.compare(content!, pdfBytes)).toBe(0)
+      expect(content ? Buffer.compare(content, pdfBytes) : -1).toBe(0)
     })
   })
 

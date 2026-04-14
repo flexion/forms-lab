@@ -72,20 +72,20 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
     return Buffer.from(stdout).toString()
   }
 
-  async function gitBinary(
-    slug: string,
-    args: string[],
-  ): Promise<Buffer | null> {
+  async function gitBinary(slug: string, args: string[]): Promise<Buffer> {
     const proc = Bun.spawn(['git', '--git-dir', repoDir(slug), ...args], {
       stdout: 'pipe',
       stderr: 'pipe',
     })
 
     const stdout = await new Response(proc.stdout).arrayBuffer()
+    const stderr = await new Response(proc.stderr).text()
     const exitCode = await proc.exited
 
     if (exitCode !== 0) {
-      return null
+      throw new Error(
+        `git ${args.join(' ')} failed (exit ${exitCode}): ${stderr}`,
+      )
     }
 
     return Buffer.from(stdout)
@@ -126,7 +126,7 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
       message: string,
       author: string,
     ): Promise<string> {
-      const indexFile = join(repoDir(slug), `index-${Date.now()}`)
+      const indexFile = join(repoDir(slug), `index-${crypto.randomUUID()}`)
       const authorEnv = {
         GIT_INDEX_FILE: indexFile,
         GIT_AUTHOR_NAME: author,
@@ -202,7 +202,14 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
       rev: string,
       path: string,
     ): Promise<Buffer | null> {
-      return gitBinary(slug, ['show', `${rev}:${path}`])
+      try {
+        return await gitBinary(slug, ['show', `${rev}:${path}`])
+      } catch (err) {
+        if (err instanceof Error && err.message.includes('exit 128')) {
+          return null
+        }
+        throw err
+      }
     },
 
     async listTree(
