@@ -81,28 +81,16 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             current={props.currentPath === '/'}
           />
           <HeaderNavItem
-            href={resolveUrl('/forms')}
-            label="Forms"
-            current={props.currentPath === '/forms'}
-          />
-          <HeaderNavItem
             href={resolveUrl('/catalog')}
             label="Catalog"
             current={props.currentPath?.startsWith('/catalog') ?? false}
           />
           {props.user ? (
-            <>
-              <HeaderNavItem
-                href={resolveUrl(`/${props.user.login}`)}
-                label="Projects"
-                current={props.currentPath === `/${props.user.login}`}
-              />
-              <HeaderNavItem
-                href={resolveUrl('/forms/sessions')}
-                label="My Sessions"
-                current={props.currentPath === '/forms/sessions'}
-              />
-            </>
+            <HeaderNavItem
+              href={resolveUrl(`/${props.user.login}`)}
+              label="Projects"
+              current={props.currentPath === `/${props.user.login}`}
+            />
           ) : (
             <HeaderNavItem href={resolveUrl('/auth/signin')} label="Sign in" />
           )}
