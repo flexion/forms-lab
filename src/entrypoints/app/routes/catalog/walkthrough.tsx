@@ -4,6 +4,7 @@ import { Breadcrumb } from '../../../../design-system/components/flex-breadcrumb
 import { ContentCard } from '../../../../design-system/components/flex-card'
 import { CatalogSidebar } from '../../../../design-system/components/flex-catalog-sidebar'
 import { Layout } from '../../../../design-system/components/flex-layout'
+import { PresentLayout } from '../../../../design-system/components/flex-present-layout'
 import { Prose } from '../../../../design-system/components/flex-prose'
 import { TagList } from '../../../../design-system/components/flex-tag-list'
 import { WalkthroughNav } from '../../../../design-system/components/flex-walkthrough-nav'
@@ -13,7 +14,7 @@ import {
 } from '../../../../services/content/markdown'
 import type { WalkthroughPage } from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
-import { getCatalogSidebar, getWalkthroughSidebar } from './sidebar'
+import { getWalkthroughSidebar } from './sidebar'
 
 const walkthrough = new Hono()
 
@@ -66,10 +67,46 @@ walkthrough.get('/', async (c) => {
     return sum + (match ? parseInt(match[1], 10) : 0)
   }, 0)
 
+  const firstPage = pages[0]
+
+  const isPresent = c.req.query('present') !== undefined
+
+  if (isPresent) {
+    const firstUrl = firstPage
+      ? resolveUrl(`/catalog/walkthrough/${firstPage.slug}?present`)
+      : null
+
+    return c.html(
+      <PresentLayout title="Walkthrough">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center">
+          <h1 style="font-size:var(--flex-text-3xl);margin-block-end:var(--flex-space-md)">
+            Forms Lab
+          </h1>
+          <p style="font-size:var(--flex-text-xl);color:var(--flex-color-text-muted);margin-block-end:var(--flex-space-xl)">
+            LLM-Assisted Forms Platform for Government
+          </p>
+          {firstUrl && (
+            <a href={firstUrl} class="flex-button" data-size="big">
+              Begin →
+            </a>
+          )}
+          <p style="font-size:var(--flex-text-sm);color:var(--flex-color-text-muted);margin-block-start:var(--flex-space-lg)">
+            Press → or click to begin
+          </p>
+        </div>
+        {firstUrl && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();location.href='${firstUrl}'}})`,
+            }}
+          />
+        )}
+      </PresentLayout>,
+    )
+  }
+
   const sidebarData = getWalkthroughSidebar(pages, '/catalog/walkthrough')
   const sidebar = <CatalogSidebar sections={sidebarData} />
-
-  const firstPage = pages[0]
 
   return c.html(
     <Layout
@@ -136,7 +173,10 @@ walkthrough.get('/:slug', async (c) => {
   const pageIndex = pages.findIndex((p) => p.slug === slug)
 
   if (pageIndex === -1) {
-    const sidebarData = getWalkthroughSidebar(pages, `/catalog/walkthrough/${slug}`)
+    const sidebarData = getWalkthroughSidebar(
+      pages,
+      `/catalog/walkthrough/${slug}`,
+    )
     const sidebar = <CatalogSidebar sections={sidebarData} />
     return c.html(
       <Layout
@@ -156,7 +196,53 @@ walkthrough.get('/:slug', async (c) => {
   const prevPage = pageIndex > 0 ? pages[pageIndex - 1] : null
   const nextPage = pageIndex < pages.length - 1 ? pages[pageIndex + 1] : null
 
-  const sidebarData = getWalkthroughSidebar(pages, `/catalog/walkthrough/${slug}`)
+  const isPresent = c.req.query('present') !== undefined
+
+  if (isPresent) {
+    const prevUrl = prevPage
+      ? resolveUrl(`/catalog/walkthrough/${prevPage.slug}?present`)
+      : null
+    const nextUrl = nextPage
+      ? resolveUrl(`/catalog/walkthrough/${nextPage.slug}?present`)
+      : null
+
+    return c.html(
+      <PresentLayout
+        title={page.title}
+        nav={
+          <WalkthroughNav
+            currentPage={pageIndex + 1}
+            totalPages={pages.length}
+            prevUrl={prevUrl}
+            nextUrl={nextUrl}
+          />
+        }
+      >
+        <Prose html={renderMarkdown(page.content)} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){
+            var prev=${prevUrl ? `"${prevUrl}"` : 'null'};
+            var next=${nextUrl ? `"${nextUrl}"` : 'null'};
+            document.addEventListener('keydown',function(e){
+              if(e.key==='ArrowRight'||e.key===' '){if(next){e.preventDefault();location.href=next}}
+              if(e.key==='ArrowLeft'){if(prev){e.preventDefault();location.href=prev}}
+              if(e.key==='Escape'){location.href='${resolveUrl('/catalog/walkthrough')}'}
+            });
+            document.querySelectorAll('.prose a').forEach(function(a){
+              if(!a.getAttribute('href').startsWith('#'))a.setAttribute('target','_blank')
+            });
+          }())`,
+          }}
+        />
+      </PresentLayout>,
+    )
+  }
+
+  const sidebarData = getWalkthroughSidebar(
+    pages,
+    `/catalog/walkthrough/${slug}`,
+  )
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(

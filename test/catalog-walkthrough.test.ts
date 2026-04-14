@@ -49,4 +49,38 @@ describe('Walkthrough Routes', () => {
       expect(body).toContain('← Back to Catalog')
     })
   })
+
+  describe('Present mode', () => {
+    it('returns 200 for walkthrough page in present mode', async () => {
+      const res = await app.request(
+        '/catalog/walkthrough/01-the-problem?present',
+      )
+      expect(res.status).toBe(200)
+    })
+
+    it('does not render catalog header in present mode', async () => {
+      const res = await app.request(
+        '/catalog/walkthrough/01-the-problem?present',
+      )
+      const body = await res.text()
+      expect(body).not.toContain('flex-header')
+      expect(body).toContain('flex-present-layout')
+      expect(body).toContain('The Problem')
+    })
+
+    it('includes keyboard navigation script in present mode', async () => {
+      const res = await app.request(
+        '/catalog/walkthrough/01-the-problem?present',
+      )
+      const body = await res.text()
+      expect(body).toContain('ArrowRight')
+    })
+
+    it('renders index as title slide in present mode', async () => {
+      const res = await app.request('/catalog/walkthrough?present')
+      expect(res.status).toBe(200)
+      const body = await res.text()
+      expect(body).toContain('flex-present-layout')
+    })
+  })
 })

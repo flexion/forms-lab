@@ -1,0 +1,43 @@
+.flex-present-layout {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+  padding: var(--flex-space-xl) var(--flex-space-lg);
+}
+
+.flex-present-layout__content {
+  flex: 1;
+  max-inline-size: 50rem;
+  margin-inline: auto;
+  inline-size: 100%;
+}
+
+.flex-present-layout__content .prose {
+  font-size: var(--flex-text-lg);
+  line-height: 1.6;
+}
+
+.flex-present-layout__content .prose h1 {
+  font-size: var(--flex-text-3xl);
+  margin-block-end: var(--flex-space-lg);
+}
+
+.flex-present-layout__content .prose h2 {
+  font-size: var(--flex-text-2xl);
+  margin-block-start: var(--flex-space-xl);
+}
+
+.flex-present-layout__content .prose a {
+  text-decoration: underline;
+}
+
+.flex-present-layout__nav {
+  max-inline-size: 50rem;
+  margin-inline: auto;
+  inline-size: 100%;
+}
+
+.flex-present-layout .flex-walkthrough-nav {
+  border-block-start: none;
+  margin-block-start: 0;
+}
