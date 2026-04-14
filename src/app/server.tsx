@@ -9,9 +9,10 @@ import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
 } from '../services/pdf-extractor'
+import { createUserStore } from '../services/user-store'
 import { Layout } from './components/flex-layout'
 import { requireAuth, sessionReader } from './middleware/auth'
-import auth from './routes/auth/index'
+import { createAuthRoutes } from './routes/auth/index'
 import catalog from './routes/catalog/index'
 import { createProjectRoutes } from './routes/projects/index'
 
@@ -27,6 +28,7 @@ mkdirSync(reposPath, { recursive: true })
 
 const projectStore = createProjectStore(projectDbPath)
 const cacheStore = createCacheStore(cacheDbPath)
+const userStore = createUserStore(projectDbPath)
 const formProjectRepo = createFormProjectRepo(reposPath)
 const extractor = createCachedPdfExtractor(
   createBedrockPdfExtractor(),
@@ -127,7 +129,7 @@ app.use(
 )
 
 // Mount auth routes
-app.route('/auth', auth)
+app.route('/auth', createAuthRoutes(userStore))
 
 // Mount projects routes with auth guard
 app.use('/projects/*', requireAuth())
