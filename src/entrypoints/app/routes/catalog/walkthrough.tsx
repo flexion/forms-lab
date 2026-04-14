@@ -13,7 +13,7 @@ import {
 } from '../../../../services/content/markdown'
 import type { WalkthroughPage } from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
-import { getCatalogSidebar } from './sidebar'
+import { getCatalogSidebar, getWalkthroughSidebar } from './sidebar'
 
 const walkthrough = new Hono()
 
@@ -66,7 +66,7 @@ walkthrough.get('/', async (c) => {
     return sum + (match ? parseInt(match[1], 10) : 0)
   }, 0)
 
-  const sidebarData = getCatalogSidebar('/catalog/walkthrough')
+  const sidebarData = getWalkthroughSidebar(pages, '/catalog/walkthrough')
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   const firstPage = pages[0]
@@ -136,7 +136,7 @@ walkthrough.get('/:slug', async (c) => {
   const pageIndex = pages.findIndex((p) => p.slug === slug)
 
   if (pageIndex === -1) {
-    const sidebarData = getCatalogSidebar('/catalog/walkthrough')
+    const sidebarData = getWalkthroughSidebar(pages, `/catalog/walkthrough/${slug}`)
     const sidebar = <CatalogSidebar sections={sidebarData} />
     return c.html(
       <Layout
@@ -156,7 +156,7 @@ walkthrough.get('/:slug', async (c) => {
   const prevPage = pageIndex > 0 ? pages[pageIndex - 1] : null
   const nextPage = pageIndex < pages.length - 1 ? pages[pageIndex + 1] : null
 
-  const sidebarData = getCatalogSidebar('/catalog/walkthrough')
+  const sidebarData = getWalkthroughSidebar(pages, `/catalog/walkthrough/${slug}`)
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(

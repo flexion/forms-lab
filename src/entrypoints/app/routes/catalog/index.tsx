@@ -66,6 +66,17 @@ catalog.get('/', async (c) => {
 
       <div class="l-stack" style="--stack-space: var(--flex-space-xl)">
         <section>
+          <p class="catalog-group-label">Presentation</p>
+          <div class="l-grid" style="--grid-min: 280px">
+            <ContentCard
+              title="Walkthrough"
+              href={resolveUrl('/catalog/walkthrough')}
+              description="Guided tour of the project — problem, approach, LLM integration, and demo"
+            />
+          </div>
+        </section>
+
+        <section>
           <p class="catalog-group-label">The System</p>
           <div class="l-grid" style="--grid-min: 280px">
             <ContentCard

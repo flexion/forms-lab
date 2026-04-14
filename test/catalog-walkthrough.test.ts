@@ -34,4 +34,19 @@ describe('Walkthrough Routes', () => {
       expect(res.status).toBe(404)
     })
   })
+
+  describe('Sidebar Integration', () => {
+    it('shows walkthrough link in catalog sidebar', async () => {
+      const res = await app.request('/catalog')
+      const body = await res.text()
+      expect(body).toContain('Walkthrough')
+      expect(body).toContain('/catalog/walkthrough')
+    })
+
+    it('shows contextual sidebar on walkthrough pages', async () => {
+      const res = await app.request('/catalog/walkthrough/01-the-problem')
+      const body = await res.text()
+      expect(body).toContain('← Back to Catalog')
+    })
+  })
 })
