@@ -1,7 +1,15 @@
-import { describe, expect, it } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { Hono } from 'hono'
 import { createProjectRoutes } from '../src/app/routes/projects/index'
+import type { ProjectStore } from '../src/services/database'
 import { createProjectStore } from '../src/services/database'
+import {
+  createFormProjectRepo,
+  type FormProjectRepo,
+} from '../src/services/form-project-repo'
 import type { PdfExtractor } from '../src/services/pdf-extractor'
 import type { ExtractionResult } from '../src/types/models'
 
@@ -23,9 +31,21 @@ const stubResult: ExtractionResult = {
   confidence: [],
 }
 
-function createTestApp() {
+let repoBasePath: string
+let repo: FormProjectRepo
+
+beforeEach(() => {
+  repoBasePath = mkdtempSync(join(tmpdir(), 'form-repos-test-'))
+  repo = createFormProjectRepo(repoBasePath)
+})
+
+afterEach(() => {
+  rmSync(repoBasePath, { recursive: true, force: true })
+})
+
+function createTestApp(overrides?: { extractor?: PdfExtractor }) {
   const projectStore = createProjectStore(':memory:')
-  const extractor: PdfExtractor = {
+  const extractor: PdfExtractor = overrides?.extractor ?? {
     async extract(): Promise<ExtractionResult> {
       return stubResult
     },
@@ -36,8 +56,69 @@ function createTestApp() {
     c.set('user', { login: 'testuser', name: 'Test User', avatarUrl: '' })
     await next()
   })
-  app.route('/projects', createProjectRoutes(projectStore, extractor))
+  app.route('/projects', createProjectRoutes(projectStore, extractor, repo))
   return { app, projectStore, extractor }
+}
+
+/** Helper: create a project in SQLite and init its git repo with source PDF */
+async function createIndexedProject(
+  projectStore: ProjectStore,
+  opts: { name: string; slug: string },
+) {
+  const project = projectStore.create({
+    name: opts.name,
+    slug: opts.slug,
+    createdBy: 'testuser',
+  })
+  await repo.init(opts.slug)
+  await repo.commit(
+    opts.slug,
+    [
+      {
+        path: `source/${opts.slug}.pdf`,
+        content: Buffer.from('fake-pdf'),
+      },
+      {
+        path: 'project.json',
+        content: Buffer.from(
+          JSON.stringify({
+            name: opts.name,
+            slug: opts.slug,
+            createdBy: 'testuser',
+          }),
+        ),
+      },
+    ],
+    `Initialize project: ${opts.name}`,
+    'testuser',
+  )
+  return project
+}
+
+/** Helper: commit spec data into a project's git repo */
+async function commitSpecs(
+  slug: string,
+  result: ExtractionResult = stubResult,
+) {
+  await repo.commit(
+    slug,
+    [
+      {
+        path: 'forms/default/spec.json',
+        content: Buffer.from(JSON.stringify(result.spec, null, 2)),
+      },
+      {
+        path: 'forms/default/form.json',
+        content: Buffer.from(JSON.stringify(result.formSpec, null, 2)),
+      },
+      {
+        path: 'forms/default/confidence.json',
+        content: Buffer.from(JSON.stringify(result.confidence, null, 2)),
+      },
+    ],
+    'Extract form specifications',
+    'testuser',
+  )
 }
 
 describe('GET /projects', () => {
@@ -52,13 +133,13 @@ describe('GET /projects', () => {
 
   it('lists existing projects in a table', async () => {
     const { app, projectStore } = createTestApp()
-    const p = projectStore.create({
+    await createIndexedProject(projectStore, {
       name: 'Pardon App',
-      description: 'Test',
-      sourcePdf: Buffer.from('pdf'),
-      createdBy: 'testuser',
+      slug: 'pardon-app',
     })
-    projectStore.update(p.id, { status: 'ready' })
+    projectStore.update(projectStore.list('testuser')[0].id, {
+      status: 'ready',
+    })
     const res = await app.request('/projects')
     const html = await res.text()
     expect(html).toContain('Pardon App')
@@ -99,6 +180,25 @@ describe('POST /projects', () => {
     expect(['extracting', 'ready']).toContain(projects[0].status)
   })
 
+  it('commits project.json to git on creation', async () => {
+    const { app, projectStore } = createTestApp()
+    await app.request('/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'fixture=pardon-application',
+    })
+
+    const projects = projectStore.list('testuser')
+    const slug = projects[0].slug
+    const projectJson = await repo.readFile(slug, 'main', 'project.json')
+    expect(projectJson).not.toBeNull()
+    // biome-ignore lint/style/noNonNullAssertion: asserted not null above
+    const parsed = JSON.parse(projectJson!.toString())
+    expect(parsed.name).toBe(
+      'Application for Pardon After Completion of Sentence',
+    )
+  })
+
   it('returns 400 for unknown fixture', async () => {
     const { app } = createTestApp()
     const res = await app.request('/projects', {
@@ -113,11 +213,9 @@ describe('POST /projects', () => {
 describe('GET /projects/:id', () => {
   it('shows extracting status with auto-refresh', async () => {
     const { app, projectStore } = createTestApp()
-    const project = projectStore.create({
+    const project = await createIndexedProject(projectStore, {
       name: 'Test',
-      description: 'Test',
-      sourcePdf: Buffer.from('pdf'),
-      createdBy: 'testuser',
+      slug: 'test',
     })
     const res = await app.request(`/projects/${project.id}`)
     const html = await res.text()
@@ -125,20 +223,15 @@ describe('GET /projects/:id', () => {
     expect(html).toContain('http-equiv="refresh"')
   })
 
-  it('shows ready project with spec details', async () => {
+  it('shows ready project with spec details from git', async () => {
     const { app, projectStore } = createTestApp()
-    const project = projectStore.create({
+    const project = await createIndexedProject(projectStore, {
       name: 'Test Form',
-      description: 'Test',
-      sourcePdf: Buffer.from('pdf'),
-      createdBy: 'testuser',
+      slug: 'test-form',
     })
-    projectStore.update(project.id, {
-      status: 'ready',
-      spec: stubResult.spec,
-      formSpec: stubResult.formSpec,
-      confidence: stubResult.confidence,
-    })
+    await commitSpecs('test-form')
+    projectStore.update(project.id, { status: 'ready' })
+
     const res = await app.request(`/projects/${project.id}`)
     const html = await res.text()
     expect(html).toContain('Test Form')
@@ -155,11 +248,9 @@ describe('GET /projects/:id', () => {
 describe('GET /projects/:id (error state)', () => {
   it('shows error message and retry button', async () => {
     const { app, projectStore } = createTestApp()
-    const project = projectStore.create({
+    const project = await createIndexedProject(projectStore, {
       name: 'Failed Project',
-      description: 'Test',
-      sourcePdf: Buffer.from('pdf'),
-      createdBy: 'testuser',
+      slug: 'failed-project',
     })
     projectStore.update(project.id, {
       status: 'error',
@@ -176,11 +267,9 @@ describe('GET /projects/:id (error state)', () => {
 describe('POST /projects/:id/retry', () => {
   it('resets status to extracting and redirects', async () => {
     const { app, projectStore } = createTestApp()
-    const project = projectStore.create({
+    const project = await createIndexedProject(projectStore, {
       name: 'Retry Test',
-      description: 'Test',
-      sourcePdf: Buffer.from('pdf'),
-      createdBy: 'testuser',
+      slug: 'retry-test',
     })
     projectStore.update(project.id, { status: 'error', error: 'timeout' })
 
@@ -189,22 +278,44 @@ describe('POST /projects/:id/retry', () => {
     })
     expect(res.status).toBe(302)
 
-    // Give async extraction a tick to start
-    await new Promise((r) => setTimeout(r, 50))
+    // Give async extraction a tick to complete
+    await new Promise((r) => setTimeout(r, 100))
     const updated = projectStore.get(project.id)
     // Status should be 'ready' since stub extractor resolves immediately
     expect(updated?.status).toBe('ready')
+  })
+
+  it('commits extracted specs to git on retry', async () => {
+    const { app, projectStore } = createTestApp()
+    const project = await createIndexedProject(projectStore, {
+      name: 'Retry Commit Test',
+      slug: 'retry-commit-test',
+    })
+    projectStore.update(project.id, { status: 'error', error: 'timeout' })
+
+    await app.request(`/projects/${project.id}/retry`, { method: 'POST' })
+
+    // Wait for async extraction
+    await new Promise((r) => setTimeout(r, 100))
+
+    const specBuf = await repo.readFile(
+      'retry-commit-test',
+      'main',
+      'forms/default/spec.json',
+    )
+    expect(specBuf).not.toBeNull()
+    // biome-ignore lint/style/noNonNullAssertion: asserted not null above
+    const spec = JSON.parse(specBuf!.toString())
+    expect(spec.id).toBe('spec-1')
   })
 })
 
 describe('POST /projects/:id/delete', () => {
   it('deletes project and redirects to list', async () => {
     const { app, projectStore } = createTestApp()
-    const project = projectStore.create({
+    const project = await createIndexedProject(projectStore, {
       name: 'Delete Test',
-      description: 'Test',
-      sourcePdf: Buffer.from('pdf'),
-      createdBy: 'testuser',
+      slug: 'delete-test',
     })
     expect(projectStore.get(project.id)).not.toBeNull()
 
@@ -226,16 +337,13 @@ describe('POST /projects/:id/delete', () => {
 })
 
 describe('Project detail - ready state', () => {
-  function createReadyProject() {
+  async function createReadyProject() {
     const { app, projectStore } = createTestApp()
-    const project = projectStore.create({
+    const project = await createIndexedProject(projectStore, {
       name: 'Summary Test',
-      description: 'Test',
-      sourcePdf: Buffer.from('pdf'),
-      createdBy: 'testuser',
+      slug: 'summary-test',
     })
-    projectStore.update(project.id, {
-      status: 'ready',
+    const detailedResult: ExtractionResult = {
       spec: {
         id: 'spec-1',
         title: 'Test',
@@ -291,26 +399,28 @@ describe('Project detail - ready state', () => {
           flags: ['conditional-logic-unclear'],
         },
       ],
-    })
+    }
+    await commitSpecs('summary-test', detailedResult)
+    projectStore.update(project.id, { status: 'ready' })
     return { app, project }
   }
 
   it('shows summary bar with counts', async () => {
-    const { app, project } = createReadyProject()
+    const { app, project } = await createReadyProject()
     const res = await app.request(`/projects/${project.id}`)
     const html = await res.text()
     expect(html).toContain('project-summary')
   })
 
   it('shows back link', async () => {
-    const { app, project } = createReadyProject()
+    const { app, project } = await createReadyProject()
     const res = await app.request(`/projects/${project.id}`)
     const html = await res.text()
     expect(html).toContain('Back to projects')
   })
 
   it('shows condition for conditional fields', async () => {
-    const { app, project } = createReadyProject()
+    const { app, project } = await createReadyProject()
     const res = await app.request(`/projects/${project.id}`)
     const html = await res.text()
     expect(html).toContain('marital-status')
@@ -318,26 +428,31 @@ describe('Project detail - ready state', () => {
   })
 
   it('shows form layout with resolved group names', async () => {
-    const { app, project } = createReadyProject()
+    const { app, project } = await createReadyProject()
     const res = await app.request(`/projects/${project.id}`)
     const html = await res.text()
     expect(html).toContain('form-page-card')
     expect(html).toContain('Personal Information')
     expect(html).toContain('Personal Info')
   })
+
+  it('shows version history', async () => {
+    const { app, project } = await createReadyProject()
+    const res = await app.request(`/projects/${project.id}`)
+    const html = await res.text()
+    expect(html).toContain('Version History')
+    expect(html).toContain('Initialize project')
+  })
 })
 
 describe('Confidence indicators', () => {
   it('shows badge for low-confidence fields', async () => {
     const { app, projectStore } = createTestApp()
-    const project = projectStore.create({
+    const project = await createIndexedProject(projectStore, {
       name: 'Confidence Test',
-      description: 'Test',
-      sourcePdf: Buffer.from('pdf'),
-      createdBy: 'testuser',
+      slug: 'confidence-test',
     })
-    projectStore.update(project.id, {
-      status: 'ready',
+    await commitSpecs('confidence-test', {
       spec: {
         id: 'spec-1',
         title: 'Test',
@@ -378,8 +493,47 @@ describe('Confidence indicators', () => {
         { fieldId: 'high-conf', confidence: 0.95 },
       ],
     })
+    projectStore.update(project.id, { status: 'ready' })
+
     const res = await app.request(`/projects/${project.id}`)
     const html = await res.text()
     expect(html).toContain('Low confidence')
+  })
+})
+
+describe('GET /projects/:id/version/:sha', () => {
+  it('shows snapshot at specific SHA', async () => {
+    const { app, projectStore } = createTestApp()
+    const project = await createIndexedProject(projectStore, {
+      name: 'Version Test',
+      slug: 'version-test',
+    })
+    const sha = await repo.commit(
+      'version-test',
+      [
+        {
+          path: 'forms/default/spec.json',
+          content: Buffer.from(JSON.stringify(stubResult.spec, null, 2)),
+        },
+        {
+          path: 'forms/default/form.json',
+          content: Buffer.from(JSON.stringify(stubResult.formSpec, null, 2)),
+        },
+        {
+          path: 'forms/default/confidence.json',
+          content: Buffer.from(JSON.stringify(stubResult.confidence, null, 2)),
+        },
+      ],
+      'Extract form specifications',
+      'testuser',
+    )
+    projectStore.update(project.id, { status: 'ready' })
+
+    const res = await app.request(`/projects/${project.id}/version/${sha}`)
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('Viewing snapshot')
+    expect(html).toContain(sha.slice(0, 8))
+    expect(html).toContain('View latest')
   })
 })

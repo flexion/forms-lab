@@ -1,16 +1,15 @@
 import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../fixtures/index'
 import { resolveUrl } from '../../../lib/base-path'
+import type { CommitEntry } from '../../../services/form-project-repo'
 import type {
   DataCollectionSpec,
   FieldConfidence,
   FormSpec,
-  StoredProject,
+  ProjectIndex,
 } from '../../../types/models'
 
-export const ProjectList: FC<{ projects: StoredProject[] }> = ({
-  projects,
-}) => (
+export const ProjectList: FC<{ projects: ProjectIndex[] }> = ({ projects }) => (
   <div class="l-stack">
     <div class="l-cluster justify-between">
       <h1>My Projects</h1>
@@ -32,11 +31,6 @@ export const ProjectList: FC<{ projects: StoredProject[] }> = ({
         </thead>
         <tbody>
           {projects.map((p) => {
-            const fieldCount =
-              p.spec?.groups.reduce(
-                (sum, g) => sum + g.requirements.length,
-                0,
-              ) ?? 0
             const created = new Date(p.createdAt * 1000).toLocaleDateString(
               'en-US',
               { month: 'short', day: 'numeric', year: 'numeric' },
@@ -48,11 +42,11 @@ export const ProjectList: FC<{ projects: StoredProject[] }> = ({
                     <strong>{p.name}</strong>
                   </a>
                   <div class="text-muted text-sm">
-                    {p.status === 'ready'
-                      ? `${p.spec?.groups.length ?? 0} groups, ${fieldCount} fields`
-                      : p.status === 'extracting'
-                        ? 'Extracting form structure...'
-                        : p.description}
+                    {p.status === 'extracting'
+                      ? 'Extracting form structure...'
+                      : p.status === 'ready'
+                        ? 'Ready'
+                        : (p.error ?? '')}
                   </div>
                 </td>
                 <td data-label="Status">
@@ -162,17 +156,42 @@ export const NewProjectPage: FC<{ fixtures: DemoFixture[] }> = ({
   </div>
 )
 
-export const ProjectDetail: FC<{ project: StoredProject }> = ({ project }) => {
+interface ProjectDetailProps {
+  project: ProjectIndex
+  spec?: DataCollectionSpec | null
+  formSpec?: FormSpec | null
+  confidence?: FieldConfidence[] | null
+  history?: CommitEntry[]
+  viewingSha?: string
+}
+
+export const ProjectDetail: FC<ProjectDetailProps> = ({
+  project,
+  spec,
+  formSpec,
+  confidence,
+  history,
+  viewingSha,
+}) => {
   if (project.status === 'extracting') {
     return <ExtractingView project={project} />
   }
   if (project.status === 'error') {
     return <ErrorView project={project} />
   }
-  return <ReadyView project={project} />
+  return (
+    <ReadyView
+      project={project}
+      spec={spec ?? null}
+      formSpec={formSpec ?? null}
+      confidence={confidence ?? null}
+      history={history ?? []}
+      viewingSha={viewingSha}
+    />
+  )
 }
 
-const ExtractingView: FC<{ project: StoredProject }> = ({ project }) => (
+const ExtractingView: FC<{ project: ProjectIndex }> = ({ project }) => (
   <div class="l-stack">
     <a href={resolveUrl('/projects')} class="project-back-link">
       &larr; Back to projects
@@ -191,7 +210,7 @@ const ExtractingView: FC<{ project: StoredProject }> = ({ project }) => (
   </div>
 )
 
-const ErrorView: FC<{ project: StoredProject }> = ({ project }) => (
+const ErrorView: FC<{ project: ProjectIndex }> = ({ project }) => (
   <div class="l-stack">
     <a href={resolveUrl('/projects')} class="project-back-link">
       &larr; Back to projects
@@ -211,13 +230,28 @@ const ErrorView: FC<{ project: StoredProject }> = ({ project }) => (
   </div>
 )
 
-const ReadyView: FC<{ project: StoredProject }> = ({ project }) => {
-  const groupCount = project.spec?.groups.length ?? 0
+interface ReadyViewProps {
+  project: ProjectIndex
+  spec: DataCollectionSpec | null
+  formSpec: FormSpec | null
+  confidence: FieldConfidence[] | null
+  history: CommitEntry[]
+  viewingSha?: string
+}
+
+const ReadyView: FC<ReadyViewProps> = ({
+  project,
+  spec,
+  formSpec,
+  confidence,
+  history,
+  viewingSha,
+}) => {
+  const groupCount = spec?.groups.length ?? 0
   const fieldCount =
-    project.spec?.groups.reduce((sum, g) => sum + g.requirements.length, 0) ?? 0
-  const pageCount = project.formSpec?.pages.length ?? 0
-  const lowConfCount =
-    project.confidence?.filter((c) => c.confidence < 0.8).length ?? 0
+    spec?.groups.reduce((sum, g) => sum + g.requirements.length, 0) ?? 0
+  const pageCount = formSpec?.pages.length ?? 0
+  const lowConfCount = confidence?.filter((c) => c.confidence < 0.8).length ?? 0
 
   return (
     <div class="l-stack">
@@ -225,6 +259,14 @@ const ReadyView: FC<{ project: StoredProject }> = ({ project }) => {
         &larr; Back to projects
       </a>
       <h1>{project.name}</h1>
+      {viewingSha && (
+        <div class="flex-alert flex-alert--info" role="status">
+          <p>
+            Viewing snapshot <code>{viewingSha.slice(0, 8)}</code>.{' '}
+            <a href={resolveUrl(`/projects/${project.id}`)}>View latest</a>
+          </p>
+        </div>
+      )}
       <div class="project-summary">
         <span>
           <strong>{groupCount}</strong> groups
@@ -239,15 +281,53 @@ const ReadyView: FC<{ project: StoredProject }> = ({ project }) => {
           <strong>{lowConfCount}</strong> low confidence
         </span>
       </div>
-      {project.spec && (
-        <SpecViewer spec={project.spec} confidence={project.confidence ?? []} />
-      )}
-      {project.formSpec && project.spec && (
-        <FormSpecViewer formSpec={project.formSpec} spec={project.spec} />
+      {spec && <SpecViewer spec={spec} confidence={confidence ?? []} />}
+      {formSpec && spec && <FormSpecViewer formSpec={formSpec} spec={spec} />}
+      {history.length > 0 && (
+        <HistoryView project={project} history={history} />
       )}
     </div>
   )
 }
+
+const HistoryView: FC<{ project: ProjectIndex; history: CommitEntry[] }> = ({
+  project,
+  history,
+}) => (
+  <section class="l-stack">
+    <h2>Version History</h2>
+    <table class="flex-table" data-variant="borderless" data-stacked>
+      <thead>
+        <tr>
+          <th scope="col">SHA</th>
+          <th scope="col">Message</th>
+          <th scope="col">Author</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {history.map((entry) => (
+          <tr key={entry.sha}>
+            <td data-label="SHA">
+              <a
+                href={resolveUrl(
+                  `/projects/${project.id}/version/${entry.sha}`,
+                )}
+              >
+                <code>{entry.shortSha}</code>
+              </a>
+            </td>
+            <td data-label="Message">{entry.message}</td>
+            <td data-label="Author">{entry.author}</td>
+            <td data-label="Date" class="text-muted text-sm">
+              {entry.date}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+)
 
 const ConfidenceBadge: FC<{ confidence: number; flags?: string[] }> = ({
   confidence,

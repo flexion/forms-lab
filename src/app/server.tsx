@@ -4,6 +4,7 @@ import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
 import { getBasePath, resolveUrl } from '../lib/base-path'
 import { createCacheStore, createProjectStore } from '../services/database'
+import { createFormProjectRepo } from '../services/form-project-repo'
 import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
@@ -19,11 +20,14 @@ const app = new Hono().basePath(basePath)
 
 const projectDbPath = process.env.PROJECT_DB_PATH ?? 'data/projects.sqlite'
 const cacheDbPath = process.env.CACHE_DB_PATH ?? 'data/cache.sqlite' // Shared across branches in production
+const reposPath = process.env.REPOS_PATH ?? 'data/repos'
 mkdirSync(dirname(projectDbPath), { recursive: true })
 mkdirSync(dirname(cacheDbPath), { recursive: true })
+mkdirSync(reposPath, { recursive: true })
 
 const projectStore = createProjectStore(projectDbPath)
 const cacheStore = createCacheStore(cacheDbPath)
+const formProjectRepo = createFormProjectRepo(reposPath)
 const extractor = createCachedPdfExtractor(
   createBedrockPdfExtractor(),
   cacheStore,
@@ -127,7 +131,10 @@ app.route('/auth', auth)
 
 // Mount projects routes with auth guard
 app.use('/projects/*', requireAuth())
-app.route('/projects', createProjectRoutes(projectStore, extractor))
+app.route(
+  '/projects',
+  createProjectRoutes(projectStore, extractor, formProjectRepo),
+)
 
 // Mount catalog routes
 app.route('/catalog', catalog)
