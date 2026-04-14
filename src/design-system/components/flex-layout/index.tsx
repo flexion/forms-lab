@@ -72,6 +72,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           ]}
         />
         <Header
+          logoHref={resolveUrl('/')}
           user={props.user ?? undefined}
           signoutAction={resolveUrl('/auth/signout')}
         >

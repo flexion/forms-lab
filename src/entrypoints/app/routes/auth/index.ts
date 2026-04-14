@@ -40,10 +40,12 @@ export function createAuthRoutes(userStore: UserStore): Hono {
       return c.redirect(resolveUrl('/?error=config'))
     }
 
-    const returnTo = c.req.query('returnTo') || '/'
+    const returnTo = c.req.query('returnTo') || resolveUrl('/')
     // Prevent open redirect — only allow internal paths
     const safeReturnTo =
-      returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/'
+      returnTo.startsWith('/') && !returnTo.startsWith('//')
+        ? returnTo
+        : resolveUrl('/')
     const state = JSON.stringify({ returnTo: safeReturnTo })
 
     // Build absolute callback URL from the current request so it works
@@ -134,7 +136,9 @@ export function createAuthRoutes(userStore: UserStore): Hono {
       const returnTo = state.returnTo || resolveUrl('/')
       // Prevent open redirect — only allow internal paths
       const safeReturnTo =
-        returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/'
+        returnTo.startsWith('/') && !returnTo.startsWith('//')
+          ? returnTo
+          : resolveUrl('/')
       return c.redirect(safeReturnTo)
     } catch (error) {
       console.error('OAuth callback error:', error)
