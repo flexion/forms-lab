@@ -1,10 +1,16 @@
 import { join } from 'node:path'
 import { Hono } from 'hono'
+import { Breadcrumb } from '../../../../design-system/components/flex-breadcrumb'
 import { ContentCard } from '../../../../design-system/components/flex-card'
 import { CatalogSidebar } from '../../../../design-system/components/flex-catalog-sidebar'
 import { Layout } from '../../../../design-system/components/flex-layout'
+import { Prose } from '../../../../design-system/components/flex-prose'
 import { TagList } from '../../../../design-system/components/flex-tag-list'
-import { readMarkdownDir } from '../../../../services/content/markdown'
+import { WalkthroughNav } from '../../../../design-system/components/flex-walkthrough-nav'
+import {
+  readMarkdownDir,
+  renderMarkdown,
+} from '../../../../services/content/markdown'
 import type { WalkthroughPage } from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
 import { getCatalogSidebar } from './sidebar'
@@ -120,6 +126,64 @@ walkthrough.get('/', async (c) => {
           ))}
         </div>
       </section>
+    </Layout>,
+  )
+})
+
+walkthrough.get('/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const pages = await loadWalkthroughPages()
+  const pageIndex = pages.findIndex((p) => p.slug === slug)
+
+  if (pageIndex === -1) {
+    const sidebarData = getCatalogSidebar('/catalog/walkthrough')
+    const sidebar = <CatalogSidebar sections={sidebarData} />
+    return c.html(
+      <Layout
+        title="Not Found"
+        sidebar={sidebar}
+        currentPath="/catalog"
+        user={c.get('user')}
+      >
+        <h1>Page Not Found</h1>
+        <p>The walkthrough page "{slug}" does not exist.</p>
+      </Layout>,
+      404,
+    )
+  }
+
+  const page = pages[pageIndex]
+  const prevPage = pageIndex > 0 ? pages[pageIndex - 1] : null
+  const nextPage = pageIndex < pages.length - 1 ? pages[pageIndex + 1] : null
+
+  const sidebarData = getCatalogSidebar('/catalog/walkthrough')
+  const sidebar = <CatalogSidebar sections={sidebarData} />
+
+  return c.html(
+    <Layout
+      title={page.title}
+      sidebar={sidebar}
+      currentPath="/catalog"
+      user={c.get('user')}
+    >
+      <Breadcrumb
+        items={[
+          { label: 'Catalog', href: resolveUrl('/catalog') },
+          { label: 'Walkthrough', href: resolveUrl('/catalog/walkthrough') },
+          { label: page.title },
+        ]}
+      />
+      <Prose html={renderMarkdown(page.content)} />
+      <WalkthroughNav
+        currentPage={pageIndex + 1}
+        totalPages={pages.length}
+        prevUrl={
+          prevPage ? resolveUrl(`/catalog/walkthrough/${prevPage.slug}`) : null
+        }
+        nextUrl={
+          nextPage ? resolveUrl(`/catalog/walkthrough/${nextPage.slug}`) : null
+        }
+      />
     </Layout>,
   )
 })

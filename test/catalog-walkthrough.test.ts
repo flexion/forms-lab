@@ -12,4 +12,26 @@ describe('Walkthrough Routes', () => {
       expect(body).toContain('The Problem')
     })
   })
+
+  describe('GET /catalog/walkthrough/:slug', () => {
+    it('returns 200 and renders walkthrough page', async () => {
+      const res = await app.request('/catalog/walkthrough/01-the-problem')
+      expect(res.status).toBe(200)
+
+      const body = await res.text()
+      expect(body).toContain('The Problem')
+      expect(body).toContain('Government Forms')
+    })
+
+    it('shows progress indicator', async () => {
+      const res = await app.request('/catalog/walkthrough/01-the-problem')
+      const body = await res.text()
+      expect(body).toContain('1 of')
+    })
+
+    it('returns 404 for unknown slug', async () => {
+      const res = await app.request('/catalog/walkthrough/nonexistent')
+      expect(res.status).toBe(404)
+    })
+  })
 })
