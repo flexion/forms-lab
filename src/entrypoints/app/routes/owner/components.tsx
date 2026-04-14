@@ -173,7 +173,7 @@ export const ProfilePage: FC<{
     <div class="l-stack" data-space="lg">
       <div
         class="l-cluster"
-        style="gap: var(--flex-space-l); align-items: center;"
+        style="gap: var(--flex-space-xl); align-items: center;"
       >
         {user.avatarUrl && (
           <img
