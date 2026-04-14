@@ -7,7 +7,7 @@
 
 .flex-present-layout__content {
   flex: 1;
-  max-inline-size: 50rem;
+  max-inline-size: var(--flex-content-default);
   margin-inline: auto;
   inline-size: 100%;
 }
@@ -32,7 +32,7 @@
 }
 
 .flex-present-layout__nav {
-  max-inline-size: 50rem;
+  max-inline-size: var(--flex-content-default);
   margin-inline: auto;
   inline-size: 100%;
 }
