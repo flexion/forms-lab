@@ -277,7 +277,7 @@ export const ProjectOverview: FC<{
   const blobBasePath = `/${owner}/${project.slug}/blob/main`
 
   const repoBase = `/${owner}/${project.slug}`
-  const cloneUrl = `${origin ?? ''}${resolveUrl(`/git/${project.slug}.git`)}`
+  const cloneUrl = `${origin ?? ''}/git/${project.slug}.git`
 
   return (
     <div class="l-stack">
