@@ -173,15 +173,17 @@ export const ProfilePage: FC<{
     <div class="l-stack">
       <div
         class="l-cluster"
-        style="gap: var(--flex-space-m); align-items: center;"
+        style="gap: var(--flex-space-l); align-items: center;"
       >
-        <img
-          src={user.avatarUrl}
-          alt=""
-          width="64"
-          height="64"
-          style="border-radius: 50%;"
-        />
+        {user.avatarUrl && (
+          <img
+            src={user.avatarUrl}
+            alt=""
+            width="64"
+            height="64"
+            style="border-radius: 50%;"
+          />
+        )}
         <div>
           <h1 style="margin: 0;">{user.name}</h1>
           <p class="text-muted" style="margin: 0;">
@@ -819,74 +821,96 @@ export const NewProjectPage: FC<{ fixtures: DemoFixture[] }> = ({
 export const Dashboard: FC<{
   projects: ProjectIndex[]
   user: SessionUser
-}> = ({ projects, user }) => (
-  <div class="l-stack">
-    <div class="l-cluster justify-between">
-      <h1>My Projects</h1>
-      <a href={resolveUrl('/new')} class="flex-button">
-        New Project
-      </a>
-    </div>
-    {projects.length === 0 ? (
-      <p>No projects yet. Create one to get started.</p>
-    ) : (
-      <table class="flex-table" data-variant="borderless" data-stacked>
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Status</th>
-            <th scope="col">Created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {projects.map((p) => {
-            const created = new Date(p.createdAt * 1000).toLocaleDateString(
-              'en-US',
-              { month: 'short', day: 'numeric', year: 'numeric' },
-            )
-            const forkedFrom = parseForkedFrom(p.forkedFrom)
-            return (
-              <tr key={p.id}>
-                <td data-label="Name">
-                  <a href={resolveUrl(`/${user.login}/${p.slug}`)}>
-                    <strong>{p.name}</strong>
-                  </a>
-                  {forkedFrom && (
-                    <div class="text-muted text-sm">
-                      forked from{' '}
-                      <a
-                        href={resolveUrl(
-                          `/${forkedFrom.owner}/${forkedFrom.slug}`,
+}> = ({ projects, user }) => {
+  const recentProjects = projects.slice(0, 5)
+  const hasMore = projects.length > 5
+
+  return (
+    <div class="l-stack">
+      <h1>Welcome back, {user.name.split(' ')[0]}</h1>
+
+      <section class="l-stack">
+        <div class="l-cluster justify-between" style="align-items: baseline;">
+          <h2>Recent projects</h2>
+          <a href={resolveUrl('/new')} class="flex-button">
+            New Project
+          </a>
+        </div>
+        {recentProjects.length === 0 ? (
+          <div class="l-stack">
+            <p>
+              Upload a government PDF form and the platform will extract its
+              structure into a reviewable, version-controlled specification.
+            </p>
+            <p>
+              <a href={resolveUrl('/new')} class="flex-button">
+                Create your first project
+              </a>
+            </p>
+          </div>
+        ) : (
+          <>
+            <table class="flex-table" data-variant="borderless" data-stacked>
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentProjects.map((p) => {
+                  const forkedFrom = parseForkedFrom(p.forkedFrom)
+                  return (
+                    <tr key={p.id}>
+                      <td data-label="Name">
+                        <a href={resolveUrl(`/${user.login}/${p.slug}`)}>
+                          <strong>{p.name}</strong>
+                        </a>
+                        {forkedFrom && (
+                          <span class="text-muted text-sm">
+                            {' '}
+                            forked from{' '}
+                            <a
+                              href={resolveUrl(
+                                `/${forkedFrom.owner}/${forkedFrom.slug}`,
+                              )}
+                            >
+                              {forkedFrom.owner}/{forkedFrom.slug}
+                            </a>
+                          </span>
                         )}
-                      >
-                        {forkedFrom.owner}/{forkedFrom.slug}
-                      </a>
-                    </div>
-                  )}
-                  <div class="text-muted text-sm">
-                    {p.status === 'extracting'
-                      ? 'Extracting form structure...'
-                      : p.status === 'ready'
-                        ? 'Ready'
-                        : (p.error ?? '')}
-                  </div>
-                </td>
-                <td data-label="Status">
-                  <span class="badge" data-status={p.status}>
-                    {p.status.charAt(0).toUpperCase() + p.status.slice(1)}
-                  </span>
-                </td>
-                <td data-label="Created" class="text-muted text-sm">
-                  {created}
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    )}
-  </div>
-)
+                      </td>
+                      <td data-label="Status">
+                        <span class="badge" data-status={p.status}>
+                          {p.status.charAt(0).toUpperCase() + p.status.slice(1)}
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            {hasMore && (
+              <p>
+                <a href={resolveUrl(`/${user.login}`)}>
+                  View all {projects.length} projects
+                </a>
+              </p>
+            )}
+          </>
+        )}
+      </section>
+
+      <section class="l-stack">
+        <h2>Explore</h2>
+        <p class="text-muted">
+          Browse the <a href={resolveUrl('/catalog')}>project catalog</a> for
+          architecture decisions, design system components, and documentation.
+        </p>
+      </section>
+    </div>
+  )
+}
 
 // ---------------------------------------------------------------------------
 // 10. LandingPage
@@ -896,14 +920,46 @@ export const LandingPage: FC = () => (
   <div class="l-stack">
     <h1>Forms Lab</h1>
     <p>
-      An LLM-assisted platform for extracting, shaping, and delivering
-      government forms as accessible digital experiences.
+      An LLM-assisted platform for digitizing government forms. Upload a PDF,
+      and the system extracts its structure into a reviewable specification --
+      fields, types, validation rules, conditional logic -- all
+      version-controlled in git.
     </p>
-    <p>
-      <a href={resolveUrl('/auth/signin')} class="flex-button">
-        Sign in with GitHub
-      </a>
-    </p>
+
+    <section class="l-stack">
+      <h2>How it works</h2>
+      <ol class="l-stack" style="padding-left: var(--flex-space-l);">
+        <li>
+          <strong>Upload</strong> a government PDF form
+        </li>
+        <li>
+          <strong>Extract</strong> -- the platform identifies fields, groupings,
+          and conditions
+        </li>
+        <li>
+          <strong>Review</strong> -- inspect the extracted specification, flag
+          low-confidence fields
+        </li>
+        <li>
+          <strong>Collaborate</strong> -- fork projects, track changes through
+          git history
+        </li>
+      </ol>
+    </section>
+
+    <section class="l-stack">
+      <h2>Get started</h2>
+      <p>
+        Sign in with GitHub to create your first project, or browse the{' '}
+        <a href={resolveUrl('/catalog')}>catalog</a> to explore the platform's
+        architecture and design decisions.
+      </p>
+      <p>
+        <a href={resolveUrl('/auth/signin')} class="flex-button">
+          Sign in with GitHub
+        </a>
+      </p>
+    </section>
   </div>
 )
 
