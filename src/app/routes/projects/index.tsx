@@ -80,7 +80,12 @@ export function createProjectRoutes(
       name = fixture.name
     }
 
-    const slug = slugify(name)
+    let slug = slugify(name)
+    let suffix = 1
+    while (projectStore.getBySlug(slug)) {
+      suffix++
+      slug = `${slugify(name)}-${suffix}`
+    }
     const project = projectStore.create({
       name,
       slug,
