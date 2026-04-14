@@ -163,6 +163,7 @@ interface ProjectDetailProps {
   confidence?: FieldConfidence[] | null
   history?: CommitEntry[]
   viewingSha?: string
+  cloneUrl?: string
 }
 
 export const ProjectDetail: FC<ProjectDetailProps> = ({
@@ -172,6 +173,7 @@ export const ProjectDetail: FC<ProjectDetailProps> = ({
   confidence,
   history,
   viewingSha,
+  cloneUrl,
 }) => {
   if (project.status === 'extracting') {
     return <ExtractingView project={project} />
@@ -187,6 +189,7 @@ export const ProjectDetail: FC<ProjectDetailProps> = ({
       confidence={confidence ?? null}
       history={history ?? []}
       viewingSha={viewingSha}
+      cloneUrl={cloneUrl}
     />
   )
 }
@@ -237,6 +240,7 @@ interface ReadyViewProps {
   confidence: FieldConfidence[] | null
   history: CommitEntry[]
   viewingSha?: string
+  cloneUrl?: string
 }
 
 const ReadyView: FC<ReadyViewProps> = ({
@@ -246,6 +250,7 @@ const ReadyView: FC<ReadyViewProps> = ({
   confidence,
   history,
   viewingSha,
+  cloneUrl,
 }) => {
   const groupCount = spec?.groups.length ?? 0
   const fieldCount =
@@ -283,6 +288,12 @@ const ReadyView: FC<ReadyViewProps> = ({
       </div>
       {spec && <SpecViewer spec={spec} confidence={confidence ?? []} />}
       {formSpec && spec && <FormSpecViewer formSpec={formSpec} spec={spec} />}
+      {cloneUrl && (
+        <section class="l-stack">
+          <h2>Clone</h2>
+          <code class="clone-url">git clone {cloneUrl}</code>
+        </section>
+      )}
       {history.length > 0 && (
         <HistoryView project={project} history={history} />
       )}

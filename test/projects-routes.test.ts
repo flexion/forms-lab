@@ -443,6 +443,14 @@ describe('Project detail - ready state', () => {
     expect(html).toContain('Version History')
     expect(html).toContain('Initialize project')
   })
+
+  it('shows clone URL', async () => {
+    const { app, project } = await createReadyProject()
+    const res = await app.request(`/projects/${project.id}`)
+    const html = await res.text()
+    expect(html).toContain('/git/summary-test.git')
+    expect(html).toContain('git clone')
+  })
 })
 
 describe('Confidence indicators', () => {

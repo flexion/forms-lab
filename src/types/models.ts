@@ -199,34 +199,6 @@ export interface ExtractionOptions {
 export type ProjectStatus = 'extracting' | 'ready' | 'error'
 
 /**
- * StoredProject - Database representation of a FormProject
- *
- * Unlike FormProject (which nests specs), StoredProject stores
- * specs as JSON strings alongside status and metadata.
- */
-export interface StoredProject {
-  id: string
-  name: string
-  description: string
-  status: ProjectStatus
-  sourcePdf: Buffer
-  spec: DataCollectionSpec | null
-  formSpec: FormSpec | null
-  confidence: FieldConfidence[] | null
-  error: string | null
-  createdBy: string
-  createdAt: number
-  updatedAt: number
-}
-
-export interface NewProject {
-  name: string
-  description: string
-  sourcePdf: Buffer
-  createdBy: string
-}
-
-/**
  * ProjectIndex - Lightweight operational index for projects
  *
  * Tracks project identity and status. Specs, PDFs, and confidence

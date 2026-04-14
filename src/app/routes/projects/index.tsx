@@ -172,6 +172,7 @@ export function createProjectRoutes(
             formSpec={formSpec}
             confidence={confidence}
             history={history}
+            cloneUrl={`/git/${project.slug}.git`}
           />
         </Layout>,
       )
@@ -212,6 +213,7 @@ export function createProjectRoutes(
           confidence={confidence}
           history={history}
           viewingSha={sha}
+          cloneUrl={`/git/${project.slug}.git`}
         />
       </Layout>,
     )

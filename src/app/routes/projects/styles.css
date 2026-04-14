@@ -83,6 +83,17 @@
   background: var(--flex-color-surface);
 }
 
+/* Clone URL display */
+.clone-url {
+  display: block;
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  background: var(--flex-color-surface);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  font-size: var(--flex-text-sm);
+  word-break: break-all;
+}
+
 /* Delete confirmation */
 .delete-confirm__trigger {
   color: var(--flex-color-error);
