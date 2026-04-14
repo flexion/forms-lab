@@ -12,6 +12,7 @@ import experiments from './experiments'
 import personas from './personas'
 import { getCatalogSidebar } from './sidebar'
 import stories from './stories'
+import walkthrough from './walkthrough'
 
 const catalog = new Hono()
 
@@ -22,6 +23,7 @@ catalog.route('/architecture', architecture)
 catalog.route('/stories', stories)
 catalog.route('/experiments', experiments)
 catalog.route('/design-system', designSystem)
+catalog.route('/walkthrough', walkthrough)
 
 // Catalog landing page
 catalog.get('/', async (c) => {
