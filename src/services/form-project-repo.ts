@@ -35,6 +35,7 @@ export interface FormProjectRepo {
     path?: string,
     limit?: number,
   ): Promise<CommitEntry[]>
+  cloneBare(sourceSlug: string, destSlug: string): Promise<void>
 }
 
 export function createFormProjectRepo(basePath: string): FormProjectRepo {
@@ -263,6 +264,20 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
           const [sha, shortSha, message, author, date] = line.split('\0')
           return { sha, shortSha, message, author, date }
         })
+    },
+
+    async cloneBare(sourceSlug: string, destSlug: string): Promise<void> {
+      const sourceDir = repoDir(sourceSlug)
+      const destDir = repoDir(destSlug)
+      const proc = Bun.spawn(['git', 'clone', '--bare', sourceDir, destDir], {
+        stdout: 'pipe',
+        stderr: 'pipe',
+      })
+      const exitCode = await proc.exited
+      if (exitCode !== 0) {
+        const stderr = await new Response(proc.stderr).text()
+        throw new Error(`git clone --bare failed: ${stderr}`)
+      }
     },
   }
 }
