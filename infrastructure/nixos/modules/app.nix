@@ -8,6 +8,8 @@
     after = [ "network.target" ];
     onFailure = [ "forms-lab-notify-failure@%n.service" ];
 
+    path = [ pkgs.git ];
+
     serviceConfig = {
       Type = "simple";
       User = "forms-lab";
