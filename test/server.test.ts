@@ -29,13 +29,13 @@ describe('Authentication', () => {
     expect(res.headers.get('Location')).toContain('github.com')
   })
 
-  it('protects /projects routes', async () => {
-    const res = await app.request('/projects')
+  it('protects /new route', async () => {
+    const res = await app.request('/new')
     expect(res.status).toBe(302)
     expect(res.headers.get('Location')).toContain('/auth/signin')
   })
 
-  it('allows authenticated access to /projects', async () => {
+  it('allows authenticated access to dashboard', async () => {
     const secret = 'test-secret-key-32-bytes-long!'
     process.env.SESSION_SECRET = secret
 
@@ -48,7 +48,7 @@ describe('Authentication', () => {
       secret,
     )
 
-    const res = await app.request('/projects', {
+    const res = await app.request('/', {
       headers: {
         Cookie: `${COOKIE_NAME}=${sessionCookie}`,
       },

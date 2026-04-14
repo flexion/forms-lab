@@ -1,5 +1,5 @@
 /**
- * Smoke tests — verify the system is wired up correctly at the integration
+ * Smoke tests -- verify the system is wired up correctly at the integration
  * level. These catch configuration and wiring issues (missing env vars,
  * unregistered routes, broken middleware chains) that unit tests miss.
  */
@@ -54,14 +54,14 @@ describe('Smoke tests', () => {
   })
 
   describe('Auth middleware is wired up', () => {
-    it('GET /projects redirects unauthenticated users to signin', async () => {
-      const res = await app.request('/projects')
+    it('GET /new redirects unauthenticated users to signin', async () => {
+      const res = await app.request('/new')
       expect(res.status).toBe(302)
       expect(res.headers.get('Location')).toContain('/auth/signin')
     })
 
-    it('GET /projects returns 200 for authenticated users', async () => {
-      const res = await authenticatedRequest('/projects')
+    it('GET / returns dashboard for authenticated users', async () => {
+      const res = await authenticatedRequest('/')
       expect(res.status).toBe(200)
       const html = await res.text()
       expect(html).toContain('My Projects')
@@ -69,8 +69,8 @@ describe('Smoke tests', () => {
   })
 
   describe('Project creation flow', () => {
-    it('GET /projects/new shows fixture cards and upload form', async () => {
-      const res = await authenticatedRequest('/projects/new')
+    it('GET /new shows fixture cards and upload form', async () => {
+      const res = await authenticatedRequest('/new')
       expect(res.status).toBe(200)
       const html = await res.text()
       expect(html).toContain('New Project')
@@ -78,21 +78,22 @@ describe('Smoke tests', () => {
       expect(html).toContain('Upload your own PDF')
     })
 
-    it('POST /projects with fixture creates a project and redirects', async () => {
-      const res = await authenticatedRequest('/projects', {
+    it('POST /new with fixture creates a project and redirects', async () => {
+      const res = await authenticatedRequest('/new', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'fixture=pardon-application',
         redirect: 'manual',
       })
       expect(res.status).toBe(302)
-      const location = res.headers.get('Location')
-      expect(location).toMatch(/\/projects\/[a-f0-9-]+/)
+      const location = res.headers.get('Location') ?? ''
+      // New URL structure: /:owner/:slug
+      expect(location).toContain('/testuser/')
     })
 
-    it('GET /projects/:id shows project detail page', async () => {
+    it('GET /:owner/:slug shows project detail page', async () => {
       // Create a project first
-      const createRes = await authenticatedRequest('/projects', {
+      const createRes = await authenticatedRequest('/new', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'fixture=pardon-application',
@@ -139,14 +140,14 @@ describe('Smoke tests', () => {
       const { createBedrockPdfExtractor } = await import(
         '../src/services/pdf-extractor'
       )
-      // Should not throw — construction is lazy, no AWS calls yet
+      // Should not throw -- construction is lazy, no AWS calls yet
       const extractor = createBedrockPdfExtractor()
       expect(extractor).toBeDefined()
       expect(typeof extractor.extract).toBe('function')
     })
 
     it('AWS_REGION is set when required env vars are checked', () => {
-      // This test documents the requirement — in production,
+      // This test documents the requirement -- in production,
       // AWS_REGION must be set for Bedrock calls to succeed.
       // The deploy script must include it in the .env file.
       const region =
@@ -157,7 +158,7 @@ describe('Smoke tests', () => {
         // In local dev, warn but don't fail
         if (!region) {
           console.warn(
-            'WARN: AWS_REGION not set — Bedrock extraction will fail at runtime',
+            'WARN: AWS_REGION not set -- Bedrock extraction will fail at runtime',
           )
         }
       }
