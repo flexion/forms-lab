@@ -2,15 +2,19 @@ import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
-import { demoFixtures, getFixture, loadFixturePdf } from '../../../fixtures/index'
+import {
+  demoFixtures,
+  getFixture,
+  loadFixturePdf,
+} from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
-import { createCacheStore, createProjectStore } from '../../services/storage'
 import { createFormProjectRepo } from '../../services/form-project-repo'
 import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
 } from '../../services/pdf-extractor'
 import { createProjectService } from '../../services/project-service'
+import { createCacheStore, createProjectStore } from '../../services/storage'
 import { createUserStore } from '../../services/user-store'
 import { getBasePath, resolveUrl } from '../../shared/base-path'
 import { requireAuth, sessionReader } from './middleware/auth'

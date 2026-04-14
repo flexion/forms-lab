@@ -1,10 +1,10 @@
 import { type Context, Hono } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
-import { resolveUrl } from '../../../../shared/base-path'
+import { Layout } from '../../../../design-system/components/flex-layout'
 import { AppError, UnauthenticatedError } from '../../../../services/errors'
 import type { ProjectService } from '../../../../services/project-service'
 import type { UserStore } from '../../../../services/user-store'
-import { Layout } from '../../../../design-system/components/flex-layout'
+import { resolveUrl } from '../../../../shared/base-path'
 import {
   BlobPage,
   CommitListPage,

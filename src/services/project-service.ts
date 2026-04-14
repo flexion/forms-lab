@@ -1,4 +1,3 @@
-import type { SessionUser } from './auth/session'
 import { slugify } from '../shared/slugify'
 import type {
   DataCollectionSpec,
@@ -6,7 +5,7 @@ import type {
   FormSpec,
   ProjectIndex,
 } from '../types/models'
-import type { ProjectStore } from './storage'
+import type { SessionUser } from './auth/session'
 import {
   BadRequestError,
   ForbiddenError,
@@ -19,6 +18,7 @@ import type {
   TreeEntry,
 } from './form-project-repo'
 import type { PdfExtractor } from './pdf-extractor'
+import type { ProjectStore } from './storage'
 
 export interface ProjectView {
   project: ProjectIndex

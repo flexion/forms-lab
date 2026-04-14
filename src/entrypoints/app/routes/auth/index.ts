@@ -9,8 +9,8 @@ import {
   COOKIE_NAME,
   encryptSession,
 } from '../../../../services/auth/session'
-import { resolveUrl } from '../../../../shared/base-path'
 import type { UserStore } from '../../../../services/user-store'
+import { resolveUrl } from '../../../../shared/base-path'
 
 export function createAuthRoutes(userStore: UserStore): Hono {
   const auth = new Hono()

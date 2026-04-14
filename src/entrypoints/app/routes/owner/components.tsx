@@ -6,6 +6,7 @@ import type {
   TreeEntry,
 } from '../../../../services/form-project-repo'
 import type { ProjectView } from '../../../../services/project-service'
+import { resolveUrl } from '../../../../shared/base-path'
 import type {
   DataCollectionSpec,
   FieldConfidence,
@@ -13,7 +14,6 @@ import type {
   ProjectIndex,
   UserProfile,
 } from '../../../../types/models'
-import { resolveUrl } from '../../../../shared/base-path'
 
 // ---------------------------------------------------------------------------
 // Shared spec viewers (reused from old project components)
