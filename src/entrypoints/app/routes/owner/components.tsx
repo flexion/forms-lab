@@ -329,14 +329,13 @@ export const ProjectOverview: FC<{
       <RepoNav owner={owner} slug={project.slug} current="overview" />
 
       <div class="clone-bar">
-        <code class="clone-bar__url" id="clone-url">
-          {cloneUrl}
-        </code>
+        <code class="clone-bar__url">{cloneUrl}</code>
         <button
           type="button"
           class="clone-bar__copy"
-          aria-label="Copy clone URL"
-          onclick="navigator.clipboard.writeText(document.getElementById('clone-url').textContent).then(function(){var b=event.target.closest('button');b.textContent='Copied!';setTimeout(function(){b.textContent='Copy'},2000)})"
+          aria-label="Copy git clone command"
+          data-clone-cmd={`git -c http.sslVerify=false clone ${cloneUrl}`}
+          onclick="navigator.clipboard.writeText(this.dataset.cloneCmd).then(function(){var b=event.target.closest('button');b.textContent='Copied!';setTimeout(function(){b.textContent='Copy'},2000)})"
         >
           Copy
         </button>
