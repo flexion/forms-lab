@@ -170,7 +170,7 @@ export const ProfilePage: FC<{
   currentUser: SessionUser | null
 }> = ({ user, projects, currentUser: _currentUser }) => {
   return (
-    <div class="l-stack">
+    <div class="l-stack" data-space="lg">
       <div
         class="l-cluster"
         style="gap: var(--flex-space-l); align-items: center;"
@@ -276,7 +276,7 @@ export const ProjectOverview: FC<{
   const blobBasePath = `/${owner}/${project.slug}/blob/main`
 
   return (
-    <div class="l-stack">
+    <div class="l-stack" data-space="lg">
       <div class="l-cluster justify-between">
         <h1>
           <a href={resolveUrl(`/${owner}`)} class="text-muted">
@@ -826,7 +826,7 @@ export const Dashboard: FC<{
   const hasMore = projects.length > 5
 
   return (
-    <div class="l-stack">
+    <div class="l-stack" data-space="lg">
       <h1>Welcome back, {user.name.split(' ')[0]}</h1>
 
       <section class="l-stack">
@@ -917,7 +917,7 @@ export const Dashboard: FC<{
 // ---------------------------------------------------------------------------
 
 export const LandingPage: FC = () => (
-  <div class="l-stack">
+  <div class="l-stack" data-space="lg">
     <h1>Forms Lab</h1>
     <p>
       An LLM-assisted platform for digitizing government forms. Upload a PDF,
