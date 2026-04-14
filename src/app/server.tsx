@@ -2,6 +2,7 @@ import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
+import { demoFixtures, getFixture, loadFixturePdf } from '../../fixtures/index'
 import { getBasePath, resolveUrl } from '../lib/base-path'
 import { createCacheStore, createProjectStore } from '../services/database'
 import { createFormProjectRepo } from '../services/form-project-repo'
@@ -9,12 +10,18 @@ import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
 } from '../services/pdf-extractor'
+import { createProjectService } from '../services/project-service'
 import { createUserStore } from '../services/user-store'
 import { Layout } from './components/flex-layout'
 import { requireAuth, sessionReader } from './middleware/auth'
 import { createAuthRoutes } from './routes/auth/index'
 import catalog from './routes/catalog/index'
-import { createProjectRoutes } from './routes/projects/index'
+import {
+  Dashboard,
+  LandingPage,
+  NewProjectPage,
+} from './routes/owner/components'
+import { createOwnerRoutes } from './routes/owner/index'
 
 const basePath = getBasePath()
 const app = new Hono().basePath(basePath)
@@ -33,6 +40,11 @@ const formProjectRepo = createFormProjectRepo(reposPath)
 const extractor = createCachedPdfExtractor(
   createBedrockPdfExtractor(),
   cacheStore,
+)
+const projectService = createProjectService(
+  projectStore,
+  formProjectRepo,
+  extractor,
 )
 
 // Apply session reader globally
@@ -131,13 +143,6 @@ app.use(
 // Mount auth routes
 app.route('/auth', createAuthRoutes(userStore))
 
-// Mount projects routes with auth guard
-app.use('/projects/*', requireAuth())
-app.route(
-  '/projects',
-  createProjectRoutes(projectStore, extractor, formProjectRepo),
-)
-
 // Mount catalog routes
 app.route('/catalog', catalog)
 
@@ -149,20 +154,77 @@ app.get('/health', (c) => {
   })
 })
 
-// Root page
-app.get('/', (c) => {
+// New project routes (requires auth)
+app.use('/new', requireAuth())
+app.get('/new', (c) => {
+  const user = c.get('user')
   return c.html(
-    <Layout currentPath="/" user={c.get('user')}>
-      <h1>Forms Lab</h1>
-      <p>
-        Upload a government PDF form, extract structured specs, deliver form
-        experiences (static or conversational), and generate completed PDFs.
-      </p>
-      <p>
-        <a href={resolveUrl('/catalog')}>Browse the Catalog</a>
-      </p>
+    <Layout currentPath="/new" user={user}>
+      <NewProjectPage fixtures={demoFixtures} />
     </Layout>,
   )
 })
+app.post('/new', async (c) => {
+  const user = c.get('user')
+  if (!user) return c.redirect(resolveUrl('/auth/signin'))
+
+  // Parse form body - fixture or file upload
+  const contentType = c.req.header('content-type') ?? ''
+  let pdf: Buffer
+  let name: string
+
+  if (contentType.includes('multipart/form-data')) {
+    const body = await c.req.parseBody()
+    const file = body.pdf
+    if (!(file instanceof File) || file.size === 0) {
+      return c.html(
+        <Layout currentPath="/new" user={user}>
+          <NewProjectPage fixtures={demoFixtures} />
+        </Layout>,
+        400,
+      )
+    }
+    pdf = Buffer.from(await file.arrayBuffer())
+    name = file.name.replace(/\.pdf$/i, '')
+  } else {
+    const body = await c.req.parseBody()
+    const fixtureSlug = body.fixture as string
+    const fixture = getFixture(fixtureSlug)
+    if (!fixture) {
+      return c.html(
+        <Layout currentPath="/new" user={user}>
+          <NewProjectPage fixtures={demoFixtures} />
+        </Layout>,
+        400,
+      )
+    }
+    pdf = loadFixturePdf(fixture)
+    name = fixture.name
+  }
+
+  const project = await projectService.createProject(name, pdf, user)
+  return c.redirect(resolveUrl(`/${user.login}/${project.slug}`))
+})
+
+// Root page - dashboard for authenticated users, landing for anonymous
+app.get('/', (c) => {
+  const user = c.get('user')
+  if (user) {
+    const projects = projectService.listUserProjects(user.login)
+    return c.html(
+      <Layout currentPath="/" user={user}>
+        <Dashboard projects={projects} user={user} />
+      </Layout>,
+    )
+  }
+  return c.html(
+    <Layout currentPath="/" user={user}>
+      <LandingPage />
+    </Layout>,
+  )
+})
+
+// Mount owner routes LAST (catch-all pattern /:owner)
+app.route('/', createOwnerRoutes(projectService, userStore))
 
 export default app
