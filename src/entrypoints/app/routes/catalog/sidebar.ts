@@ -1,5 +1,9 @@
 import { getComponentsByCategory } from '../../../../design-system/registry'
-import type { Decision, Story, WalkthroughPage } from '../../../../services/content/types'
+import type {
+  Decision,
+  Story,
+  WalkthroughPage,
+} from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
 
 export function getCatalogSidebar(currentPath?: string) {

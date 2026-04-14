@@ -230,7 +230,7 @@ walkthrough.get('/:slug', async (c) => {
               if(e.key==='Escape'){location.href='${resolveUrl('/catalog/walkthrough')}'}
             });
             document.querySelectorAll('.prose a').forEach(function(a){
-              if(!a.getAttribute('href').startsWith('#'))a.setAttribute('target','_blank')
+              var h=a.getAttribute('href');if(h&&!h.startsWith('#'))a.setAttribute('target','_blank')
             });
           }())`,
           }}
