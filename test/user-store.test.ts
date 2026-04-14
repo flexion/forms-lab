@@ -62,7 +62,7 @@ describe('UserStore', () => {
     expect(second?.name).toBe('Octo Cat Updated')
     expect(second?.avatarUrl).toBe('https://example.com/new.png')
     expect(second?.createdAt).toBe(first?.createdAt)
-    expect(second?.updatedAt).toBeGreaterThanOrEqual(first?.updatedAt)
+    expect(second?.updatedAt).toBeGreaterThanOrEqual(first?.updatedAt ?? 0)
   })
 
   it('returns null for unknown user', () => {
