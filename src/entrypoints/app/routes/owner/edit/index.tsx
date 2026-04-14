@@ -178,7 +178,7 @@ export function createEditRoutes(
   })
 
   // -----------------------------------------------------------------------
-  // POST /:owner/:slug/edit/reorder — move page up/down
+  // POST /:owner/:slug/edit/reorder — move page up/down or reorder all
   // -----------------------------------------------------------------------
   app.post('/:owner/:slug/edit/reorder', async (c) => {
     const owner = c.req.param('owner')
@@ -189,36 +189,58 @@ export function createEditRoutes(
       if (!user) throw new UnauthenticatedError()
 
       const body = await c.req.parseBody()
-      const pageId = body.pageId as string
-      const direction = body.direction as string
-
       const view = await service.getProject(owner, slug, user)
       if (!view.isOwner || !view.formSpec) {
         return c.redirect(resolveUrl(`/${owner}/${slug}/edit`))
       }
 
-      const pages = [...view.formSpec.pages]
-      const idx = pages.findIndex((p) => p.id === pageId)
-      if (idx === -1) {
+      let pages = [...view.formSpec.pages]
+      let commitMessage = 'Reorder pages'
+
+      // Check if this is a full order array (drag-and-drop) or single move (fallback)
+      if (body.order) {
+        // Drag-and-drop: full order array
+        const orderJson = body.order as string
+        const pageIds = JSON.parse(orderJson) as string[]
+
+        // Reorder pages based on the provided array
+        const pageMap = new Map(pages.map((p) => [p.id, p]))
+        pages = pageIds
+          .map((id) => pageMap.get(id))
+          .filter(Boolean) as typeof pages
+
+        commitMessage = 'Reorder pages via drag-and-drop'
+      } else if (body.pageId && body.direction) {
+        // Fallback: single up/down move
+        const pageId = body.pageId as string
+        const direction = body.direction as string
+
+        const idx = pages.findIndex((p) => p.id === pageId)
+        if (idx === -1) {
+          return c.redirect(resolveUrl(`/${owner}/${slug}/edit`))
+        }
+
+        const newIdx = direction === 'up' ? idx - 1 : idx + 1
+        if (newIdx < 0 || newIdx >= pages.length) {
+          return c.redirect(resolveUrl(`/${owner}/${slug}/edit`))
+        }
+
+        // Swap
+        const temp = pages[idx]
+        pages[idx] = pages[newIdx]
+        pages[newIdx] = temp
+
+        commitMessage = `Reorder: move "${pages[newIdx].title}" ${direction}`
+      } else {
         return c.redirect(resolveUrl(`/${owner}/${slug}/edit`))
       }
-
-      const newIdx = direction === 'up' ? idx - 1 : idx + 1
-      if (newIdx < 0 || newIdx >= pages.length) {
-        return c.redirect(resolveUrl(`/${owner}/${slug}/edit`))
-      }
-
-      // Swap
-      const temp = pages[idx]
-      pages[idx] = pages[newIdx]
-      pages[newIdx] = temp
 
       const updatedSpec = { ...view.formSpec, pages }
       await service.updateFormSpec(
         owner,
         slug,
         updatedSpec,
-        `Reorder: move "${pages[newIdx].title}" ${direction}`,
+        commitMessage,
         user,
       )
 

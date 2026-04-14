@@ -84,11 +84,15 @@ export const EditorPage: FC<{
         <div class="editor-panel editor-panel--preview">
           <h2>Preview</h2>
           {formSpec ? (
-            <iframe
-              class="editor-preview-frame"
-              src={resolveUrl(`/${owner}/${project.slug}/preview`)}
-              title="Form preview"
-            />
+            <flex-preview-panel
+              data-src={resolveUrl(`/${owner}/${project.slug}/preview`)}
+            >
+              <iframe
+                class="editor-preview-frame"
+                src={resolveUrl(`/${owner}/${project.slug}/preview`)}
+                title="Form preview"
+              />
+            </flex-preview-panel>
           ) : (
             <p class="text-muted">No form to preview.</p>
           )}
@@ -108,27 +112,29 @@ const IntentForm: FC<{
 }> = ({ editBase, intentValue }) => (
   <section class="editor-section">
     <h2>Reshape with AI</h2>
-    <form method="post" action={resolveUrl(`${editBase}/intent`)}>
-      <div class="l-stack" data-space="sm">
-        <label class="flex-label" for="intent-input">
-          Describe how you want to change the form
-        </label>
-        <textarea
-          class="flex-textarea"
-          id="intent-input"
-          name="intent"
-          rows={3}
-          placeholder="e.g., Move the address fields to their own page, make eligibility a screener..."
-        >
-          {intentValue ?? ''}
-        </textarea>
-        <div>
-          <button type="submit" class="flex-button">
-            Generate changes
-          </button>
+    <flex-intent-input>
+      <form method="post" action={resolveUrl(`${editBase}/intent`)}>
+        <div class="l-stack" data-space="sm">
+          <label class="flex-label" for="intent-input">
+            Describe how you want to change the form
+          </label>
+          <textarea
+            class="flex-textarea"
+            id="intent-input"
+            name="intent"
+            rows={3}
+            placeholder="e.g., Move the address fields to their own page, make eligibility a screener..."
+          >
+            {intentValue ?? ''}
+          </textarea>
+          <div>
+            <button type="submit" class="flex-button">
+              Generate changes
+            </button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </flex-intent-input>
   </section>
 )
 
@@ -199,65 +205,67 @@ const PageList: FC<{
   return (
     <section class="editor-section">
       <h2>Pages</h2>
-      <ol class="editor-page-list">
-        {formSpec.pages.map((page, i) => (
-          <li key={page.id} class="editor-page-card">
-            <div class="editor-page-card__header">
-              <span class="editor-page-card__number">{i + 1}.</span>
-              <span class="editor-page-card__title">{page.title}</span>
-              <div class="editor-page-card__actions">
-                {i > 0 && (
-                  <form
-                    method="post"
-                    action={resolveUrl(`${editBase}/reorder`)}
-                    style="display:inline"
-                  >
-                    <input type="hidden" name="pageId" value={page.id} />
-                    <input type="hidden" name="direction" value="up" />
-                    <button
-                      type="submit"
-                      class="editor-page-card__move-btn"
-                      aria-label={`Move ${page.title} up`}
-                      title="Move up"
+      <flex-sortable-list data-action={resolveUrl(`${editBase}/reorder`)}>
+        <ol class="editor-page-list">
+          {formSpec.pages.map((page, i) => (
+            <li key={page.id} class="editor-page-card" data-page-id={page.id}>
+              <div class="editor-page-card__header">
+                <span class="editor-page-card__number">{i + 1}.</span>
+                <span class="editor-page-card__title">{page.title}</span>
+                <div class="editor-page-card__actions form-editor__reorder-buttons">
+                  {i > 0 && (
+                    <form
+                      method="post"
+                      action={resolveUrl(`${editBase}/reorder`)}
+                      style="display:inline"
                     >
-                      &uarr;
-                    </button>
-                  </form>
-                )}
-                {i < formSpec.pages.length - 1 && (
-                  <form
-                    method="post"
-                    action={resolveUrl(`${editBase}/reorder`)}
-                    style="display:inline"
-                  >
-                    <input type="hidden" name="pageId" value={page.id} />
-                    <input type="hidden" name="direction" value="down" />
-                    <button
-                      type="submit"
-                      class="editor-page-card__move-btn"
-                      aria-label={`Move ${page.title} down`}
-                      title="Move down"
+                      <input type="hidden" name="pageId" value={page.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <button
+                        type="submit"
+                        class="editor-page-card__move-btn"
+                        aria-label={`Move ${page.title} up`}
+                        title="Move up"
+                      >
+                        &uarr;
+                      </button>
+                    </form>
+                  )}
+                  {i < formSpec.pages.length - 1 && (
+                    <form
+                      method="post"
+                      action={resolveUrl(`${editBase}/reorder`)}
+                      style="display:inline"
                     >
-                      &darr;
-                    </button>
-                  </form>
-                )}
+                      <input type="hidden" name="pageId" value={page.id} />
+                      <input type="hidden" name="direction" value="down" />
+                      <button
+                        type="submit"
+                        class="editor-page-card__move-btn"
+                        aria-label={`Move ${page.title} down`}
+                        title="Move down"
+                      >
+                        &darr;
+                      </button>
+                    </form>
+                  )}
+                </div>
               </div>
-            </div>
-            {page.description && (
-              <p class="text-muted text-sm">{page.description}</p>
-            )}
-            <div class="editor-page-card__groups">
-              {page.groups.map((gId) => groupMap.get(gId) ?? gId).join(', ')}
-            </div>
-            <DeliveryModeSelect
-              editBase={editBase}
-              pageId={page.id}
-              currentMode={page.deliveryMode ?? 'static'}
-            />
-          </li>
-        ))}
-      </ol>
+              {page.description && (
+                <p class="text-muted text-sm">{page.description}</p>
+              )}
+              <div class="editor-page-card__groups">
+                {page.groups.map((gId) => groupMap.get(gId) ?? gId).join(', ')}
+              </div>
+              <DeliveryModeSelect
+                editBase={editBase}
+                pageId={page.id}
+                currentMode={page.deliveryMode ?? 'static'}
+              />
+            </li>
+          ))}
+        </ol>
+      </flex-sortable-list>
     </section>
   )
 }

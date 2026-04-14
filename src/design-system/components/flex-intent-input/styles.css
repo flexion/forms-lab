@@ -1,0 +1,8 @@
+flex-intent-input {
+	display: block;
+}
+
+flex-intent-input button[disabled] {
+	opacity: 0.6;
+	cursor: wait;
+}

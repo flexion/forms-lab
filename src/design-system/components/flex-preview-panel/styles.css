@@ -1,0 +1,5 @@
+flex-preview-panel {
+	display: block;
+	position: sticky;
+	top: var(--flex-space-2);
+}

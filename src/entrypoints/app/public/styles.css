@@ -73,6 +73,9 @@
 @import "../../../design-system/components/flex-diagram/styles.css" layer(block);
 @import "../../dashboard/deployment-table.css" layer(block);
 @import "../../../design-system/components/flex-strategy-selector/styles.css" layer(block);
+@import "../../../design-system/components/flex-sortable-list/styles.css" layer(block);
+@import "../../../design-system/components/flex-intent-input/styles.css" layer(block);
+@import "../../../design-system/components/flex-preview-panel/styles.css" layer(block);
 @import "../routes/projects/styles.css" layer(block);
 @import "../routes/owner/edit/styles.css" layer(block);
 
