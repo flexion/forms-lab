@@ -257,7 +257,8 @@ export const ProjectOverview: FC<{
   owner: string
   user: SessionUser | null
   viewingSha?: string
-}> = ({ view, owner, user, viewingSha }) => {
+  origin?: string
+}> = ({ view, owner, user, viewingSha, origin }) => {
   const { project, spec, formSpec, confidence, history, isOwner, forkedFrom } =
     view
 
@@ -276,7 +277,7 @@ export const ProjectOverview: FC<{
   const blobBasePath = `/${owner}/${project.slug}/blob/main`
 
   const repoBase = `/${owner}/${project.slug}`
-  const cloneUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/git/${project.slug}.git`
+  const cloneUrl = `${origin ?? ''}${resolveUrl(`/git/${project.slug}.git`)}`
 
   return (
     <div class="l-stack">

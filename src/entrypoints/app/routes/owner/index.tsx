@@ -15,6 +15,17 @@ import {
   TreePage,
 } from './components'
 
+function getExternalOrigin(c: Context): string {
+  const proto =
+    c.req.header('x-forwarded-proto') ||
+    new URL(c.req.url).protocol.replace(':', '')
+  const host =
+    c.req.header('x-forwarded-host') ||
+    c.req.header('host') ||
+    new URL(c.req.url).host
+  return `${proto}://${host}`
+}
+
 export function createOwnerRoutes(
   service: ProjectService,
   userStore: UserStore,
@@ -67,9 +78,15 @@ export function createOwnerRoutes(
 
     try {
       const view = await service.getProject(owner, slug, user)
+      const origin = getExternalOrigin(c)
       return c.html(
         <Layout user={user}>
-          <ProjectOverview view={view} owner={owner} user={user} />
+          <ProjectOverview
+            view={view}
+            owner={owner}
+            user={user}
+            origin={origin}
+          />
         </Layout>,
       )
     } catch (err) {
