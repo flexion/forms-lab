@@ -72,6 +72,20 @@ export interface ProjectService {
     sha: string,
     user: SessionUser | null,
   ): Promise<ProjectView>
+  updateFormSpec(
+    owner: string,
+    slug: string,
+    formSpec: FormSpec,
+    message: string,
+    user: SessionUser,
+  ): Promise<string>
+  getFormSpecHistory(owner: string, slug: string): Promise<CommitEntry[]>
+  undoFormSpec(
+    owner: string,
+    slug: string,
+    targetSha: string,
+    user: SessionUser,
+  ): Promise<string>
 }
 
 export function createProjectService(
@@ -402,6 +416,65 @@ export function createProjectService(
         isOwner,
         forkedFrom,
       }
+    },
+
+    async updateFormSpec(
+      owner: string,
+      slug: string,
+      formSpec: FormSpec,
+      message: string,
+      user: SessionUser,
+    ): Promise<string> {
+      requireAuth(user)
+      const project = resolveProject(owner, slug)
+      requireOwner(project, user)
+
+      return repo.commit(
+        slug,
+        [
+          {
+            path: 'forms/default/form.json',
+            content: Buffer.from(JSON.stringify(formSpec, null, 2)),
+          },
+        ],
+        message,
+        user.login,
+      )
+    },
+
+    async getFormSpecHistory(
+      owner: string,
+      slug: string,
+    ): Promise<CommitEntry[]> {
+      resolveProject(owner, slug)
+      return repo.log(slug, 'main', 'forms/default/form.json')
+    },
+
+    async undoFormSpec(
+      owner: string,
+      slug: string,
+      targetSha: string,
+      user: SessionUser,
+    ): Promise<string> {
+      requireAuth(user)
+      const project = resolveProject(owner, slug)
+      requireOwner(project, user)
+
+      const formBuf = await repo.readFile(
+        slug,
+        targetSha,
+        'forms/default/form.json',
+      )
+      if (!formBuf) {
+        throw new BadRequestError('No FormSpec found at that revision')
+      }
+
+      return repo.commit(
+        slug,
+        [{ path: 'forms/default/form.json', content: formBuf }],
+        `Undo: revert to ${targetSha.slice(0, 7)}`,
+        user.login,
+      )
     },
   }
 }
