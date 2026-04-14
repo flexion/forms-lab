@@ -1,0 +1,86 @@
+<h2>Project List — Before & After</h2>
+<p class="subtitle">Replacing card list with a table. Click to select your preference.</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Current: Card List</div>
+    <div class="mockup-body" style="padding: 1.5rem; font-family: system-ui; max-width: 600px; margin: 0 auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="margin: 0;">My Projects</h3>
+        <button style="background: #005ea2; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.875rem;">New Project</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <a href="#" style="display: block; text-decoration: none; color: inherit; border: 1px solid #ddd; border-radius: 4px; padding: 1rem;">
+          <strong>Application for Pardon After Completion of Sentence</strong>
+          <span style="display: inline-block; background: #ecf3ec; color: #2e7d32; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; margin-left: 0.5rem;">ready</span>
+          <div style="color: #71767a; font-size: 0.875rem; margin-top: 0.25rem;">Extracted from Application for Pardon...</div>
+        </a>
+        <a href="#" style="display: block; text-decoration: none; color: inherit; border: 1px solid #ddd; border-radius: 4px; padding: 1rem;">
+          <strong>SF-86 Background Investigation</strong>
+          <span style="display: inline-block; background: #fef0cd; color: #936300; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; margin-left: 0.5rem;">extracting</span>
+          <div style="color: #71767a; font-size: 0.875rem; margin-top: 0.25rem;">Extracted from SF-86...</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Proposed: Table with Actions</div>
+    <div class="mockup-body" style="padding: 1.5rem; font-family: system-ui;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="margin: 0;">My Projects</h3>
+        <button style="background: #005ea2; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.875rem;">New Project</button>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid #1b1b1b; text-align: left;">
+            <th style="padding: 0.75rem 0.5rem;">Name</th>
+            <th style="padding: 0.75rem 0.5rem;">Status</th>
+            <th style="padding: 0.75rem 0.5rem;">Created</th>
+            <th style="padding: 0.75rem 0.5rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 0.75rem 0.5rem;">
+              <a href="#" style="color: #005ea2; font-weight: 600;">Application for Pardon After Completion of Sentence</a>
+              <div style="color: #71767a; font-size: 0.8rem;">14 groups, 135 fields</div>
+            </td>
+            <td style="padding: 0.75rem 0.5rem;">
+              <span style="background: #ecf3ec; color: #2e7d32; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px;">Ready</span>
+            </td>
+            <td style="padding: 0.75rem 0.5rem; color: #71767a; font-size: 0.85rem;">Apr 11, 2026</td>
+            <td style="padding: 0.75rem 0.5rem;">
+              <a href="#" style="color: #005ea2; font-size: 0.85rem; margin-right: 0.75rem;">View</a>
+              <a href="#" style="color: #b50909; font-size: 0.85rem;">Delete</a>
+            </td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 0.75rem 0.5rem;">
+              <a href="#" style="color: #005ea2; font-weight: 600;">SF-86 Background Investigation</a>
+              <div style="color: #71767a; font-size: 0.8rem;">Extracting form structure...</div>
+            </td>
+            <td style="padding: 0.75rem 0.5rem;">
+              <span style="background: #fef0cd; color: #936300; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px;">Extracting</span>
+            </td>
+            <td style="padding: 0.75rem 0.5rem; color: #71767a; font-size: 0.85rem;">Apr 11, 2026</td>
+            <td style="padding: 0.75rem 0.5rem; color: #71767a; font-size: 0.85rem;">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 1.5rem;">
+  <h3>Design notes</h3>
+  <ul style="line-height: 1.8;">
+    <li><strong>Name column</strong> links to project detail page. Shows field count summary for ready projects.</li>
+    <li><strong>Status</strong> uses semantic badges (ready = green, extracting = yellow, error = red).</li>
+    <li><strong>Actions</strong> — View and Delete for now. Edit comes with story 4.</li>
+    <li><strong>Delete</strong> uses a POST form with confirmation, not a bare link.</li>
+    <li><strong>Empty state</strong> keeps the current friendly message with a prominent New Project button.</li>
+  </ul>
+</div>

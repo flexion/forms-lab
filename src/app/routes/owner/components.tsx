@@ -328,6 +328,12 @@ export const ProjectOverview: FC<{
           <p>
             Viewing snapshot <code>{viewingSha.slice(0, 8)}</code>.{' '}
             <a href={resolveUrl(`/${owner}/${project.slug}`)}>View latest</a>
+            {' | '}
+            <a
+              href={resolveUrl(`/${owner}/${project.slug}/tree/${viewingSha}`)}
+            >
+              Browse repository at this commit
+            </a>
           </p>
         </div>
       )}
@@ -695,6 +701,7 @@ export const CommitListPage: FC<{
           <th scope="col">Message</th>
           <th scope="col">Author</th>
           <th scope="col">Date</th>
+          <th scope="col">Browse</th>
         </tr>
       </thead>
       <tbody>
@@ -709,6 +716,11 @@ export const CommitListPage: FC<{
             <td data-label="Author">{entry.author}</td>
             <td data-label="Date" class="text-muted text-sm">
               {entry.date}
+            </td>
+            <td data-label="Browse">
+              <a href={resolveUrl(`/${owner}/${slug}/tree/${entry.sha}`)}>
+                Tree
+              </a>
             </td>
           </tr>
         ))}
