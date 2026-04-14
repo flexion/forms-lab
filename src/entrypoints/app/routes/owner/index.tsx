@@ -26,8 +26,10 @@ export function createOwnerRoutes(
   // -----------------------------------------------------------------------
   app.get('/:owner', async (c) => {
     const owner = c.req.param('owner')
+    const projects = service.listUserProjects(owner)
     const profile = userStore.get(owner)
-    if (!profile) {
+
+    if (!profile && projects.length === 0) {
       return c.html(
         <Layout user={c.get('user')}>
           <ErrorPage statusCode={404} message="User not found" />
@@ -36,11 +38,18 @@ export function createOwnerRoutes(
       )
     }
 
-    const projects = service.listUserProjects(owner)
+    const displayProfile = profile ?? {
+      login: owner,
+      name: owner,
+      avatarUrl: '',
+      createdAt: 0,
+      updatedAt: 0,
+    }
+
     return c.html(
       <Layout user={c.get('user')}>
         <ProfilePage
-          user={profile}
+          user={displayProfile}
           projects={projects}
           currentUser={c.get('user')}
         />
