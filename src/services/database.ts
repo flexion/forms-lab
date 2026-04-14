@@ -77,6 +77,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
       id TEXT PRIMARY KEY,
       slug TEXT NOT NULL UNIQUE,
       name TEXT NOT NULL,
+      forked_from TEXT,
       status TEXT NOT NULL DEFAULT 'extracting',
       error TEXT,
       created_by TEXT NOT NULL,
@@ -90,6 +91,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
       id: row.id as string,
       slug: row.slug as string,
       name: row.name as string,
+      forkedFrom: (row.forked_from as string | null) ?? null,
       status: row.status as ProjectStatus,
       error: (row.error as string | null) ?? null,
       createdBy: row.created_by as string,
@@ -103,9 +105,17 @@ export function createProjectStore(dbPath: string): ProjectStore {
       const id = crypto.randomUUID()
       const now = Math.floor(Date.now() / 1000)
       db.run(
-        `INSERT INTO projects (id, slug, name, created_by, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [id, project.slug, project.name, project.createdBy, now, now],
+        `INSERT INTO projects (id, slug, name, forked_from, created_by, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          id,
+          project.slug,
+          project.name,
+          project.forkedFrom ?? null,
+          project.createdBy,
+          now,
+          now,
+        ],
       )
       // biome-ignore lint/style/noNonNullAssertion: row was just inserted
       return this.get(id)!

@@ -208,6 +208,7 @@ export interface ProjectIndex {
   id: string
   slug: string
   name: string
+  forkedFrom: string | null
   status: ProjectStatus
   error: string | null
   createdBy: string
@@ -219,4 +220,19 @@ export interface NewProjectIndex {
   name: string
   slug: string
   createdBy: string
+  forkedFrom?: string
+}
+
+/**
+ * UserProfile - Persisted GitHub user profile
+ *
+ * Cached locally on login to avoid repeated API calls
+ * and to support user display across the platform.
+ */
+export interface UserProfile {
+  login: string
+  name: string
+  avatarUrl: string
+  createdAt: number
+  updatedAt: number
 }

@@ -106,6 +106,29 @@ describe('ProjectStore', () => {
     expect(store.get(project.id)).toBeNull()
   })
 
+  it('stores forkedFrom metadata', () => {
+    const store = createProjectStore(':memory:')
+    const project = store.create({
+      name: 'Forked Project',
+      slug: 'forked-project',
+      createdBy: 'maya',
+      forkedFrom: 'danielnaab/pardon-application',
+    })
+    expect(project.forkedFrom).toBe('danielnaab/pardon-application')
+    const retrieved = store.get(project.id)
+    expect(retrieved?.forkedFrom).toBe('danielnaab/pardon-application')
+  })
+
+  it('forkedFrom defaults to null', () => {
+    const store = createProjectStore(':memory:')
+    const project = store.create({
+      name: 'Original',
+      slug: 'original',
+      createdBy: 'danielnaab',
+    })
+    expect(project.forkedFrom).toBeNull()
+  })
+
   it('updates project status and error', () => {
     const store = createProjectStore(':memory:')
     const project = store.create({
