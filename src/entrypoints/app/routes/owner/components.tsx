@@ -275,8 +275,11 @@ export const ProjectOverview: FC<{
   const lowConfCount = confidence?.filter((c) => c.confidence < 0.8).length ?? 0
   const blobBasePath = `/${owner}/${project.slug}/blob/main`
 
+  const repoBase = `/${owner}/${project.slug}`
+  const cloneUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/git/${project.slug}.git`
+
   return (
-    <div class="l-stack" data-space="lg">
+    <div class="l-stack">
       <div class="l-cluster justify-between">
         <h1>
           <a href={resolveUrl(`/${owner}`)} class="text-muted">
@@ -287,17 +290,14 @@ export const ProjectOverview: FC<{
         <div class="l-cluster">
           {isOwner ? (
             <a
-              href={resolveUrl(`/${owner}/${project.slug}/settings`)}
+              href={resolveUrl(`${repoBase}/settings`)}
               class="flex-button"
               data-variant="outline"
             >
               Settings
             </a>
           ) : user ? (
-            <form
-              method="post"
-              action={resolveUrl(`/${owner}/${project.slug}/fork`)}
-            >
+            <form method="post" action={resolveUrl(`${repoBase}/fork`)}>
               <button type="submit" class="flex-button" data-variant="outline">
                 Fork
               </button>
@@ -305,7 +305,7 @@ export const ProjectOverview: FC<{
           ) : (
             <a
               href={resolveUrl(
-                `/auth/signin?returnTo=${encodeURIComponent(`/${owner}/${project.slug}`)}`,
+                `/auth/signin?returnTo=${encodeURIComponent(repoBase)}`,
               )}
               class="flex-button"
               data-variant="outline"
@@ -325,15 +325,29 @@ export const ProjectOverview: FC<{
         </p>
       )}
 
+      <RepoNav owner={owner} slug={project.slug} current="overview" />
+
+      <div class="clone-bar">
+        <code class="clone-bar__url" id="clone-url">
+          {cloneUrl}
+        </code>
+        <button
+          type="button"
+          class="clone-bar__copy"
+          aria-label="Copy clone URL"
+          onclick="navigator.clipboard.writeText(document.getElementById('clone-url').textContent).then(function(){var b=event.target.closest('button');b.textContent='Copied!';setTimeout(function(){b.textContent='Copy'},2000)})"
+        >
+          Copy
+        </button>
+      </div>
+
       {viewingSha && (
         <div class="flex-alert flex-alert--info" role="status">
           <p>
             Viewing snapshot <code>{viewingSha.slice(0, 8)}</code>.{' '}
-            <a href={resolveUrl(`/${owner}/${project.slug}`)}>View latest</a>
+            <a href={resolveUrl(repoBase)}>View latest</a>
             {' | '}
-            <a
-              href={resolveUrl(`/${owner}/${project.slug}/tree/${viewingSha}`)}
-            >
+            <a href={resolveUrl(`${repoBase}/tree/${viewingSha}`)}>
               Browse repository at this commit
             </a>
           </p>
@@ -355,67 +369,55 @@ export const ProjectOverview: FC<{
         </span>
       </div>
 
-      {spec && (
-        <SpecViewer
-          spec={spec}
-          confidence={confidence ?? []}
-          blobBasePath={blobBasePath}
-        />
-      )}
-      {formSpec && spec && (
-        <FormSpecViewer
-          formSpec={formSpec}
-          spec={spec}
-          blobBasePath={blobBasePath}
-        />
-      )}
-
-      <section class="l-stack">
-        <h2>Clone</h2>
-        <code class="clone-url">git clone /git/{project.slug}.git</code>
-      </section>
-
-      {history.length > 0 && (
-        <section class="l-stack">
-          <div class="l-cluster justify-between">
-            <h2>History</h2>
-            <a href={resolveUrl(`/${owner}/${project.slug}/commits`)}>
-              View all commits
-            </a>
-          </div>
-          <table class="flex-table" data-variant="borderless" data-stacked>
-            <thead>
-              <tr>
-                <th scope="col">SHA</th>
-                <th scope="col">Message</th>
-                <th scope="col">Author</th>
-                <th scope="col">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {history.slice(0, 5).map((entry) => (
-                <tr key={entry.sha}>
-                  <td data-label="SHA">
-                    <a
-                      href={resolveUrl(
-                        `/${owner}/${project.slug}/commit/${entry.sha}`,
-                      )}
-                    >
-                      <code>{entry.shortSha}</code>
-                    </a>
-                  </td>
-                  <td data-label="Message">{entry.message}</td>
-                  <td data-label="Author">{entry.author}</td>
-                  <td data-label="Date" class="text-muted text-sm">
-                    {entry.date}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      )}
+      <div class="l-stack" data-space="lg">
+        {spec && (
+          <SpecViewer
+            spec={spec}
+            confidence={confidence ?? []}
+            blobBasePath={blobBasePath}
+          />
+        )}
+        {formSpec && spec && (
+          <FormSpecViewer
+            formSpec={formSpec}
+            spec={spec}
+            blobBasePath={blobBasePath}
+          />
+        )}
+      </div>
     </div>
+  )
+}
+
+type RepoTab = 'overview' | 'history' | 'files'
+
+const RepoNav: FC<{
+  owner: string
+  slug: string
+  current: RepoTab
+}> = ({ owner, slug, current }) => {
+  const base = `/${owner}/${slug}`
+  const tabs: { id: RepoTab; label: string; href: string }[] = [
+    { id: 'overview', label: 'Overview', href: base },
+    { id: 'history', label: 'History', href: `${base}/commits` },
+    { id: 'files', label: 'Files', href: `${base}/tree/main` },
+  ]
+  return (
+    <nav class="repo-nav" aria-label="Repository">
+      <ul class="repo-nav__list">
+        {tabs.map((tab) => (
+          <li key={tab.id} class="repo-nav__item">
+            <a
+              href={resolveUrl(tab.href)}
+              class={`repo-nav__link${tab.id === current ? ' repo-nav__link--current' : ''}`}
+              aria-current={tab.id === current ? 'page' : undefined}
+            >
+              {tab.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
   )
 }
 
@@ -544,6 +546,8 @@ export const TreePage: FC<{
         </a>{' '}
         / <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
       </h1>
+
+      <RepoNav owner={owner} slug={slug} current="files" />
 
       <nav aria-label="Breadcrumb">
         <ol class="l-cluster" style="list-style: none; padding: 0;">
@@ -693,8 +697,10 @@ export const CommitListPage: FC<{
       <a href={resolveUrl(`/${owner}`)} class="text-muted">
         {owner}
       </a>{' '}
-      / <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a> / Commits
+      / <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
     </h1>
+
+    <RepoNav owner={owner} slug={slug} current="history" />
 
     <table class="flex-table" data-variant="borderless" data-stacked>
       <thead>

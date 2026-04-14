@@ -264,24 +264,27 @@ describe('GET /:owner/:slug (project overview)', () => {
     expect(html).toContain('Model timeout after 60 seconds')
   })
 
-  it('shows version history', async () => {
+  it('shows repo nav with tabs', async () => {
     const { app, service, projectStore } = createTestApp(danielUser)
     const project = await createReadyProject(service, projectStore)
 
     const res = await app.request(`/danielnaab/${project.slug}`)
     const html = await res.text()
+    expect(html).toContain('repo-nav')
+    expect(html).toContain('Overview')
     expect(html).toContain('History')
-    expect(html).toContain('Initialize project')
+    expect(html).toContain('Files')
   })
 
-  it('shows clone URL', async () => {
+  it('shows clone URL with copy button', async () => {
     const { app, service, projectStore } = createTestApp(danielUser)
     const project = await createReadyProject(service, projectStore)
 
     const res = await app.request(`/danielnaab/${project.slug}`)
     const html = await res.text()
     expect(html).toContain(`/git/${project.slug}.git`)
-    expect(html).toContain('git clone')
+    expect(html).toContain('clone-bar')
+    expect(html).toContain('Copy')
   })
 })
 
@@ -611,7 +614,7 @@ describe('GET /:owner/:slug/commits', () => {
     const res = await app.request(`/danielnaab/${project.slug}/commits`)
     expect(res.status).toBe(200)
     const html = await res.text()
-    expect(html).toContain('Commits')
+    expect(html).toContain('repo-nav')
     expect(html).toContain('Initialize project')
     expect(html).toContain('Extract form specifications')
   })

@@ -119,15 +119,72 @@
   border-bottom: 1px solid var(--flex-color-border);
 }
 
-/* Clone URL display */
-.clone-url {
+/* Repository navigation tabs */
+.repo-nav {
+  border-block-end: 1px solid var(--flex-color-border);
+}
+
+.repo-nav__list {
+  display: flex;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.repo-nav__link {
   display: block;
-  padding: var(--flex-space-xs) var(--flex-space-sm);
-  background: var(--flex-color-surface);
+  padding: var(--flex-space-xs) var(--flex-space-md);
+  color: var(--flex-color-text-muted);
+  text-decoration: none;
+  font-size: var(--flex-text-sm);
+  border-block-end: 2px solid transparent;
+  margin-block-end: -1px;
+}
+
+.repo-nav__link:hover {
+  color: var(--flex-color-text);
+}
+
+.repo-nav__link--current {
+  color: var(--flex-color-text);
+  font-weight: 700;
+  border-block-end-color: var(--flex-color-primary);
+}
+
+/* Clone URL bar with copy button */
+.clone-bar {
+  display: flex;
+  align-items: center;
   border: 1px solid var(--flex-color-border);
   border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-surface);
+  overflow: hidden;
+}
+
+.clone-bar__url {
+  flex: 1;
+  padding: var(--flex-space-2xs) var(--flex-space-sm);
   font-size: var(--flex-text-sm);
   word-break: break-all;
+  user-select: all;
+}
+
+.clone-bar__copy {
+  padding: var(--flex-space-2xs) var(--flex-space-sm);
+  border: none;
+  border-inline-start: 1px solid var(--flex-color-border);
+  background: var(--flex-color-surface);
+  color: var(--flex-color-text-muted);
+  font: inherit;
+  font-size: var(--flex-text-sm);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.clone-bar__copy:hover {
+  background: var(--flex-color-surface-hover);
+  color: var(--flex-color-text);
 }
 
 /* Delete confirmation */
