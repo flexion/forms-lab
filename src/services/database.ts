@@ -1,11 +1,8 @@
 import { Database } from 'bun:sqlite'
 import type {
-  DataCollectionSpec,
-  FieldConfidence,
-  FormSpec,
-  NewProject,
+  NewProjectIndex,
+  ProjectIndex,
   ProjectStatus,
-  StoredProject,
 } from '../types/models'
 
 export interface CacheEntry {
@@ -61,18 +58,14 @@ export function createCacheStore(dbPath: string): CacheStore {
 }
 
 export interface ProjectStore {
-  create(project: NewProject): StoredProject
-  get(id: string): StoredProject | null
-  list(userId?: string): StoredProject[]
+  create(project: NewProjectIndex): ProjectIndex
+  get(id: string): ProjectIndex | null
+  getBySlug(slug: string): ProjectIndex | null
+  list(userId?: string): ProjectIndex[]
   update(
     id: string,
-    changes: Partial<
-      Pick<
-        StoredProject,
-        'status' | 'spec' | 'formSpec' | 'confidence' | 'error'
-      >
-    >,
-  ): StoredProject
+    changes: Partial<Pick<ProjectIndex, 'status' | 'error'>>,
+  ): ProjectIndex
   delete(id: string): void
 }
 
@@ -82,13 +75,9 @@ export function createProjectStore(dbPath: string): ProjectStore {
   db.run(`
     CREATE TABLE IF NOT EXISTS projects (
       id TEXT PRIMARY KEY,
+      slug TEXT NOT NULL UNIQUE,
       name TEXT NOT NULL,
-      description TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'extracting',
-      source_pdf BLOB NOT NULL,
-      spec TEXT,
-      form_spec TEXT,
-      confidence TEXT,
       error TEXT,
       created_by TEXT NOT NULL,
       created_at INTEGER NOT NULL,
@@ -96,22 +85,12 @@ export function createProjectStore(dbPath: string): ProjectStore {
     )
   `)
 
-  function rowToProject(row: Record<string, unknown>): StoredProject {
+  function rowToProject(row: Record<string, unknown>): ProjectIndex {
     return {
       id: row.id as string,
+      slug: row.slug as string,
       name: row.name as string,
-      description: row.description as string,
       status: row.status as ProjectStatus,
-      sourcePdf: row.source_pdf as Buffer,
-      spec: row.spec
-        ? (JSON.parse(row.spec as string) as DataCollectionSpec)
-        : null,
-      formSpec: row.form_spec
-        ? (JSON.parse(row.form_spec as string) as FormSpec)
-        : null,
-      confidence: row.confidence
-        ? (JSON.parse(row.confidence as string) as FieldConfidence[])
-        : null,
       error: (row.error as string | null) ?? null,
       createdBy: row.created_by as string,
       createdAt: row.created_at as number,
@@ -120,27 +99,19 @@ export function createProjectStore(dbPath: string): ProjectStore {
   }
 
   return {
-    create(project: NewProject): StoredProject {
+    create(project: NewProjectIndex): ProjectIndex {
       const id = crypto.randomUUID()
       const now = Math.floor(Date.now() / 1000)
       db.run(
-        `INSERT INTO projects (id, name, description, status, source_pdf, created_by, created_at, updated_at)
-         VALUES (?, ?, ?, 'extracting', ?, ?, ?, ?)`,
-        [
-          id,
-          project.name,
-          project.description,
-          project.sourcePdf,
-          project.createdBy,
-          now,
-          now,
-        ],
+        `INSERT INTO projects (id, slug, name, created_by, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [id, project.slug, project.name, project.createdBy, now, now],
       )
       // biome-ignore lint/style/noNonNullAssertion: row was just inserted
       return this.get(id)!
     },
 
-    get(id: string): StoredProject | null {
+    get(id: string): ProjectIndex | null {
       const row = db
         .query('SELECT * FROM projects WHERE id = ?')
         .get(id) as Record<string, unknown> | null
@@ -148,7 +119,15 @@ export function createProjectStore(dbPath: string): ProjectStore {
       return rowToProject(row)
     },
 
-    list(userId?: string): StoredProject[] {
+    getBySlug(slug: string): ProjectIndex | null {
+      const row = db
+        .query('SELECT * FROM projects WHERE slug = ?')
+        .get(slug) as Record<string, unknown> | null
+      if (!row) return null
+      return rowToProject(row)
+    },
+
+    list(userId?: string): ProjectIndex[] {
       const query = userId
         ? db.query(
             'SELECT * FROM projects WHERE created_by = ? ORDER BY created_at DESC',
@@ -163,31 +142,14 @@ export function createProjectStore(dbPath: string): ProjectStore {
 
     update(
       id: string,
-      changes: Partial<
-        Pick<
-          StoredProject,
-          'status' | 'spec' | 'formSpec' | 'confidence' | 'error'
-        >
-      >,
-    ): StoredProject {
+      changes: Partial<Pick<ProjectIndex, 'status' | 'error'>>,
+    ): ProjectIndex {
       const sets: string[] = ['updated_at = ?']
       const values: (string | number | null)[] = [Math.floor(Date.now() / 1000)]
 
       if (changes.status !== undefined) {
         sets.push('status = ?')
         values.push(changes.status)
-      }
-      if (changes.spec !== undefined) {
-        sets.push('spec = ?')
-        values.push(JSON.stringify(changes.spec))
-      }
-      if (changes.formSpec !== undefined) {
-        sets.push('form_spec = ?')
-        values.push(JSON.stringify(changes.formSpec))
-      }
-      if (changes.confidence !== undefined) {
-        sets.push('confidence = ?')
-        values.push(JSON.stringify(changes.confidence))
       }
       if (changes.error !== undefined) {
         sets.push('error = ?')

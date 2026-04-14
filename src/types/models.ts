@@ -225,3 +225,26 @@ export interface NewProject {
   sourcePdf: Buffer
   createdBy: string
 }
+
+/**
+ * ProjectIndex - Lightweight operational index for projects
+ *
+ * Tracks project identity and status. Specs, PDFs, and confidence
+ * data live in git bare repos (FormProjectRepo).
+ */
+export interface ProjectIndex {
+  id: string
+  slug: string
+  name: string
+  status: ProjectStatus
+  error: string | null
+  createdBy: string
+  createdAt: number
+  updatedAt: number
+}
+
+export interface NewProjectIndex {
+  name: string
+  slug: string
+  createdBy: string
+}
