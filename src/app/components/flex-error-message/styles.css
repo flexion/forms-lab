@@ -1,9 +1,0 @@
-/* flex-error-message — USWDS Error Message conformance
-   Extends: Typography Base (base-classes.css#typography) */
-.flex-error-message {
-  color: var(--flex-color-error);
-  font-weight: 700;
-  display: block;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-}

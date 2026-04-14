@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'bun:test'
-import { createCacheStore } from '../src/services/database'
 import {
   createCachedPdfExtractor,
   type PdfExtractor,
-} from '../src/services/pdf-extractor'
-import type { ExtractionResult } from '../src/types/models'
+} from '../src/services/ingestion/pdf-extractor'
+import type { ExtractionResult } from '../src/services/ingestion/types'
+import { createCacheStore } from '../src/services/storage'
 
 const stubResult: ExtractionResult = {
   spec: {
@@ -36,11 +36,8 @@ const stubResult: ExtractionResult = {
         id: 'p1',
         title: 'Personal Info',
         groups: ['g1'],
-        deliveryMode: 'static',
       },
     ],
-    createdAt: '2026-04-09',
-    updatedAt: '2026-04-09',
   },
   confidence: [{ fieldId: 'f1', confidence: 0.95 }],
 }

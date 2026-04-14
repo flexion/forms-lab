@@ -1,10 +1,38 @@
-import { beforeEach, describe, expect, it } from 'bun:test'
-import type { GitHubClient } from '../src/services/github'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import {
   deployMainBranch,
   triggerDeploy,
   triggerDeployWithStatus,
-} from '../src/webhook/deploy'
+} from '../src/entrypoints/webhook/deploy'
+import type { GitHubClient } from '../src/services/deployment/github'
+import type { NotifyEvent } from '../src/services/notifications/types'
+
+function captureNotifyEvents(): {
+  events: NotifyEvent[]
+  restore: () => void
+} {
+  const events: NotifyEvent[] = []
+  const originalFetch = globalThis.fetch
+  const mockFetch = async (input: unknown, init?: RequestInit) => {
+    const url = typeof input === 'string' ? input : String(input)
+    if (url.includes('/event') && init?.body) {
+      try {
+        events.push(JSON.parse(init.body as string) as NotifyEvent)
+      } catch {}
+      return new Response('ok', { status: 200 })
+    }
+    return originalFetch(input as RequestInfo, init)
+  }
+  ;(mockFetch as unknown as { preconnect: (url: string) => void }).preconnect =
+    () => {}
+  globalThis.fetch = mockFetch as typeof fetch
+  return {
+    events,
+    restore: () => {
+      globalThis.fetch = originalFetch
+    },
+  }
+}
 
 describe('triggerDeploy', () => {
   const _originalEnv = process.env.DEPLOY_SCRIPT
@@ -231,5 +259,96 @@ describe('deployMainBranch', () => {
     if (!result.success) {
       expect(result.error).toBeDefined()
     }
+  })
+
+  describe('notify events', () => {
+    let capture: ReturnType<typeof captureNotifyEvents>
+
+    beforeEach(() => {
+      capture = captureNotifyEvents()
+    })
+
+    afterEach(() => {
+      capture.restore()
+      delete process.env.DEPLOY_MAIN_SCRIPT
+    })
+
+    it('includes deployed URL on success when hostname provided', async () => {
+      process.env.DEPLOY_MAIN_SCRIPT = 'true'
+
+      await deployMainBranch('abc123def', 'example.com')
+
+      const event = capture.events.find((e) => e.type === 'deploy.success')
+      expect(event).toBeDefined()
+      expect(event?.url).toBe('https://example.com/')
+    })
+
+    it('omits URL when hostname not provided', async () => {
+      process.env.DEPLOY_MAIN_SCRIPT = 'true'
+
+      await deployMainBranch('abc123def')
+
+      const event = capture.events.find((e) => e.type === 'deploy.success')
+      expect(event).toBeDefined()
+      expect(event?.url).toBeUndefined()
+    })
+
+    it('omits URL on failure', async () => {
+      process.env.DEPLOY_MAIN_SCRIPT = 'false'
+
+      await deployMainBranch('abc123def', 'example.com')
+
+      const event = capture.events.find((e) => e.type === 'deploy.failure')
+      expect(event).toBeDefined()
+      expect(event?.url).toBeUndefined()
+    })
+  })
+})
+
+describe('triggerDeployWithStatus notify events', () => {
+  let capture: ReturnType<typeof captureNotifyEvents>
+
+  beforeEach(() => {
+    process.env.DEPLOY_SCRIPT = 'echo'
+    capture = captureNotifyEvents()
+  })
+
+  afterEach(() => {
+    capture.restore()
+  })
+
+  it('includes deployed URL on successful branch deploy when hostname provided', async () => {
+    const client = createMockGitHubClient()
+
+    await triggerDeployWithStatus({
+      branch: 'feature/test',
+      sha: 'abc123def',
+      owner: 'flexion',
+      repo: 'forms-lab',
+      githubClient: client,
+      hostname: 'example.com',
+    })
+
+    const event = capture.events.find((e) => e.type === 'deploy.success')
+    expect(event).toBeDefined()
+    expect(event?.url).toBe('https://example.com/feature-test/')
+  })
+
+  it('omits URL on branch deploy failure', async () => {
+    process.env.DEPLOY_SCRIPT = 'false'
+    const client = createMockGitHubClient()
+
+    await triggerDeployWithStatus({
+      branch: 'feature/test',
+      sha: 'abc123def',
+      owner: 'flexion',
+      repo: 'forms-lab',
+      githubClient: client,
+      hostname: 'example.com',
+    })
+
+    const event = capture.events.find((e) => e.type === 'deploy.failure')
+    expect(event).toBeDefined()
+    expect(event?.url).toBeUndefined()
   })
 })

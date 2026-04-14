@@ -1,6 +1,42 @@
 { config, pkgs, ... }:
 
 let
+  deployMainScript = pkgs.writeShellScriptBin "forms-lab-deploy-main" ''
+    set -euo pipefail
+
+    SHA="$1"
+
+    echo "Starting main deployment at $SHA..."
+
+    # Use a unique working directory per run so a stale or mis-owned
+    # leftover can never wedge the next deploy.
+    WORK_DIR=$(${pkgs.coreutils}/bin/mktemp -d /tmp/forms-lab-deploy.XXXXXX)
+    trap '${pkgs.coreutils}/bin/rm -rf "$WORK_DIR"' EXIT
+
+    cd "$WORK_DIR"
+    ${pkgs.git}/bin/git clone https://github.com/flexion/forms-lab.git repo
+    cd repo
+    ${pkgs.git}/bin/git checkout "$SHA"
+
+    # Check if nixos config changed since last deployment
+    if ! ${pkgs.diffutils}/bin/diff -qr infrastructure/nixos /etc/nixos >/dev/null 2>&1; then
+      echo "NixOS config changed, rebuilding..."
+      /run/wrappers/bin/sudo ${pkgs.rsync}/bin/rsync -av --delete infrastructure/nixos/ /etc/nixos/
+      /run/wrappers/bin/sudo ${pkgs.nixos-rebuild}/bin/nixos-rebuild switch --flake /etc/nixos#forms-lab
+    else
+      echo "No NixOS config changes"
+    fi
+
+    # Deploy main branch app via the standard deploy script
+    ${deployScript}/bin/forms-lab-deploy main "$SHA"
+
+    # Health check
+    ${pkgs.coreutils}/bin/sleep 2
+    ${pkgs.curl}/bin/curl -f http://localhost:3000/health || exit 1
+
+    echo "Main deployment complete"
+  '';
+
   deployScript = pkgs.writeShellScriptBin "forms-lab-deploy" ''
     set -euo pipefail
 
@@ -12,6 +48,8 @@ let
     SAFE_BRANCH=$(echo "$BRANCH" | tr '/' '-')
     BRANCH_DIR="$DEPLOY_ROOT/$SAFE_BRANCH"
     PORT_FILE="$DEPLOY_ROOT/ports.json"
+
+    mkdir -p "$DEPLOY_ROOT/repos"
 
     echo "Deploying $BRANCH at $SHA..."
 
@@ -44,6 +82,33 @@ let
 
     # Install and build
     ${pkgs.bun}/bin/bun install
+
+    # Bootstrap guard: verify deploy.json entrypoints exist before building
+    if [ -f "$BRANCH_DIR/deploy.json" ]; then
+      echo "Validating deploy.json entrypoints..."
+      if [ "$BRANCH" = "main" ]; then
+        ROLES="app dashboard webhook notify"
+      else
+        ROLES="app"
+      fi
+      for ROLE in $ROLES; do
+        EP=$(${pkgs.jq}/bin/jq -r ".entrypoints[\"$ROLE\"] // empty" "$BRANCH_DIR/deploy.json")
+        if [ -z "$EP" ]; then
+          echo "ERROR: deploy.json has no entrypoint for role '$ROLE'"
+          exit 1
+        fi
+        if [ ! -f "$BRANCH_DIR/$EP" ]; then
+          echo "ERROR: deploy.json entry '$ROLE' points to '$EP'"
+          echo "       but that file does not exist in $BRANCH_DIR/"
+          echo "       This usually means the branch needs to be rebased on main."
+          exit 1
+        fi
+      done
+      echo "All entrypoints validated."
+    else
+      echo "WARNING: No deploy.json found in $BRANCH_DIR — skipping entrypoint validation"
+    fi
+
     ${pkgs.bun}/bin/bun run build
 
     # Assign port — read from ports.json or assign next available
@@ -78,6 +143,7 @@ AWS_REGION=us-east-1
 AWS_BEDROCK_PROFILE=ClaudeCodeAccess-FlexionLLM
 AWS_BEDROCK_REGION=us-west-2
 CACHE_DB_PATH=/srv/forms-lab/cache.sqlite
+REPOS_PATH=/srv/forms-lab/repos
 ENVEOF
 
     # Start or restart the service (use full path to sudo wrapper with setuid bit)
@@ -126,10 +192,11 @@ CADDYEOF
   '';
 in
 {
-  environment.systemPackages = [ deployScript ];
+  environment.systemPackages = [ deployScript deployMainScript ];
 
-  # Make the deploy script available at the expected path
+  # Make the deploy scripts available at expected paths
   system.activationScripts.deployLink = ''
     ln -sf ${deployScript}/bin/forms-lab-deploy /srv/forms-lab/deploy.sh
+    ln -sf ${deployMainScript}/bin/forms-lab-deploy-main /srv/forms-lab/deploy-main.sh
   '';
 }

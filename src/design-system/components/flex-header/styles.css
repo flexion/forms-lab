@@ -1,0 +1,513 @@
+/* flex-header — USWDS Header conformance (basic variant)
+   Site header with logo, primary navigation, and responsive mobile menu. */
+
+flex-header {
+  display: block;
+}
+
+.flex-header {
+  font-size: 1.06rem;
+  line-height: 1.5;
+  background-color: var(--flex-color-surface);
+  border-block-end: 1px solid var(--flex-color-border);
+}
+
+/* --- Inner container (matches banner/content max-width) --- */
+
+.flex-header__inner {
+  margin-inline: auto;
+  max-inline-size: var(--flex-content-max-width);
+  padding-inline: var(--flex-space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* --- Logo --- */
+
+.flex-header__logo {
+  flex-shrink: 0;
+  padding-block: 0.75rem;
+}
+
+.flex-header__logo-link {
+  color: var(--flex-color-text);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.flex-header__logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* --- Menu button (mobile only) --- */
+
+.flex-header__menu-btn {
+  display: none;
+  background-color: var(--flex-color-accent);
+  color: var(--flex-color-on-accent);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 0.87rem;
+  font-weight: 400;
+  block-size: 3rem;
+  padding-inline: 0.75rem;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  flex: 0 1 auto;
+
+  &:focus {
+    outline: 0.25rem solid var(--flex-color-focus);
+    outline-offset: 0;
+  }
+
+  &:hover {
+    background-color: var(--flex-color-link-hover);
+  }
+}
+
+/* --- Nav (desktop: horizontal, mobile: overlay) --- */
+
+.flex-header__nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  inline-size: 100%;
+  padding: 0 0 0 0.5rem;
+}
+
+/* --- Close button (mobile only) --- */
+
+.flex-header__close-btn {
+  display: none;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 0.87rem;
+  font-weight: 400;
+  color: currentColor;
+  text-decoration: underline;
+  block-size: 3rem;
+  inline-size: 3rem;
+  padding: 0;
+  text-align: center;
+  cursor: pointer;
+  flex: none;
+  float: right;
+  margin: -0.75rem -1rem 1rem auto;
+
+  &:focus {
+    outline: 0.25rem solid var(--flex-color-focus);
+    outline-offset: 0;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* --- Nav list --- */
+
+.flex-header__nav-list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  inline-size: auto;
+}
+
+/* --- Nav items --- */
+
+.flex-header__nav-item {
+  font-size: 0.93rem;
+  line-height: 0.9;
+}
+
+/* --- Nav links --- */
+
+.flex-header__nav-link {
+  display: flex;
+  align-items: center;
+  color: var(--flex-color-text-muted);
+  text-decoration: none;
+  font-weight: 700;
+  padding: 1rem;
+  block-size: 100%;
+
+  &:hover {
+    color: var(--flex-color-accent);
+  }
+}
+
+/* Current page indicator — 0.25rem bottom border in accent color */
+.flex-header__nav-link--current,
+.flex-header__nav-link:hover {
+  position: relative;
+}
+
+.flex-header__nav-link--current::after,
+.flex-header__nav-link:hover::after {
+  background-color: var(--flex-color-accent);
+  border-radius: 0;
+  content: "";
+  display: block;
+  position: absolute;
+  block-size: 0.25rem;
+  inset-inline-start: 1rem;
+  inset-inline-end: 1rem;
+  inset-block-end: -0.25rem;
+}
+
+/* --- User menu (signed-in profile dropdown) --- */
+
+.flex-header__user-menu {
+  position: relative;
+  margin-inline-start: auto;
+  padding-inline-start: var(--flex-space-sm);
+}
+
+.flex-header__user-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--flex-space-xs);
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--flex-color-text);
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--flex-color-border);
+    background: rgb(0 0 0 / 3%);
+  }
+
+  &:focus-visible {
+    outline: 0.25rem solid var(--flex-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.flex-header__avatar {
+  border-radius: 50%;
+  display: block;
+}
+
+.flex-header__avatar--lg {
+  inline-size: 3rem;
+  block-size: 3rem;
+}
+
+.flex-header__user-caret {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  color: var(--flex-color-text-muted);
+}
+
+.flex-header__user-panel {
+  position: absolute;
+  inset-block-start: calc(100% + var(--flex-space-xs));
+  inset-inline-end: 0;
+  min-inline-size: 16rem;
+  background: var(--flex-color-surface);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-md);
+  box-shadow: var(--flex-shadow-md);
+  padding: var(--flex-space-sm) 0;
+  z-index: 500;
+}
+
+.flex-header__user-panel[hidden] {
+  display: none;
+}
+
+.flex-header__user-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-sm);
+  padding: var(--flex-space-sm) var(--flex-space-md);
+}
+
+.flex-header__user-name {
+  font-weight: 700;
+  color: var(--flex-color-text);
+  line-height: 1.2;
+}
+
+.flex-header__user-login {
+  font-size: 0.85rem;
+  color: var(--flex-color-text-muted);
+  line-height: 1.2;
+}
+
+.flex-header__user-divider {
+  block-size: 1px;
+  background: var(--flex-color-border);
+  margin-block: var(--flex-space-xs);
+  border: 0;
+}
+
+.flex-header__user-theme {
+  padding: var(--flex-space-xs) var(--flex-space-md);
+}
+
+/* Inside the panel the theme toggle is the full row, not an auto-margin widget */
+.flex-header__user-theme .flex-theme-toggle {
+  margin-inline-start: 0;
+  padding-inline-start: 0;
+}
+
+.flex-header__user-signout {
+  padding: 0 var(--flex-space-md) var(--flex-space-xs);
+}
+
+.flex-header__user-signout-btn {
+  inline-size: 100%;
+  background: transparent;
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  font: inherit;
+  font-weight: 700;
+  color: var(--flex-color-text);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--flex-color-accent);
+    color: var(--flex-color-on-accent);
+    border-color: var(--flex-color-accent);
+  }
+
+  &:focus-visible {
+    outline: 0.25rem solid var(--flex-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+/* --- Overlay (mobile backdrop) --- */
+
+.flex-header__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 70%);
+  z-index: 400;
+}
+
+/* ============================================================================
+   MOBILE (< 64em)
+   ============================================================================ */
+
+@media (max-width: 63.9375rem) {
+  .flex-header__inner {
+    align-items: center;
+    border-block-end: 1px solid var(--flex-color-border);
+  }
+
+  .flex-header__menu-btn {
+    display: block;
+  }
+
+  .flex-header__nav {
+    position: fixed;
+    inset-inline-end: 0;
+    inset-block-end: 0;
+    inset-block-start: 0;
+    background: var(--flex-color-surface);
+    border-inline-end: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding: 1rem;
+    inline-size: 15rem;
+    z-index: 500;
+
+    &.is-visible {
+      display: flex;
+      animation: flex-header-slidein 0.3s ease-in-out;
+    }
+  }
+
+  .flex-header__close-btn {
+    display: block;
+  }
+
+  .flex-header__nav-list {
+    flex-direction: column;
+    align-items: stretch;
+    inline-size: 100%;
+  }
+
+  .flex-header__nav-item {
+    border-block-start: 1px solid var(--flex-color-border);
+  }
+
+  .flex-header__nav-link {
+    padding-block: 0.75rem;
+    padding-inline: 1rem;
+  }
+
+  .flex-header__nav-link--current::after,
+  .flex-header__nav-link:hover::after {
+    display: none;
+  }
+
+  .flex-header__nav-link--current {
+    font-weight: 700;
+    color: var(--flex-color-accent);
+  }
+
+  /* User menu becomes an inline utility section inside the slide-in panel */
+  .flex-header__user-menu {
+    display: contents;
+  }
+
+  .flex-header__user-trigger {
+    display: none;
+  }
+
+  .flex-header__user-panel,
+  .flex-header__user-panel[hidden] {
+    display: block;
+    position: static;
+    inset: auto;
+    min-inline-size: 0;
+    background: transparent;
+    border: 0;
+    border-block-start: 2px solid var(--flex-color-border);
+    border-radius: 0;
+    box-shadow: none;
+    padding: var(--flex-space-md) 0 0;
+    margin-block-start: var(--flex-space-sm);
+    order: 99;
+  }
+
+  .flex-header__user-identity {
+    padding-inline: 0;
+  }
+
+  .flex-header__user-theme {
+    padding-inline: 0;
+  }
+
+  .flex-header__user-signout {
+    padding-inline: 0;
+  }
+
+  /* Signed-out parallel: theme toggle as a utility section at the bottom of the panel */
+  .flex-header__nav > .flex-theme-toggle {
+    order: 99;
+    margin-inline-start: 0;
+    padding-inline-start: 0;
+    padding-block-start: var(--flex-space-md);
+    margin-block-start: var(--flex-space-sm);
+    border-block-start: 2px solid var(--flex-color-border);
+    inline-size: 100%;
+  }
+}
+
+@keyframes flex-header-slidein {
+  0% {
+    transform: translateX(15rem);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* --- Theme toggle --- */
+
+.flex-header__nav > .flex-theme-toggle {
+  display: flex;
+  align-items: center;
+  margin-inline-start: auto;
+  padding-inline-start: var(--flex-space-sm);
+  flex-shrink: 0;
+}
+
+.flex-theme-toggle__fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.flex-theme-toggle__legend {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.flex-theme-toggle__option {
+  display: flex;
+}
+
+.flex-theme-toggle__input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.flex-theme-toggle__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  cursor: pointer;
+  border: 1px solid var(--flex-color-border);
+  background: transparent;
+  color: var(--flex-color-text-muted);
+}
+
+.flex-theme-toggle__option:first-child .flex-theme-toggle__label {
+  border-radius: var(--flex-radius-sm) 0 0 var(--flex-radius-sm);
+}
+
+.flex-theme-toggle__option:last-child .flex-theme-toggle__label {
+  border-radius: 0 var(--flex-radius-sm) var(--flex-radius-sm) 0;
+}
+
+.flex-theme-toggle__option:not(:first-child) .flex-theme-toggle__label {
+  border-inline-start: 0;
+}
+
+.flex-theme-toggle__input:checked + .flex-theme-toggle__label {
+  background: var(--flex-color-accent);
+  border-color: var(--flex-color-accent);
+  color: var(--flex-color-on-accent);
+}
+
+.flex-theme-toggle__input:focus-visible + .flex-theme-toggle__label {
+  outline: 0.25rem solid var(--flex-color-focus);
+  outline-offset: 2px;
+  z-index: 1;
+  position: relative;
+}
+
+.flex-theme-toggle__icon {
+  inline-size: 1rem;
+  block-size: 1rem;
+  fill: currentColor;
+}

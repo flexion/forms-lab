@@ -1,0 +1,139 @@
+/* flex-identifier — USWDS Identifier conformance
+   Agency identification with logos, required links, and disclaimers */
+
+.flex-identifier {
+  font-size: 1.06rem;
+  line-height: 1.3;
+  color: var(--flex-white);
+  background-color: var(--flex-gray-90);
+  padding-block-end: 1rem;
+}
+
+/* --- Container --- */
+
+.flex-identifier__container {
+  margin-inline: auto;
+  padding-inline: var(--flex-space-md);
+  max-inline-size: var(--flex-content-max-width);
+}
+
+/* --- Sections --- */
+
+.flex-identifier__section {
+  padding-block: 1rem;
+}
+
+.flex-identifier__section--masthead .flex-identifier__container {
+  align-items: center;
+  display: flex;
+}
+
+/* --- Logos --- */
+
+.flex-identifier__logos {
+  display: flex;
+  margin-inline-end: 1rem;
+}
+
+.flex-identifier__logo {
+  text-decoration: none;
+  block-size: 3rem;
+  display: block;
+
+  & + & {
+    margin-inline-start: 0.5rem;
+  }
+}
+
+.flex-identifier__logo-img {
+  block-size: 100%;
+  inline-size: auto;
+}
+
+/* --- Identity --- */
+
+.flex-identifier__identity {
+  flex: 1 1 0%;
+  margin-block-start: 0;
+}
+
+.flex-identifier__identity-disclaimer,
+.flex-identifier__identity-domain {
+  margin: 0;
+  padding: 0;
+}
+
+.flex-identifier__identity-domain {
+  color: var(--flex-gray-cool-30);
+}
+
+.flex-identifier__identity-disclaimer {
+  font-weight: 700;
+
+  & a,
+  & a:visited {
+    color: var(--flex-gray-cool-10);
+  }
+
+  & a:active,
+  & a:hover {
+    color: var(--flex-gray-5);
+  }
+}
+
+/* --- Required links --- */
+
+.flex-identifier__required-links-list {
+  list-style-type: none;
+  padding-inline-start: 0;
+  margin-block: 0;
+  column-count: 2;
+  column-gap: 2rem;
+  column-fill: balance;
+}
+
+@media (min-width: 48rem) {
+  .flex-identifier__required-links-list {
+    column-count: 4;
+  }
+}
+
+.flex-identifier__required-links-list-item {
+  break-inside: avoid;
+  margin-block-end: 0.5rem;
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+}
+
+.flex-identifier__required-link,
+.flex-identifier__required-link:visited {
+  color: var(--flex-gray-cool-30);
+  display: inline-block;
+}
+
+.flex-identifier__required-link:active,
+.flex-identifier__required-link:hover {
+  color: var(--flex-gray-cool-10);
+}
+
+/* --- USA.gov description --- */
+
+.flex-identifier__usagov-description {
+  margin: 0;
+}
+
+.flex-identifier__section--usagov a {
+  color: var(--flex-gray-cool-10);
+  font-weight: 700;
+
+  &:visited {
+    color: var(--flex-gray-cool-10);
+  }
+
+  &:active,
+  &:hover {
+    color: var(--flex-gray-5);
+  }
+}

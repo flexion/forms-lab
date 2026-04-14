@@ -1,0 +1,228 @@
+/* flex-button — USWDS Button conformance
+   Variants: default, secondary, accent-cool, accent-warm, base, outline, inverse, unstyled
+   Sizes: default, big, small
+   States: hover, active, focus-visible, disabled */
+
+.flex-button {
+  font-size: var(--flex-text-uswds);
+  font-weight: 700;
+  line-height: 0.9;
+  color: var(--flex-color-on-accent);
+  background-color: var(--flex-color-accent);
+  border: 0 none;
+  border-radius: var(--flex-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: var(--flex-space-sm);
+  padding: 12px 20px;
+  margin-inline-end: var(--flex-space-sm);
+  cursor: pointer;
+  text-decoration: none;
+  appearance: none;
+
+  /* --- Default variant states --- */
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--flex-color-accent) 85%, black);
+  }
+
+  &:active {
+    background-color: color-mix(in srgb, var(--flex-color-accent) 70%, black);
+  }
+
+  &:focus-visible {
+    outline: var(--flex-focus-ring);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    background-color: var(--flex-color-disabled-lighter);
+    color: var(--flex-color-disabled-dark);
+    cursor: not-allowed;
+  }
+
+  /* --- Secondary variant --- */
+
+  &[data-variant="secondary"] {
+    background-color: var(--flex-red-60);
+    color: var(--flex-color-on-accent);
+    box-shadow: none;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--flex-red-60) 85%, black);
+    }
+
+    &:active {
+      background-color: color-mix(in srgb, var(--flex-red-60) 70%, black);
+    }
+
+    &:disabled {
+      background-color: var(--flex-color-disabled-lighter);
+      color: var(--flex-color-disabled-dark);
+      box-shadow: none;
+    }
+  }
+
+  /* --- Accent Cool variant --- */
+
+  &[data-variant="accent-cool"] {
+    background-color: var(--flex-cyan-vivid-30);
+    color: var(--flex-gray-90);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--flex-cyan-vivid-30) 85%, black);
+    }
+
+    &:active {
+      background-color: color-mix(in srgb, var(--flex-cyan-vivid-30) 70%, black);
+    }
+
+    &:disabled {
+      background-color: var(--flex-color-disabled-lighter);
+      color: var(--flex-color-disabled-dark);
+    }
+  }
+
+  /* --- Accent Warm variant --- */
+
+  &[data-variant="accent-warm"] {
+    background-color: var(--flex-orange-vivid-30);
+    color: var(--flex-gray-90);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--flex-orange-vivid-30) 85%, black);
+    }
+
+    &:active {
+      background-color: color-mix(in srgb, var(--flex-orange-vivid-30) 70%, black);
+    }
+
+    &:disabled {
+      background-color: var(--flex-color-disabled-lighter);
+      color: var(--flex-color-disabled-dark);
+    }
+  }
+
+  /* --- Base variant --- */
+
+  &[data-variant="base"] {
+    background-color: var(--flex-gray-90);
+    color: var(--flex-color-on-accent);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--flex-gray-90) 85%, black);
+    }
+
+    &:active {
+      background-color: color-mix(in srgb, var(--flex-gray-90) 70%, black);
+    }
+
+    &:disabled {
+      background-color: var(--flex-color-disabled-lighter);
+      color: var(--flex-color-disabled-dark);
+    }
+  }
+
+  /* --- Outline variant --- */
+
+  &[data-variant="outline"] {
+    background-color: transparent;
+    color: var(--flex-color-accent);
+    box-shadow: inset 0 0 0 2px var(--flex-color-accent);
+
+    &:hover {
+      background-color: color-mix(
+        in srgb,
+        var(--flex-color-accent) 8%,
+        transparent
+      );
+    }
+
+    &:active {
+      background-color: color-mix(
+        in srgb,
+        var(--flex-color-accent) 16%,
+        transparent
+      );
+    }
+
+    &:disabled {
+      background-color: transparent;
+      color: var(--flex-color-disabled-dark);
+      box-shadow: inset 0 0 0 2px var(--flex-color-disabled-lighter);
+    }
+  }
+
+  /* --- Inverse variant --- */
+
+  &[data-variant="inverse"] {
+    background-color: transparent;
+    color: var(--flex-color-on-accent);
+    box-shadow: inset 0 0 0 2px var(--flex-color-on-accent);
+
+    &:hover {
+      background-color: color-mix(
+        in srgb,
+        var(--flex-color-on-accent) 16%,
+        transparent
+      );
+    }
+
+    &:active {
+      background-color: color-mix(
+        in srgb,
+        var(--flex-color-on-accent) 24%,
+        transparent
+      );
+    }
+
+    &:disabled {
+      color: var(--flex-color-disabled-dark);
+      box-shadow: inset 0 0 0 2px var(--flex-color-disabled-lighter);
+    }
+  }
+
+  /* --- Unstyled variant --- */
+
+  &[data-variant="unstyled"] {
+    background-color: transparent;
+    color: var(--flex-color-accent);
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin-inline-end: 0;
+    font-weight: 400;
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      background-color: transparent;
+      color: color-mix(in srgb, var(--flex-color-accent) 85%, black);
+    }
+
+    &:active {
+      background-color: transparent;
+      color: color-mix(in srgb, var(--flex-color-accent) 70%, black);
+    }
+
+    &:disabled {
+      background-color: transparent;
+      color: var(--flex-color-disabled-dark);
+    }
+  }
+
+  /* --- Size: Big --- */
+
+  &[data-size="big"] {
+    padding: 16px 24px;
+    font-size: 1.46rem; /* @uswds big button font-size */
+  }
+
+  /* --- Size: Small --- */
+
+  &[data-size="small"] {
+    padding: var(--flex-space-xs) var(--flex-space-sm);
+    font-size: var(--flex-text-xs);
+  }
+}

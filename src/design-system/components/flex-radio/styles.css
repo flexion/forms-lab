@@ -1,0 +1,101 @@
+/* flex-radio -- USWDS Radio Button conformance
+   Extends: Choice Input Label Base (base-classes.css#choice-input)
+   Variants: default, tile
+   States: checked, disabled, focus */
+
+.flex-radio {
+  position: relative;
+  background-color: var(--flex-color-surface);
+
+  /* --- Tile variant --- */
+
+  &[data-variant="tile"] .flex-radio__input + .flex-radio__label {
+    background-color: var(--flex-color-surface);
+    border: 2px solid var(--flex-gray-20);
+    border-radius: 0.25rem;
+    color: var(--flex-color-text);
+    margin-block-start: 0.5rem;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    display: inherit;
+  }
+
+  &[data-variant="tile"]
+    .flex-radio__input:checked
+    + .flex-radio__label {
+    background-color: color-mix(
+      in srgb,
+      var(--flex-color-accent) 10%,
+      transparent
+    );
+    border-color: var(--flex-color-accent);
+  }
+
+  &[data-variant="tile"]
+    .flex-radio__input:disabled
+    + .flex-radio__label {
+    border-color: var(--flex-gray-10);
+  }
+
+  &[data-variant="tile"]
+    .flex-radio__input:disabled:checked
+    + .flex-radio__label {
+    background-color: var(--flex-color-surface);
+  }
+}
+
+/* Visually hidden but accessible input */
+.flex-radio__input {
+  position: absolute;
+  inset-inline-start: -999em;
+  inset-inline-end: auto;
+}
+
+/* Label — component-specific overrides */
+.flex-radio__label {
+  margin-block-start: 0.75rem;
+  padding-inline-start: 2rem;
+
+  /* Radio circle (::before) */
+  &::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    inset-inline-start: 0;
+    margin-inline-start: 2px;
+    margin-block-start: 0.064rem;
+    block-size: 1.25rem;
+    inline-size: 1.25rem;
+    border-radius: 99rem;
+    background-color: var(--flex-color-surface);
+    box-shadow: 0 0 0 2px var(--flex-color-text);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+}
+
+/* Checked state — filled circle with white inset ring */
+.flex-radio__input:checked + .flex-radio__label::before {
+  background-color: var(--flex-color-accent);
+  box-shadow:
+    0 0 0 2px var(--flex-color-accent),
+    inset 0 0 0 2px var(--flex-color-surface);
+}
+
+/* Focus state */
+.flex-radio__input:focus + .flex-radio__label::before {
+  outline: 0.25rem solid var(--flex-blue-vivid-40);
+  outline-offset: 0.25rem;
+}
+
+/* Disabled state — pseudo-element */
+.flex-radio__input:disabled + .flex-radio__label::before {
+  background-color: var(--flex-color-surface);
+  box-shadow: 0 0 0 2px var(--flex-color-disabled);
+}
+
+.flex-radio__input:checked:disabled + .flex-radio__label::before {
+  background-color: var(--flex-color-disabled);
+  box-shadow:
+    0 0 0 2px var(--flex-color-disabled),
+    inset 0 0 0 2px var(--flex-color-surface);
+}

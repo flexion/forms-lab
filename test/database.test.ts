@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { createCacheStore, createProjectStore } from '../src/services/database'
+import { createCacheStore, createProjectStore } from '../src/services/storage'
 
 describe('CacheStore', () => {
   it('returns null for missing key', () => {

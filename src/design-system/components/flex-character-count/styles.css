@@ -1,0 +1,19 @@
+/* flex-character-count — USWDS Character Count conformance
+   Provides live feedback on remaining/exceeded character limit */
+
+flex-character-count {
+  display: block;
+}
+
+.flex-character-count__message {
+  display: inline-block;
+  padding-block-start: 0.25rem;
+  font-size: 1rem;
+  color: var(--flex-color-text);
+  line-height: 1.3;
+
+  &[data-state="error"] {
+    color: var(--flex-color-error);
+    font-weight: 700;
+  }
+}

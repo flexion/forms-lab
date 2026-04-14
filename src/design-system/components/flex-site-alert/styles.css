@@ -1,0 +1,100 @@
+/* flex-site-alert — USWDS Site Alert conformance
+   Extends: Alert Icon Base (base-classes.css#alert-icon)
+   Variants: info, emergency
+   Modifiers: slim, no-icon, no-heading */
+
+.flex-site-alert {
+  font-size: var(--flex-text-uswds);
+  line-height: 1.5;
+  color: var(--flex-color-text);
+
+  /* --- Variant: Info --- */
+
+  &[data-variant="info"] {
+    background-color: var(--flex-color-info-lighter);
+    border-inline-start: 0.5rem solid var(--flex-color-info);
+
+    .flex-site-alert__body {
+      padding-inline-start: 4.25rem;
+
+      &::before {
+        inset-inline-start: 1.0833rem;
+        inset-block-start: 0.6667rem;
+        inline-size: 2rem;
+        block-size: 2rem;
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
+      }
+    }
+  }
+
+  /* --- Variant: Emergency --- */
+
+  &[data-variant="emergency"] {
+    background-color: var(--flex-color-emergency);
+    border-inline-start: 0.5rem solid var(--flex-color-emergency);
+    color: var(--flex-color-on-accent);
+
+    .flex-site-alert__body {
+      padding-inline-start: 4.25rem;
+
+      &::before {
+        inset-inline-start: 1.0833rem;
+        inset-block-start: 0.6667rem;
+        inline-size: 2rem;
+        block-size: 2rem;
+        background-color: var(--flex-color-on-accent);
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
+      }
+    }
+
+    .flex-site-alert__heading,
+    .flex-site-alert__text,
+    a {
+      color: var(--flex-color-on-accent);
+    }
+  }
+
+  /* --- Modifier: Slim --- */
+
+  &[data-slim] .flex-site-alert__body {
+    padding-inline-start: 1.75rem;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  /* --- Modifier: No Icon --- */
+
+  &[data-no-icon] .flex-site-alert__body {
+    padding-inline-start: 1.75rem;
+
+    &::before {
+      display: none;
+    }
+  }
+}
+
+.flex-site-alert__body {
+  position: relative;
+  /* stylelint-disable-next-line declaration-property-value-allowed-list -- USWDS site-alert intrinsic width — see follow-up in grid layout design notes. */
+  max-inline-size: 64rem;
+  margin-inline: auto;
+  padding: 1rem 1.75rem;
+}
+
+/* --- Internal elements --- */
+
+.flex-site-alert__heading {
+  font-size: 1.46rem;
+  font-weight: 700;
+  line-height: 0.9;
+  margin: 0 0 0.5rem;
+}
+
+.flex-site-alert__text {
+  font-weight: 400;
+  margin: 0;
+  font-size: var(--flex-text-uswds);
+  line-height: 1.5;
+}

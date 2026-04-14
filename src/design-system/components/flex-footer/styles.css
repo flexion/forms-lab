@@ -1,0 +1,212 @@
+/* flex-footer — USWDS Footer conformance
+   Variants: slim (default), medium, big */
+
+.flex-footer {
+  font-size: 1.06rem;
+  line-height: 1.5;
+}
+
+/* --- Return to top --- */
+
+.flex-footer__return-to-top {
+  max-inline-size: var(--flex-content-max-width);
+  margin-inline: auto;
+  padding-inline: var(--flex-space-md);
+  padding-block-end: 1.25rem;
+  padding-block-start: 1.25rem;
+  line-height: 0.9;
+}
+
+.flex-footer__return-to-top a {
+  color: var(--flex-color-link);
+  text-decoration: underline;
+
+  &:visited {
+    color: var(--flex-color-link-visited);
+  }
+
+  &:hover {
+    color: var(--flex-color-link-hover);
+  }
+
+  &:active {
+    color: var(--flex-color-link-active);
+  }
+
+  &:focus {
+    outline: 0.25rem solid var(--flex-color-focus);
+    outline-offset: 0;
+  }
+}
+
+/* --- Primary section --- */
+
+.flex-footer__primary {
+  background-color: var(--flex-color-bg-subtle);
+}
+
+.flex-footer__primary-container {
+  margin-inline: auto;
+  max-inline-size: var(--flex-content-max-width);
+  padding-inline: var(--flex-space-md);
+}
+
+.flex-footer__primary-content {
+  line-height: 1.1;
+}
+
+.flex-footer__primary-link {
+  padding: 0.75rem 0;
+  color: var(--flex-color-text);
+  font-weight: 700;
+  display: inline-block;
+  border: 0;
+  text-decoration: none;
+  font-size: var(--flex-text-sm);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* --- Nav --- */
+
+.flex-footer__nav {
+  margin-inline: auto;
+  max-inline-size: var(--flex-content-max-width);
+  padding-inline: var(--flex-space-md);
+}
+
+.flex-footer__nav > ul {
+  margin-block-end: 0;
+  margin-block-start: 0;
+  list-style-type: none;
+  padding-inline-start: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--flex-space-md);
+}
+
+/* --- Secondary section --- */
+
+.flex-footer__secondary {
+  padding-block-end: 1.25rem;
+  padding-block-start: 1.25rem;
+  color: var(--flex-color-text);
+  background-color: var(--flex-color-border); /* @uswds base-lighter (#dfe1e2) */
+}
+
+.flex-footer__secondary-container {
+  margin-inline: auto;
+  max-inline-size: var(--flex-content-max-width);
+  padding-inline: var(--flex-space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-footer__secondary a {
+  color: var(--flex-color-text);
+}
+
+/* --- Logo --- */
+
+.flex-footer__logo {
+  display: flex;
+  align-items: center;
+}
+
+.flex-footer__logo-img {
+  block-size: 3rem;
+}
+
+.flex-footer__logo-heading {
+  margin: 0;
+  font-size: 1.06rem;
+  line-height: 1.1;
+}
+
+/* --- Contact info --- */
+
+.flex-footer__contact-info {
+  display: inline-block;
+}
+
+.flex-footer__contact-info a {
+  color: var(--flex-color-text);
+  text-decoration: none;
+}
+
+/* --- Secondary links --- */
+
+.flex-footer__secondary-link {
+  line-height: 1.1;
+  margin-inline-start: 0;
+  padding: 0;
+}
+
+.flex-footer__secondary-link + .flex-footer__secondary-link {
+  padding-block-start: 1rem;
+}
+
+.flex-footer__secondary-link a {
+  color: var(--flex-color-link);
+  text-decoration: underline;
+
+  &:visited {
+    color: var(--flex-color-link-visited);
+  }
+
+  &:hover {
+    color: var(--flex-color-link-hover);
+  }
+
+  &:active {
+    color: var(--flex-color-link-active);
+  }
+
+  &:focus {
+    outline: 0.25rem solid var(--flex-color-focus);
+    outline-offset: 0;
+  }
+}
+
+/* --- Slim variant (default) --- */
+
+.flex-footer:not([data-variant]) .flex-footer__logo,
+.flex-footer[data-variant="slim"] .flex-footer__logo {
+  align-items: center;
+}
+
+.flex-footer:not([data-variant]) .flex-footer__logo-img,
+.flex-footer[data-variant="slim"] .flex-footer__logo-img {
+  block-size: 3rem;
+}
+
+.flex-footer:not([data-variant]) .flex-footer__contact-info,
+.flex-footer[data-variant="slim"] .flex-footer__contact-info {
+  padding-block-end: 1rem;
+  padding-block-start: 1rem;
+  margin-block-start: 0;
+}
+
+/* --- Medium variant --- */
+
+.flex-footer[data-variant="medium"] .flex-footer__nav {
+  padding-inline-start: 2rem;
+  padding-inline-end: 2rem;
+}
+
+.flex-footer[data-variant="medium"] .flex-footer__logo {
+  align-items: center;
+}
+
+/* --- Big variant --- */
+
+.flex-footer[data-variant="big"] .flex-footer__nav {
+  border-block-end: none;
+}
+
+.flex-footer[data-variant="big"] .flex-footer__primary-content {
+  line-height: 1.1;
+}

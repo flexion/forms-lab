@@ -1,0 +1,101 @@
+/* flex-collection — USWDS Collection conformance
+   Variants: default, condensed */
+
+.flex-collection {
+  font-size: 1.06rem;
+  margin-block: 1em;
+  line-height: 1.5;
+  padding-inline-start: 0;
+  list-style-type: none;
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+
+  &[data-variant="condensed"] .flex-collection__item {
+    margin-block: 0.5rem;
+    padding-block-start: 0.5rem;
+  }
+}
+
+/* --- Item --- */
+
+.flex-collection__item {
+  max-inline-size: 68ex;
+  margin-block: 1rem;
+  list-style-type: none;
+  padding-inline-start: 0;
+  align-items: flex-start;
+  border-block-start: 1px solid var(--flex-color-border);
+  display: flex;
+  padding-block-start: 1rem;
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+}
+
+/* --- Thumbnail --- */
+
+.flex-collection__img {
+  flex-shrink: 0;
+  inline-size: 5rem;
+  margin-inline-end: 1rem;
+
+  & img {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+}
+
+/* --- Body --- */
+
+.flex-collection__body {
+  flex: 1 1 0%;
+}
+
+/* --- Heading --- */
+
+.flex-collection__heading {
+  font-size: 1.13rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-block: 0;
+
+  & a {
+    color: var(--flex-color-accent);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--flex-blue-warm-vivid-70);
+    }
+  }
+}
+
+/* --- Description --- */
+
+.flex-collection__description {
+  margin-block: 0.5rem;
+}
+
+/* --- Meta --- */
+
+.flex-collection__meta {
+  margin-block: 0.25rem 0;
+  list-style-type: none;
+  padding-inline-start: 0;
+
+  & > li {
+    margin-block-end: 0;
+    max-inline-size: unset;
+  }
+}
+
+.flex-collection__meta-item {
+  margin-block-start: 0.25rem;
+  font-size: 0.93rem;
+  line-height: 1.3;
+  display: block;
+  margin-inline-end: 0.5rem;
+}

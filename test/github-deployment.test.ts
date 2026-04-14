@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, mock } from 'bun:test'
-import { createGitHubClient } from '../src/services/github'
+import { createGitHubClient } from '../src/services/deployment/github'
 
 describe('createDeployment', () => {
   const originalFetch = globalThis.fetch

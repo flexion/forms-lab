@@ -1,0 +1,105 @@
+/* flex-modal — USWDS Modal conformance
+   Dialog overlay with focus trapping, backdrop, and keyboard management */
+
+flex-modal {
+  display: none;
+
+  &:not([hidden]) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+  }
+
+  &[data-size="large"] {
+    & .flex-modal__content {
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- Modal size variants are component-intrinsic sizes, not content-width. */
+      max-inline-size: 55rem;
+    }
+
+    & .flex-modal__main {
+      padding-block: 1.25rem 4rem;
+      inline-size: 100%;
+      /* stylelint-disable-next-line declaration-property-value-allowed-list -- Modal size variants are component-intrinsic sizes, not content-width. */
+      max-inline-size: 40rem;
+    }
+  }
+}
+
+.flex-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 70%);
+}
+
+.flex-modal__content {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column-reverse;
+  background: var(--flex-color-surface);
+  border-radius: 0.5rem;
+  /* stylelint-disable-next-line declaration-property-value-allowed-list -- Modal size variants are component-intrinsic sizes, not content-width. */
+  max-inline-size: 30rem;
+  inline-size: 100%;
+  max-block-size: calc(100vh - 3rem);
+  overflow-y: auto;
+  z-index: 1;
+  padding-block-start: 2rem;
+  margin: 1.25rem auto;
+}
+
+.flex-modal__main {
+  margin: 0 auto;
+  padding: 0.5rem 2rem 2rem;
+}
+
+.flex-modal__heading {
+  font-family: var(--flex-font-serif, Georgia, 'Times New Roman', serif);
+  font-size: 1.34rem;
+  line-height: 1.4;
+  margin-block-start: 0;
+}
+
+.flex-modal__body {
+  font-size: 1.06rem;
+  line-height: 1.5;
+  color: var(--flex-color-text);
+}
+
+.flex-modal__footer {
+  margin-block-start: 1.5rem;
+}
+
+.flex-modal__close {
+  display: flex;
+  align-items: center;
+  align-self: flex-end;
+  flex-shrink: 0;
+  background-color: transparent;
+  border: 0;
+  color: var(--flex-color-text-muted);
+  font-size: 0.93rem;
+  margin: -2rem 0 0 auto;
+  padding: 0.25rem;
+  inline-size: auto;
+  cursor: pointer;
+
+  &:hover,
+  &:active {
+    background-color: transparent;
+    color: var(--flex-color-text);
+  }
+
+  &:focus {
+    outline: 0.25rem solid var(--flex-color-focus);
+    outline-offset: 0;
+  }
+
+  & .flex-icon {
+    block-size: 2rem;
+    inline-size: 2rem;
+    margin: 2px 2px 0 0;
+  }
+}

@@ -1,8 +1,0 @@
-/* flex-time-picker -- USWDS Time Picker conformance
-   Extends: flex-combo-box
-   Features: time selection via combo box with pre-populated time options */
-
-flex-time-picker {
-  display: block;
-  max-width: 10rem;
-}

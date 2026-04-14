@@ -1,4 +1,4 @@
-import type { SessionUser } from '../lib/session'
+import type { SessionUser } from './auth/session'
 import { slugify } from '../shared/slugify'
 import type {
   DataCollectionSpec,
@@ -6,7 +6,7 @@ import type {
   FormSpec,
   ProjectIndex,
 } from '../types/models'
-import type { ProjectStore } from './database'
+import type { ProjectStore } from './storage'
 import {
   BadRequestError,
   ForbiddenError,

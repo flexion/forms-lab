@@ -5,7 +5,7 @@ import {
   exchangeCodeForToken,
   fetchUserProfile,
   type GitHubUser,
-} from '../src/lib/github-oauth'
+} from '../src/services/auth/github-oauth'
 
 describe('GitHub OAuth', () => {
   describe('exchangeCodeForToken', () => {

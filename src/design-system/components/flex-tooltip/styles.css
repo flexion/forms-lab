@@ -1,0 +1,74 @@
+/* flex-tooltip — USWDS Tooltip conformance
+   Hover/focus information popup with positioning */
+
+flex-tooltip {
+  display: inline-block;
+  position: relative;
+}
+
+.flex-tooltip__trigger {
+  cursor: pointer;
+}
+
+.flex-tooltip__body {
+  position: absolute;
+  display: none;
+  background-color: var(--flex-color-tooltip-bg);
+  color: var(--flex-color-tooltip-text);
+  font-size: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  white-space: pre;
+  inline-size: auto;
+  z-index: 100000;
+  opacity: 0;
+  transition: opacity 0.08s ease-in-out;
+
+  &[data-visible] {
+    display: block;
+    opacity: 1;
+  }
+
+  /* Arrow triangles via ::after */
+  &::after {
+    content: "";
+    position: absolute;
+    border: 5px solid transparent;
+  }
+
+  /* Top position: arrow points down */
+  &[data-position-actual="top"]::after {
+    inset-block-start: 100%;
+    inset-inline-start: 50%;
+    margin-inline-start: -5px;
+    border-block-start-color: var(--flex-color-tooltip-bg);
+    border-block-end: 0;
+  }
+
+  /* Bottom position: arrow points up */
+  &[data-position-actual="bottom"]::after {
+    inset-block-end: 100%;
+    inset-inline-start: 50%;
+    margin-inline-start: -5px;
+    border-block-end-color: var(--flex-color-tooltip-bg);
+    border-block-start: 0;
+  }
+
+  /* Left position: arrow points right */
+  &[data-position-actual="left"]::after {
+    inset-block-start: 50%;
+    inset-inline-start: 100%;
+    margin-block-start: -5px;
+    border-inline-start-color: var(--flex-color-tooltip-bg);
+    border-inline-end: 0;
+  }
+
+  /* Right position: arrow points left */
+  &[data-position-actual="right"]::after {
+    inset-block-start: 50%;
+    inset-inline-end: 100%;
+    margin-block-start: -5px;
+    border-inline-end-color: var(--flex-color-tooltip-bg);
+    border-inline-start: 0;
+  }
+}

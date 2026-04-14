@@ -1,0 +1,106 @@
+.site-footer {
+  border-block-start: 1px solid var(--flex-color-border);
+  margin-block-start: var(--flex-space-xl);
+  padding-block: var(--flex-space-md);
+
+  .l-center {
+    padding-block: 0;
+  }
+
+  p {
+    font-size: var(--flex-text-sm);
+    color: var(--flex-color-text-muted);
+  }
+}
+
+.catalog-sidebar {
+  font-size: var(--flex-text-base);
+  border-inline-end: 1px solid var(--flex-color-border);
+  padding-inline-end: var(--flex-space-lg);
+  overflow-y: auto;
+  max-block-size: calc(100vh - 120px);
+  position: sticky;
+  inset-block-start: var(--flex-space-md);
+
+  h2 {
+    font-size: var(--flex-text-base);
+    font-weight: 600;
+    color: var(--flex-color-text);
+    margin-block-end: var(--flex-space-sm);
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    margin-block-end: var(--flex-space-xs);
+  }
+
+  a {
+    color: var(--flex-color-text);
+    text-decoration: none;
+    font-size: var(--flex-text-sm);
+
+    &:hover {
+      color: var(--flex-color-accent);
+    }
+
+    &[aria-current="page"] {
+      color: var(--flex-color-accent);
+      font-weight: 600;
+    }
+  }
+}
+
+/* Collapsible sidebar toggle — uses native <details>/<summary>.
+   Wide: content always visible (open attr), summary hidden.
+   Narrow: collapsible, starts closed via inline script. */
+
+.catalog-nav-toggle {
+  > summary {
+    display: none;
+  }
+}
+
+@media (max-width: 48rem) {
+  .catalog-sidebar {
+    position: static;
+    max-block-size: none;
+    overflow-y: visible;
+    border-inline-end: none;
+    padding-inline-end: 0;
+    border-block-end: 1px solid var(--flex-color-border);
+    padding-block-end: var(--flex-space-md);
+    margin-block-end: var(--flex-space-md);
+  }
+
+  .catalog-nav-toggle {
+    > summary {
+      display: block;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: var(--flex-text-base);
+      color: var(--flex-color-accent);
+      padding-block: var(--flex-space-sm);
+      list-style: none;
+
+      &::marker {
+        display: none;
+      }
+
+      &::before {
+        content: "\25B6\FE0E";
+        display: inline-block;
+        margin-inline-end: var(--flex-space-xs);
+        font-size: 0.7em;
+        transition: transform 0.15s;
+      }
+    }
+
+    &[open] > summary::before {
+      transform: rotate(90deg);
+    }
+  }
+}

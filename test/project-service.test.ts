@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import type { SessionUser } from '../src/lib/session'
-import type { ProjectStore } from '../src/services/database'
-import { createProjectStore } from '../src/services/database'
+import type { SessionUser } from '../src/services/auth/session'
+import type { ProjectStore } from '../src/services/storage'
+import { createProjectStore } from '../src/services/storage'
 import {
   BadRequestError,
   ForbiddenError,

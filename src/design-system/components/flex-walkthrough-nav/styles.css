@@ -1,0 +1,33 @@
+.flex-walkthrough-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--flex-space-md);
+  border-block-start: 1px solid var(--flex-color-border);
+  margin-block-start: var(--flex-space-lg);
+}
+
+.flex-walkthrough-nav__progress {
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+}
+
+.flex-walkthrough-nav__controls {
+  display: flex;
+  gap: var(--flex-space-md);
+}
+
+.flex-walkthrough-nav__link {
+  color: var(--flex-color-accent);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.flex-walkthrough-nav__link:hover {
+  text-decoration: underline;
+}
+
+.flex-walkthrough-nav__link[data-disabled] {
+  color: var(--flex-color-text-muted);
+  pointer-events: none;
+}

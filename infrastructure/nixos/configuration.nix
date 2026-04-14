@@ -67,9 +67,13 @@
     secrets.session-secret = {
       owner = "forms-lab";
     };
+    secrets.slack-webhook-url = {
+      owner = "forms-lab";
+    };
   };
 
-  # Allow forms-lab user to manage its own services and reload Caddy
+  # Allow forms-lab user to manage its own services, reload Caddy, and
+  # apply NixOS config changes that arrive via the webhook-driven main deploy.
   security.sudo.extraRules = [{
     users = [ "forms-lab" ];
     commands = [{
@@ -86,6 +90,14 @@
       options = [ "NOPASSWD" ];
     } {
       command = "${pkgs.systemd}/bin/systemctl reload caddy.service";
+      options = [ "NOPASSWD" ];
+    } {
+      command = "${pkgs.rsync}/bin/rsync -av --delete infrastructure/nixos/ /etc/nixos/";
+      options = [ "NOPASSWD" ];
+    } {
+      # Use a wildcard for the flake target because `#` is a comment
+      # character in sudoers and would otherwise truncate the rule.
+      command = "${pkgs.nixos-rebuild}/bin/nixos-rebuild switch --flake /etc/nixos*";
       options = [ "NOPASSWD" ];
     }];
   }];

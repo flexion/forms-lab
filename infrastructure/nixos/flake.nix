@@ -25,7 +25,10 @@
         ./modules/webhook.nix
         ./modules/app.nix
         ./modules/deploy.nix
+        ./modules/entrypoint-wrapper.nix
         ./modules/homepage.nix
+        ./modules/notify.nix
+        ./modules/notify-failure.nix
       ];
     };
 

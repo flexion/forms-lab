@@ -6,6 +6,7 @@
   systemd.services."forms-lab-app@" = {
     description = "Forms Lab App - %i";
     after = [ "network.target" ];
+    onFailure = [ "forms-lab-notify-failure@%n.service" ];
 
     serviceConfig = {
       Type = "simple";
@@ -13,7 +14,7 @@
       Group = "forms-lab";
       # %i is the instance name (branch name, with / replaced by -)
       WorkingDirectory = "/srv/forms-lab/%i";
-      ExecStart = "${pkgs.bun}/bin/bun run src/app/main.ts";
+      ExecStart = "${config.flexion.entrypointWrapper}/bin/forms-lab-entrypoint app /srv/forms-lab/%i";
       Restart = "on-failure";
       RestartSec = 5;
 

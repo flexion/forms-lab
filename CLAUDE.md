@@ -192,6 +192,21 @@ See [PR #25](https://github.com/flexion/forms-lab/pull/25) for the pattern:
 - **CLI:** `bun run cli <command>` for operational tasks
 - **CSS:** Two-tier tokens (USWDS 3.13), cascade layers, Bun.build() at build time, serveStatic
 
+## Principles
+
+The codebase is shaped by four architectural principles that exist to keep evolution cheap and safe. Before adding or moving code, read [catalog/architecture/software-architecture.md](catalog/architecture/software-architecture.md).
+
+- **P1 — Intent over mechanism.** Names reveal domain, not framework. The tree should read as the business purpose of the system.
+- **P2 — Dependency flows one way.** `shared → services/design-system → entrypoints`. Each layer is understood without knowing its callers; direction encodes stability. Enforced by `test/architecture/dependency-rule.test.ts`.
+- **P3 — Services own their types.** Where a type lives answers "who decides when this changes?"
+- **P4 — Presentation is stateless.** Components describe appearance; callers decide. Logic and data belong to the caller.
+
+When adopting a third-party dependency, explicitly choose: isolate it (contain to one layer) or embrace it (accept a future refactoring cost). See "Dependencies and externalities" in the architecture doc.
+
+When a situation doesn't fit a principle, propose an ADR amendment rather than silently diverging. See "When principles conflict" in the architecture doc.
+
+Provenance: [catalog/decisions/architecture/architecture-principles.md](catalog/decisions/architecture/architecture-principles.md).
+
 ## Documentation Governance
 
 Follows [meta-knowledge-base](https://github.com/danielnaab/meta-knowledge-base) conventions:
@@ -203,12 +218,21 @@ Follows [meta-knowledge-base](https://github.com/danielnaab/meta-knowledge-base)
 
 ## Project Structure
 
-- `src/app/` — Web application (server, routes, components, public assets)
-- `src/webhook/` — GitHub webhook listener service
-- `src/lib/` — Shared utilities (markdown, base-path, test-helpers)
-- `src/services/` — Shared services (GitHub API client)
-- `src/types/` — Shared type definitions
-- `src/commands/` — CLI commands (sync-stories, infra, nixos, webhook)
+- `src/entrypoints/app/` — Forms platform web application (server, routes, middleware, public assets)
+- `src/entrypoints/dashboard/` — Deployment dashboard (homepage service)
+- `src/entrypoints/webhook/` — GitHub webhook listener service
+- `src/entrypoints/notify/` — Notification delivery server
+- `src/entrypoints/cli/` — CLI commands (sync-stories, infra, nixos, webhook, deploy)
+- `src/services/data-collection/` — Core domain model: what data to collect
+- `src/services/forms/` — Form resolution, delivery, sessions, submission
+- `src/services/ingestion/` — PDF to structured spec pipeline
+- `src/services/auth/` — Authentication and sessions (GitHub OAuth)
+- `src/services/deployment/` — Deploy orchestration and metadata
+- `src/services/notifications/` — Notification types and client
+- `src/services/content/` — Content rendering (markdown, catalog types)
+- `src/services/storage.ts` — Persistence layer (SQLite)
+- `src/design-system/` — UI components (flex-* component library, conformance, registry)
+- `src/shared/` — Pure utilities (base-path, format-html, test-helpers, visual-descriptor)
 - `infrastructure/pulumi/` — EC2 provisioning (Pulumi TypeScript)
 - `infrastructure/nixos/` — Server configuration (NixOS flake)
 - `catalog/` — Catalog content (personas, stories, decisions, architecture, experiments)

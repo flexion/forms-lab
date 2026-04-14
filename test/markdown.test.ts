@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { parseMarkdown, renderMarkdown } from '../src/lib/markdown'
+import { parseMarkdown, renderMarkdown } from '../src/services/content/markdown'
 
 describe('renderMarkdown', () => {
   it('renders basic markdown to HTML', () => {

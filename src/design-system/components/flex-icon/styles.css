@@ -1,0 +1,43 @@
+.flex-icon {
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  fill: currentColor;
+  vertical-align: middle;
+  overflow: hidden;
+
+  &[data-size="3"] {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+  }
+
+  &[data-size="4"] {
+    inline-size: 2rem;
+    block-size: 2rem;
+  }
+
+  &[data-size="5"] {
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+  }
+
+  &[data-size="6"] {
+    inline-size: 3rem;
+    block-size: 3rem;
+  }
+
+  &[data-size="7"] {
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+  }
+
+  &[data-size="8"] {
+    inline-size: 4rem;
+    block-size: 4rem;
+  }
+
+  &[data-size="9"] {
+    inline-size: 4.5rem;
+    block-size: 4.5rem;
+  }
+}

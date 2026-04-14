@@ -1,0 +1,39 @@
+/* flex-summary-box — USWDS Summary Box conformance
+   Bordered callout with info-lighter background */
+
+.flex-summary-box {
+  font-size: var(--flex-text-uswds);
+  line-height: 1.5;
+  color: var(--flex-color-text);
+  background-color: var(--flex-color-info-lighter);
+  border: 1px solid var(--flex-cyan-20);
+  border-radius: 0.25rem;
+  padding: 1.5rem;
+  position: relative;
+  margin-block-start: 1rem;
+}
+
+.flex-summary-box__body {
+  /* No extra styling needed — padding is on the outer element */
+}
+
+.flex-summary-box__heading {
+  font-size: 1.46rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 0.5rem;
+}
+
+.flex-summary-box__text {
+  margin: 0;
+
+  ul,
+  ol {
+    padding-inline-start: 2ch;
+    margin: 0;
+  }
+
+  li:last-child {
+    margin-block-end: 0;
+  }
+}

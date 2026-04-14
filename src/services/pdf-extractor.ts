@@ -2,7 +2,7 @@ import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
 import type { ExtractionOptions, ExtractionResult } from '../types/models'
-import type { CacheStore } from './database'
+import type { CacheStore } from './storage'
 import { extractionResponseSchema, formSpecSchema } from './extraction-schemas'
 
 export interface PdfExtractor {

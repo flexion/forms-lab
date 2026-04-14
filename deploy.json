@@ -1,0 +1,8 @@
+{
+  "entrypoints": {
+    "app": "src/entrypoints/app/main.ts",
+    "dashboard": "src/entrypoints/dashboard/main.ts",
+    "webhook": "src/entrypoints/webhook/main.ts",
+    "notify": "src/entrypoints/notify/main.ts"
+  }
+}

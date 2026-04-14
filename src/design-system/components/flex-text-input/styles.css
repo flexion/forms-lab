@@ -1,0 +1,55 @@
+/* flex-text-input — USWDS Text Input conformance
+   Extends: Form Control Base (base-classes.css#form-control)
+   Width variants: 2xs, xs, sm, md, lg, xl, 2xl
+   States: error, success
+   States: disabled, readonly */
+
+.flex-input {
+  block-size: var(--flex-control-height);
+
+  &[readonly] {
+    background-color: var(--flex-color-bg);
+  }
+
+  /* --- State: error --- */
+
+  &[data-state="error"] {
+    padding-block: 4px;
+  }
+
+  /* --- State: success --- */
+
+  &[data-state="success"] {
+    padding-block: 4px;
+  }
+
+  /* --- Width variants --- */
+
+  &[data-width="2xs"] {
+    max-inline-size: 5ex;
+  }
+
+  &[data-width="xs"] {
+    max-inline-size: 9ex;
+  }
+
+  &[data-width="sm"] {
+    max-inline-size: 13ex;
+  }
+
+  &[data-width="md"] {
+    max-inline-size: 20ex;
+  }
+
+  &[data-width="lg"] {
+    max-inline-size: 30ex;
+  }
+
+  &[data-width="xl"] {
+    max-inline-size: 40ex;
+  }
+
+  &[data-width="2xl"] {
+    max-inline-size: 50ex;
+  }
+}

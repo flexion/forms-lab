@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import app from '../src/app/server'
+import app from '../src/entrypoints/app/server'
 
 describe('Catalog Routes', () => {
   describe('GET /catalog/personas', () => {
