@@ -1021,52 +1021,89 @@ export const Dashboard: FC<{
 // 10. LandingPage
 // ---------------------------------------------------------------------------
 
-export const LandingPage: FC = () => (
-  <div class="l-stack" data-space="lg">
-    <h1>Forms Lab</h1>
-    <p>
-      An LLM-assisted platform for digitizing government forms. Upload a PDF,
-      and the system extracts its structure into a reviewable specification --
-      fields, types, validation rules, conditional logic -- all
-      version-controlled in git.
-    </p>
+const AUTH_ERROR_MESSAGES: Record<string, { heading: string; body: string }> = {
+  unauthorized: {
+    heading: 'Access denied',
+    body: 'Your GitHub account is not on the allowlist for this instance. Contact the administrator to request access.',
+  },
+  config: {
+    heading: 'Sign-in is not configured',
+    body: 'The server is missing OAuth credentials. Contact the administrator.',
+  },
+  invalid_request: {
+    heading: 'Invalid sign-in request',
+    body: 'The OAuth callback was missing required parameters. Try signing in again.',
+  },
+  invalid_state: {
+    heading: 'Invalid sign-in request',
+    body: 'The OAuth state parameter could not be validated. Try signing in again.',
+  },
+  auth_failed: {
+    heading: 'Sign-in failed',
+    body: 'Something went wrong while exchanging your GitHub authorization. Try again, and if it keeps failing contact the administrator.',
+  },
+}
 
-    <section class="l-stack">
-      <h2>How it works</h2>
-      <ol class="l-stack" style="list-style-position: inside; padding-left: 0;">
-        <li>
-          <strong>Upload</strong> a government PDF form
-        </li>
-        <li>
-          <strong>Extract</strong> -- the platform identifies fields, groupings,
-          and conditions
-        </li>
-        <li>
-          <strong>Review</strong> -- inspect the extracted specification, flag
-          low-confidence fields
-        </li>
-        <li>
-          <strong>Collaborate</strong> -- fork projects, track changes through
-          git history
-        </li>
-      </ol>
-    </section>
+export const LandingPage: FC<{ error?: string | null }> = ({ error }) => {
+  const errorInfo = error ? AUTH_ERROR_MESSAGES[error] : null
+  return (
+    <div class="l-stack" data-space="lg">
+      {errorInfo && (
+        <div class="flex-alert flex-alert--error" role="alert">
+          <p>
+            <strong>{errorInfo.heading}</strong>
+          </p>
+          <p>{errorInfo.body}</p>
+        </div>
+      )}
+      <h1>Forms Lab</h1>
+      <p>
+        An LLM-assisted platform for digitizing government forms. Upload a PDF,
+        and the system extracts its structure into a reviewable specification --
+        fields, types, validation rules, conditional logic -- all
+        version-controlled in git.
+      </p>
 
-    <section class="l-stack">
-      <h2>Get started</h2>
-      <p>
-        Sign in with GitHub to create your first project, or browse the{' '}
-        <a href={resolveUrl('/catalog')}>catalog</a> to explore the platform's
-        architecture and design decisions.
-      </p>
-      <p>
-        <a href={resolveUrl('/auth/signin')} class="flex-button">
-          Sign in with GitHub
-        </a>
-      </p>
-    </section>
-  </div>
-)
+      <section class="l-stack">
+        <h2>How it works</h2>
+        <ol
+          class="l-stack"
+          style="list-style-position: inside; padding-left: 0;"
+        >
+          <li>
+            <strong>Upload</strong> a government PDF form
+          </li>
+          <li>
+            <strong>Extract</strong> -- the platform identifies fields,
+            groupings, and conditions
+          </li>
+          <li>
+            <strong>Review</strong> -- inspect the extracted specification, flag
+            low-confidence fields
+          </li>
+          <li>
+            <strong>Collaborate</strong> -- fork projects, track changes through
+            git history
+          </li>
+        </ol>
+      </section>
+
+      <section class="l-stack">
+        <h2>Get started</h2>
+        <p>
+          Sign in with GitHub to create your first project, or browse the{' '}
+          <a href={resolveUrl('/catalog')}>catalog</a> to explore the platform's
+          architecture and design decisions.
+        </p>
+        <p>
+          <a href={resolveUrl('/auth/signin')} class="flex-button">
+            Sign in with GitHub
+          </a>
+        </p>
+      </section>
+    </div>
+  )
+}
 
 // ---------------------------------------------------------------------------
 // Helpers

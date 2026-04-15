@@ -213,6 +213,7 @@ app.post('/new', async (c) => {
 // Root page - dashboard for authenticated users, landing for anonymous
 app.get('/', (c) => {
   const user = c.get('user')
+  const error = c.req.query('error') ?? null
   if (user) {
     const projects = projectService.listUserProjects(user.login)
     return c.html(
@@ -223,7 +224,7 @@ app.get('/', (c) => {
   }
   return c.html(
     <Layout currentPath="/" user={user}>
-      <LandingPage />
+      <LandingPage error={error} />
     </Layout>,
   )
 })

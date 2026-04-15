@@ -51,6 +51,23 @@ describe('Smoke tests', () => {
       const res = await app.request('/catalog')
       expect(res.status).toBe(200)
     })
+
+    it('GET /?error=unauthorized renders a visible error message', async () => {
+      const res = await app.request('/?error=unauthorized')
+      expect(res.status).toBe(200)
+      const html = await res.text()
+      expect(html).toContain('Access denied')
+      expect(html).toContain('not on the allowlist')
+      expect(html).toContain('flex-alert--error')
+    })
+
+    it('GET /?error=auth_failed renders a visible error message', async () => {
+      const res = await app.request('/?error=auth_failed')
+      expect(res.status).toBe(200)
+      const html = await res.text()
+      expect(html).toContain('Sign-in failed')
+      expect(html).toContain('flex-alert--error')
+    })
   })
 
   describe('Auth middleware is wired up', () => {
