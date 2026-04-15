@@ -273,6 +273,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | 2026-04-09 | #11 / Story 2 | Updated authentication boundary from planned to implemented; added open redirect risk |
 | 2026-04-14 | #50 / Story 3 | Replaced filesystem boundary with bare git repo boundary (form project storage moved to managed bare repos). Added new boundaries for read-only git HTTP serving and ProjectService permission enforcement. Updated auth boundary for user-scoped routes. |
 | 2026-04-14 | Story 4 | Added LLM form shaping trust boundary; prompt injection, unauthorized mutation, and data leakage threats |
+| 2026-04-15 | Story 4 v2 | Replaced full-spec rewrite with command-based shaping. LLM uses AI SDK tool-use mode to emit validated domain commands. Each command is individually executable and auditable. Command schemas replace free-form JSON validation as the primary integrity boundary for LLM output. |
 
 ## Sources
 
