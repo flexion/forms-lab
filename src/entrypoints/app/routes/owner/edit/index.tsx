@@ -64,11 +64,14 @@ export function createEditRoutes(
     const slug = c.req.param('slug')
     const user = c.get('user')
 
+    console.log(`[edit/intent] ${owner}/${slug} user=${user?.login ?? 'none'}`)
+
     try {
       if (!user) throw new UnauthenticatedError()
 
       const body = await c.req.parseBody()
       const intent = (body.intent as string) ?? ''
+      console.log(`[edit/intent] intent="${intent}"`)
 
       if (!intent.trim()) {
         return c.redirect(resolveUrl(`/${owner}/${slug}/edit`))
@@ -90,6 +93,9 @@ export function createEditRoutes(
 
       // Convert models FormSpec to services FormSpec for the shaper
       const currentFormSpec = toServicesFormSpec(view.formSpec)
+      console.log(
+        `[edit/intent] calling shaper with ${currentFormSpec.pages.length} pages`,
+      )
 
       const shaper = shapingRegistry.getDefault()
       const result = await shaper.shape({
@@ -97,8 +103,14 @@ export function createEditRoutes(
         currentFormSpec,
         dataSpec: toServicesDataSpec(view.spec),
       })
+      console.log(
+        `[edit/intent] shaper returned ${result.revisedFormSpec.pages.length} pages`,
+      )
 
       const diff = diffFormSpecs(currentFormSpec, result.revisedFormSpec)
+      console.log(
+        `[edit/intent] diff hasChanges=${diff.hasChanges} summary="${diff.summary}"`,
+      )
       const history = await service.getFormSpecHistory(owner, slug)
 
       return c.html(
@@ -115,6 +127,10 @@ export function createEditRoutes(
         </Layout>,
       )
     } catch (err) {
+      console.error(
+        `[edit/intent] ERROR:`,
+        err instanceof Error ? (err.stack ?? err.message) : String(err),
+      )
       if (err instanceof AppError || err instanceof UnauthenticatedError) {
         return handleError(c, err)
       }
