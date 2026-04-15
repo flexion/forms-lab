@@ -335,12 +335,16 @@ export function createProjectService(
         user.login,
       )
 
-      return store.create({
+      const forkedProject = store.create({
         name: sourceProject.name,
         slug: forkSlug,
         createdBy: user.login,
         forkedFrom: forkedFromValue,
       })
+
+      // The fork inherits all committed specs from the source via the clone,
+      // so there's nothing to extract. Mark it ready immediately.
+      return store.update(forkedProject.id, { status: 'ready' })
     },
 
     async getFileContent(

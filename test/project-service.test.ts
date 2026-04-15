@@ -279,6 +279,18 @@ describe('ProjectService', () => {
       expect(fork.forkedFrom).toBe('alice/original')
     })
 
+    it('fork starts in ready status (no extraction needed)', async () => {
+      const original = await service.createProject(
+        'Ready Source',
+        SAMPLE_PDF,
+        alice,
+      )
+      await waitForStatus(store, original.id, 'ready')
+
+      const fork = await service.forkProject('alice', original.slug, bob)
+      expect(fork.status).toBe('ready')
+    })
+
     it('throws BadRequestError when forking own project', async () => {
       const project = await service.createProject('Mine', SAMPLE_PDF, alice)
       expect(
