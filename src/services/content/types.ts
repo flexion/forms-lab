@@ -44,3 +44,13 @@ export interface Story {
   syncedAt: string
   content: string
 }
+
+export interface WalkthroughPage {
+  slug: string
+  title: string
+  order: number
+  rubric: string[]
+  timing: string
+  audience: string[]
+  content: string
+}
