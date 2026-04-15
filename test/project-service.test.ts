@@ -148,6 +148,50 @@ describe('ProjectService', () => {
       const third = await service.createProject('My Form', SAMPLE_PDF, alice)
       expect(third.slug).toBe('my-form-3')
     })
+
+    it('rolls back SQLite row when git init fails', async () => {
+      // A repo wrapper that throws on init to simulate git failure
+      const failingRepo = {
+        ...repo,
+        init: async () => {
+          throw new Error('simulated git failure')
+        },
+      }
+      const failingService = createProjectService(
+        store,
+        failingRepo,
+        stubExtractor(),
+      )
+
+      expect(
+        failingService.createProject('Broken Form', SAMPLE_PDF, alice),
+      ).rejects.toThrow('simulated git failure')
+
+      // The SQLite row should not exist — cleanup happened
+      await new Promise((r) => setTimeout(r, 10))
+      expect(store.getBySlug('broken-form')).toBeNull()
+      expect(store.list('alice')).toHaveLength(0)
+    })
+
+    it('rolls back SQLite row when git commit fails', async () => {
+      const failingRepo = {
+        ...repo,
+        commit: async () => {
+          throw new Error('simulated commit failure')
+        },
+      }
+      const failingService = createProjectService(
+        store,
+        failingRepo,
+        stubExtractor(),
+      )
+
+      expect(
+        failingService.createProject('Broken Form', SAMPLE_PDF, alice),
+      ).rejects.toThrow('simulated commit failure')
+
+      expect(store.getBySlug('broken-form')).toBeNull()
+    })
   })
 
   describe('deleteProject', () => {

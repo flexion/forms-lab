@@ -158,6 +158,30 @@ describe('GET /:owner (profile)', () => {
     const html = await res.text()
     expect(html).toContain('User not found')
   })
+
+  it('shows New Project button when viewing own profile', async () => {
+    const { app } = createTestApp(danielUser)
+    const res = await app.request('/danielnaab')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('New Project')
+  })
+
+  it('hides New Project button when viewing another user profile', async () => {
+    const { app } = createTestApp(mayaUser)
+    const res = await app.request('/danielnaab')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).not.toContain('>New Project<')
+  })
+
+  it('hides New Project button for anonymous viewer', async () => {
+    const { app } = createTestApp(null)
+    const res = await app.request('/danielnaab')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).not.toContain('>New Project<')
+  })
 })
 
 // ---------------------------------------------------------------------------
@@ -243,6 +267,76 @@ describe('GET /:owner/:slug (project overview)', () => {
     const html = await res.text()
     expect(html).toContain('Extracting form structure')
     expect(html).toContain('http-equiv="refresh"')
+  })
+
+  it('shows Cancel button for owner on extracting project', async () => {
+    const slowStore = createProjectStore(':memory:')
+    const slowRepo = createFormProjectRepo(repoBasePath)
+    const slowExtractor = {
+      async extract() {
+        await new Promise((r) => setTimeout(r, 5000))
+        return stubResult
+      },
+    }
+    const slowService = createProjectService(slowStore, slowRepo, slowExtractor)
+    const slowUserStore = createUserStore(':memory:')
+    slowUserStore.upsert({
+      login: 'danielnaab',
+      name: 'Daniel',
+      avatarUrl: '',
+    })
+    const slowApp = new Hono()
+    slowApp.use('*', async (c, next) => {
+      c.set('user', danielUser)
+      await next()
+    })
+    slowApp.route('/', createOwnerRoutes(slowService, slowUserStore))
+    const project = await slowService.createProject(
+      'Slow Form',
+      Buffer.from('%PDF-1.4 sample'),
+      danielUser,
+    )
+
+    const res = await slowApp.request(`/danielnaab/${project.slug}`)
+    const html = await res.text()
+    expect(html).toContain('Extracting form structure')
+    expect(html).toContain('>Cancel<')
+    expect(html).toContain(`/danielnaab/${project.slug}/settings`)
+    expect(html).toContain('name="action" value="delete"')
+  })
+
+  it('hides Cancel button for non-owner on extracting project', async () => {
+    const slowStore = createProjectStore(':memory:')
+    const slowRepo = createFormProjectRepo(repoBasePath)
+    const slowExtractor = {
+      async extract() {
+        await new Promise((r) => setTimeout(r, 5000))
+        return stubResult
+      },
+    }
+    const slowService = createProjectService(slowStore, slowRepo, slowExtractor)
+    const slowUserStore = createUserStore(':memory:')
+    slowUserStore.upsert({
+      login: 'danielnaab',
+      name: 'Daniel',
+      avatarUrl: '',
+    })
+    const slowApp = new Hono()
+    slowApp.use('*', async (c, next) => {
+      c.set('user', mayaUser)
+      await next()
+    })
+    slowApp.route('/', createOwnerRoutes(slowService, slowUserStore))
+    const project = await slowService.createProject(
+      'Slow Form',
+      Buffer.from('%PDF-1.4 sample'),
+      danielUser,
+    )
+
+    const res = await slowApp.request(`/danielnaab/${project.slug}`)
+    const html = await res.text()
+    expect(html).toContain('Extracting form structure')
+    expect(html).not.toContain('>Cancel<')
   })
 
   it('shows error status with error message', async () => {
