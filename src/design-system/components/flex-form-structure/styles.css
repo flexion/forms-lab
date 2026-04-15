@@ -1,0 +1,40 @@
+flex-form-structure {
+  display: block;
+}
+
+.form-structure__page-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+}
+
+.form-structure__page {
+  border: 1px solid var(--flex-color-border);
+  padding: var(--flex-space-md);
+  border-radius: var(--flex-radius-md);
+}
+
+.form-structure__page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-block-end: var(--flex-space-sm);
+}
+
+.form-structure__page-title {
+  font-weight: 700;
+}
+
+.form-structure__group-count {
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+}
+
+.form-structure__reorder {
+  display: flex;
+  gap: var(--flex-space-sm);
+  margin-block-start: var(--flex-space-sm);
+}
