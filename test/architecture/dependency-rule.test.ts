@@ -64,7 +64,12 @@ function parseImports(content: string): ParsedImport[] {
   const imports: ParsedImport[] = []
   const lines = content.split('\n')
   const importPattern = /\bfrom\s+['"]([^'"]+)['"]/
+  // Type-only imports (`import type ... from`) are erased at compile time
+  // and carry no runtime coupling — they describe shape, not behavior —
+  // so they are excluded from the dependency rule.
+  const typeOnlyPattern = /^\s*import\s+type\b/
   for (let i = 0; i < lines.length; i++) {
+    if (typeOnlyPattern.test(lines[i])) continue
     const match = lines[i].match(importPattern)
     if (match) {
       imports.push({ line: i + 1, source: match[1] })

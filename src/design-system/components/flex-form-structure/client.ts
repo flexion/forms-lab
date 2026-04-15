@@ -26,7 +26,7 @@ class FlexFormStructure extends HTMLElement {
         return `
           <li class="form-structure__page" data-page-id="${page.id}">
             <div class="form-structure__page-header">
-              <span class="form-structure__page-title">${i + 1}. ${escape(page.title)}</span>
+              <span class="form-structure__page-title">${i + 1}. ${escapeHtml(page.title)}</span>
               <span class="form-structure__group-count">${groupCount} group${groupCount === 1 ? '' : 's'}</span>
             </div>
             <select class="flex-select form-structure__delivery" data-page-id="${page.id}">
@@ -100,8 +100,12 @@ class FlexFormStructure extends HTMLElement {
   }
 }
 
-function escape(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 if (!customElements.get('flex-form-structure')) {
