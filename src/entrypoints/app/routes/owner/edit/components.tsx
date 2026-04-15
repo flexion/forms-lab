@@ -48,8 +48,10 @@ export const EditorPage: FC<{
       </div>
 
       {error && (
-        <div class="flex-alert flex-alert--error" role="alert">
-          <p>{error}</p>
+        <div class="flex-alert" data-variant="error" role="alert">
+          <div class="flex-alert__body">
+            <p class="flex-alert__text">{error}</p>
+          </div>
         </div>
       )}
 
