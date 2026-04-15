@@ -16,7 +16,8 @@
     "build": "bun run build:css && bun run build:components",
     "check": "bunx @biomejs/biome check . && bun run --no-warnings tsc --noEmit && bun test",
     "lint:css": "bunx stylelint 'src/**/*.css'",
-    "smoke": "bun run scripts/smoke-check.ts"
+    "smoke": "bun run scripts/smoke-check.ts",
+    "setup-hooks": "bash scripts/install-hooks.sh"
   },
   "dependencies": {
     "@ai-sdk/amazon-bedrock": "^4.0.92",

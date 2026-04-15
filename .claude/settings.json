@@ -1,5 +1,40 @@
 {
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'COMMAND=\"$CLAUDE_TOOL_INPUT_command\"; if echo \"$COMMAND\" | grep -q \"gh pr create\"; then ls notes/story-*/review.md >/dev/null 2>&1 || echo \"WARNING: No code review artifact found. Run /finish-story to ensure code review before PR creation.\" >&2; fi'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'COMMAND=\"$CLAUDE_TOOL_INPUT_command\"; if echo \"$COMMAND\" | grep -q \"git push\"; then BRANCH=$(git branch --show-current); if [[ \"$BRANCH\" == story-* ]]; then STORY_NUM=$(echo \"$BRANCH\" | sed \"s/story-\\([0-9]*\\).*/\\1/\"); echo \"Reminder: update notes/flight-board.md for story #$STORY_NUM\" >&2; fi; fi'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'WORKTREES=$(git worktree list --porcelain 2>/dev/null | grep \"^worktree\" | grep -v \"$(git rev-parse --show-toplevel)$\" || true); if [ -n \"$WORKTREES\" ]; then DIRTY=\"\"; for wt in $(echo \"$WORKTREES\" | sed \"s/worktree //\"); do if [ -n \"$(git -C \"$wt\" status --porcelain 2>/dev/null)\" ]; then DIRTY=\"$DIRTY  $wt\\n\"; fi; done; if [ -n \"$DIRTY\" ]; then printf \"WARNING: Worktrees with uncommitted changes:\\n%b\" \"$DIRTY\" >&2; fi; fi'"
+          }
+        ]
+      }
+    ]
   }
 }
