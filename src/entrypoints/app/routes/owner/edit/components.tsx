@@ -36,7 +36,7 @@ export const EditorPage: FC<{
   const editBase = `/${owner}/${project.slug}/edit`
 
   return (
-    <div class="l-stack">
+    <div class="form-editor l-stack">
       <div class="l-cluster justify-between">
         <h1>
           <a href={resolveUrl(`/${owner}`)} class="text-muted">
