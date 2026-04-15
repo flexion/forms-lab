@@ -16,6 +16,20 @@ bunx @biomejs/biome check --write .     # Lint + format fix
 bun run lint:css                        # Stylelint CSS token enforcement
 ```
 
+## Session Lifecycle
+
+Use these commands to maintain a consistent workflow across sessions:
+
+```bash
+/create-story              # Create a new user story (GitHub issue + notes directory)
+/start-story <description> # Initialize session for a story (worktree, context, skill routing)
+/finish-story              # Run checks, code review, create PR, update flight board
+/review-story <PR>         # Review another session's PR
+```
+
+Session artifacts are stored in `notes/story-N-name/` (design, plan, session log, review).
+The flight board at `notes/flight-board.md` tracks in-flight work across sessions.
+
 ## Deployment
 
 The deployment system consists of two parts:
@@ -81,11 +95,19 @@ To enable authentication:
 
 4. Visit http://localhost:3000 and click "Sign in"
 
+### Git Hooks
+
+Install project git hooks (pre-push checks, conventional commit validation):
+
+```bash
+bun run setup-hooks
+```
+
 ## Conventions
 
 - **Code is canonical** — when in doubt, follow existing patterns
 - **Tests required** — new functionality needs tests in `test/`
-- **Verify before pushing** — always run `bun run check` before `git push`. This runs lint, type check, and tests. A Claude Code hook enforces this automatically, but manual pushes must also pass.
+- **Verify before pushing** — always run `bun run check` before `git push`. This runs lint, type check, and tests. The pre-push git hook enforces this automatically (install via `bun run setup-hooks`).
 - **Server-rendered JSX** — Hono JSX components return HTML strings, no client runtime
 - **TDD** — write failing test first, then implementation
 - **Vertical slicing** — each story delivers complete user value through all layers
