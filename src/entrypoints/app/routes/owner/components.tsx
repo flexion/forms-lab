@@ -281,50 +281,57 @@ export const ProjectOverview: FC<{
 
   return (
     <div class="l-stack">
-      <div class="l-cluster justify-between">
-        <h1>
-          <a href={resolveUrl(`/${owner}`)} class="text-muted">
-            {owner}
-          </a>{' '}
-          / {project.name}
-        </h1>
-        <div class="l-cluster">
-          {isOwner ? (
-            <a
-              href={resolveUrl(`${repoBase}/settings`)}
-              class="flex-button"
-              data-variant="outline"
-            >
-              Settings
-            </a>
-          ) : user ? (
-            <form method="post" action={resolveUrl(`${repoBase}/fork`)}>
-              <button type="submit" class="flex-button" data-variant="outline">
-                Fork
-              </button>
-            </form>
-          ) : (
-            <a
-              href={resolveUrl(
-                `/auth/signin?returnTo=${encodeURIComponent(repoBase)}`,
-              )}
-              class="flex-button"
-              data-variant="outline"
-            >
-              Sign in to fork
-            </a>
+      <header class="repo-header">
+        <nav class="repo-header__path" aria-label="Repository path">
+          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+          <span class="repo-header__path-sep" aria-hidden="true">
+            /
+          </span>
+          <span class="repo-header__path-slug">{project.slug}</span>
+          {forkedFrom && (
+            <span class="repo-header__fork-badge">
+              forked from{' '}
+              <a href={resolveUrl(`/${forkedFrom.owner}/${forkedFrom.slug}`)}>
+                {forkedFrom.owner}/{forkedFrom.slug}
+              </a>
+            </span>
           )}
+        </nav>
+        <div class="repo-header__title-row">
+          <h1 class="repo-header__title">{project.name}</h1>
+          <div class="repo-header__actions">
+            {isOwner ? (
+              <a
+                href={resolveUrl(`${repoBase}/settings`)}
+                class="flex-button"
+                data-variant="outline"
+              >
+                Settings
+              </a>
+            ) : user ? (
+              <form method="post" action={resolveUrl(`${repoBase}/fork`)}>
+                <button
+                  type="submit"
+                  class="flex-button"
+                  data-variant="outline"
+                >
+                  Fork
+                </button>
+              </form>
+            ) : (
+              <a
+                href={resolveUrl(
+                  `/auth/signin?returnTo=${encodeURIComponent(repoBase)}`,
+                )}
+                class="flex-button"
+                data-variant="outline"
+              >
+                Sign in to fork
+              </a>
+            )}
+          </div>
         </div>
-      </div>
-
-      {forkedFrom && (
-        <p class="text-muted text-sm">
-          Forked from{' '}
-          <a href={resolveUrl(`/${forkedFrom.owner}/${forkedFrom.slug}`)}>
-            {forkedFrom.owner}/{forkedFrom.slug}
-          </a>
-        </p>
-      )}
+      </header>
 
       <RepoNav owner={owner} slug={project.slug} current="overview" />
 
@@ -488,13 +495,18 @@ export const SettingsPage: FC<{
   owner: string
 }> = ({ project, owner }) => (
   <div class="l-stack">
-    <h1>
-      <a href={resolveUrl(`/${owner}`)} class="text-muted">
-        {owner}
-      </a>{' '}
-      / <a href={resolveUrl(`/${owner}/${project.slug}`)}>{project.name}</a> /
-      Settings
-    </h1>
+    <header class="repo-header">
+      <nav class="repo-header__path" aria-label="Repository path">
+        <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+        <span class="repo-header__path-sep" aria-hidden="true">
+          /
+        </span>
+        <a href={resolveUrl(`/${owner}/${project.slug}`)}>{project.slug}</a>
+      </nav>
+      <div class="repo-header__title-row">
+        <h1 class="repo-header__title">Settings</h1>
+      </div>
+    </header>
 
     <section class="l-stack">
       <h2>Extraction</h2>
@@ -540,12 +552,18 @@ export const TreePage: FC<{
 
   return (
     <div class="l-stack">
-      <h1>
-        <a href={resolveUrl(`/${owner}`)} class="text-muted">
-          {owner}
-        </a>{' '}
-        / <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
-      </h1>
+      <header class="repo-header">
+        <nav class="repo-header__path" aria-label="Repository path">
+          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+          <span class="repo-header__path-sep" aria-hidden="true">
+            /
+          </span>
+          <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
+        </nav>
+        <div class="repo-header__title-row">
+          <h1 class="repo-header__title">Files</h1>
+        </div>
+      </header>
 
       <RepoNav owner={owner} slug={slug} current="files" />
 
@@ -634,12 +652,18 @@ export const BlobPage: FC<{
 
   return (
     <div class="l-stack">
-      <h1>
-        <a href={resolveUrl(`/${owner}`)} class="text-muted">
-          {owner}
-        </a>{' '}
-        / <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
-      </h1>
+      <header class="repo-header">
+        <nav class="repo-header__path" aria-label="Repository path">
+          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+          <span class="repo-header__path-sep" aria-hidden="true">
+            /
+          </span>
+          <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
+        </nav>
+        <div class="repo-header__title-row">
+          <h1 class="repo-header__title">{fileName}</h1>
+        </div>
+      </header>
 
       <nav aria-label="Breadcrumb">
         <ol class="l-cluster" style="list-style: none; padding: 0;">
@@ -693,12 +717,18 @@ export const CommitListPage: FC<{
   slug: string
 }> = ({ history, owner, slug }) => (
   <div class="l-stack">
-    <h1>
-      <a href={resolveUrl(`/${owner}`)} class="text-muted">
-        {owner}
-      </a>{' '}
-      / <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
-    </h1>
+    <header class="repo-header">
+      <nav class="repo-header__path" aria-label="Repository path">
+        <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+        <span class="repo-header__path-sep" aria-hidden="true">
+          /
+        </span>
+        <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
+      </nav>
+      <div class="repo-header__title-row">
+        <h1 class="repo-header__title">History</h1>
+      </div>
+    </header>
 
     <RepoNav owner={owner} slug={slug} current="history" />
 
