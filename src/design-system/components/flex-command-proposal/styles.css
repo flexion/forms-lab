@@ -1,0 +1,37 @@
+flex-command-proposal {
+  display: block;
+}
+
+.command-proposal {
+  border: 1px solid var(--flex-color-border);
+  padding: var(--flex-space-md);
+  border-radius: var(--flex-radius-md);
+}
+
+.command-proposal__intent-form textarea {
+  width: 100%;
+}
+
+.command-proposal__preview {
+  margin-block-start: var(--flex-space-md);
+  padding-block-start: var(--flex-space-md);
+  border-block-start: 1px solid var(--flex-color-border);
+}
+
+.command-proposal__explanation {
+  font-weight: 700;
+}
+
+.command-proposal__list {
+  margin-block: var(--flex-space-sm);
+  padding-inline-start: var(--flex-space-lg);
+}
+
+.command-proposal__refine-form input {
+  width: 100%;
+  margin-block-end: var(--flex-space-sm);
+}
+
+.command-proposal__error {
+  margin-block-start: var(--flex-space-md);
+}
