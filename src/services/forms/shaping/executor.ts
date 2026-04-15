@@ -637,3 +637,27 @@ function execRemoveField(
   }
   return ok({ ...state, dataSpec })
 }
+
+export type BatchResult =
+  | { ok: true; state: ProjectState }
+  | { ok: false; error: string; failedAt: number; command: Command }
+
+export function executeBatch(
+  state: ProjectState,
+  commands: Command[],
+): BatchResult {
+  let current = state
+  for (let i = 0; i < commands.length; i++) {
+    const result = executeCommand(current, commands[i])
+    if (!result.ok) {
+      return {
+        ok: false,
+        error: result.error,
+        failedAt: i,
+        command: commands[i],
+      }
+    }
+    current = result.state
+  }
+  return { ok: true, state: current }
+}
