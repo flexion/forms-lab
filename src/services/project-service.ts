@@ -17,8 +17,18 @@ import type {
   FormProjectRepo,
   TreeEntry,
 } from './form-project-repo'
+import type { Command } from './forms/shaping/commands'
+import { executeBatch } from './forms/shaping/executor'
 import type { PdfExtractor } from './pdf-extractor'
 import type { ProjectStore } from './storage'
+
+export interface ShapingLogEntry {
+  timestamp: string
+  authorCommit: string
+  source: 'llm' | 'manual'
+  commands: Command[]
+  explanation: string
+}
 
 export interface ProjectView {
   project: ProjectIndex
@@ -86,6 +96,22 @@ export interface ProjectService {
     targetSha: string,
     user: SessionUser,
   ): Promise<string>
+  executeCommands(
+    owner: string,
+    slug: string,
+    commands: Command[],
+    explanation: string,
+    source: 'llm' | 'manual',
+    user: SessionUser,
+  ): Promise<
+    | {
+        ok: true
+        state: { formSpec: FormSpec; dataSpec: DataCollectionSpec }
+        sha: string
+      }
+    | { ok: false; error: string; failedAt: number; command: Command }
+  >
+  getShapingLog(owner: string, slug: string): Promise<ShapingLogEntry[]>
 }
 
 export function createProjectService(
@@ -475,6 +501,105 @@ export function createProjectService(
         `Undo: revert to ${targetSha.slice(0, 7)}`,
         user.login,
       )
+    },
+
+    async executeCommands(owner, slug, commands, explanation, source, user) {
+      requireAuth(user)
+      const project = resolveProject(owner, slug)
+      requireOwner(project, user)
+
+      const [formBuf, specBuf, logBuf] = await Promise.all([
+        repo.readFile(slug, 'main', 'forms/default/form.json'),
+        repo.readFile(slug, 'main', 'forms/default/spec.json'),
+        repo.readFile(slug, 'main', 'forms/default/shaping-log.json'),
+      ])
+      if (!formBuf || !specBuf) {
+        throw new BadRequestError('Project has no FormSpec to edit yet')
+      }
+      const currentFormSpec = JSON.parse(formBuf.toString()) as FormSpec
+      const currentDataSpec = JSON.parse(
+        specBuf.toString(),
+      ) as DataCollectionSpec
+      const log: ShapingLogEntry[] = logBuf
+        ? (JSON.parse(logBuf.toString()) as ShapingLogEntry[])
+        : []
+
+      const batchResult = executeBatch(
+        {
+          formSpec:
+            currentFormSpec as unknown as import('./forms/types').FormSpec,
+          dataSpec:
+            currentDataSpec as unknown as import('./data-collection/types').DataCollectionSpec,
+        },
+        commands,
+      )
+      if (!batchResult.ok) {
+        return {
+          ok: false as const,
+          error: batchResult.error,
+          failedAt: batchResult.failedAt,
+          command: batchResult.command,
+        }
+      }
+
+      const timestamp = new Date().toISOString()
+      const newEntry: ShapingLogEntry = {
+        timestamp,
+        authorCommit: '',
+        source,
+        commands,
+        explanation,
+      }
+      const nextLog = [...log, newEntry]
+
+      const sha = await repo.commit(
+        slug,
+        [
+          {
+            path: 'forms/default/form.json',
+            content: Buffer.from(
+              JSON.stringify(batchResult.state.formSpec, null, 2),
+            ),
+          },
+          {
+            path: 'forms/default/spec.json',
+            content: Buffer.from(
+              JSON.stringify(batchResult.state.dataSpec, null, 2),
+            ),
+          },
+          {
+            path: 'forms/default/shaping-log.json',
+            content: Buffer.from(JSON.stringify(nextLog, null, 2)),
+          },
+        ],
+        `Apply shaping: ${explanation}`,
+        user.login,
+      )
+
+      newEntry.authorCommit = sha
+
+      return {
+        ok: true as const,
+        state: batchResult.state as unknown as {
+          formSpec: FormSpec
+          dataSpec: DataCollectionSpec
+        },
+        sha,
+      }
+    },
+
+    async getShapingLog(
+      owner: string,
+      slug: string,
+    ): Promise<ShapingLogEntry[]> {
+      resolveProject(owner, slug)
+      const buf = await repo.readFile(
+        slug,
+        'main',
+        'forms/default/shaping-log.json',
+      )
+      if (!buf) return []
+      return JSON.parse(buf.toString()) as ShapingLogEntry[]
     },
   }
 }
