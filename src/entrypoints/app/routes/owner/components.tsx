@@ -263,7 +263,9 @@ export const ProjectOverview: FC<{
     view
 
   if (project.status === 'extracting') {
-    return <ExtractingBanner project={project} owner={owner} />
+    return (
+      <ExtractingBanner project={project} owner={owner} isOwner={isOwner} />
+    )
   }
   if (project.status === 'error') {
     return <ErrorBanner project={project} owner={owner} isOwner={isOwner} />
@@ -428,29 +430,78 @@ const RepoNav: FC<{
   )
 }
 
-const ExtractingBanner: FC<{ project: ProjectIndex; owner: string }> = ({
-  project,
-  owner,
-}) => (
-  <div class="l-stack">
-    <meta http-equiv="refresh" content="3" />
-    <h1>
-      <a href={resolveUrl(`/${owner}`)} class="text-muted">
-        {owner}
-      </a>{' '}
-      / {project.name}
-    </h1>
-    <div class="flex-alert flex-alert--info" role="status" aria-live="polite">
-      <p>
-        <strong>Extracting form structure...</strong>
-      </p>
-      <p>
-        This may take up to a minute for large forms. This page will refresh
-        automatically.
-      </p>
+const ExtractingBanner: FC<{
+  project: ProjectIndex
+  owner: string
+  isOwner: boolean
+}> = ({ project, owner, isOwner }) => {
+  const startedAt = project.updatedAt * 1000
+  const elapsedMs = Date.now() - startedAt
+  const stuck = elapsedMs > 2 * 60 * 1000 // 2 minutes
+  return (
+    <div class="l-stack">
+      {!stuck && <meta http-equiv="refresh" content="3" />}
+      <header class="repo-header">
+        <nav class="repo-header__path" aria-label="Repository path">
+          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+          <span class="repo-header__path-sep" aria-hidden="true">
+            /
+          </span>
+          <span class="repo-header__path-slug">{project.slug}</span>
+        </nav>
+        <div class="repo-header__title-row">
+          <h1 class="repo-header__title">{project.name}</h1>
+          {isOwner && (
+            <div class="repo-header__actions">
+              <form
+                method="post"
+                action={resolveUrl(`/${owner}/${project.slug}/settings`)}
+                onsubmit="return confirm('Cancel and delete this project?')"
+              >
+                <input type="hidden" name="action" value="delete" />
+                <button
+                  type="submit"
+                  class="flex-button"
+                  data-variant="outline"
+                >
+                  Cancel
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+      </header>
+      <div
+        class={`flex-alert flex-alert--${stuck ? 'warning' : 'info'}`}
+        role="status"
+        aria-live="polite"
+      >
+        {stuck ? (
+          <>
+            <p>
+              <strong>Extraction appears stuck.</strong>
+            </p>
+            <p>
+              This project has been extracting for more than 2 minutes. The
+              server may have restarted during extraction.{' '}
+              {isOwner && 'Use Cancel to delete and try again.'}
+            </p>
+          </>
+        ) : (
+          <>
+            <p>
+              <strong>Extracting form structure...</strong>
+            </p>
+            <p>
+              This may take up to a minute for large forms. This page will
+              refresh automatically.
+            </p>
+          </>
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const ErrorBanner: FC<{
   project: ProjectIndex

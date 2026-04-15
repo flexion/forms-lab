@@ -195,21 +195,28 @@ export function createProjectService(
         createdBy: user.login,
       })
 
-      await repo.init(slug)
-      await repo.commit(
-        slug,
-        [
-          { path: `source/${slug}.pdf`, content: pdf },
-          {
-            path: 'project.json',
-            content: Buffer.from(
-              JSON.stringify({ name, slug, createdBy: user.login }, null, 2),
-            ),
-          },
-        ],
-        `Initialize project: ${name}`,
-        user.login,
-      )
+      try {
+        await repo.init(slug)
+        await repo.commit(
+          slug,
+          [
+            { path: `source/${slug}.pdf`, content: pdf },
+            {
+              path: 'project.json',
+              content: Buffer.from(
+                JSON.stringify({ name, slug, createdBy: user.login }, null, 2),
+              ),
+            },
+          ],
+          `Initialize project: ${name}`,
+          user.login,
+        )
+      } catch (err) {
+        // Git init/commit failed; clean up the SQLite row so the project
+        // isn't stuck in 'extracting' forever.
+        store.delete(project.id)
+        throw err
+      }
 
       fireAndForgetExtraction(project.id, slug, pdf, user.login)
 
