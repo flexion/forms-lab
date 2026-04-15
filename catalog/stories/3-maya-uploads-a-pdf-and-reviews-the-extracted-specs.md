@@ -4,7 +4,7 @@ title: Maya uploads a PDF and reviews the extracted specs
 milestone: "Final Project"
 labels: [user-story, llm-integration]
 state: open
-synced_at: 2026-04-09T14:40:12.308Z
+synced_at: 2026-04-14T00:31:42.550Z
 ---
 
 ## User Story:
@@ -18,14 +18,14 @@ As a **form creator (Maya)**, in order to **digitize a paper form without techni
 
 ## Acceptance Criteria:
 
-- [ ] Upload page accepts PDF files
-- [ ] System extracts structure from PDF and produces a DataCollectionSpec
-- [ ] System generates a default FormSpec based on the extracted DataCollectionSpec
-- [ ] Both specs are displayed in the catalog as browsable, reviewable content
-- [ ] Maya can see what fields were extracted, their types, grouping, and conditions
+- [x] Upload page accepts PDF files
+- [x] System extracts structure from PDF and produces a DataCollectionSpec
+- [x] System generates a default FormSpec based on the extracted DataCollectionSpec
+- [x] Both specs are displayed in the catalog as browsable, reviewable content
+- [x] Maya can see what fields were extracted, their types, grouping, and conditions
 - [ ] Maya can see the proposed form layout (pages, sections, delivery modes)
 - [ ] Extracted specs are persisted as a FormProject in git
-- [ ] Extraction errors or low-confidence fields are flagged for review
+- [x] Extraction errors or low-confidence fields are flagged for review
 
 ## Success Metrics:
 
@@ -46,9 +46,9 @@ As a **form creator (Maya)**, in order to **digitize a paper form without techni
 - [ ] Acceptance criteria met
 - [ ] Threat model updated -- any new trust boundaries, data flows, or attack surfaces are reflected in `catalog/architecture/threat-model.md`
 - [ ] Technical documentation updated -- architecture docs and decisions are current
-- [ ] LLM extraction service has interface abstraction (swappable implementations)
-- [ ] At least one test PDF with ground truth for evaluation
-- [ ] Tests pass
-- [ ] Type checking passes
-- [ ] CI pipeline green
-- [ ] Deployed and demoable
+- [x] LLM extraction service has interface abstraction (swappable implementations)
+- [x] At least one test PDF with ground truth for evaluation
+- [x] Tests pass
+- [x] Type checking passes
+- [x] CI pipeline green
+- [x] Deployed and demoable

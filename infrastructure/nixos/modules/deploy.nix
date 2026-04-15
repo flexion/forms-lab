@@ -49,6 +49,8 @@ let
     BRANCH_DIR="$DEPLOY_ROOT/$SAFE_BRANCH"
     PORT_FILE="$DEPLOY_ROOT/ports.json"
 
+    mkdir -p "$DEPLOY_ROOT/repos"
+
     echo "Deploying $BRANCH at $SHA..."
 
     # Initialize bare repo if needed
@@ -141,6 +143,7 @@ AWS_REGION=us-east-1
 AWS_BEDROCK_PROFILE=ClaudeCodeAccess-FlexionLLM
 AWS_BEDROCK_REGION=us-west-2
 CACHE_DB_PATH=/srv/forms-lab/cache.sqlite
+REPOS_PATH=/srv/forms-lab/repos
 ENVEOF
 
     # Start or restart the service (use full path to sudo wrapper with setuid bit)

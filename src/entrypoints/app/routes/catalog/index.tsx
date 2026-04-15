@@ -12,6 +12,7 @@ import experiments from './experiments'
 import personas from './personas'
 import { getCatalogSidebar } from './sidebar'
 import stories from './stories'
+import walkthrough from './walkthrough'
 
 const catalog = new Hono()
 
@@ -22,6 +23,7 @@ catalog.route('/architecture', architecture)
 catalog.route('/stories', stories)
 catalog.route('/experiments', experiments)
 catalog.route('/design-system', designSystem)
+catalog.route('/walkthrough', walkthrough)
 
 // Catalog landing page
 catalog.get('/', async (c) => {
@@ -63,6 +65,17 @@ catalog.get('/', async (c) => {
       </p>
 
       <div class="l-stack" style="--stack-space: var(--flex-space-xl)">
+        <section>
+          <p class="catalog-group-label">Presentation</p>
+          <div class="l-grid" style="--grid-min: 280px">
+            <ContentCard
+              title="Walkthrough"
+              href={resolveUrl('/catalog/walkthrough')}
+              description="Guided tour of the project — problem, approach, LLM integration, and demo"
+            />
+          </div>
+        </section>
+
         <section>
           <p class="catalog-group-label">The System</p>
           <div class="l-grid" style="--grid-min: 280px">

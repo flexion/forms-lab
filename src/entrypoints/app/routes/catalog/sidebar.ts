@@ -1,5 +1,9 @@
 import { getComponentsByCategory } from '../../../../design-system/registry'
-import type { Decision, Story } from '../../../../services/content/types'
+import type {
+  Decision,
+  Story,
+  WalkthroughPage,
+} from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
 
 export function getCatalogSidebar(currentPath?: string) {
@@ -11,6 +15,16 @@ export function getCatalogSidebar(currentPath?: string) {
           label: 'Overview',
           href: resolveUrl('/catalog'),
           current: currentPath === '/catalog',
+        },
+      ],
+    },
+    {
+      title: 'Presentation',
+      items: [
+        {
+          label: 'Walkthrough',
+          href: resolveUrl('/catalog/walkthrough'),
+          current: currentPath === '/catalog/walkthrough',
         },
       ],
     },
@@ -251,6 +265,37 @@ export function getStoriesSidebar(stories: Story[], currentPath?: string) {
           label: `#${s.issue} ${s.title}`,
           href: resolveUrl(`/catalog/stories/${s.slug}`),
           current: currentPath === `/catalog/stories/${s.slug}`,
+        })),
+      ],
+    },
+  ]
+}
+
+/**
+ * Contextual sidebar for walkthrough pages.
+ */
+export function getWalkthroughSidebar(
+  pages: WalkthroughPage[],
+  currentPath?: string,
+) {
+  return [
+    {
+      title: 'Walkthrough',
+      items: [
+        {
+          label: '\u2190 Back to Catalog',
+          href: resolveUrl('/catalog'),
+          current: false,
+        },
+        {
+          label: 'Overview',
+          href: resolveUrl('/catalog/walkthrough'),
+          current: currentPath === '/catalog/walkthrough',
+        },
+        ...pages.map((p, i) => ({
+          label: `${i + 1}. ${p.title}`,
+          href: resolveUrl(`/catalog/walkthrough/${p.slug}`),
+          current: currentPath === `/catalog/walkthrough/${p.slug}`,
         })),
       ],
     },

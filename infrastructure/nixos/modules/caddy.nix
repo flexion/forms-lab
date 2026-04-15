@@ -22,6 +22,13 @@
           reverse_proxy localhost:9000
         }
 
+        # Read-only git HTTP (dumb transport — serves bare repo files)
+        handle /git/* {
+          root * /srv/forms-lab/repos
+          uri strip_prefix /git
+          file_server browse
+        }
+
         # Import branch-specific routes first (more specific)
         import /srv/forms-lab/caddy.d/branch-*.caddy
 
