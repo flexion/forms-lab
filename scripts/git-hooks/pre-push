@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Running pre-push checks (bun run check)..."
+bun run check
+echo "Pre-push checks passed."
