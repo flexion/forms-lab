@@ -278,8 +278,7 @@ export const ProjectOverview: FC<{
   viewingSha?: string
   origin?: string
 }> = ({ view, owner, user, viewingSha, origin }) => {
-  const { project, spec, formSpec, confidence, history, isOwner, forkedFrom } =
-    view
+  const { project, spec, formSpec, confidence, isOwner, forkedFrom } = view
 
   if (project.status === 'extracting') {
     return (
