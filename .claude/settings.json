@@ -6,7 +6,7 @@
     "PreToolCall": [
       {
         "matcher": "Bash(gh pr create*)",
-        "hook": "bash -c 'if ! find notes/story-*/review.md -maxdepth 0 2>/dev/null | grep -q .; then echo \"WARNING: No code review artifact found. Run /finish-story to ensure code review before PR creation.\" >&2; fi'",
+        "hook": "bash -c 'ls notes/story-*/review.md >/dev/null 2>&1 || echo \"WARNING: No code review artifact found. Run /finish-story to ensure code review before PR creation.\" >&2'",
         "description": "Warn if creating a PR without a code review artifact"
       }
     ],
@@ -19,7 +19,7 @@
     ],
     "Stop": [
       {
-        "hook": "bash -c 'WORKTREES=$(git worktree list --porcelain 2>/dev/null | grep \"^worktree\" | grep -v \"$(git rev-parse --show-toplevel)$\" || true); if [ -n \"$WORKTREES\" ]; then DIRTY=\"\"; for wt in $(echo \"$WORKTREES\" | sed \"s/worktree //\"); do if [ -n \"$(git -C \"$wt\" status --porcelain 2>/dev/null)\" ]; then DIRTY=\"$DIRTY\\n  $wt\"; fi; done; if [ -n \"$DIRTY\" ]; then echo \"WARNING: Worktrees with uncommitted changes:$DIRTY\" >&2; fi; fi'",
+        "hook": "bash -c 'WORKTREES=$(git worktree list --porcelain 2>/dev/null | grep \"^worktree\" | grep -v \"$(git rev-parse --show-toplevel)$\" || true); if [ -n \"$WORKTREES\" ]; then DIRTY=\"\"; for wt in $(echo \"$WORKTREES\" | sed \"s/worktree //\"); do if [ -n \"$(git -C \"$wt\" status --porcelain 2>/dev/null)\" ]; then DIRTY=\"$DIRTY  $wt\n\"; fi; done; if [ -n \"$DIRTY\" ]; then printf \"WARNING: Worktrees with uncommitted changes:\\n%b\" \"$DIRTY\" >&2; fi; fi'",
         "description": "Warn about worktrees with uncommitted changes on session exit"
       }
     ]

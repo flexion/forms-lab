@@ -2,6 +2,12 @@
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+if [ -f "$REPO_ROOT/.git" ]; then
+  echo "ERROR: Run this from the main working tree, not a worktree."
+  exit 1
+fi
+
 HOOKS_DIR="$REPO_ROOT/scripts/git-hooks"
 GIT_HOOKS_DIR="$REPO_ROOT/.git/hooks"
 

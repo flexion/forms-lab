@@ -9,16 +9,21 @@ on:
       base_url:
         description: 'Deployed URL to check'
         required: true
+  repository_dispatch:
+    types: [deploy-complete]
 
 jobs:
   smoke:
     name: Smoke Check
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_BRANCH: ${{ inputs.branch || github.event.client_payload.branch }}
+      DEPLOY_URL: ${{ inputs.base_url || github.event.client_payload.base_url }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ env.DEPLOY_BRANCH }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
@@ -31,7 +36,7 @@ jobs:
       - name: Run smoke checks
         run: bun run smoke
         env:
-          BASE_URL: ${{ inputs.base_url }}
+          BASE_URL: ${{ env.DEPLOY_URL }}
 
       - name: Report status
         if: always()
