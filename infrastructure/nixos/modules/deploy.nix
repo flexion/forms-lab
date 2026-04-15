@@ -139,6 +139,7 @@ GITHUB_CLIENT_ID=$(cat /run/secrets/github-client-id 2>/dev/null || echo "")
 GITHUB_CLIENT_SECRET=$(cat /run/secrets/github-client-secret 2>/dev/null || echo "")
 SESSION_SECRET=$(cat /run/secrets/session-secret 2>/dev/null || echo "")
 GITHUB_AUTHZ_ORG=flexion
+ALLOWED_USERS=danielnaab,FlexionCodeReview
 AWS_REGION=us-east-1
 AWS_BEDROCK_PROFILE=ClaudeCodeAccess-FlexionLLM
 AWS_BEDROCK_REGION=us-west-2
