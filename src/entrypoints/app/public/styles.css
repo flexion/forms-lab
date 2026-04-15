@@ -73,8 +73,7 @@
 @import "../../../design-system/components/flex-diagram/styles.css" layer(block);
 @import "../../dashboard/deployment-table.css" layer(block);
 @import "../../../design-system/components/flex-strategy-selector/styles.css" layer(block);
-@import "../../../design-system/components/flex-sortable-list/styles.css" layer(block);
-@import "../../../design-system/components/flex-preview-panel/styles.css" layer(block);
+
 @import "../../../design-system/components/flex-form-editor/styles.css" layer(block);
 @import "../../../design-system/components/flex-command-proposal/styles.css" layer(block);
 @import "../../../design-system/components/flex-form-structure/styles.css" layer(block);
