@@ -1,0 +1,58 @@
+import type { DataCollectionSpec } from '../../../services/data-collection/types'
+import type { Command } from '../../../services/forms/shaping/commands'
+import type { FormSpec } from '../../../services/forms/types'
+
+export interface ProjectStateClient {
+  formSpec: FormSpec
+  dataSpec: DataCollectionSpec
+}
+
+export interface ShapingLogEntryClient {
+  timestamp: string
+  authorCommit: string
+  source: 'llm' | 'manual'
+  commands: Command[]
+  explanation: string
+}
+
+export type FormEditorEvent =
+  | {
+      type: 'formeditor:select'
+      detail: { kind: 'page' | 'group' | 'field'; id: string }
+    }
+  | {
+      type: 'formeditor:proposal-received'
+      detail: { commands: Command[]; explanation: string }
+    }
+  | { type: 'formeditor:proposal-accept'; detail: Record<string, never> }
+  | { type: 'formeditor:proposal-reject'; detail: Record<string, never> }
+  | { type: 'formeditor:proposal-refine'; detail: { feedback: string } }
+  | {
+      type: 'formeditor:spec-updated'
+      detail: { state: ProjectStateClient }
+    }
+  | {
+      type: 'formeditor:command-failed'
+      detail: { error: string; command: Command | null }
+    }
+  | {
+      type: 'formeditor:manual-command'
+      detail: { command: Command; explanation: string }
+    }
+  | {
+      type: 'formeditor:intent-submitted'
+      detail: { intent: string }
+    }
+
+export function dispatchEditorEvent(
+  target: EventTarget,
+  event: FormEditorEvent,
+): void {
+  target.dispatchEvent(
+    new CustomEvent(event.type, {
+      detail: event.detail,
+      bubbles: true,
+      composed: true,
+    }),
+  )
+}
