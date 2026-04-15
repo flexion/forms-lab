@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import type { DataCollectionSpec } from '../../../src/services/data-collection/types'
-import type { FormSpec } from '../../../src/services/forms/types'
 import type { ProjectState } from '../../../src/services/forms/shaping/commands'
 import { executeCommand } from '../../../src/services/forms/shaping/executor'
+import type { FormSpec } from '../../../src/services/forms/types'
 
 function fixture(): ProjectState {
   const dataSpec: DataCollectionSpec = {
@@ -65,13 +65,13 @@ describe('executor — field commands', () => {
     if (result.ok) {
       expect(
         result.state.dataSpec.groups
-          .find((g) => g.id === 'g1')!
-          .requirements.map((r) => r.id),
+          .find((g) => g.id === 'g1')
+          ?.requirements.map((r) => r.id),
       ).toEqual(['f1'])
       expect(
         result.state.dataSpec.groups
-          .find((g) => g.id === 'g2')!
-          .requirements.map((r) => r.id),
+          .find((g) => g.id === 'g2')
+          ?.requirements.map((r) => r.id),
       ).toEqual(['f3', 'f2'])
     }
   })

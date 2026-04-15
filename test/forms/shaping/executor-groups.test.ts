@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import type { DataCollectionSpec } from '../../../src/services/data-collection/types'
-import type { FormSpec } from '../../../src/services/forms/types'
 import type { ProjectState } from '../../../src/services/forms/shaping/commands'
 import { executeCommand } from '../../../src/services/forms/shaping/executor'
+import type { FormSpec } from '../../../src/services/forms/types'
 
 function fixture(): ProjectState {
   const dataSpec: DataCollectionSpec = {
@@ -76,6 +76,7 @@ describe('executor — group commands', () => {
       )
       expect(newGroup).toBeDefined()
       expect(newGroup?.requirements).toEqual([])
+      // biome-ignore lint/style/noNonNullAssertion: toBeDefined() guard above proves newGroup is defined
       expect(result.state.formSpec.pages[1].groups).toContain(newGroup!.id)
     }
   })
@@ -150,7 +151,9 @@ describe('executor — group commands', () => {
     expect(result.ok).toBe(true)
     if (result.ok) {
       const orig = result.state.dataSpec.groups.find((g) => g.id === 'g2')
-      const extra = result.state.dataSpec.groups.find((g) => g.title === 'Extra')
+      const extra = result.state.dataSpec.groups.find(
+        (g) => g.title === 'Extra',
+      )
       expect(orig?.requirements.map((r) => r.id)).toEqual(['f1'])
       expect(extra?.requirements.map((r) => r.id)).toEqual(['f2'])
     }

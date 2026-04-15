@@ -1,4 +1,7 @@
-import type { DataCollectionSpec, RequirementGroup } from '../../data-collection/types'
+import type {
+  DataCollectionSpec,
+  RequirementGroup,
+} from '../../data-collection/types'
 import type { FormPage, FormSpec } from '../types'
 import type { Command, ProjectState } from './commands'
 
@@ -282,7 +285,9 @@ function execMoveGroup(
   command: Extract<Command, { kind: 'moveGroup' }>,
 ): ExecutorResult {
   const formSpec = cloneFormSpec(state.formSpec)
-  const fromPage = formSpec.pages.find((p) => p.groups.includes(command.groupId))
+  const fromPage = formSpec.pages.find((p) =>
+    p.groups.includes(command.groupId),
+  )
   if (!fromPage) return fail(command, `Unknown groupId: ${command.groupId}`)
   const toPage = formSpec.pages.find((p) => p.id === command.toPageId)
   if (!toPage) return fail(command, `Unknown toPageId: ${command.toPageId}`)
