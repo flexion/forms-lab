@@ -99,7 +99,10 @@ export function createProjectService(
     const base = slugify(baseName)
     let slug = base
     let suffix = 1
-    while (store.getBySlug(slug)) {
+    // A slug is only unique when both the SQLite index and the git repo
+    // directory are free. Checking the filesystem catches orphaned repos
+    // from server crashes or manual cleanup that left SQLite inconsistent.
+    while (store.getBySlug(slug) || repo.exists(slug)) {
       suffix++
       slug = `${base}-${suffix}`
     }
@@ -269,6 +272,9 @@ export function createProjectService(
       const project = resolveProject(owner, slug)
       requireOwner(project, user)
       store.delete(project.id)
+      // Also remove the bare git repo so the slug can be reused and the
+      // disk doesn't fill up with orphaned project data.
+      await repo.remove(slug)
     },
 
     async retryExtraction(

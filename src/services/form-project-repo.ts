@@ -1,3 +1,4 @@
+import { existsSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 
 export interface FileEntry {
@@ -21,6 +22,8 @@ export interface CommitEntry {
 
 export interface FormProjectRepo {
   init(slug: string): Promise<void>
+  exists(slug: string): boolean
+  remove(slug: string): Promise<void>
   commit(
     slug: string,
     files: FileEntry[],
@@ -118,6 +121,17 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
       if (exitCode !== 0) {
         const stderr = await new Response(proc.stderr).text()
         throw new Error(`git init failed: ${stderr}`)
+      }
+    },
+
+    exists(slug: string): boolean {
+      return existsSync(repoDir(slug))
+    },
+
+    async remove(slug: string): Promise<void> {
+      const dir = repoDir(slug)
+      if (existsSync(dir)) {
+        rmSync(dir, { recursive: true, force: true })
       }
     },
 

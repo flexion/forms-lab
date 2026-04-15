@@ -28,6 +28,29 @@ describe('FormProjectRepo', () => {
     })
   })
 
+  describe('exists + remove', () => {
+    it('exists returns false for a slug with no repo', () => {
+      expect(repo.exists('never-created')).toBe(false)
+    })
+
+    it('exists returns true after init', async () => {
+      await repo.init('real-project')
+      expect(repo.exists('real-project')).toBe(true)
+    })
+
+    it('remove deletes the bare repo directory', async () => {
+      await repo.init('doomed')
+      expect(repo.exists('doomed')).toBe(true)
+      await repo.remove('doomed')
+      expect(repo.exists('doomed')).toBe(false)
+    })
+
+    it('remove is a no-op when the repo does not exist', async () => {
+      await repo.remove('phantom')
+      expect(repo.exists('phantom')).toBe(false)
+    })
+  })
+
   describe('commit + readFile', () => {
     it('commits files and reads them back', async () => {
       await repo.init('proj')

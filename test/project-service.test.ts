@@ -236,6 +236,27 @@ describe('ProjectService', () => {
         service.deleteProject('alice', 'nonexistent', alice),
       ).rejects.toBeInstanceOf(NotFoundError)
     })
+
+    it('removes the bare git repo from disk', async () => {
+      const project = await service.createProject(
+        'To Delete',
+        SAMPLE_PDF,
+        alice,
+      )
+      expect(repo.exists(project.slug)).toBe(true)
+
+      await service.deleteProject('alice', project.slug, alice)
+      expect(repo.exists(project.slug)).toBe(false)
+    })
+
+    it('allows slug to be reused after deletion', async () => {
+      const first = await service.createProject('Reusable', SAMPLE_PDF, alice)
+      await service.deleteProject('alice', first.slug, alice)
+
+      const second = await service.createProject('Reusable', SAMPLE_PDF, alice)
+      // Without filesystem-aware slug uniqueness, this would become 'reusable-2'.
+      expect(second.slug).toBe('reusable')
+    })
   })
 
   describe('retryExtraction', () => {
