@@ -168,7 +168,8 @@ export const ProfilePage: FC<{
   user: UserProfile
   projects: ProjectIndex[]
   currentUser: SessionUser | null
-}> = ({ user, projects, currentUser: _currentUser }) => {
+}> = ({ user, projects, currentUser }) => {
+  const isOwnProfile = currentUser?.login === user.login
   return (
     <div class="l-stack" data-space="lg">
       <div
@@ -192,58 +193,76 @@ export const ProfilePage: FC<{
         </div>
       </div>
 
-      <h2>Projects</h2>
-      {projects.length === 0 ? (
-        <p class="text-muted">No projects yet.</p>
-      ) : (
-        <table class="flex-table" data-variant="borderless" data-stacked>
-          <thead>
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Status</th>
-              <th scope="col">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((p) => {
-              const created = new Date(p.createdAt * 1000).toLocaleDateString(
-                'en-US',
-                { month: 'short', day: 'numeric', year: 'numeric' },
-              )
-              const forkedFrom = parseForkedFrom(p.forkedFrom)
-              return (
-                <tr key={p.id}>
-                  <td data-label="Name">
-                    <a href={resolveUrl(`/${p.createdBy}/${p.slug}`)}>
-                      <strong>{p.name}</strong>
-                    </a>
-                    {forkedFrom && (
-                      <div class="text-muted text-sm">
-                        forked from{' '}
-                        <a
-                          href={resolveUrl(
-                            `/${forkedFrom.owner}/${forkedFrom.slug}`,
-                          )}
-                        >
-                          {forkedFrom.owner}/{forkedFrom.slug}
-                        </a>
-                      </div>
-                    )}
-                  </td>
-                  <td data-label="Status">
-                    <span class="badge" data-status={p.status}>
-                      {p.status.charAt(0).toUpperCase() + p.status.slice(1)}
-                    </span>
-                  </td>
-                  <td data-label="Created" class="text-muted text-sm">
-                    {created}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      )}
+      <section class="l-stack">
+        <div class="l-cluster justify-between" style="align-items: baseline;">
+          <h2>Projects</h2>
+          {isOwnProfile && (
+            <a href={resolveUrl('/new')} class="flex-button">
+              New Project
+            </a>
+          )}
+        </div>
+        {projects.length === 0 ? (
+          <p class="text-muted">
+            {isOwnProfile ? (
+              <>
+                No projects yet.{' '}
+                <a href={resolveUrl('/new')}>Create your first project</a>.
+              </>
+            ) : (
+              'No projects yet.'
+            )}
+          </p>
+        ) : (
+          <table class="flex-table" data-variant="borderless" data-stacked>
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Status</th>
+                <th scope="col">Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.map((p) => {
+                const created = new Date(p.createdAt * 1000).toLocaleDateString(
+                  'en-US',
+                  { month: 'short', day: 'numeric', year: 'numeric' },
+                )
+                const forkedFrom = parseForkedFrom(p.forkedFrom)
+                return (
+                  <tr key={p.id}>
+                    <td data-label="Name">
+                      <a href={resolveUrl(`/${p.createdBy}/${p.slug}`)}>
+                        <strong>{p.name}</strong>
+                      </a>
+                      {forkedFrom && (
+                        <div class="text-muted text-sm">
+                          forked from{' '}
+                          <a
+                            href={resolveUrl(
+                              `/${forkedFrom.owner}/${forkedFrom.slug}`,
+                            )}
+                          >
+                            {forkedFrom.owner}/{forkedFrom.slug}
+                          </a>
+                        </div>
+                      )}
+                    </td>
+                    <td data-label="Status">
+                      <span class="badge" data-status={p.status}>
+                        {p.status.charAt(0).toUpperCase() + p.status.slice(1)}
+                      </span>
+                    </td>
+                    <td data-label="Created" class="text-muted text-sm">
+                      {created}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )}
+      </section>
     </div>
   )
 }
