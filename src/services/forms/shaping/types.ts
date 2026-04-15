@@ -1,5 +1,4 @@
-import type { DataCollectionSpec } from '../../data-collection/types'
-import type { FormSpec } from '../types'
+import type { Command, ProjectState } from './commands'
 
 export interface FormShaper {
   shape(request: ShapingRequest): Promise<ShapingResult>
@@ -7,15 +6,16 @@ export interface FormShaper {
 
 export interface ShapingRequest {
   intent: string
-  currentFormSpec: FormSpec
-  dataSpec: DataCollectionSpec
+  state: ProjectState
+  previousAttempt?: { commands: Command[]; feedback: string }
 }
 
 export interface ShapingResult {
-  revisedFormSpec: FormSpec
-  summary: string
+  commands: Command[]
+  explanation: string
 }
 
+// Keep for now — to be deleted in Task 11
 export interface PageDiff {
   id: string
   title: string
@@ -23,6 +23,7 @@ export interface PageDiff {
   details?: string
 }
 
+// Keep for now — to be deleted in Task 11
 export interface FormSpecDiff {
   summary: string
   pages: PageDiff[]

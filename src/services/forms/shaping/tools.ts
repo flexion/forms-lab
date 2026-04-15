@@ -121,8 +121,7 @@ export const commandTools = {
     inputSchema: z.object({ intoId: z.string(), fromId: z.string() }),
   }),
   moveField: tool({
-    description:
-      'Move a field from its current group to a different group.',
+    description: 'Move a field from its current group to a different group.',
     inputSchema: z.object({
       fieldId: z.string(),
       toGroupId: z.string(),

@@ -13,7 +13,7 @@ describe('commandTools', () => {
   it('each tool has a description and a parameters schema', () => {
     for (const [_name, toolDef] of Object.entries(commandTools)) {
       expect(typeof toolDef.description).toBe('string')
-      expect(toolDef.description.length).toBeGreaterThan(0)
+      expect((toolDef.description ?? '').length).toBeGreaterThan(0)
       expect(toolDef.inputSchema).toBeDefined()
     }
   })

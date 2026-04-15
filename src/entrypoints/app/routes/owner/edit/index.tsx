@@ -2,7 +2,6 @@ import { type Context, Hono } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { Layout } from '../../../../../design-system/components/flex-layout'
 import { AppError, UnauthenticatedError } from '../../../../../services/errors'
-import { diffFormSpecs } from '../../../../../services/forms/shaping/differ'
 import type { FormShaper } from '../../../../../services/forms/shaping/types'
 import type {
   DeliveryMode,
@@ -16,7 +15,7 @@ import { EditorPage, PreviewPage } from './components'
 
 export function createEditRoutes(
   service: ProjectService,
-  shapingRegistry: StrategyRegistry<FormShaper>,
+  _shapingRegistry: StrategyRegistry<FormShaper>,
 ): Hono {
   const app = new Hono()
 
@@ -91,38 +90,17 @@ export function createEditRoutes(
         return c.redirect(resolveUrl(`/${owner}/${slug}/edit`))
       }
 
-      // Convert models FormSpec to services FormSpec for the shaper
-      const currentFormSpec = toServicesFormSpec(view.formSpec)
-      console.log(
-        `[edit/intent] calling shaper with ${currentFormSpec.pages.length} pages`,
-      )
-
-      const shaper = shapingRegistry.getDefault()
-      const result = await shaper.shape({
-        intent,
-        currentFormSpec,
-        dataSpec: toServicesDataSpec(view.spec),
-      })
-      console.log(
-        `[edit/intent] shaper returned ${result.revisedFormSpec.pages.length} pages`,
-      )
-
-      const diff = diffFormSpecs(currentFormSpec, result.revisedFormSpec)
-      console.log(
-        `[edit/intent] diff hasChanges=${diff.hasChanges} summary="${diff.summary}"`,
-      )
+      // TODO(Task 13): rewrite to use command-based shaping. This route is
+      // temporarily stubbed out while the shaper interface is being rewritten.
       const history = await service.getFormSpecHistory(owner, slug)
-
       return c.html(
         <Layout user={user} title={`Edit ${view.project.name}`}>
           <EditorPage
             view={view}
             owner={owner}
             user={user}
-            diff={diff}
-            proposedSpec={result.revisedFormSpec}
             history={history}
-            intentValue={intent}
+            error="Intent-based shaping is being rebuilt. Please check back soon."
           />
         </Layout>,
       )
@@ -365,18 +343,8 @@ export function createEditRoutes(
         return c.json({ error: 'No form spec available' }, 400)
       }
 
-      const { buildSuggestModesPrompt } = await import(
-        '../../../../../services/forms/shaping/prompts/suggest-modes'
-      )
-
-      const currentFormSpec = toServicesFormSpec(view.formSpec)
-      const dataSpec = toServicesDataSpec(view.spec)
-      const prompt = buildSuggestModesPrompt(currentFormSpec, dataSpec)
-
-      // Use the shaper's underlying LLM — for now we just return the prompt info
-      // The actual LLM call would go through a dedicated suggest-modes strategy
+      // TODO(Task 13): wire suggest-modes to command-based shaping
       return c.json({
-        prompt,
         message:
           'Delivery mode suggestions will be available when the suggest-modes strategy is wired.',
       })
@@ -470,13 +438,12 @@ function toModelsFormSpec(
   }
 }
 
-function toServicesDataSpec(
-  modelSpec: import('../../../../../types/models').DataCollectionSpec,
-): import('../../../../../services/data-collection/types').DataCollectionSpec {
-  // These are structurally compatible — the models version may have
-  // additional optional fields that the services version doesn't require
-  return modelSpec as unknown as import('../../../../../services/data-collection/types').DataCollectionSpec
-}
+// TODO(Task 13): restore when edit routes are rewritten for command-based shaping
+// function toServicesDataSpec(
+//   modelSpec: import('../../../../../types/models').DataCollectionSpec,
+// ): import('../../../../../services/data-collection/types').DataCollectionSpec {
+//   return modelSpec as unknown as import('../../../../../services/data-collection/types').DataCollectionSpec
+// }
 
 // ---------------------------------------------------------------------------
 // Error handler (shared pattern with owner routes)
