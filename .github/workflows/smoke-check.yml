@@ -1,0 +1,51 @@
+name: Post-Deploy Smoke Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch that was deployed'
+        required: true
+      base_url:
+        description: 'Deployed URL to check'
+        required: true
+
+jobs:
+  smoke:
+    name: Smoke Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run smoke checks
+        run: bun run smoke
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+
+      - name: Report status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            gh api repos/${{ github.repository }}/statuses/${{ github.sha }} \
+              -f state=success \
+              -f description="Smoke check passed" \
+              -f context="smoke-check"
+          else
+            gh api repos/${{ github.repository }}/statuses/${{ github.sha }} \
+              -f state=failure \
+              -f description="Smoke check failed" \
+              -f context="smoke-check"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
