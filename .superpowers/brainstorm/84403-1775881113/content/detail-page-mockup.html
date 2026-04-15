@@ -1,0 +1,119 @@
+<h2>Project Detail Page — Proposed Changes</h2>
+<p class="subtitle">Showing the ready state with all proposed improvements</p>
+
+<div class="mockup" style="max-width: 960px; margin: 0 auto;">
+  <div class="mockup-header">Project Detail: Ready State</div>
+  <div class="mockup-body" style="padding: 1.5rem; font-family: system-ui; font-size: 0.9rem;">
+
+    <!-- Back link -->
+    <a href="#" style="color: #005ea2; font-size: 0.85rem; text-decoration: none;">&larr; Back to projects</a>
+
+    <!-- Title -->
+    <h2 style="margin: 0.75rem 0 0.25rem;">Application for Pardon After Completion of Sentence</h2>
+
+    <!-- Summary bar -->
+    <div style="display: flex; gap: 1.5rem; padding: 0.75rem 0; border-bottom: 1px solid #ddd; margin-bottom: 1.5rem; color: #71767a; font-size: 0.85rem;">
+      <span><strong style="color: #1b1b1b;">14</strong> groups</span>
+      <span><strong style="color: #1b1b1b;">135</strong> fields</span>
+      <span><strong style="color: #1b1b1b;">12</strong> pages</span>
+      <span><strong style="color: #1b1b1b;">0</strong> low confidence</span>
+    </div>
+
+    <!-- Spec section -->
+    <h3 style="margin-top: 0;">Extracted Data Requirements</h3>
+    <p style="color: #71767a; margin-bottom: 1rem;">Structured data requirements extracted from the uploaded PDF form.</p>
+
+    <!-- One group example -->
+    <h4 style="margin-bottom: 0.5rem; font-size: 0.95rem;">Background Information</h4>
+
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 1.5rem;">
+      <thead>
+        <tr style="border-bottom: 2px solid #1b1b1b; text-align: left;">
+          <th style="padding: 0.5rem;">Field</th>
+          <th style="padding: 0.5rem;">Type</th>
+          <th style="padding: 0.5rem;">Required</th>
+          <th style="padding: 0.5rem;">Conditions</th>
+          <th style="padding: 0.5rem;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid #ddd;">
+          <td style="padding: 0.5rem;">
+            <strong>First name</strong>
+            <div style="color: #71767a; font-size: 0.8rem;">Legal first name as it appears on official documents</div>
+          </td>
+          <td style="padding: 0.5rem;">Text</td>
+          <td style="padding: 0.5rem;">Yes</td>
+          <td style="padding: 0.5rem; color: #71767a;">—</td>
+          <td style="padding: 0.5rem;">—</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #ddd;">
+          <td style="padding: 0.5rem;">
+            <strong>Maiden name</strong>
+          </td>
+          <td style="padding: 0.5rem;">Text</td>
+          <td style="padding: 0.5rem;">No</td>
+          <td style="padding: 0.5rem;">
+            <span style="font-size: 0.8rem; color: #5c5c5c; background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">When marital-status = married</span>
+          </td>
+          <td style="padding: 0.5rem;">—</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #ddd; background: #fef0cd22;">
+          <td style="padding: 0.5rem;">
+            <strong>Other names used</strong>
+            <div style="color: #71767a; font-size: 0.8rem;">Include aliases, nicknames, or previous legal names</div>
+          </td>
+          <td style="padding: 0.5rem;">Text</td>
+          <td style="padding: 0.5rem;">No</td>
+          <td style="padding: 0.5rem; color: #71767a;">—</td>
+          <td style="padding: 0.5rem;">
+            <span style="background: #fef0cd; color: #936300; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px;">Review</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Form Layout section -->
+    <h3>Form Layout</h3>
+    <p style="color: #71767a; margin-bottom: 1rem;">Proposed page structure for the digital form experience.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+      <div style="display: flex; align-items: baseline; gap: 1rem; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+        <span style="color: #71767a; font-size: 0.8rem; min-width: 2rem;">1.</span>
+        <div style="flex: 1;">
+          <strong>Personal Information</strong>
+          <div style="color: #71767a; font-size: 0.8rem; margin-top: 0.25rem;">Background Information, Family Information</div>
+        </div>
+        <span style="background: #e6f2ff; color: #005ea2; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px;">Conversational</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 1rem; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+        <span style="color: #71767a; font-size: 0.8rem; min-width: 2rem;">2.</span>
+        <div style="flex: 1;">
+          <strong>Pardon Request</strong>
+          <div style="color: #71767a; font-size: 0.8rem; margin-top: 0.25rem;">Reasons for Seeking Pardon</div>
+        </div>
+        <span style="background: #f0f0f0; color: #5c5c5c; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px;">Static</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 1rem; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+        <span style="color: #71767a; font-size: 0.8rem; min-width: 2rem;">3.</span>
+        <div style="flex: 1;">
+          <strong>Community Involvement &amp; Education</strong>
+          <div style="color: #71767a; font-size: 0.8rem; margin-top: 0.25rem;">Community Activities, Educational and Licensing Opportunities</div>
+        </div>
+        <span style="background: #fef0cd; color: #936300; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px;">Hybrid</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="margin-top: 1.5rem;">
+  <h3>What changed</h3>
+  <ul style="line-height: 1.8;">
+    <li><strong>Summary bar</strong> at top — groups, fields, pages, low-confidence count at a glance</li>
+    <li><strong>Back link</strong> above the title for navigation</li>
+    <li><strong>Conditions column</strong> in spec table — shows when fields are conditional</li>
+    <li><strong>Form Layout</strong> — card rows instead of indented list, group IDs resolved to titles, delivery mode as colored badges</li>
+    <li><strong>Borderless table variant</strong> for the spec (less visual noise for data-heavy content)</li>
+  </ul>
+</div>

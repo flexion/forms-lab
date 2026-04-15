@@ -1,14 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Hono } from 'hono'
 import { sessionReader } from '../src/entrypoints/app/middleware/auth'
-import authRoutes from '../src/entrypoints/app/routes/auth'
+import { createAuthRoutes } from '../src/entrypoints/app/routes/auth'
 import type { GitHubUser } from '../src/services/auth/github-oauth'
 import { COOKIE_NAME } from '../src/services/auth/session'
+import type { UserStore } from '../src/services/user-store'
 
 describe('Auth Routes', () => {
   let app: Hono
   let originalEnv: NodeJS.ProcessEnv
   let originalFetch: typeof global.fetch
+  let mockUserStore: UserStore
 
   beforeEach(() => {
     // Save original environment and fetch
@@ -21,10 +23,17 @@ describe('Auth Routes', () => {
     process.env.SESSION_SECRET = 'test-secret-key-32-bytes-long!'
     process.env.ALLOWED_USERS = 'testuser'
 
+    // Create mock UserStore
+    mockUserStore = {
+      upsert: mock(() => {}),
+      get: mock(() => null),
+      exists: mock(() => false),
+    }
+
     // Create app
     app = new Hono()
     app.use('*', sessionReader())
-    app.route('/auth', authRoutes)
+    app.route('/auth', createAuthRoutes(mockUserStore))
   })
 
   afterEach(() => {
@@ -112,6 +121,13 @@ describe('Auth Routes', () => {
       expect(cookie).toContain(COOKIE_NAME)
       expect(cookie).toContain('HttpOnly')
       expect(cookie).toContain('SameSite=Lax')
+
+      // Verify user was persisted
+      expect(mockUserStore.upsert).toHaveBeenCalledWith({
+        login: 'testuser',
+        name: 'Test User',
+        avatarUrl: 'https://example.com/avatar.png',
+      })
     })
 
     it('redirects to home with error for unauthorized user', async () => {

@@ -72,6 +72,7 @@ Pure utilities with no domain knowledge. Zero internal dependencies — the base
 
 - **`base-path.ts`** — Multi-tenant URL resolution for subpath-deployed branches.
 - **`format-html.ts`** — HTML pretty-printer used in catalog rendering and tests.
+- **`slugify.ts`** — URL-safe slug generation for projects and forms.
 - **`types/markdown-it-task-lists.d.ts`** — Third-party type declaration.
 
 ### `src/services/`
@@ -85,7 +86,13 @@ Core domain services. Each service directory has a `types.ts` (P3) and one or mo
 - **`forms/`** — Form resolution, validation, navigation, sessions, and submission. `FormSpec`, `ResolvedForm`, `FormSession`.
 - **`ingestion/`** — PDF → structured spec extraction pipeline. Uses Bedrock (Claude) to parse PDFs into `DataCollectionSpec`s.
 - **`notifications/`** — Notification event types and Slack client used by the deploy pipeline.
-- **`storage.ts`** — SQLite persistence layer (flat file, intentionally not a directory).
+- **`storage.ts`** — SQLite stores: `ProjectStore` (project index), `CacheStore` (LLM extraction cache).
+- **`user-store.ts`** — SQLite-backed `UserStore` persisting GitHub profile data upserted on OAuth login.
+- **`form-project-repo.ts`** — `FormProjectRepo` service wrapping git plumbing commands against bare repos. The app never checks out a working tree — it operates directly on the object store. See [form-project-repos-and-permissions decision](../decisions/architecture/form-project-repos-and-permissions.md).
+- **`project-service.ts`** — `ProjectService` owns project business logic and permission enforcement. Composes `ProjectStore` and `FormProjectRepo` to create, read, update, delete, and fork projects. Throws typed errors (`UnauthenticatedError`, `ForbiddenError`, `NotFoundError`, `BadRequestError`) that route handlers map to HTTP status codes.
+- **`errors.ts`** — `AppError` hierarchy used to signal HTTP-mappable conditions from services to routes without coupling services to HTTP.
+
+**Thin route handlers, rich services.** Routes in `entrypoints/app/routes/` parse requests, call service methods, and render responses. They do not hold business logic. Anything that can throw a `ForbiddenError` or needs an ownership check belongs in a service. This keeps permission rules unit-testable without an HTTP harness and prevents drift between routes.
 
 ### `src/design-system/`
 
@@ -119,7 +126,7 @@ Neither choice is wrong. What matters is that the choice is explicit. Drifting i
 
 **Current state:**
 
-- **Isolated:** USWDS (design-system only), Bedrock (`services/ingestion/` only), `better-sqlite3` (`services/storage.ts` only), `markdown-it` (`services/content/markdown.ts` only)
+- **Isolated:** USWDS (design-system only), Bedrock (`services/ingestion/` only), `bun:sqlite` (`services/storage.ts` and `services/user-store.ts` only), git CLI (`services/form-project-repo.ts` only), `markdown-it` (`services/content/markdown.ts` only)
 - **Embraced:** `hono/jsx` (design-system components), Hono routing (entrypoints), Bun (runtime)
 
 When adding a new dependency, note the choice in the commit or ADR that introduces it. Future axes of change are cheaper to plan for when they're visible.

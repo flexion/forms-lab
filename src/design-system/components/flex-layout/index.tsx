@@ -72,6 +72,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           ]}
         />
         <Header
+          logoHref={resolveUrl('/')}
           user={props.user ?? undefined}
           signoutAction={resolveUrl('/auth/signout')}
         >
@@ -80,31 +81,31 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             label="Home"
             current={props.currentPath === '/'}
           />
-          <HeaderNavItem
-            href={resolveUrl('/forms')}
-            label="Forms"
-            current={props.currentPath === '/forms'}
-          />
-          <HeaderNavItem
-            href={resolveUrl('/catalog')}
-            label="Catalog"
-            current={props.currentPath?.startsWith('/catalog') ?? false}
-          />
           {props.user ? (
             <>
               <HeaderNavItem
-                href={resolveUrl('/projects')}
+                href={resolveUrl(`/${props.user.login}`)}
                 label="Projects"
-                current={props.currentPath?.startsWith('/projects') ?? false}
+                current={props.currentPath === `/${props.user.login}`}
               />
               <HeaderNavItem
-                href={resolveUrl('/forms/sessions')}
-                label="My Sessions"
-                current={props.currentPath === '/forms/sessions'}
+                href={resolveUrl('/catalog')}
+                label="Catalog"
+                current={props.currentPath?.startsWith('/catalog') ?? false}
               />
             </>
           ) : (
-            <HeaderNavItem href={resolveUrl('/auth/signin')} label="Sign in" />
+            <>
+              <HeaderNavItem
+                href={resolveUrl('/catalog')}
+                label="Catalog"
+                current={props.currentPath?.startsWith('/catalog') ?? false}
+              />
+              <HeaderNavItem
+                href={resolveUrl('/auth/signin')}
+                label="Sign in"
+              />
+            </>
           )}
         </Header>
         {props.sidebar ? (
@@ -147,14 +148,16 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
                     Catalog
                   </a>
                 </li>
-                <li>
-                  <a
-                    class="flex-footer__primary-link"
-                    href={resolveUrl('/projects')}
-                  >
-                    Projects
-                  </a>
-                </li>
+                {props.user && (
+                  <li>
+                    <a
+                      class="flex-footer__primary-link"
+                      href={resolveUrl(`/${props.user.login}`)}
+                    >
+                      Projects
+                    </a>
+                  </li>
+                )}
                 <li>
                   <a
                     class="flex-footer__primary-link"

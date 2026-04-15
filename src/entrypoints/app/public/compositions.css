@@ -4,6 +4,14 @@
   gap: var(--stack-space, var(--flex-space-md));
 }
 
+.l-stack[data-space="lg"] {
+  --stack-space: var(--flex-space-xl);
+}
+
+.l-stack[data-space="xl"] {
+  --stack-space: var(--flex-space-2xl);
+}
+
 .l-cluster {
   display: flex;
   flex-wrap: wrap;

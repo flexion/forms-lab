@@ -2,30 +2,54 @@ import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/bun'
-import { testDataSpec, testFormSpec } from '../../../test/forms/fixtures'
+import {
+  demoFixtures,
+  getFixture,
+  loadFixturePdf,
+} from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
-import { createExtractorRegistry } from '../../services/extraction/registry'
-import { InMemoryFormSessionGateway } from '../../services/forms/session'
-import { InMemorySubmissionGateway } from '../../services/forms/submission'
+import { createFormProjectRepo } from '../../services/form-project-repo'
+import {
+  createBedrockPdfExtractor,
+  createCachedPdfExtractor,
+} from '../../services/pdf-extractor'
+import { createProjectService } from '../../services/project-service'
 import { createCacheStore, createProjectStore } from '../../services/storage'
+import { createUserStore } from '../../services/user-store'
 import { getBasePath, resolveUrl } from '../../shared/base-path'
 import { requireAuth, sessionReader } from './middleware/auth'
-import auth from './routes/auth/index'
+import { createAuthRoutes } from './routes/auth/index'
 import catalog from './routes/catalog/index'
-import { createFormRouter } from './routes/forms/index'
-import { createProjectRoutes } from './routes/projects/index'
+import {
+  Dashboard,
+  LandingPage,
+  NewProjectPage,
+} from './routes/owner/components'
+import { createOwnerRoutes } from './routes/owner/index'
 
 const basePath = getBasePath()
 const app = new Hono().basePath(basePath)
 
 const projectDbPath = process.env.PROJECT_DB_PATH ?? 'data/projects.sqlite'
 const cacheDbPath = process.env.CACHE_DB_PATH ?? 'data/cache.sqlite' // Shared across branches in production
+const reposPath = process.env.REPOS_PATH ?? 'data/repos'
 mkdirSync(dirname(projectDbPath), { recursive: true })
 mkdirSync(dirname(cacheDbPath), { recursive: true })
+mkdirSync(reposPath, { recursive: true })
 
 const projectStore = createProjectStore(projectDbPath)
 const cacheStore = createCacheStore(cacheDbPath)
-const extractorRegistry = createExtractorRegistry()
+const userStore = createUserStore(projectDbPath)
+const formProjectRepo = createFormProjectRepo(reposPath)
+const extractor = createCachedPdfExtractor(
+  createBedrockPdfExtractor(),
+  cacheStore,
+)
+const projectService = createProjectService(
+  projectStore,
+  formProjectRepo,
+  extractor,
+)
 
 // Apply session reader globally
 app.use('*', sessionReader())
@@ -121,31 +145,7 @@ app.use(
 )
 
 // Mount auth routes
-app.route('/auth', auth)
-
-// Mount projects routes with auth guard
-app.use('/projects/*', requireAuth())
-app.route(
-  '/projects',
-  createProjectRoutes(projectStore, extractorRegistry, cacheStore),
-)
-
-// Form delivery routes (in-memory, using test fixtures for now)
-const sessionGateway = new InMemoryFormSessionGateway()
-const submissionGateway = new InMemorySubmissionGateway()
-
-const specRegistry = new Map([
-  [testDataSpec.id, { dataSpec: testDataSpec, formSpec: testFormSpec }],
-])
-
-const forms = createFormRouter({
-  sessionGateway,
-  submissionGateway,
-  getSpecs: (specId) => specRegistry.get(specId) ?? null,
-  listSpecs: () => [...specRegistry.values()],
-})
-
-app.route('/forms', forms)
+app.route('/auth', createAuthRoutes(userStore))
 
 // Mount catalog routes
 app.route('/catalog', catalog)
@@ -158,20 +158,78 @@ app.get('/health', (c) => {
   })
 })
 
-// Root page
-app.get('/', (c) => {
+// New project routes (requires auth)
+app.use('/new', requireAuth())
+app.get('/new', (c) => {
+  const user = c.get('user')
   return c.html(
-    <Layout currentPath="/" user={c.get('user')}>
-      <h1>Forms Lab</h1>
-      <p>
-        Upload a government PDF form, extract structured specs, deliver form
-        experiences (static or conversational), and generate completed PDFs.
-      </p>
-      <p>
-        <a href={resolveUrl('/catalog')}>Browse the Catalog</a>
-      </p>
+    <Layout currentPath="/new" user={user}>
+      <NewProjectPage fixtures={demoFixtures} />
     </Layout>,
   )
 })
+app.post('/new', async (c) => {
+  const user = c.get('user')
+  if (!user) return c.redirect(resolveUrl('/auth/signin'))
+
+  // Parse form body - fixture or file upload
+  const contentType = c.req.header('content-type') ?? ''
+  let pdf: Buffer
+  let name: string
+
+  if (contentType.includes('multipart/form-data')) {
+    const body = await c.req.parseBody()
+    const file = body.pdf
+    if (!(file instanceof File) || file.size === 0) {
+      return c.html(
+        <Layout currentPath="/new" user={user}>
+          <NewProjectPage fixtures={demoFixtures} />
+        </Layout>,
+        400,
+      )
+    }
+    pdf = Buffer.from(await file.arrayBuffer())
+    name = file.name.replace(/\.pdf$/i, '')
+  } else {
+    const body = await c.req.parseBody()
+    const fixtureSlug = body.fixture as string
+    const fixture = getFixture(fixtureSlug)
+    if (!fixture) {
+      return c.html(
+        <Layout currentPath="/new" user={user}>
+          <NewProjectPage fixtures={demoFixtures} />
+        </Layout>,
+        400,
+      )
+    }
+    pdf = loadFixturePdf(fixture)
+    name = fixture.name
+  }
+
+  const project = await projectService.createProject(name, pdf, user)
+  return c.redirect(resolveUrl(`/${user.login}/${project.slug}`))
+})
+
+// Root page - dashboard for authenticated users, landing for anonymous
+app.get('/', (c) => {
+  const user = c.get('user')
+  const error = c.req.query('error') ?? null
+  if (user) {
+    const projects = projectService.listUserProjects(user.login)
+    return c.html(
+      <Layout currentPath="/" user={user}>
+        <Dashboard projects={projects} user={user} />
+      </Layout>,
+    )
+  }
+  return c.html(
+    <Layout currentPath="/" user={user}>
+      <LandingPage error={error} />
+    </Layout>,
+  )
+})
+
+// Mount owner routes LAST (catch-all pattern /:owner)
+app.route('/', createOwnerRoutes(projectService, userStore))
 
 export default app

@@ -29,56 +29,51 @@ describe('CacheStore', () => {
 })
 
 describe('ProjectStore', () => {
-  it('creates and retrieves a project', () => {
+  it('creates and retrieves a project with slug', () => {
     const store = createProjectStore(':memory:')
     const project = store.create({
       name: 'Pardon Application',
-      description: 'Presidential pardon form',
-      strategy: 'sonnet',
-      sourcePdf: Buffer.from('fake-pdf'),
+      slug: 'pardon-application',
       createdBy: 'testuser',
     })
     expect(project.id).toBeDefined()
     expect(project.name).toBe('Pardon Application')
+    expect(project.slug).toBe('pardon-application')
     expect(project.status).toBe('extracting')
-    expect(project.strategy).toBe('sonnet')
     expect(project.createdBy).toBe('testuser')
+    expect(project.error).toBeNull()
 
     const retrieved = store.get(project.id)
     expect(retrieved).not.toBeNull()
     expect(retrieved?.name).toBe('Pardon Application')
-    expect(retrieved?.strategy).toBe('sonnet')
-    expect(Buffer.from(retrieved!.sourcePdf).toString()).toBe('fake-pdf')
+    expect(retrieved?.slug).toBe('pardon-application')
   })
 
-  it('returns null for missing project', () => {
+  it('finds by slug', () => {
+    const store = createProjectStore(':memory:')
+    const project = store.create({
+      name: 'Test Project',
+      slug: 'test-project',
+      createdBy: 'user',
+    })
+
+    const found = store.getBySlug('test-project')
+    expect(found).not.toBeNull()
+    expect(found?.id).toBe(project.id)
+    expect(found?.name).toBe('Test Project')
+  })
+
+  it('returns null for missing project by id and slug', () => {
     const store = createProjectStore(':memory:')
     expect(store.get('nonexistent')).toBeNull()
+    expect(store.getBySlug('nonexistent')).toBeNull()
   })
 
   it('lists projects filtered by user', () => {
     const store = createProjectStore(':memory:')
-    store.create({
-      name: 'Project A',
-      description: 'A',
-      strategy: 'sonnet',
-      sourcePdf: Buffer.from('a'),
-      createdBy: 'alice',
-    })
-    store.create({
-      name: 'Project B',
-      description: 'B',
-      strategy: 'sonnet',
-      sourcePdf: Buffer.from('b'),
-      createdBy: 'bob',
-    })
-    store.create({
-      name: 'Project C',
-      description: 'C',
-      strategy: 'sonnet',
-      sourcePdf: Buffer.from('c'),
-      createdBy: 'alice',
-    })
+    store.create({ name: 'Project A', slug: 'project-a', createdBy: 'alice' })
+    store.create({ name: 'Project B', slug: 'project-b', createdBy: 'bob' })
+    store.create({ name: 'Project C', slug: 'project-c', createdBy: 'alice' })
 
     const aliceProjects = store.list('alice')
     expect(aliceProjects).toHaveLength(2)
@@ -91,13 +86,19 @@ describe('ProjectStore', () => {
     expect(allProjects).toHaveLength(3)
   })
 
+  it('enforces unique slugs', () => {
+    const store = createProjectStore(':memory:')
+    store.create({ name: 'First', slug: 'unique-slug', createdBy: 'user' })
+    expect(() =>
+      store.create({ name: 'Second', slug: 'unique-slug', createdBy: 'user' }),
+    ).toThrow()
+  })
+
   it('deletes a project', () => {
     const store = createProjectStore(':memory:')
     const project = store.create({
       name: 'Delete Me',
-      description: 'Test',
-      strategy: 'sonnet',
-      sourcePdf: Buffer.from('pdf'),
+      slug: 'delete-me',
       createdBy: 'testuser',
     })
     expect(store.get(project.id)).not.toBeNull()
@@ -105,31 +106,48 @@ describe('ProjectStore', () => {
     expect(store.get(project.id)).toBeNull()
   })
 
-  it('updates project fields', () => {
+  it('stores forkedFrom metadata', () => {
+    const store = createProjectStore(':memory:')
+    const project = store.create({
+      name: 'Forked Project',
+      slug: 'forked-project',
+      createdBy: 'maya',
+      forkedFrom: 'danielnaab/pardon-application',
+    })
+    expect(project.forkedFrom).toBe('danielnaab/pardon-application')
+    const retrieved = store.get(project.id)
+    expect(retrieved?.forkedFrom).toBe('danielnaab/pardon-application')
+  })
+
+  it('forkedFrom defaults to null', () => {
+    const store = createProjectStore(':memory:')
+    const project = store.create({
+      name: 'Original',
+      slug: 'original',
+      createdBy: 'danielnaab',
+    })
+    expect(project.forkedFrom).toBeNull()
+  })
+
+  it('updates project status and error', () => {
     const store = createProjectStore(':memory:')
     const project = store.create({
       name: 'Test',
-      description: 'Test',
-      strategy: 'sonnet',
-      sourcePdf: Buffer.from('pdf'),
+      slug: 'test',
       createdBy: 'user',
     })
 
     const updated = store.update(project.id, {
       status: 'ready',
-      spec: { id: 's1', title: 'Spec', description: '', groups: [] },
-      formSpec: {
-        id: 'f1',
-        specId: 's1',
-        title: 'Form',
-        pages: [],
-      },
-      confidence: [{ fieldId: 'f1', confidence: 0.9 }],
     })
-
     expect(updated.status).toBe('ready')
-    expect(updated.spec?.title).toBe('Spec')
-    expect(updated.formSpec?.title).toBe('Form')
-    expect(updated.confidence).toHaveLength(1)
+    expect(updated.error).toBeNull()
+
+    const withError = store.update(project.id, {
+      status: 'error',
+      error: 'Extraction failed',
+    })
+    expect(withError.status).toBe('error')
+    expect(withError.error).toBe('Extraction failed')
   })
 })

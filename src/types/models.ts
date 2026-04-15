@@ -199,31 +199,40 @@ export interface ExtractionOptions {
 export type ProjectStatus = 'extracting' | 'ready' | 'error'
 
 /**
- * StoredProject - Database representation of a FormProject
+ * ProjectIndex - Lightweight operational index for projects
  *
- * Unlike FormProject (which nests specs), StoredProject stores
- * specs as JSON strings alongside status and metadata.
+ * Tracks project identity and status. Specs, PDFs, and confidence
+ * data live in git bare repos (FormProjectRepo).
  */
-export interface StoredProject {
+export interface ProjectIndex {
   id: string
+  slug: string
   name: string
-  description: string
+  forkedFrom: string | null
   status: ProjectStatus
-  strategy: string
-  sourcePdf: Buffer
-  spec: DataCollectionSpec | null
-  formSpec: FormSpec | null
-  confidence: FieldConfidence[] | null
   error: string | null
   createdBy: string
   createdAt: number
   updatedAt: number
 }
 
-export interface NewProject {
+export interface NewProjectIndex {
   name: string
-  description: string
-  strategy: string
-  sourcePdf: Buffer
+  slug: string
   createdBy: string
+  forkedFrom?: string
+}
+
+/**
+ * UserProfile - Persisted GitHub user profile
+ *
+ * Cached locally on login to avoid repeated API calls
+ * and to support user display across the platform.
+ */
+export interface UserProfile {
+  login: string
+  name: string
+  avatarUrl: string
+  createdAt: number
+  updatedAt: number
 }
