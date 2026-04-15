@@ -14,18 +14,3 @@ export interface ShapingResult {
   commands: Command[]
   explanation: string
 }
-
-// Keep for now — to be deleted in Task 11
-export interface PageDiff {
-  id: string
-  title: string
-  status: 'added' | 'removed' | 'moved' | 'modified' | 'unchanged'
-  details?: string
-}
-
-// Keep for now — to be deleted in Task 11
-export interface FormSpecDiff {
-  summary: string
-  pages: PageDiff[]
-  hasChanges: boolean
-}

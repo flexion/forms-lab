@@ -1,7 +1,6 @@
 import type { FC } from 'hono/jsx'
 import type { SessionUser } from '../../../../../services/auth/session'
 import type { CommitEntry } from '../../../../../services/form-project-repo'
-import type { FormSpecDiff } from '../../../../../services/forms/shaping/types'
 import type {
   DeliveryMode,
   FormSpec,
@@ -17,21 +16,10 @@ export const EditorPage: FC<{
   view: ProjectView
   owner: string
   user: SessionUser
-  diff?: FormSpecDiff | null
-  proposedSpec?: FormSpec | null
   history?: CommitEntry[]
   error?: string | null
   intentValue?: string
-}> = ({
-  view,
-  owner,
-  user: _user,
-  diff,
-  proposedSpec,
-  history,
-  error,
-  intentValue,
-}) => {
+}> = ({ view, owner, user: _user, history, error, intentValue }) => {
   const { project, formSpec, spec } = view
   const editBase = `/${owner}/${project.slug}/edit`
 
@@ -60,14 +48,6 @@ export const EditorPage: FC<{
           {formSpec && spec ? (
             <>
               <IntentForm editBase={editBase} intentValue={intentValue} />
-
-              {diff && proposedSpec && (
-                <DiffView
-                  diff={diff}
-                  editBase={editBase}
-                  proposedSpec={proposedSpec}
-                />
-              )}
 
               <PageList formSpec={formSpec} spec={spec} editBase={editBase} />
 
@@ -137,59 +117,6 @@ const IntentForm: FC<{
         </div>
       </form>
     </flex-intent-input>
-  </section>
-)
-
-// ---------------------------------------------------------------------------
-// DiffView — proposed changes with accept/reject
-// ---------------------------------------------------------------------------
-
-export const DiffView: FC<{
-  diff: FormSpecDiff
-  editBase: string
-  proposedSpec: FormSpec
-}> = ({ diff, editBase, proposedSpec }) => (
-  <section class="editor-section editor-diff">
-    <h2>Proposed changes</h2>
-    <p class="text-muted">{diff.summary}</p>
-
-    {diff.hasChanges && (
-      <ul class="editor-diff__pages">
-        {diff.pages
-          .filter((p) => p.status !== 'unchanged')
-          .map((page) => (
-            <li
-              key={page.id}
-              class="editor-diff__page"
-              data-status={page.status}
-            >
-              <span class="editor-diff__status">{page.status}</span>
-              <span class="editor-diff__title">{page.title}</span>
-              {page.details && (
-                <span class="text-muted text-sm">{page.details}</span>
-              )}
-            </li>
-          ))}
-      </ul>
-    )}
-
-    <div class="l-cluster">
-      <form method="post" action={resolveUrl(`${editBase}/accept`)}>
-        <input
-          type="hidden"
-          name="proposedSpec"
-          value={JSON.stringify(proposedSpec)}
-        />
-        <button type="submit" class="flex-button">
-          Accept changes
-        </button>
-      </form>
-      <form method="post" action={resolveUrl(`${editBase}/reject`)}>
-        <button type="submit" class="flex-button" data-variant="outline">
-          Discard
-        </button>
-      </form>
-    </div>
   </section>
 )
 
