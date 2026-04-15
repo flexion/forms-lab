@@ -6,6 +6,10 @@ import type {
 } from '../../../../../services/project-service'
 import { resolveUrl } from '../../../../../shared/base-path'
 
+function safeJsonForScript(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, '\\u003c')
+}
+
 export const EditorPage: FC<{
   view: ProjectView
   owner: string
@@ -30,8 +34,6 @@ export const EditorPage: FC<{
     )
   }
 
-  const initialState = JSON.stringify({ formSpec, dataSpec: spec })
-
   return (
     <div class="form-editor l-stack">
       <div class="l-cluster justify-between">
@@ -54,13 +56,15 @@ export const EditorPage: FC<{
           type="application/json"
           data-initial-state
           // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON payload for bootstrap
-          dangerouslySetInnerHTML={{ __html: initialState }}
+          dangerouslySetInnerHTML={{
+            __html: safeJsonForScript({ formSpec, dataSpec: spec }),
+          }}
         />
         <script
           type="application/json"
           data-shaping-log
           // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON payload for bootstrap
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(log) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonForScript(log) }}
         />
 
         <div class="editor-layout">
