@@ -216,6 +216,16 @@ class FlexFormEditor extends HTMLElement {
       type: 'formeditor:spec-updated',
       detail: { state: this.state },
     })
+    this.reloadPreview()
+  }
+
+  private reloadPreview() {
+    const iframe = this.querySelector<HTMLIFrameElement>('iframe.editor-preview-frame')
+    if (!iframe) return
+    // Add a cache-busting query param to force reload
+    const base = this.dataset.previewBase ?? ''
+    const ts = Date.now()
+    iframe.src = `${base}?page=0&t=${ts}`
   }
 
   private dispatchOwn(event: FormEditorEvent) {
