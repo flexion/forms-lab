@@ -14,7 +14,9 @@ class FlexFormEditor extends HTMLElement {
   connectedCallback() {
     this.hydrateState()
     this.bindEvents()
-    this.broadcastSpec()
+    // Defer initial broadcast so child elements have time to connect
+    // and register their listeners first
+    queueMicrotask(() => this.broadcastSpec())
   }
 
   private hydrateState() {
