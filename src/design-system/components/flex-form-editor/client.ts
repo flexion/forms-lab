@@ -1,9 +1,5 @@
 import type { Command } from '../../../services/forms/shaping/commands'
-import type {
-  FormEditorEvent,
-  ProjectStateClient,
-  ShapingLogEntryClient,
-} from './protocol'
+import type { FormEditorEvent, ProjectStateClient } from './protocol'
 
 interface ProposalState {
   commands: Command[]
@@ -13,12 +9,7 @@ interface ProposalState {
 
 class FlexFormEditor extends HTMLElement {
   private state: ProjectStateClient | null = null
-  private log: ShapingLogEntryClient[] = []
   private proposal: ProposalState | null = null
-  private selection: {
-    kind: 'page' | 'group' | 'field'
-    id: string
-  } | null = null
 
   connectedCallback() {
     this.hydrateState()
@@ -31,10 +22,7 @@ class FlexFormEditor extends HTMLElement {
     if (stateScript?.textContent) {
       this.state = JSON.parse(stateScript.textContent) as ProjectStateClient
     }
-    const logScript = this.querySelector('script[data-shaping-log]')
-    if (logScript?.textContent) {
-      this.log = JSON.parse(logScript.textContent) as ShapingLogEntryClient[]
-    }
+    // Log data is available in script[data-shaping-log] for future use
   }
 
   private bindEvents() {
@@ -203,11 +191,19 @@ class FlexFormEditor extends HTMLElement {
     this.broadcastSpec()
   }
 
+  private selectedPageIndex = 0
+
   private handleSelect(detail: {
     kind: 'page' | 'group' | 'field'
     id: string
   }) {
-    this.selection = detail
+    if (detail.kind === 'page' && this.state) {
+      const idx = this.state.formSpec.pages.findIndex((p) => p.id === detail.id)
+      if (idx >= 0) {
+        this.selectedPageIndex = idx
+        this.reloadPreview()
+      }
+    }
   }
 
   private broadcastSpec() {
@@ -220,12 +216,14 @@ class FlexFormEditor extends HTMLElement {
   }
 
   private reloadPreview() {
-    const iframe = this.querySelector<HTMLIFrameElement>('iframe.editor-preview-frame')
+    const iframe = this.querySelector<HTMLIFrameElement>(
+      'iframe.editor-preview-frame',
+    )
     if (!iframe) return
     // Add a cache-busting query param to force reload
     const base = this.dataset.previewBase ?? ''
     const ts = Date.now()
-    iframe.src = `${base}?page=0&t=${ts}`
+    iframe.src = `${base}?page=${this.selectedPageIndex}&t=${ts}`
   }
 
   private dispatchOwn(event: FormEditorEvent) {

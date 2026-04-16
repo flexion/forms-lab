@@ -74,6 +74,23 @@ class FlexFormStructure extends HTMLElement {
         )
       })
     }
+    for (const pageEl of this.querySelectorAll<HTMLElement>(
+      '.form-structure__page-header',
+    )) {
+      pageEl.style.cursor = 'pointer'
+      pageEl.addEventListener('click', () => {
+        const pageId =
+          pageEl.closest<HTMLElement>('[data-page-id]')?.dataset.pageId
+        if (!pageId) return
+        this.dispatchEvent(
+          new CustomEvent('formeditor:select', {
+            detail: { kind: 'page', id: pageId },
+            bubbles: true,
+            composed: true,
+          }),
+        )
+      })
+    }
     for (const btn of this.querySelectorAll<HTMLButtonElement>(
       '[data-action]',
     )) {
