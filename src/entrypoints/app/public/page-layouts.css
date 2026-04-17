@@ -64,6 +64,13 @@
   padding-block: var(--flex-space-lg);
 }
 
+/* Full-width content — no max-width constraint.
+   Horizontal padding matches the header's internal padding. */
+.l-page-content--full {
+  padding-inline: var(--flex-space-md);
+  padding-block: var(--flex-space-lg);
+}
+
 /* Narrow and wide content-track variants.
    Overriding --flex-content-default on the page layout root changes
    the default track width for all descendants. */

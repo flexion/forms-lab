@@ -15,6 +15,7 @@ interface LayoutProps {
   sidebar?: Child
   currentPath?: string
   user?: HeaderUser | null
+  contentWidth?: 'centered' | 'full'
 }
 
 export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
@@ -126,8 +127,18 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             </main>
           </div>
         ) : (
-          <main class="l-page-content">
-            <div class="l-stack">{props.children}</div>
+          <main
+            class={
+              props.contentWidth === 'full'
+                ? 'l-page-content--full'
+                : 'l-page-content'
+            }
+          >
+            {props.contentWidth === 'full' ? (
+              props.children
+            ) : (
+              <div class="l-stack">{props.children}</div>
+            )}
           </main>
         )}
         <Footer variant="slim">
