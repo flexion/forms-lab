@@ -40,21 +40,21 @@ function setSelection(
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: generic capture
-function capture(target: HTMLElement): { get: () => any } {
+function captureStageCommands(target: HTMLElement): { all: () => any[] } {
   // biome-ignore lint/suspicious/noExplicitAny: test capture
-  let value: any = null
+  const commands: any[] = []
   target.addEventListener('formeditor:stage-command', (e: Event) => {
-    value = (e as CustomEvent).detail
+    commands.push((e as CustomEvent).detail.command)
   })
-  return { get: () => value }
+  return { all: () => commands }
 }
 
-describe('flex-editable-field preview vs selected', () => {
+describe('flex-editable-field preview', () => {
   beforeEach(() => {
     document.body.innerHTML = ''
   })
 
-  it('renders Carlos-style preview without edit chrome when not selected', () => {
+  it('renders a Carlos-style preview with no edit chrome when not selected', () => {
     const { el } = mount()
     expect(el.querySelector('.flex-form-group')).not.toBeNull()
     expect(el.querySelector('.flex-label')).not.toBeNull()
@@ -71,128 +71,100 @@ describe('flex-editable-field preview vs selected', () => {
     ;(el.querySelector('[data-action="select-field"]') as HTMLElement).click()
     expect(detail).toEqual({ kind: 'field', id: 'f1' })
   })
-
-  it('shows the edit card when selection matches', () => {
-    const { root, el } = mount()
-    setSelection(root, { kind: 'field', id: 'f1' })
-    expect(el.querySelector('.editable-field__edit')).not.toBeNull()
-    expect(el.querySelector('[data-action="save-field"]')).not.toBeNull()
-    expect(el.querySelector('[data-action="cancel-field"]')).not.toBeNull()
-  })
-
-  it('collapses back to preview when selection clears', () => {
-    const { root, el } = mount()
-    setSelection(root, { kind: 'field', id: 'f1' })
-    expect(el.querySelector('.editable-field__edit')).not.toBeNull()
-    setSelection(root, null)
-    expect(el.querySelector('.editable-field__edit')).toBeNull()
-  })
 })
 
-describe('flex-editable-field draft-and-save', () => {
+describe('flex-editable-field edit panel', () => {
   beforeEach(() => {
     document.body.innerHTML = ''
   })
 
-  it('does not stage changes until Save is clicked', () => {
+  it('shows the full labeled-form layout when selected', () => {
     const { root, el } = mount()
     setSelection(root, { kind: 'field', id: 'f1' })
-    const staged = capture(el)
-
-    // Type change — should only update draft, not stage
-    const sel = el.querySelector('.editable-field__type') as HTMLSelectElement
-    sel.value = 'phone'
-    sel.dispatchEvent(new Event('change', { bubbles: true }))
-    expect(staged.get()).toBeNull()
-
-    // Required toggle — also draft-only
-    ;(
-      el.querySelector('[data-action="toggle-required"]') as HTMLElement
-    ).click()
-    expect(staged.get()).toBeNull()
-
-    // Save button visible and enabled; click it
-    const saveBtn = el.querySelector(
-      '[data-action="save-field"]',
-    ) as HTMLButtonElement
-    expect(saveBtn.disabled).toBe(false)
-    saveBtn.click()
-
-    // One stage event per changed property (use document to collect)
-    // Re-run with a collecting listener this time
+    expect(el.querySelector('.editable-field__edit')).not.toBeNull()
+    expect(el.querySelector('[data-prop="label"]')).not.toBeNull()
+    expect(el.querySelector('[data-prop="fieldType"]')).not.toBeNull()
+    expect(el.querySelector('[data-prop="required"]')).not.toBeNull()
+    expect(el.querySelector('[data-prop="helpText"]')).not.toBeNull()
+    expect(el.querySelector('[data-prop="sensitivity"]')).not.toBeNull()
+    expect(el.querySelector('[data-prop="control"]')).not.toBeNull()
+    expect(el.querySelector('[data-prop="moveToGroup"]')).not.toBeNull()
+    expect(el.querySelector('[data-action="save-field"]')).not.toBeNull()
+    expect(el.querySelector('[data-action="cancel-field"]')).not.toBeNull()
+    expect(el.querySelector('[data-action="remove-field"]')).not.toBeNull()
   })
 
-  it('Save dispatches a stage-command per changed property', () => {
+  it('Save button starts disabled and enables after any property changes', () => {
     const { root, el } = mount()
     setSelection(root, { kind: 'field', id: 'f1' })
-    // biome-ignore lint/suspicious/noExplicitAny: test capture
-    const commands: any[] = []
-    root.addEventListener('formeditor:stage-command', (e: Event) => {
-      commands.push((e as CustomEvent).detail.command)
-    })
+    const saveBtn = el.querySelector<HTMLButtonElement>(
+      '[data-action="save-field"]',
+    )!
+    expect(saveBtn.disabled).toBe(true)
+    const typeSel = el.querySelector<HTMLSelectElement>(
+      '[data-prop="fieldType"]',
+    )!
+    typeSel.value = 'phone'
+    typeSel.dispatchEvent(new Event('change', { bubbles: true }))
+    expect(saveBtn.disabled).toBe(false)
+  })
 
-    const sel = el.querySelector('.editable-field__type') as HTMLSelectElement
-    sel.value = 'phone'
-    sel.dispatchEvent(new Event('change', { bubbles: true }))
-    ;(
-      el.querySelector('[data-action="toggle-required"]') as HTMLElement
-    ).click()
+  it('edits do not stage until Save is clicked', () => {
+    const { root, el } = mount()
+    setSelection(root, { kind: 'field', id: 'f1' })
+    const staged = captureStageCommands(root)
+    const typeSel = el.querySelector<HTMLSelectElement>(
+      '[data-prop="fieldType"]',
+    )!
+    typeSel.value = 'phone'
+    typeSel.dispatchEvent(new Event('change', { bubbles: true }))
+    const req = el.querySelector<HTMLInputElement>('[data-prop="required"]')!
+    req.checked = true
+    req.dispatchEvent(new Event('change', { bubbles: true }))
+    expect(staged.all()).toEqual([])
+  })
+
+  it('Save dispatches one stage-command per changed property', () => {
+    const { root, el } = mount()
+    setSelection(root, { kind: 'field', id: 'f1' })
+    const staged = captureStageCommands(root)
+    const typeSel = el.querySelector<HTMLSelectElement>(
+      '[data-prop="fieldType"]',
+    )!
+    typeSel.value = 'phone'
+    typeSel.dispatchEvent(new Event('change', { bubbles: true }))
+    const req = el.querySelector<HTMLInputElement>('[data-prop="required"]')!
+    req.checked = true
+    req.dispatchEvent(new Event('change', { bubbles: true }))
     ;(el.querySelector('[data-action="save-field"]') as HTMLElement).click()
-
-    const kinds = commands.map((c) => c.kind)
+    const kinds = staged.all().map((c) => c.kind)
     expect(kinds).toContain('changeFieldType')
     expect(kinds).toContain('setRequired')
   })
 
-  it('Cancel discards the draft without staging', () => {
+  it('Cancel leaves nothing staged', () => {
     const { root, el } = mount()
     setSelection(root, { kind: 'field', id: 'f1' })
-    const staged = capture(el)
-
-    const sel = el.querySelector('.editable-field__type') as HTMLSelectElement
-    sel.value = 'phone'
-    sel.dispatchEvent(new Event('change', { bubbles: true }))
+    const staged = captureStageCommands(root)
+    const typeSel = el.querySelector<HTMLSelectElement>(
+      '[data-prop="fieldType"]',
+    )!
+    typeSel.value = 'phone'
+    typeSel.dispatchEvent(new Event('change', { bubbles: true }))
     ;(el.querySelector('[data-action="cancel-field"]') as HTMLElement).click()
-    expect(staged.get()).toBeNull()
+    expect(staged.all()).toEqual([])
   })
 
-  it('Save button is disabled while no changes are made', () => {
+  it('Delete field stages immediately and deselects', () => {
     const { root, el } = mount()
     setSelection(root, { kind: 'field', id: 'f1' })
-    const saveBtn = el.querySelector(
-      '[data-action="save-field"]',
-    ) as HTMLButtonElement
-    expect(saveBtn.disabled).toBe(true)
-  })
-
-  it('remove-field acts immediately (structural, not drafted)', () => {
-    const { root, el } = mount()
-    setSelection(root, { kind: 'field', id: 'f1' })
-    // biome-ignore lint/suspicious/noExplicitAny: test capture
-    let staged: any = null
-    root.addEventListener('formeditor:stage-command', (e: Event) => {
-      staged = (e as CustomEvent).detail
+    const staged = captureStageCommands(root)
+    let deselected = false
+    root.addEventListener('formeditor:deselect', () => {
+      deselected = true
     })
     ;(el.querySelector('[data-action="remove-field"]') as HTMLElement).click()
-    expect(staged.command).toEqual({ kind: 'removeField', id: 'f1' })
-  })
-
-  it('label edit updates the draft and only stages on Save', () => {
-    const { root, el } = mount()
-    setSelection(root, { kind: 'field', id: 'f1' })
-    const staged = capture(root)
-    ;(el.querySelector('.editable-field__label') as HTMLElement).click()
-    const input = el.querySelector(
-      '.editable-field__label-input',
-    ) as HTMLInputElement
-    input.value = 'Email address'
-    input.dispatchEvent(new Event('blur', { bubbles: true }))
-    expect(staged.get()).toBeNull()
-    ;(el.querySelector('[data-action="save-field"]') as HTMLElement).click()
-    expect(staged.get().command).toEqual({
-      kind: 'relabelField',
-      id: 'f1',
-      label: 'Email address',
-    })
+    expect(staged.all()).toEqual([{ kind: 'removeField', id: 'f1' }])
+    expect(deselected).toBe(true)
   })
 })

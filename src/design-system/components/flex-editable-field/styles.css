@@ -2,132 +2,116 @@
   flex-editable-field {
     display: block;
   }
+
+  /* --- Preview: hover reveals this row is clickable --- */
+
   .editable-field__preview {
     cursor: pointer;
     border-radius: var(--flex-radius-md);
     padding: var(--flex-space-sm) var(--flex-space-md);
     margin-inline: calc(-1 * var(--flex-space-md));
     border: 1px solid transparent;
-    transition: border-color 100ms ease, background 100ms ease;
+    transition:
+      border-color 100ms ease,
+      background 100ms ease;
   }
   .editable-field__preview:hover,
   .editable-field__preview:focus-visible {
     border-color: var(--flex-color-border);
     background: var(--flex-color-bg-subtle);
   }
+
+  /* --- Edit: labeled-form panel, every property visible --- */
+
   .editable-field__edit {
     position: relative;
     margin-block: var(--flex-space-sm);
+    padding: var(--flex-space-lg) var(--flex-space-md) var(--flex-space-md);
     border: 2px solid var(--flex-color-accent);
     border-radius: var(--flex-radius-md);
-    padding: var(--flex-space-lg) var(--flex-space-md) var(--flex-space-md);
     background: color-mix(
       in srgb,
-      var(--flex-color-accent) 5%,
+      var(--flex-color-accent) 4%,
       var(--flex-color-surface)
     );
     box-shadow:
-      0 0 0 6px color-mix(in srgb, var(--flex-color-accent) 12%, transparent),
+      0 0 0 6px color-mix(in srgb, var(--flex-color-accent) 10%, transparent),
       var(--flex-shadow-md);
-    display: flex;
-    flex-direction: column;
-    gap: var(--flex-space-md);
   }
-  .editable-field__edit::before {
-    content: 'Editing field';
-    position: absolute;
-    inset-block-start: calc(-1 * var(--flex-space-xs));
-    inset-inline-start: var(--flex-space-sm);
+
+  .editable-field__edit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: var(--flex-space-md);
+  }
+
+  .editable-field__edit-badge {
+    display: inline-block;
+    padding: 2px var(--flex-space-xs);
+    border-radius: var(--flex-radius-sm);
     background: var(--flex-color-accent);
     color: var(--flex-color-surface);
     font-size: var(--flex-text-xs);
     font-weight: 600;
     letter-spacing: 0.02em;
-    padding: 2px var(--flex-space-xs);
-    border-radius: var(--flex-radius-sm);
   }
-  .editable-field__edit-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--flex-space-sm);
-    flex-wrap: wrap;
-  }
-  .editable-field__label-wrap {
-    display: inline-flex;
-    align-items: baseline;
-    gap: var(--flex-space-xs);
-  }
-  .editable-field__label {
-    font-weight: 600;
-    cursor: text;
-    border-radius: var(--flex-radius-sm);
-    padding-inline: var(--flex-space-2xs);
-  }
-  .editable-field__label:hover,
-  .editable-field__label:focus-visible {
-    outline: 2px solid var(--flex-color-accent);
-  }
-  .editable-field__required {
-    color: var(--flex-color-error);
-    font-weight: 700;
-  }
-  .editable-field__optional {
-    color: var(--flex-color-text-muted);
-    font-size: var(--flex-text-xs);
-  }
-  .editable-field__label-input {
-    font-weight: 600;
-  }
-  .editable-field__toolbar {
-    display: flex;
-    gap: var(--flex-space-sm);
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .editable-field__chip[aria-pressed='true'] {
-    background: var(--flex-color-accent);
-    border-color: var(--flex-color-accent);
-  }
-  /* Override .flex-select's full-width form-field layout so it sits
-     inline among toolbar buttons. */
-  .editable-field__type.flex-select {
-    display: inline-block;
-    inline-size: auto;
-    max-inline-size: min(12rem, 100%);
-    block-size: auto;
-    margin-block-start: 0;
-    padding-block: var(--flex-space-2xs);
-    padding-inline: var(--flex-space-xs) 2rem;
-    font-size: var(--flex-text-sm);
-  }
-  .editable-field__more {
-    padding: var(--flex-space-xs);
-    background: var(--flex-color-bg-subtle);
-    border-radius: var(--flex-radius-sm);
+
+  .editable-field__form {
     display: grid;
     grid-template-columns: max-content 1fr;
-    gap: var(--flex-space-xs) var(--flex-space-sm);
+    gap: var(--flex-space-sm) var(--flex-space-md);
+    align-items: baseline;
+  }
+
+  .editable-field__form > .flex-label {
+    margin-block: 0;
+    padding-block-start: var(--flex-space-2xs);
+  }
+
+  /* Controls in grid cells: override .flex-input / .flex-select defaults that
+     assume they're the sole form-field in a column (max-inline-size,
+     margin-block-start from form-control base), so they fit each cell cleanly. */
+  .editable-field__form .flex-input,
+  .editable-field__form .flex-select {
+    max-inline-size: none;
+    margin-block-start: 0;
+  }
+
+  .editable-field__checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--flex-space-xs);
+    margin-block-start: 0;
+  }
+
+  .editable-field__condition {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto;
+    gap: var(--flex-space-xs);
     align-items: center;
   }
-  .editable-field__more[hidden] {
-    display: none;
-  }
-  .editable-field__footer {
+
+  .editable-field__edit-footer {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: var(--flex-space-sm);
+    margin-block-start: var(--flex-space-lg);
+    padding-block-start: var(--flex-space-md);
+    border-block-start: 1px solid var(--flex-color-border);
+  }
+
+  .editable-field__edit-actions {
+    display: inline-flex;
     align-items: center;
     gap: var(--flex-space-sm);
-    padding-block-start: var(--flex-space-xs);
-    border-block-start: 1px dashed var(--flex-color-border);
   }
-  .editable-field__footer-actions {
-    display: inline-flex;
-    gap: var(--flex-space-xs);
-  }
+
   .editable-field__dirty {
     font-size: var(--flex-text-xs);
     color: var(--flex-color-text-muted);
     font-style: italic;
+    margin-inline-end: var(--flex-space-xs);
   }
 }
