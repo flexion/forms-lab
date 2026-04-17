@@ -15,10 +15,23 @@ export interface ShapingLogEntryClient {
   explanation: string
 }
 
+export type SelectionTarget = {
+  kind: 'page' | 'group' | 'field'
+  id: string
+}
+
 export type FormEditorEvent =
   | {
       type: 'formeditor:select'
-      detail: { kind: 'page' | 'group' | 'field'; id: string }
+      detail: SelectionTarget
+    }
+  | {
+      type: 'formeditor:deselect'
+      detail: Record<string, never>
+    }
+  | {
+      type: 'formeditor:selection-changed'
+      detail: { selection: SelectionTarget | null }
     }
   | {
       type: 'formeditor:proposal-received'

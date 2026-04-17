@@ -1,6 +1,6 @@
 import type { Command } from '../../../services/forms/shaping/commands'
 import { executeBatch } from '../../../services/forms/shaping/executor'
-import type { ProjectStateClient } from './protocol'
+import type { ProjectStateClient, SelectionTarget } from './protocol'
 
 interface AssistantElement extends HTMLElement {
   addMessage: (role: string, html: string) => void
@@ -101,6 +101,7 @@ class FlexFormEditor extends HTMLElement {
   private lastBatchSummary = ''
   private proposal: ProposalState | null = null
   private selectedPageIndex = 0
+  private selection: SelectionTarget | null = null
 
   connectedCallback() {
     this.hydrateState()
@@ -147,10 +148,18 @@ class FlexFormEditor extends HTMLElement {
       this.handleIntent(detail.text)
     })
 
-    // From flex-form-structure: page selection
+    // Selection events
     this.addEventListener('formeditor:select', (e) =>
       this.handleSelect((e as CustomEvent).detail),
     )
+    this.addEventListener('formeditor:deselect', () => this.clearSelection())
+
+    // Escape (document-level) clears selection
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.selection) {
+        this.clearSelection()
+      }
+    })
 
     // Stage a single command into the buffer
     this.addEventListener('formeditor:stage-command', (e) => {
@@ -193,6 +202,16 @@ class FlexFormEditor extends HTMLElement {
         if (a === 'save-staged') this.saveStaged()
         if (a === 'discard-staged') this.discardStaged()
         if (a === 'toggle-staged') this.toggleStagedPopover()
+        return
+      }
+      // Background click: clear selection if target is not inside any editable element
+      if (
+        this.selection &&
+        !target.closest(
+          'flex-editable-field, flex-editable-group, flex-editable-page, flex-form-structure, flex-assistant, flex-staged-changes',
+        )
+      ) {
+        this.clearSelection()
       }
     })
 
@@ -309,10 +328,7 @@ class FlexFormEditor extends HTMLElement {
     this.handleAccept()
   }
 
-  private handleSelect(detail: {
-    kind: 'page' | 'group' | 'field'
-    id: string
-  }) {
+  private handleSelect(detail: SelectionTarget) {
     if (detail.kind === 'page' && this.state) {
       const idx = this.state.formSpec.pages.findIndex((p) => p.id === detail.id)
       if (idx >= 0) {
@@ -320,6 +336,23 @@ class FlexFormEditor extends HTMLElement {
         this.reloadPreview()
       }
     }
+    this.selection = detail
+    this.broadcastSelection()
+  }
+
+  private clearSelection() {
+    if (!this.selection) return
+    this.selection = null
+    this.broadcastSelection()
+  }
+
+  private broadcastSelection() {
+    this.dispatchEvent(
+      new CustomEvent('formeditor:selection-changed', {
+        detail: { selection: this.selection },
+        bubbles: false,
+      }),
+    )
   }
 
   private appendToBuffer(commands: Command[]) {

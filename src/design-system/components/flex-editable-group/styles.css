@@ -1,47 +1,64 @@
 @layer block {
   flex-editable-group {
     display: block;
-    border: 1px solid var(--flex-color-border);
-    border-radius: var(--flex-radius-md);
-    padding: var(--flex-space-sm);
     margin-block-end: var(--flex-space-md);
   }
-  .editable-group__header {
-    display: flex;
-    align-items: center;
-    gap: var(--flex-space-xs);
-    margin-block-end: var(--flex-space-sm);
+  .editable-group__fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
   }
-  .editable-group__title {
-    flex: 1;
+  .editable-group__fieldset--selected {
+    border: 1px solid var(--flex-color-accent);
+    border-radius: var(--flex-radius-md);
+    padding: var(--flex-space-sm);
+    background: var(--flex-color-surface);
+  }
+  .editable-group__legend {
     font-size: var(--flex-text-md);
     font-weight: 600;
-    margin: 0;
-    cursor: text;
+    padding: 0;
+    cursor: pointer;
     border-radius: var(--flex-radius-sm);
     padding-inline: var(--flex-space-2xs);
+  }
+  .editable-group__legend:hover,
+  .editable-group__legend:focus-visible {
+    outline: 2px solid var(--flex-color-accent);
+  }
+  .editable-group__legend--selected {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--flex-space-sm);
+    cursor: default;
+    outline: none;
+  }
+  .editable-group__legend--selected:hover,
+  .editable-group__legend--selected:focus-visible {
+    outline: none;
+  }
+  .editable-group__title {
+    font-weight: 600;
+    cursor: text;
+    padding-inline: var(--flex-space-2xs);
+    border-radius: var(--flex-radius-sm);
   }
   .editable-group__title:hover,
   .editable-group__title:focus-visible {
     outline: 2px solid var(--flex-color-accent);
   }
   .editable-group__title-input {
-    flex: 1;
     font-weight: 600;
   }
   .editable-group__toolbar {
-    display: flex;
+    display: inline-flex;
     gap: var(--flex-space-2xs);
-    opacity: 0;
-    transition: opacity 120ms ease;
-  }
-  flex-editable-group:hover .editable-group__toolbar,
-  flex-editable-group:focus-within .editable-group__toolbar {
-    opacity: 1;
   }
   .editable-group__fields {
     display: flex;
     flex-direction: column;
     gap: var(--flex-space-xs);
+    margin-block-start: var(--flex-space-sm);
   }
 }

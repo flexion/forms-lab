@@ -1,5 +1,6 @@
 import type { DataRequirement } from '../../../services/data-collection/types'
 import type { Command } from '../../../services/forms/shaping/commands'
+import type { SelectionTarget } from '../flex-form-editor/protocol'
 
 const FIELD_TYPES = [
   'text',
@@ -32,8 +33,25 @@ const INPUT_TYPE_FOR_FIELD: Record<(typeof FIELD_TYPES)[number], string> = {
 
 class FlexEditableField extends HTMLElement {
   private field: DataRequirement | null = null
+  private selected = false
   private moreOpen = false
   private editingLabel = false
+
+  connectedCallback() {
+    const root = this.closest('flex-form-editor')
+    if (root) {
+      root.addEventListener('formeditor:selection-changed', (e) => {
+        const sel = (e as CustomEvent).detail
+          .selection as SelectionTarget | null
+        const wasSelected = this.selected
+        this.selected = sel?.kind === 'field' && sel.id === this.field?.id
+        if (wasSelected !== this.selected) {
+          if (!this.selected) this.moreOpen = false
+          this.render()
+        }
+      })
+    }
+  }
 
   update(field: DataRequirement, _groupId: string): void {
     this.field = field
@@ -53,36 +71,49 @@ class FlexEditableField extends HTMLElement {
   private render() {
     const f = this.field
     if (!f) return
-    const required = f.required === true
-    const inputType = INPUT_TYPE_FOR_FIELD[f.fieldType] ?? 'text'
-
-    this.innerHTML = `
-      <div class="editable-field__preview">
-        <div class="editable-field__label-wrap">
-          <span class="editable-field__label" tabindex="0" data-action="edit-label" title="Click to rename">${escapeHtml(f.label)}</span>
-          ${required ? '<span class="editable-field__required" aria-hidden="true">*</span>' : '<span class="editable-field__optional">(optional)</span>'}
-        </div>
-        ${this.renderControl(f, inputType)}
-      </div>
-      <div class="editable-field__toolbar" role="toolbar" aria-label="Field actions">
-        ${this.renderTypeSelect(f)}
-        <button type="button" class="flex-button editable-field__chip" data-variant="ghost" data-action="toggle-required" aria-pressed="${required}" title="Toggle required">${required ? 'Required' : 'Optional'}</button>
-        <button type="button" class="flex-button" data-variant="ghost" data-action="toggle-more" aria-expanded="${this.moreOpen}" title="More settings">&hellip;</button>
-        <button type="button" class="flex-button" data-variant="ghost" data-action="remove-field" aria-label="Remove field" title="Delete field">&times;</button>
-      </div>
-      <div class="editable-field__more" ${this.moreOpen ? '' : 'hidden'} data-more>
-        ${this.renderMore(f)}
-      </div>
-    `
-    this.bind()
+    if (this.selected) {
+      this.renderEdit(f)
+    } else {
+      this.renderPreview(f)
+    }
   }
 
-  private renderControl(f: DataRequirement, inputType: string): string {
+  private renderPreview(f: DataRequirement) {
+    const required = f.required === true
+    this.innerHTML = `
+      <div class="flex-form-group editable-field__preview" tabindex="0" data-action="select-field">
+        <div class="l-stack" style="--stack-space: var(--flex-space-xs)">
+          ${this.renderPreviewLabel(f, required)}
+          ${f.helpText ? `<span class="flex-hint">${escapeHtml(f.helpText)}</span>` : ''}
+          ${this.renderControl(f)}
+        </div>
+      </div>
+    `
+    const wrap = this.querySelector<HTMLElement>('[data-action="select-field"]')
+    wrap?.addEventListener('click', () => this.select())
+    wrap?.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key === 'Enter') {
+        e.preventDefault()
+        this.select()
+      }
+    })
+  }
+
+  private renderPreviewLabel(f: DataRequirement, required: boolean): string {
+    if (f.fieldType === 'boolean' || f.fieldType === 'date') return ''
+    const optional = !required
+      ? ' <span class="flex-label__optional">(optional)</span>'
+      : ''
+    return `<label class="flex-label">${escapeHtml(f.label)}${optional}</label>`
+  }
+
+  private renderControl(f: DataRequirement): string {
+    const inputType = INPUT_TYPE_FOR_FIELD[f.fieldType] ?? 'text'
     if (f.fieldType === 'longText') {
-      return `<textarea class="flex-textarea editable-field__control" rows="2" readonly tabindex="-1" aria-hidden="true"></textarea>`
+      return `<textarea class="flex-textarea" readonly tabindex="-1" aria-hidden="true" rows="2"></textarea>`
     }
     if (f.fieldType === 'boolean') {
-      return `<label class="editable-field__boolean"><input type="checkbox" disabled tabindex="-1" />${escapeHtml(f.label)}</label>`
+      return `<label class="flex-checkbox"><input type="checkbox" disabled tabindex="-1" /> ${escapeHtml(f.label)}</label>`
     }
     if (
       f.fieldType === 'choice' &&
@@ -92,9 +123,35 @@ class FlexEditableField extends HTMLElement {
       const options = f.choices
         .map((c) => `<option>${escapeHtml(c)}</option>`)
         .join('')
-      return `<select class="flex-select editable-field__control" disabled tabindex="-1" aria-hidden="true"><option>&mdash;</option>${options}</select>`
+      return `<select class="flex-select" disabled tabindex="-1" aria-hidden="true"><option>&mdash;</option>${options}</select>`
     }
-    return `<input type="${inputType}" class="flex-input editable-field__control" readonly tabindex="-1" aria-hidden="true" />`
+    return `<input class="flex-input" type="${inputType}" readonly tabindex="-1" aria-hidden="true" />`
+  }
+
+  private renderEdit(f: DataRequirement) {
+    const required = f.required === true
+    this.innerHTML = `
+      <div class="editable-field__edit">
+        <div class="editable-field__edit-header">
+          <span class="editable-field__label-wrap">
+            <span class="editable-field__label" tabindex="0" data-action="edit-label" title="Click to rename">${escapeHtml(f.label)}</span>
+            ${required ? '<span class="editable-field__required" aria-hidden="true">*</span>' : '<span class="editable-field__optional">(optional)</span>'}
+          </span>
+          <div class="editable-field__toolbar" role="toolbar" aria-label="Field actions">
+            ${this.renderTypeSelect(f)}
+            <button type="button" class="flex-button editable-field__chip" data-variant="ghost" data-action="toggle-required" aria-pressed="${required}" title="Toggle required">${required ? 'Required' : 'Optional'}</button>
+            <button type="button" class="flex-button" data-variant="ghost" data-action="toggle-more" aria-expanded="${this.moreOpen}" title="More settings">&hellip;</button>
+            <button type="button" class="flex-button" data-variant="ghost" data-action="remove-field" aria-label="Remove field" title="Delete field">&times;</button>
+            <button type="button" class="flex-button" data-variant="ghost" data-action="deselect-field" aria-label="Done editing" title="Done">Done</button>
+          </div>
+        </div>
+        ${this.renderControl(f)}
+        <div class="editable-field__more" ${this.moreOpen ? '' : 'hidden'} data-more>
+          ${this.renderMore(f)}
+        </div>
+      </div>
+    `
+    this.bindEdit()
   }
 
   private renderTypeSelect(f: DataRequirement): string {
@@ -135,9 +192,12 @@ class FlexEditableField extends HTMLElement {
     `
   }
 
-  private bind() {
+  private bindEdit() {
     const labelEl = this.querySelector<HTMLElement>('.editable-field__label')
-    labelEl?.addEventListener('click', () => this.startEditingLabel())
+    labelEl?.addEventListener('click', (e) => {
+      e.stopPropagation()
+      this.startEditingLabel()
+    })
     labelEl?.addEventListener('keydown', (e) => {
       if ((e as KeyboardEvent).key === 'Enter') {
         e.preventDefault()
@@ -192,6 +252,11 @@ class FlexEditableField extends HTMLElement {
         const btn = this.querySelector('[data-action="toggle-more"]')
         btn?.setAttribute('aria-expanded', String(this.moreOpen))
       },
+    )
+
+    this.querySelector('[data-action="deselect-field"]')?.addEventListener(
+      'click',
+      () => this.deselect(),
     )
 
     const sensSel = this.querySelector<HTMLSelectElement>(
@@ -278,6 +343,27 @@ class FlexEditableField extends HTMLElement {
           `Show "${this.field.label}" when ${fieldRef.value} ${opSel.value} ${valInput.value}`,
         )
       },
+    )
+  }
+
+  private select() {
+    if (!this.field) return
+    this.dispatchEvent(
+      new CustomEvent('formeditor:select', {
+        detail: { kind: 'field', id: this.field.id },
+        bubbles: true,
+        composed: true,
+      }),
+    )
+  }
+
+  private deselect() {
+    this.dispatchEvent(
+      new CustomEvent('formeditor:deselect', {
+        detail: {},
+        bubbles: true,
+        composed: true,
+      }),
     )
   }
 

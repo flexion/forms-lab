@@ -34,57 +34,101 @@ const STATE = {
   },
 }
 
-describe('flex-editable-page', () => {
+function mount() {
+  document.body.innerHTML = ''
+  const root = document.createElement('flex-form-editor')
+  const el = document.createElement('flex-editable-page')
+  root.appendChild(el)
+  document.body.appendChild(root)
+  // biome-ignore lint/suspicious/noExplicitAny: test access to update()
+  ;(el as any).update(STATE, 0)
+  return { root, el }
+}
+
+function setSelection(
+  root: HTMLElement,
+  selection: { kind: string; id: string } | null,
+) {
+  root.dispatchEvent(
+    new CustomEvent('formeditor:selection-changed', {
+      detail: { selection },
+      bubbles: false,
+    }),
+  )
+}
+
+describe('flex-editable-page preview', () => {
   beforeEach(() => {
     document.body.innerHTML = ''
   })
 
-  it('renders page tabs and a header for the selected page', () => {
-    const el = document.createElement('flex-editable-page') as any
-    document.body.appendChild(el)
-    el.update(STATE, 0)
+  it('renders page tabs and a plain title header by default', () => {
+    const { el } = mount()
     const tabs = el.querySelectorAll('.editable-page__tab')
     expect(tabs.length).toBe(2)
     expect(tabs[0].getAttribute('aria-selected')).toBe('true')
-    expect(el.querySelector('.editable-page__title').textContent).toBe('Page A')
-    expect(el.querySelector('.editable-page__title-input')).toBeNull()
+    expect(el.querySelector('.editable-page__title')!.textContent).toBe(
+      'Page A',
+    )
+    // No toolbar in preview
+    expect(el.querySelector('.editable-page__toolbar')).toBeNull()
+    expect(el.querySelector('[data-action="add-page"]')).toBeNull()
   })
 
-  it('emits select event on tab click', () => {
-    const el = document.createElement('flex-editable-page') as any
-    document.body.appendChild(el)
-    el.update(STATE, 0)
-    let detail: any = null
-    el.addEventListener('formeditor:select', (e: any) => {
-      detail = e.detail
+  it('tab click switches page and deselects', () => {
+    const { el } = mount()
+    let deselected = false
+    el.addEventListener('formeditor:deselect', () => {
+      deselected = true
     })
-    el.querySelectorAll('.editable-page__tab')[1].dispatchEvent(
-      new MouseEvent('click', { bubbles: true }),
+    ;(el.querySelectorAll('.editable-page__tab')[1] as HTMLElement).click()
+    expect(deselected).toBe(true)
+    expect(el.querySelector('.editable-page__title')!.textContent).toBe(
+      'Page B',
     )
-    expect(detail).toEqual({ kind: 'page', id: 'p2' })
+  })
+
+  it('title click dispatches formeditor:select for the current page', () => {
+    const { el } = mount()
+    // biome-ignore lint/suspicious/noExplicitAny: test capture
+    let detail: any = null
+    el.addEventListener('formeditor:select', (e: Event) => {
+      detail = (e as CustomEvent).detail
+    })
+    ;(el.querySelector('.editable-page__title') as HTMLElement).click()
+    expect(detail).toEqual({ kind: 'page', id: 'p1' })
   })
 })
 
-describe('flex-editable-page page actions', () => {
+describe('flex-editable-page selected', () => {
   beforeEach(() => {
     document.body.innerHTML = ''
   })
 
-  it('enters edit mode on title click and commits renamePage on blur', () => {
-    const el = document.createElement('flex-editable-page') as any
-    document.body.appendChild(el)
-    el.update(STATE, 0)
+  it('shows the page toolbar once selected', () => {
+    const { root, el } = mount()
+    setSelection(root, { kind: 'page', id: 'p1' })
+    expect(el.querySelector('.editable-page__toolbar')).not.toBeNull()
+    expect(el.querySelector('[data-action="add-page"]')).not.toBeNull()
+    expect(el.querySelector('[data-action="remove-page"]')).not.toBeNull()
+    expect(el.querySelector('[data-action="deselect-page"]')).not.toBeNull()
+  })
+
+  it('commits renamePage after clicking title and blurring', () => {
+    const { root, el } = mount()
+    setSelection(root, { kind: 'page', id: 'p1' })
+    // biome-ignore lint/suspicious/noExplicitAny: test capture
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => {
-      staged = e.detail
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
     })
     ;(el.querySelector('.editable-page__title') as HTMLElement).click()
-    const titleInput = el.querySelector(
+    const input = el.querySelector(
       '.editable-page__title-input',
     ) as HTMLInputElement
-    expect(titleInput).not.toBeNull()
-    titleInput.value = 'Renamed'
-    titleInput.dispatchEvent(new Event('blur', { bubbles: true }))
+    expect(input).not.toBeNull()
+    input.value = 'Renamed'
+    input.dispatchEvent(new Event('blur', { bubbles: true }))
     expect(staged.command).toEqual({
       kind: 'renamePage',
       id: 'p1',
@@ -92,42 +136,38 @@ describe('flex-editable-page page actions', () => {
     })
   })
 
-  it('emits stage-command addPage when +Page is clicked', () => {
-    const el = document.createElement('flex-editable-page') as any
-    document.body.appendChild(el)
-    el.update(STATE, 0)
+  it('emits addPage from the toolbar', () => {
+    const { root, el } = mount()
+    setSelection(root, { kind: 'page', id: 'p1' })
+    // biome-ignore lint/suspicious/noExplicitAny: test capture
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => {
-      staged = e.detail
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
     })
-    el.querySelector('[data-action="add-page"]').dispatchEvent(
-      new MouseEvent('click', { bubbles: true }),
-    )
+    ;(el.querySelector('[data-action="add-page"]') as HTMLElement).click()
     expect(staged.command.kind).toBe('addPage')
     expect(staged.command.title).toMatch(/New page/)
   })
 
-  it('emits removePage stage-command on delete', () => {
-    const el = document.createElement('flex-editable-page') as any
-    document.body.appendChild(el)
-    el.update(STATE, 0)
+  it('emits removePage on delete', () => {
+    const { root, el } = mount()
+    setSelection(root, { kind: 'page', id: 'p1' })
+    // biome-ignore lint/suspicious/noExplicitAny: test capture
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => {
-      staged = e.detail
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
     })
-    el.querySelector('[data-action="remove-page"]').dispatchEvent(
-      new MouseEvent('click', { bubbles: true }),
-    )
+    ;(el.querySelector('[data-action="remove-page"]') as HTMLElement).click()
     expect(staged.command).toEqual({ kind: 'removePage', id: 'p1' })
   })
 
-  it('emits setDeliveryMode on select change', () => {
-    const el = document.createElement('flex-editable-page') as any
-    document.body.appendChild(el)
-    el.update(STATE, 0)
+  it('emits setDeliveryMode on delivery change', () => {
+    const { root, el } = mount()
+    setSelection(root, { kind: 'page', id: 'p1' })
+    // biome-ignore lint/suspicious/noExplicitAny: test capture
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => {
-      staged = e.detail
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
     })
     const select = el.querySelector(
       '.editable-page__delivery',
@@ -141,28 +181,37 @@ describe('flex-editable-page page actions', () => {
     })
   })
 
-  it('emits swapPages when up/down arrows clicked', () => {
-    const el = document.createElement('flex-editable-page') as any
-    document.body.appendChild(el)
-    el.update(STATE, 0)
+  it('emits swapPages on page-down', () => {
+    const { root, el } = mount()
+    setSelection(root, { kind: 'page', id: 'p1' })
+    // biome-ignore lint/suspicious/noExplicitAny: test capture
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => {
-      staged = e.detail
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
     })
-    el.querySelector('[data-action="page-down"]').dispatchEvent(
-      new MouseEvent('click', { bubbles: true }),
-    )
+    ;(el.querySelector('[data-action="page-down"]') as HTMLElement).click()
     expect(staged.command).toEqual({ kind: 'swapPages', a: 'p1', b: 'p2' })
+  })
+
+  it('emits addGroup from the footer', () => {
+    const { root, el } = mount()
+    setSelection(root, { kind: 'page', id: 'p1' })
+    // biome-ignore lint/suspicious/noExplicitAny: test capture
+    let staged: any = null
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
+    })
+    ;(el.querySelector('[data-action="add-group"]') as HTMLElement).click()
+    expect(staged.command.kind).toBe('addGroup')
+    expect(staged.command.pageId).toBe('p1')
   })
 })
 
 describe('flex-editable-page renders groups', () => {
   it('renders one flex-editable-group per group on the page', () => {
-    const el = document.createElement('flex-editable-page') as any
-    document.body.appendChild(el)
-    el.update(STATE, 0)
+    const { el } = mount()
     const groups = el.querySelectorAll('flex-editable-group')
     expect(groups.length).toBe(1)
-    expect(groups[0].dataset.groupId).toBe('g1')
+    expect((groups[0] as HTMLElement).dataset.groupId).toBe('g1')
   })
 })

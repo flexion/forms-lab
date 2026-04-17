@@ -1,9 +1,24 @@
 import type { RequirementGroup } from '../../../services/data-collection/types'
 import type { Command } from '../../../services/forms/shaping/commands'
+import type { SelectionTarget } from '../flex-form-editor/protocol'
 
 class FlexEditableGroup extends HTMLElement {
   private group: RequirementGroup | null = null
+  private selected = false
   private editingTitle = false
+
+  connectedCallback() {
+    const root = this.closest('flex-form-editor')
+    if (root) {
+      root.addEventListener('formeditor:selection-changed', (e) => {
+        const sel = (e as CustomEvent).detail
+          .selection as SelectionTarget | null
+        const wasSelected = this.selected
+        this.selected = sel?.kind === 'group' && sel.id === this.group?.id
+        if (wasSelected !== this.selected) this.render()
+      })
+    }
+  }
 
   update(group: RequirementGroup): void {
     this.group = group
@@ -32,47 +47,77 @@ class FlexEditableGroup extends HTMLElement {
           `<flex-editable-field data-field-id="${req.id}" data-group-id="${g.id}"></flex-editable-field>`,
       )
       .join('')
-    this.innerHTML = `
-      <header class="editable-group__header">
-        <h3 class="editable-group__title" tabindex="0" data-action="edit-title" title="Click to rename group">${escapeHtml(g.title)}</h3>
-        <div class="editable-group__toolbar" role="toolbar" aria-label="Group actions">
-          <button type="button" class="flex-button" data-variant="ghost" data-action="add-field" title="Add field">+ Field</button>
-          <button type="button" class="flex-button" data-variant="ghost" data-action="remove-group" aria-label="Remove group" title="Delete group">&times;</button>
-        </div>
-      </header>
-      <div class="editable-group__fields">${fields}</div>
-    `
-    const titleEl = this.querySelector<HTMLElement>('.editable-group__title')
-    titleEl?.addEventListener('click', () => this.startEditingTitle())
-    titleEl?.addEventListener('keydown', (e) => {
-      if ((e as KeyboardEvent).key === 'Enter') {
-        e.preventDefault()
-        this.startEditingTitle()
-      }
-    })
+    const titleMarkup = this.selected
+      ? `<legend class="editable-group__legend editable-group__legend--selected">
+          <span class="editable-group__title" tabindex="0" data-action="edit-title" title="Click to rename group">${escapeHtml(g.title)}</span>
+          <span class="editable-group__toolbar" role="toolbar" aria-label="Group actions">
+            <button type="button" class="flex-button" data-variant="ghost" data-action="add-field" title="Add field">+ Field</button>
+            <button type="button" class="flex-button" data-variant="ghost" data-action="remove-group" aria-label="Remove group" title="Delete group">&times;</button>
+            <button type="button" class="flex-button" data-variant="ghost" data-action="deselect-group" title="Done">Done</button>
+          </span>
+        </legend>`
+      : `<legend class="editable-group__legend" tabindex="0" data-action="select-group">${escapeHtml(g.title)}</legend>`
 
-    this.querySelector('[data-action="add-field"]')?.addEventListener(
-      'click',
-      () =>
-        this.dispatch(
-          {
-            kind: 'addField',
-            groupId: g.id,
-            label: 'New field',
-            fieldType: 'text',
-            required: false,
-          },
-          `Add field to "${g.title}"`,
-        ),
-    )
-    this.querySelector('[data-action="remove-group"]')?.addEventListener(
-      'click',
-      () =>
-        this.dispatch(
-          { kind: 'removeGroup', id: g.id },
-          `Remove group "${g.title}"`,
-        ),
-    )
+    this.innerHTML = `
+      <fieldset class="editable-group__fieldset${this.selected ? ' editable-group__fieldset--selected' : ''}">
+        ${titleMarkup}
+        <div class="editable-group__fields">${fields}</div>
+      </fieldset>
+    `
+
+    if (!this.selected) {
+      const legend = this.querySelector<HTMLElement>('.editable-group__legend')
+      legend?.addEventListener('click', (e) => {
+        e.stopPropagation()
+        this.select()
+      })
+      legend?.addEventListener('keydown', (e) => {
+        if ((e as KeyboardEvent).key === 'Enter') {
+          e.preventDefault()
+          this.select()
+        }
+      })
+    } else {
+      const titleEl = this.querySelector<HTMLElement>('.editable-group__title')
+      titleEl?.addEventListener('click', (e) => {
+        e.stopPropagation()
+        this.startEditingTitle()
+      })
+      titleEl?.addEventListener('keydown', (e) => {
+        if ((e as KeyboardEvent).key === 'Enter') {
+          e.preventDefault()
+          this.startEditingTitle()
+        }
+      })
+
+      this.querySelector('[data-action="add-field"]')?.addEventListener(
+        'click',
+        () =>
+          this.dispatch(
+            {
+              kind: 'addField',
+              groupId: g.id,
+              label: 'New field',
+              fieldType: 'text',
+              required: false,
+            },
+            `Add field to "${g.title}"`,
+          ),
+      )
+      this.querySelector('[data-action="remove-group"]')?.addEventListener(
+        'click',
+        () =>
+          this.dispatch(
+            { kind: 'removeGroup', id: g.id },
+            `Remove group "${g.title}"`,
+          ),
+      )
+      this.querySelector('[data-action="deselect-group"]')?.addEventListener(
+        'click',
+        () => this.deselect(),
+      )
+    }
+
     for (const child of this.querySelectorAll('flex-editable-field')) {
       const fieldId = (child as HTMLElement).dataset.fieldId
       const field = g.requirements.find((r) => r.id === fieldId)
@@ -83,6 +128,27 @@ class FlexEditableGroup extends HTMLElement {
         c.update(field, g.id)
       }
     }
+  }
+
+  private select() {
+    if (!this.group) return
+    this.dispatchEvent(
+      new CustomEvent('formeditor:select', {
+        detail: { kind: 'group', id: this.group.id },
+        bubbles: true,
+        composed: true,
+      }),
+    )
+  }
+
+  private deselect() {
+    this.dispatchEvent(
+      new CustomEvent('formeditor:deselect', {
+        detail: {},
+        bubbles: true,
+        composed: true,
+      }),
+    )
   }
 
   private startEditingTitle() {

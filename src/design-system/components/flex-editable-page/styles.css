@@ -25,19 +25,31 @@
     align-items: center;
     gap: var(--flex-space-sm);
     margin-block-end: var(--flex-space-md);
+    padding: var(--flex-space-xs);
+    border-radius: var(--flex-radius-md);
+    border: 1px solid transparent;
+  }
+  .editable-page__header--selected {
+    border-color: var(--flex-color-accent);
+    background: var(--flex-color-surface);
+    justify-content: space-between;
+    flex-wrap: wrap;
   }
   .editable-page__title {
     flex: 1;
     font-size: var(--flex-text-lg);
     font-weight: 600;
     margin: 0;
-    cursor: text;
+    cursor: pointer;
     border-radius: var(--flex-radius-sm);
     padding-inline: var(--flex-space-2xs);
   }
   .editable-page__title:hover,
   .editable-page__title:focus-visible {
     outline: 2px solid var(--flex-color-accent);
+  }
+  .editable-page__header--selected .editable-page__title {
+    cursor: text;
   }
   .editable-page__title-input {
     flex: 1;
@@ -48,12 +60,7 @@
     display: flex;
     gap: var(--flex-space-2xs);
     align-items: center;
-    opacity: 0;
-    transition: opacity 120ms ease;
-  }
-  .editable-page__header:hover .editable-page__toolbar,
-  .editable-page__header:focus-within .editable-page__toolbar {
-    opacity: 1;
+    flex-wrap: wrap;
   }
   .editable-page__delivery-label {
     display: inline-flex;
@@ -64,5 +71,12 @@
   }
   .editable-page__delivery {
     font-size: var(--flex-text-xs);
+  }
+  .editable-page__footer {
+    margin-block-start: var(--flex-space-md);
+  }
+  .editable-page__empty {
+    color: var(--flex-color-text-muted);
+    padding: var(--flex-space-md);
   }
 }
