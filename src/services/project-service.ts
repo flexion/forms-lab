@@ -42,6 +42,10 @@ export interface ProjectView {
   isOwner: boolean
   forkedFrom: { owner: string; slug: string } | null
   currentSha: string
+  // Name of an unmerged working branch (e.g., 'import') when the viewed
+  // branch has no specs yet. Enables the overview to surface a "pending
+  // review" CTA.
+  pendingBranch: string | null
 }
 
 export interface ProjectService {
@@ -235,6 +239,12 @@ export function createProjectService(
     extractor
       .extract(pdf)
       .then(async (result) => {
+        // Initial extraction lands on an "import" branch so the owner can
+        // iterate before publishing to main via the review workflow.
+        const branches = await repo.listBranches(slug)
+        if (!branches.some((b) => b.name === 'import')) {
+          await repo.createBranch(slug, 'import', 'main')
+        }
         await repo.commit(
           slug,
           [
@@ -253,6 +263,7 @@ export function createProjectService(
           ],
           'Extract form specifications',
           author,
+          { branch: 'import' },
         )
         store.update(projectId, { status: 'ready' })
       })
@@ -324,6 +335,17 @@ export function createProjectService(
           branch,
           branch,
         )
+        // Surface a pending working branch when the viewed branch has no
+        // specs yet (typical state right after an extraction when nothing
+        // has been merged to main). Caller decides how to present it.
+        let pendingBranch: string | null = null
+        if (!spec || !formSpec) {
+          const branches = await repo.listBranches(slug)
+          const firstWorking = branches.find(
+            (b) => b.name !== branch && b.ahead > 0,
+          )
+          pendingBranch = firstWorking?.name ?? null
+        }
         return {
           project,
           spec,
@@ -333,6 +355,7 @@ export function createProjectService(
           isOwner,
           forkedFrom,
           currentSha,
+          pendingBranch,
         }
       }
 
@@ -345,6 +368,7 @@ export function createProjectService(
         isOwner,
         forkedFrom,
         currentSha,
+        pendingBranch: null,
       }
     },
 
@@ -492,6 +516,7 @@ export function createProjectService(
         isOwner,
         forkedFrom,
         currentSha,
+        pendingBranch: null,
       }
     },
 

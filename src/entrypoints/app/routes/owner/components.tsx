@@ -278,7 +278,15 @@ export const ProjectOverview: FC<{
   viewingSha?: string
   origin?: string
 }> = ({ view, owner, user, viewingSha, origin }) => {
-  const { project, spec, formSpec, confidence, isOwner, forkedFrom } = view
+  const {
+    project,
+    spec,
+    formSpec,
+    confidence,
+    isOwner,
+    forkedFrom,
+    pendingBranch,
+  } = view
 
   if (project.status === 'extracting') {
     return (
@@ -287,6 +295,19 @@ export const ProjectOverview: FC<{
   }
   if (project.status === 'error') {
     return <ErrorBanner project={project} owner={owner} isOwner={isOwner} />
+  }
+
+  // Extraction has landed on a working branch (e.g. 'import') and nothing
+  // has been published to main yet. Show a CTA to review/merge the branch.
+  if (!spec && pendingBranch) {
+    return (
+      <PendingReviewBanner
+        project={project}
+        owner={owner}
+        isOwner={isOwner}
+        branch={pendingBranch}
+      />
+    )
   }
 
   const groupCount = spec?.groups.length ?? 0
@@ -520,6 +541,59 @@ const ExtractingBanner: FC<{
               refresh automatically.
             </p>
           </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const PendingReviewBanner: FC<{
+  project: ProjectIndex
+  owner: string
+  isOwner: boolean
+  branch: string
+}> = ({ project, owner, isOwner, branch }) => {
+  const repoBase = `/${owner}/${project.slug}`
+  return (
+    <div class="l-stack">
+      <header class="repo-header">
+        <nav class="repo-header__path" aria-label="Repository path">
+          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+          <span class="repo-header__path-sep" aria-hidden="true">
+            /
+          </span>
+          <span class="repo-header__path-slug">{project.slug}</span>
+        </nav>
+        <div class="repo-header__title-row">
+          <h1 class="repo-header__title">{project.name}</h1>
+        </div>
+      </header>
+      <div class="flex-alert flex-alert--info" role="status">
+        <p>
+          <strong>Initial extraction ready for review</strong>
+        </p>
+        <p>
+          The imported form lives on branch <code>{branch}</code>. Nothing has
+          been published to <code>main</code> yet. Review the extracted
+          structure and merge when it looks right, or keep editing if it needs
+          corrections.
+        </p>
+        {isOwner && (
+          <div class="l-cluster">
+            <a
+              href={resolveUrl(`${repoBase}/compare/main...${branch}`)}
+              class="flex-button"
+            >
+              Review import
+            </a>
+            <a
+              href={resolveUrl(`${repoBase}/edit/${branch}`)}
+              class="flex-button"
+              data-variant="outline"
+            >
+              Continue editing
+            </a>
+          </div>
         )}
       </div>
     </div>
