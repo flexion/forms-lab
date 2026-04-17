@@ -143,7 +143,41 @@ export const ReviewPage: FC<ReviewPageProps> = (props) => {
           </ol>
         )}
       </section>
-      {/* Comments / Preview panels added in Tasks 20-21 */}
+      <section id="comments" class="compare__panel">
+        {props.comments.length === 0 ? (
+          <p class="compare__empty">No comments yet.</p>
+        ) : (
+          <ol class="compare__comments">
+            {props.comments.map((comment) => (
+              <li class="compare__comment">
+                <header class="compare__comment-header">
+                  <strong class="compare__comment-author">
+                    {comment.author}
+                  </strong>
+                  <time class="compare__comment-time">{comment.timestamp}</time>
+                </header>
+                <div class="compare__comment-body">{comment.body}</div>
+              </li>
+            ))}
+          </ol>
+        )}
+        <form
+          class="compare__comment-form"
+          method="post"
+          action={resolveUrl(
+            `/${props.owner}/${props.slug}/compare/${range}/comments`,
+          )}
+        >
+          <label class="compare__comment-label">
+            Comment
+            <textarea name="body" required />
+          </label>
+          <button type="submit" class="usa-button">
+            Comment
+          </button>
+        </form>
+      </section>
+      {/* Preview panel added in Task 21 */}
     </main>
   )
 }
