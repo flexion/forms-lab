@@ -172,7 +172,11 @@ describe('ProjectService.getProject', () => {
     store = createProjectStore(':memory:')
     repo = createFormProjectRepo(basePath)
     service = createProjectService(store, repo, stubExtractor())
-    const project = await service.createProject('Test Project', SAMPLE_PDF, alice)
+    const project = await service.createProject(
+      'Test Project',
+      SAMPLE_PDF,
+      alice,
+    )
     slug = project.slug
     await waitForStatus(store, project.id, 'ready')
   })

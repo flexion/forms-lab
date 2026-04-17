@@ -11,6 +11,11 @@ import { join, relative } from 'node:path'
  *   design-system/ -> may import from: shared/, design-system/
  *   entrypoints/   -> may import from: shared/, services/, design-system/, entrypoints/
  *
+ * Browser client files (`client.ts`) within design-system components are browser
+ * entry points compiled by build-components.ts into a single browser bundle. They
+ * follow entrypoint-level import rules, because at bundle time all layers are
+ * included — the P2 rule governs server-side module resolution, not browser bundles.
+ *
  * See catalog/architecture/software-architecture.md for rationale.
  * See catalog/decisions/architecture/architecture-principles.md for provenance.
  *
@@ -44,13 +49,15 @@ async function* walk(dir: string): AsyncGenerator<string> {
 function getLayer(absolutePath: string): Layer | null {
   const rel = relative(SRC_ROOT, absolutePath)
   const top = rel.split('/')[0]
-  if (
-    top === 'shared' ||
-    top === 'services' ||
-    top === 'design-system' ||
-    top === 'entrypoints'
-  ) {
+  if (top === 'shared' || top === 'services' || top === 'entrypoints') {
     return top
+  }
+  if (top === 'design-system') {
+    // Browser client files (client.ts) are entry points for the browser bundle.
+    // They have entrypoint-level import permissions because build-components.ts
+    // compiles them (and their transitive deps) into a single browser JS file.
+    if (rel.endsWith('/client.ts')) return 'entrypoints'
+    return 'design-system'
   }
   return null
 }

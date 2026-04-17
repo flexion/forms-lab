@@ -1,4 +1,5 @@
 import type { Command } from '../../../services/forms/shaping/commands'
+import { executeBatch } from '../../../services/forms/shaping/executor'
 import type { ProjectStateClient } from './protocol'
 
 interface AssistantElement extends HTMLElement {
@@ -93,6 +94,8 @@ function describeCommand(cmd: Command, state: ProjectStateClient): string {
 
 class FlexFormEditor extends HTMLElement {
   private state: ProjectStateClient | null = null
+  private canonicalState: ProjectStateClient | null = null
+  private buffer: Command[] = []
   private proposal: ProposalState | null = null
   private selectedPageIndex = 0
 
@@ -107,6 +110,7 @@ class FlexFormEditor extends HTMLElement {
       passive: true,
     })
     queueMicrotask(() => this.broadcastSpec())
+    queueMicrotask(() => this.dispatchProjected())
   }
 
   private get assistant(): AssistantElement | null {
@@ -116,7 +120,10 @@ class FlexFormEditor extends HTMLElement {
   private hydrateState() {
     const stateScript = this.querySelector('script[data-initial-state]')
     if (stateScript?.textContent) {
-      this.state = JSON.parse(stateScript.textContent) as ProjectStateClient
+      this.canonicalState = JSON.parse(
+        stateScript.textContent,
+      ) as ProjectStateClient
+      this.state = this.canonicalState
     }
   }
 
@@ -146,6 +153,24 @@ class FlexFormEditor extends HTMLElement {
     this.addEventListener('formeditor:select', (e) =>
       this.handleSelect((e as CustomEvent).detail),
     )
+
+    // Stage a single command into the buffer
+    this.addEventListener('formeditor:stage-command', (e) => {
+      const detail = (e as CustomEvent).detail as {
+        command: Command
+        explanation: string
+      }
+      this.appendToBuffer([detail.command])
+    })
+
+    // Stage a batch of commands into the buffer
+    this.addEventListener('formeditor:stage-batch', (e) => {
+      const detail = (e as CustomEvent).detail as {
+        commands: Command[]
+        summary: string
+      }
+      this.appendToBuffer(detail.commands)
+    })
 
     // Event delegation for accept/reject buttons inside assistant messages
     this.addEventListener('click', (e) => {
@@ -327,6 +352,41 @@ class FlexFormEditor extends HTMLElement {
         this.reloadPreview()
       }
     }
+  }
+
+  private appendToBuffer(commands: Command[]) {
+    if (!this.canonicalState) return
+    const candidate = [...this.buffer, ...commands]
+    const result = executeBatch(this.canonicalState, candidate)
+    if (!result.ok) {
+      this.dispatchEvent(
+        new CustomEvent('formeditor:command-failed', {
+          detail: { error: result.error, command: result.command },
+          bubbles: true,
+          composed: true,
+        }),
+      )
+      return
+    }
+    this.buffer = candidate
+    this.state = result.state
+    this.dispatchProjected()
+  }
+
+  private dispatchProjected() {
+    if (!this.state) return
+    this.dispatchEvent(
+      new CustomEvent('formeditor:state-projected', {
+        detail: { state: this.state, bufferLength: this.buffer.length },
+        bubbles: false,
+      }),
+    )
+  }
+
+  discardStaged(): void {
+    this.buffer = []
+    if (this.canonicalState) this.state = this.canonicalState
+    this.dispatchProjected()
   }
 
   private broadcastSpec() {
