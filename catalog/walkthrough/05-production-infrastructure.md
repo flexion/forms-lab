@@ -16,7 +16,7 @@ Forms Lab runs in a production environment on AWS, provisioned and managed throu
 - **OS**: NixOS — declarative, reproducible system configuration
 - **Reverse proxy**: Caddy with automatic TLS
 - **Runtime**: Bun (JavaScript/TypeScript runtime)
-- **LLM API**: Claude via Amazon Bedrock (cross-account SSO)
+- **LLM API**: Claude via Amazon Bedrock (EC2 instance role)
 
 ## Branch-Per-Deployment Model
 

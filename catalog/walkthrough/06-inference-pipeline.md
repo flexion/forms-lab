@@ -25,7 +25,7 @@ The pipeline follows a strategy pattern:
 ## Bedrock Integration
 
 - **Service**: Amazon Bedrock (managed LLM inference)
-- **Authentication**: Cross-account SSO via AWS IAM roles
+- **Authentication**: EC2 instance role with `bedrock:InvokeModel` permissions
 - **Models available**: Claude Opus, Sonnet, Haiku — all accessible through the same endpoint
 - **Region**: us-east-1
 
