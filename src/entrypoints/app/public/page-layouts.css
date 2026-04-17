@@ -65,12 +65,10 @@
 }
 
 /* Full-width content — no max-width constraint.
-   min-height: 0 allows it to shrink within the body flex column.
-   overflow: hidden prevents children from expanding past bounds. */
+   min-height: 0 allows it to shrink within the body flex column. */
 .l-page-content--full {
   padding: 0;
   min-height: 0;
-  overflow: hidden;
 }
 
 /* Narrow and wide content-track variants.
