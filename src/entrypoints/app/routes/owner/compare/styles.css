@@ -4,6 +4,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--flex-space-md);
+  /* Sit inside l-page-content--full with consistent horizontal padding so the
+     content doesn't run to the viewport edges. */
+  padding: var(--flex-space-lg) var(--flex-space-md);
+  min-inline-size: 0;
 }
 
 .compare__header {
@@ -213,7 +217,7 @@
 
 .compare__preview {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--flex-space-md);
 }
 
@@ -231,6 +235,7 @@
   border: 1px solid var(--flex-color-border);
   border-radius: var(--flex-radius-md);
   background: var(--flex-color-surface);
+  min-inline-size: 0;
 }
 
 .compare__preview-side-header {

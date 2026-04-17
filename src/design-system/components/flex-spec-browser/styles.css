@@ -4,6 +4,8 @@
 
 flex-spec-browser {
   display: block;
+  container-type: inline-size;
+  container-name: spec-browser;
 }
 
 .flex-spec-browser {
@@ -261,8 +263,11 @@ flex-spec-browser {
   color: var(--flex-color-text-muted);
 }
 
-/* Narrow screens: stack, and drop stickiness */
-@media (max-width: 60rem) {
+/* Narrow containers: stack, and drop stickiness.
+   Uses container queries so the browser responds to its own width rather
+   than the viewport — critical when two browsers sit side-by-side in a
+   compare view on a wide screen. */
+@container spec-browser (max-width: 48rem) {
   .flex-spec-browser {
     grid-template-columns: 1fr;
   }
