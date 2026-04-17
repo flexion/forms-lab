@@ -4,6 +4,9 @@ import type {
 } from '../../data-collection/types'
 import type { SpecChange } from './types'
 
+// Compares structural attributes only: required, fieldType, label.
+// Other attributes (helpText, choices, validation, sensitivity, condition,
+// displayWidth, control) are not compared in this slice.
 export function diffDataCollectionSpecs(
   base: DataCollectionSpec,
   head: DataCollectionSpec,

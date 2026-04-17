@@ -60,6 +60,29 @@ describe('diffDataCollectionSpecs', () => {
     expect(changes[0].description).toContain('required')
   })
 
+  it('collapses multiple attribute changes on one field into a single modified entry', () => {
+    const head: DataCollectionSpec = {
+      ...baseSpec,
+      groups: [
+        {
+          ...baseSpec.groups[0],
+          requirements: [
+            {
+              ...baseSpec.groups[0].requirements[0],
+              required: true,
+              fieldType: 'email',
+            },
+          ],
+        },
+      ],
+    }
+    const changes = diffDataCollectionSpecs(baseSpec, head)
+    expect(changes).toHaveLength(1)
+    expect(changes[0].category).toBe('modified')
+    expect(changes[0].description).toContain('required')
+    expect(changes[0].description).toContain('email')
+  })
+
   it('detects a renamed group (same id, different title)', () => {
     const head: DataCollectionSpec = {
       ...baseSpec,
