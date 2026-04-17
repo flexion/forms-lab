@@ -132,6 +132,14 @@ class FlexFormEditor extends HTMLElement {
   }
 
   private sizeStickyPanels() {
+    const layout = this.querySelector<HTMLElement>('.editor-layout')
+    const breadcrumb = this.querySelector<HTMLElement>('.editor-breadcrumb')
+    if (layout && breadcrumb) {
+      layout.style.setProperty(
+        '--editor-breadcrumb-block-size',
+        `${breadcrumb.offsetHeight}px`,
+      )
+    }
     const panels = this.querySelectorAll<HTMLElement>(
       '.editor-structure, .editor-assistant',
     )
