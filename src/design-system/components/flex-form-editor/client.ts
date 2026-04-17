@@ -1,5 +1,11 @@
 import type { Command } from '../../../services/forms/shaping/commands'
-import type { FormEditorEvent, ProjectStateClient } from './protocol'
+import type { ProjectStateClient } from './protocol'
+
+interface AssistantElement extends HTMLElement {
+  addMessage: (role: string, html: string) => void
+  toggle: () => void
+  open: boolean
+}
 
 interface ProposalState {
   commands: Command[]
@@ -7,16 +13,97 @@ interface ProposalState {
   originalIntent: string
 }
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function describeCommand(cmd: Command, state: ProjectStateClient): string {
+  const pageTitle = (id: string) =>
+    state.formSpec.pages.find((p) => p.id === id)?.title ?? id
+  const groupTitle = (id: string) =>
+    state.dataSpec.groups.find((g) => g.id === id)?.title ?? id
+  const fieldLabel = (id: string) => {
+    for (const g of state.dataSpec.groups) {
+      const f = g.requirements.find((r) => r.id === id)
+      if (f) return f.label
+    }
+    return id
+  }
+  switch (cmd.kind) {
+    case 'swapPages':
+      return `Swap pages "${pageTitle(cmd.a)}" and "${pageTitle(cmd.b)}"`
+    case 'reorderPages':
+      return 'Reorder pages'
+    case 'movePage':
+      return `Move page "${pageTitle(cmd.id)}" to position ${cmd.toIndex + 1}`
+    case 'addPage':
+      return `Add page "${cmd.title}"`
+    case 'removePage':
+      return `Remove page "${pageTitle(cmd.id)}"`
+    case 'renamePage':
+      return `Rename page "${pageTitle(cmd.id)}" to "${cmd.title}"`
+    case 'splitPage':
+      return `Split page "${pageTitle(cmd.id)}"`
+    case 'mergePages':
+      return `Merge "${pageTitle(cmd.fromId)}" into "${pageTitle(cmd.intoId)}"`
+    case 'setDeliveryMode':
+      return `Set "${pageTitle(cmd.pageId)}" delivery to ${cmd.mode}`
+    case 'moveGroup':
+      return `Move group "${groupTitle(cmd.groupId)}" to "${pageTitle(cmd.toPageId)}"`
+    case 'renameGroup':
+      return `Rename group "${groupTitle(cmd.id)}" to "${cmd.title}"`
+    case 'addGroup':
+      return `Add group "${cmd.title}"`
+    case 'removeGroup':
+      return `Remove group "${groupTitle(cmd.id)}"`
+    case 'splitGroup':
+      return `Split group "${groupTitle(cmd.id)}"`
+    case 'mergeGroups':
+      return 'Merge groups'
+    case 'moveField':
+      return `Move field "${fieldLabel(cmd.fieldId)}"`
+    case 'reorderFields':
+      return `Reorder fields in "${groupTitle(cmd.groupId)}"`
+    case 'relabelField':
+      return `Relabel "${fieldLabel(cmd.id)}" to "${cmd.label}"`
+    case 'setRequired':
+      return `Mark "${fieldLabel(cmd.id)}" ${cmd.required ? 'required' : 'optional'}`
+    case 'setFieldCondition':
+      return cmd.condition
+        ? `Set condition on "${fieldLabel(cmd.id)}"`
+        : `Clear condition on "${fieldLabel(cmd.id)}"`
+    case 'setFieldSensitivity':
+      return `Set "${fieldLabel(cmd.id)}" sensitivity to ${cmd.level}`
+    case 'changeFieldType':
+      return `Change "${fieldLabel(cmd.id)}" type to ${cmd.fieldType}`
+    case 'setFieldControl':
+      return `Set "${fieldLabel(cmd.id)}" control to ${cmd.control}`
+    case 'addField':
+      return `Add field "${cmd.label}"`
+    case 'removeField':
+      return `Remove field "${fieldLabel(cmd.id)}"`
+    default:
+      return (cmd as Command).kind
+  }
+}
+
 class FlexFormEditor extends HTMLElement {
   private state: ProjectStateClient | null = null
   private proposal: ProposalState | null = null
+  private selectedPageIndex = 0
 
   connectedCallback() {
     this.hydrateState()
     this.bindEvents()
-    // Defer initial broadcast so child elements have time to connect
-    // and register their listeners first
     queueMicrotask(() => this.broadcastSpec())
+  }
+
+  private get assistant(): AssistantElement | null {
+    return this.querySelector('flex-assistant') as AssistantElement | null
   }
 
   private hydrateState() {
@@ -24,51 +111,73 @@ class FlexFormEditor extends HTMLElement {
     if (stateScript?.textContent) {
       this.state = JSON.parse(stateScript.textContent) as ProjectStateClient
     }
-    // Log data is available in script[data-shaping-log] for future use
   }
 
   private bindEvents() {
-    this.addEventListener('formeditor:intent-submitted', (e) =>
-      this.handleIntent((e as CustomEvent).detail),
-    )
-    this.addEventListener('formeditor:proposal-accept', () =>
-      this.handleAccept(),
-    )
-    this.addEventListener('formeditor:proposal-reject', () =>
-      this.handleReject(),
-    )
-    this.addEventListener('formeditor:proposal-refine', (e) =>
-      this.handleRefine((e as CustomEvent).detail),
-    )
+    // From flex-assistant: user typed a message
+    this.addEventListener('assistant:message-submitted', (e) => {
+      const detail = (e as CustomEvent).detail
+      this.handleIntent(detail.text)
+    })
+
+    // From flex-form-structure: manual commands
     this.addEventListener('formeditor:manual-command', (e) =>
       this.handleManual((e as CustomEvent).detail),
     )
+
+    // From flex-form-structure: page selection
     this.addEventListener('formeditor:select', (e) =>
       this.handleSelect((e as CustomEvent).detail),
     )
+
+    // Event delegation for accept/reject buttons inside assistant messages
+    this.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement
+      const action = target.closest<HTMLElement>('[data-proposal-action]')
+      if (action) {
+        const actionType = action.dataset.proposalAction
+        if (actionType === 'accept') this.handleAccept()
+        if (actionType === 'reject') this.handleReject()
+        return
+      }
+      // "Open assistant" button in breadcrumb
+      if (target.closest('[data-action="open-assistant"]')) {
+        this.assistant?.toggle()
+      }
+    })
   }
 
   private editBase(): string {
     return this.dataset.editBase ?? ''
   }
 
-  private async handleIntent(detail: { intent: string }) {
+  private async handleIntent(text: string) {
     if (!this.state) return
+    const assistant = this.assistant
+    if (!assistant) return
+
+    // Show user message
+    assistant.addMessage('user', escapeHtml(text))
+
+    // Show thinking indicator
+    assistant.addMessage('system', 'Thinking...')
+
     try {
       const response = await fetch(`${this.editBase()}/intent`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          intent: detail.intent,
-          previousAttempt: undefined,
+          intent: text,
+          previousAttempt: this.proposal
+            ? { commands: this.proposal.commands, feedback: text }
+            : undefined,
         }),
       })
       if (!response.ok) {
         const body = await response.json()
-        this.dispatchOwn({
-          type: 'formeditor:command-failed',
-          detail: { error: body.error ?? 'request failed', command: null },
-        })
+        this.replaceLastSystemMessage(
+          `<span style="color:var(--flex-color-error)">Error: ${escapeHtml(body.error ?? 'Request failed')}</span>`,
+        )
         return
       }
       const body = (await response.json()) as {
@@ -78,122 +187,117 @@ class FlexFormEditor extends HTMLElement {
       this.proposal = {
         commands: body.commands,
         explanation: body.explanation,
-        originalIntent: detail.intent,
+        originalIntent: text,
       }
-      this.dispatchOwn({
-        type: 'formeditor:proposal-received',
-        detail: { commands: body.commands, explanation: body.explanation },
-      })
+
+      this.replaceLastSystemMessage(
+        this.renderProposal(body.commands, body.explanation),
+      )
     } catch (err) {
-      this.dispatchOwn({
-        type: 'formeditor:command-failed',
-        detail: {
-          error: err instanceof Error ? err.message : String(err),
-          command: null,
-        },
-      })
+      this.replaceLastSystemMessage(
+        `<span style="color:var(--flex-color-error)">Error: ${escapeHtml(err instanceof Error ? err.message : String(err))}</span>`,
+      )
     }
   }
 
-  private async handleRefine(detail: { feedback: string }) {
-    if (!this.state || !this.proposal) return
-    try {
-      const response = await fetch(`${this.editBase()}/intent`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          intent: this.proposal.originalIntent,
-          previousAttempt: {
-            commands: this.proposal.commands,
-            feedback: detail.feedback,
-          },
-        }),
-      })
-      if (!response.ok) return
-      const body = (await response.json()) as {
-        commands: Command[]
-        explanation: string
-      }
-      this.proposal = {
-        commands: body.commands,
-        explanation: body.explanation,
-        originalIntent: this.proposal.originalIntent,
-      }
-      this.dispatchOwn({
-        type: 'formeditor:proposal-received',
-        detail: { commands: body.commands, explanation: body.explanation },
-      })
-    } catch {
-      // refine failures leave previous proposal visible
+  private renderProposal(commands: Command[], explanation: string): string {
+    const state = this.state
+    if (!state) return explanation
+    const list = commands
+      .map((c) => `<li>${escapeHtml(describeCommand(c, state))}</li>`)
+      .join('')
+    return `
+      <div>
+        <p style="margin:0 0 var(--flex-space-xs);font-weight:600;">${escapeHtml(explanation)}</p>
+        <ol style="margin:var(--flex-space-xs) 0;padding-inline-start:1.2em;font-size:var(--flex-text-xs);">${list}</ol>
+        <div style="display:flex;gap:var(--flex-space-xs);margin-block-start:var(--flex-space-sm);">
+          <button class="flex-button" data-proposal-action="accept" style="font-size:var(--flex-text-xs);padding:var(--flex-space-xs) var(--flex-space-sm);">Accept</button>
+          <button class="flex-button" data-variant="outline" data-proposal-action="reject" style="font-size:var(--flex-text-xs);padding:var(--flex-space-xs) var(--flex-space-sm);">Reject</button>
+        </div>
+      </div>
+    `
+  }
+
+  private replaceLastSystemMessage(html: string) {
+    const messages = this.querySelectorAll('.assistant__message--system')
+    const last = messages[messages.length - 1]
+    if (last) {
+      last.className = 'assistant__message assistant__message--assistant'
+      last.innerHTML = html
     }
   }
 
   private handleReject() {
     this.proposal = null
-    this.dispatchOwn({
-      type: 'formeditor:proposal-received',
-      detail: { commands: [], explanation: '' },
-    })
+    this.assistant?.addMessage('system', 'Proposal discarded.')
   }
 
   private async handleAccept() {
     if (!this.proposal) return
-    const response = await fetch(`${this.editBase()}/accept`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        commands: this.proposal.commands,
-        explanation: this.proposal.explanation,
-        source: 'llm',
-      }),
-    })
-    if (!response.ok) {
-      const body = await response.json()
-      this.dispatchOwn({
-        type: 'formeditor:command-failed',
-        detail: { error: body.error ?? 'accept failed', command: null },
+    const assistant = this.assistant
+    assistant?.addMessage('system', 'Applying changes...')
+
+    try {
+      const response = await fetch(`${this.editBase()}/accept`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          commands: this.proposal.commands,
+          explanation: this.proposal.explanation,
+          source: 'llm',
+        }),
       })
-      return
+      if (!response.ok) {
+        const body = await response.json()
+        this.replaceLastSystemMessage(
+          `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(body.error ?? 'Unknown error')}</span>`,
+        )
+        return
+      }
+      const body = (await response.json()) as { state: ProjectStateClient }
+      this.state = body.state
+      this.proposal = null
+      this.broadcastSpec()
+      this.replaceLastSystemMessage('Changes applied.')
+    } catch (err) {
+      this.replaceLastSystemMessage(
+        `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(err instanceof Error ? err.message : String(err))}</span>`,
+      )
     }
-    const body = (await response.json()) as { state: ProjectStateClient }
-    this.state = body.state
-    this.proposal = null
-    this.broadcastSpec()
-    this.dispatchOwn({
-      type: 'formeditor:proposal-received',
-      detail: { commands: [], explanation: '' },
-    })
   }
 
   private async handleManual(detail: {
     command: Command
     explanation: string
   }) {
-    const response = await fetch(`${this.editBase()}/execute`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        command: detail.command,
-        explanation: detail.explanation,
-      }),
-    })
-    if (!response.ok) {
-      const body = await response.json()
-      this.dispatchOwn({
-        type: 'formeditor:command-failed',
-        detail: {
-          error: body.error ?? 'manual command failed',
+    try {
+      const response = await fetch(`${this.editBase()}/execute`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
           command: detail.command,
-        },
+          explanation: detail.explanation,
+        }),
       })
-      return
+      if (!response.ok) {
+        const body = await response.json()
+        this.assistant?.addMessage(
+          'system',
+          `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(body.error ?? 'Unknown error')}</span>`,
+        )
+        return
+      }
+      const body = (await response.json()) as { state: ProjectStateClient }
+      this.state = body.state
+      this.broadcastSpec()
+      this.assistant?.addMessage('system', escapeHtml(detail.explanation))
+    } catch (err) {
+      this.assistant?.addMessage(
+        'system',
+        `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(err instanceof Error ? err.message : String(err))}</span>`,
+      )
     }
-    const body = (await response.json()) as { state: ProjectStateClient }
-    this.state = body.state
-    this.broadcastSpec()
   }
-
-  private selectedPageIndex = 0
 
   private handleSelect(detail: {
     kind: 'page' | 'group' | 'field'
@@ -210,10 +314,12 @@ class FlexFormEditor extends HTMLElement {
 
   private broadcastSpec() {
     if (!this.state) return
-    this.dispatchOwn({
-      type: 'formeditor:spec-updated',
-      detail: { state: this.state },
-    })
+    this.dispatchEvent(
+      new CustomEvent('formeditor:spec-updated', {
+        detail: { state: this.state },
+        bubbles: false,
+      }),
+    )
     this.reloadPreview()
   }
 
@@ -222,19 +328,9 @@ class FlexFormEditor extends HTMLElement {
       'iframe.editor-preview-frame',
     )
     if (!iframe) return
-    // Add a cache-busting query param to force reload
     const base = this.dataset.previewBase ?? ''
     const ts = Date.now()
     iframe.src = `${base}?page=${this.selectedPageIndex}&t=${ts}`
-  }
-
-  private dispatchOwn(event: FormEditorEvent) {
-    this.dispatchEvent(
-      new CustomEvent(event.type, {
-        detail: event.detail,
-        bubbles: false,
-      }),
-    )
   }
 }
 

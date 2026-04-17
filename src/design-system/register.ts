@@ -20,5 +20,5 @@ import './components/flex-in-page-nav/client'
 import './components/flex-tab-group/client'
 
 import './components/flex-form-editor/client'
-import './components/flex-command-proposal/client'
+import './components/flex-assistant/client'
 import './components/flex-form-structure/client'

@@ -75,7 +75,7 @@
 @import "../../../design-system/components/flex-strategy-selector/styles.css" layer(block);
 
 @import "../../../design-system/components/flex-form-editor/styles.css" layer(block);
-@import "../../../design-system/components/flex-command-proposal/styles.css" layer(block);
+@import "../../../design-system/components/flex-assistant/styles.css" layer(block);
 @import "../../../design-system/components/flex-form-structure/styles.css" layer(block);
 @import "../routes/projects/styles.css" layer(block);
 @import "../routes/owner/edit/styles.css" layer(block);
