@@ -40,10 +40,10 @@ function setSelection(
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: generic capture
-function capture(el: HTMLElement): { get: () => any } {
+function capture(target: HTMLElement): { get: () => any } {
   // biome-ignore lint/suspicious/noExplicitAny: test capture
   let value: any = null
-  el.addEventListener('formeditor:stage-command', (e: Event) => {
+  target.addEventListener('formeditor:stage-command', (e: Event) => {
     value = (e as CustomEvent).detail
   })
   return { get: () => value }
@@ -127,7 +127,7 @@ describe('flex-editable-field draft-and-save', () => {
     setSelection(root, { kind: 'field', id: 'f1' })
     // biome-ignore lint/suspicious/noExplicitAny: test capture
     const commands: any[] = []
-    el.addEventListener('formeditor:stage-command', (e: Event) => {
+    root.addEventListener('formeditor:stage-command', (e: Event) => {
       commands.push((e as CustomEvent).detail.command)
     })
 
@@ -170,7 +170,7 @@ describe('flex-editable-field draft-and-save', () => {
     setSelection(root, { kind: 'field', id: 'f1' })
     // biome-ignore lint/suspicious/noExplicitAny: test capture
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: Event) => {
+    root.addEventListener('formeditor:stage-command', (e: Event) => {
       staged = (e as CustomEvent).detail
     })
     ;(el.querySelector('[data-action="remove-field"]') as HTMLElement).click()
@@ -180,8 +180,7 @@ describe('flex-editable-field draft-and-save', () => {
   it('label edit updates the draft and only stages on Save', () => {
     const { root, el } = mount()
     setSelection(root, { kind: 'field', id: 'f1' })
-    const staged = capture(el)
-
+    const staged = capture(root)
     ;(el.querySelector('.editable-field__label') as HTMLElement).click()
     const input = el.querySelector(
       '.editable-field__label-input',
@@ -189,7 +188,6 @@ describe('flex-editable-field draft-and-save', () => {
     input.value = 'Email address'
     input.dispatchEvent(new Event('blur', { bubbles: true }))
     expect(staged.get()).toBeNull()
-
     ;(el.querySelector('[data-action="save-field"]') as HTMLElement).click()
     expect(staged.get().command).toEqual({
       kind: 'relabelField',

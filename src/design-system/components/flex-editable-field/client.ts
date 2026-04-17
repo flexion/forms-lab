@@ -254,11 +254,25 @@ class FlexEditableField extends HTMLElement {
       'click',
       () => {
         if (!this.field) return
-        this.dispatch(
-          { kind: 'removeField', id: this.field.id },
-          `Remove "${this.field.label}"`,
+        const root = this.closest('flex-form-editor') as HTMLElement | null
+        if (!root) return
+        root.dispatchEvent(
+          new CustomEvent('formeditor:stage-command', {
+            detail: {
+              command: { kind: 'removeField', id: this.field.id },
+              explanation: `Remove "${this.field.label}"`,
+            },
+            bubbles: true,
+            composed: true,
+          }),
         )
-        this.deselect()
+        root.dispatchEvent(
+          new CustomEvent('formeditor:deselect', {
+            detail: {},
+            bubbles: true,
+            composed: true,
+          }),
+        )
       },
     )
 
@@ -376,23 +390,40 @@ class FlexEditableField extends HTMLElement {
       this.deselect()
       return
     }
+    // Dispatch on the editor root so subsequent events still reach the
+    // editor after the first stage-command triggers a re-render that
+    // detaches `this` from the DOM.
+    const root = this.closest('flex-form-editor') as HTMLElement | null
+    if (!root) return
+    const fire = (type: string, detail: unknown) => {
+      root.dispatchEvent(
+        new CustomEvent(type, {
+          detail,
+          bubbles: true,
+          composed: true,
+        }),
+      )
+    }
+    const fireCommand = (command: Command, explanation: string) => {
+      fire('formeditor:stage-command', { command, explanation })
+    }
     const d = this.draft
     const f = this.field
     const id = f.id
     if (d.label !== f.label) {
-      this.dispatch(
+      fireCommand(
         { kind: 'relabelField', id, label: d.label },
         `Relabel "${f.label}" to "${d.label}"`,
       )
     }
     if (d.fieldType !== f.fieldType) {
-      this.dispatch(
+      fireCommand(
         { kind: 'changeFieldType', id, fieldType: d.fieldType as FieldType },
         `Change "${f.label}" type to ${d.fieldType}`,
       )
     }
     if ((d.required === true) !== (f.required === true)) {
-      this.dispatch(
+      fireCommand(
         { kind: 'setRequired', id, required: d.required === true },
         `Mark "${f.label}" ${d.required === true ? 'required' : 'optional'}`,
       )
@@ -400,7 +431,7 @@ class FlexEditableField extends HTMLElement {
     const dSens = d.sensitivity ?? 'low'
     const fSens = f.sensitivity ?? 'low'
     if (dSens !== fSens) {
-      this.dispatch(
+      fireCommand(
         { kind: 'setFieldSensitivity', id, level: dSens as Sensitivity },
         `Set "${f.label}" sensitivity to ${dSens}`,
       )
@@ -408,7 +439,7 @@ class FlexEditableField extends HTMLElement {
     const dCtrl = d.control ?? ''
     const fCtrl = f.control ?? ''
     if (dCtrl !== fCtrl && dCtrl) {
-      this.dispatch(
+      fireCommand(
         { kind: 'setFieldControl', id, control: dCtrl as ControlWidget },
         `Set "${f.label}" control to ${dCtrl}`,
       )
@@ -416,14 +447,14 @@ class FlexEditableField extends HTMLElement {
     const dCond = JSON.stringify(d.condition ?? null)
     const fCond = JSON.stringify(f.condition ?? null)
     if (dCond !== fCond) {
-      this.dispatch(
+      fireCommand(
         { kind: 'setFieldCondition', id, condition: d.condition ?? null },
         d.condition
           ? `Show "${f.label}" when ${d.condition.field} ${d.condition.operator} ${d.condition.value}`
           : `Clear condition on "${f.label}"`,
       )
     }
-    this.deselect()
+    fire('formeditor:deselect', {})
   }
 
   private select() {

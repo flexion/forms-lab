@@ -1,19 +1,26 @@
 @layer block {
   flex-editable-page {
     display: block;
+    padding-block: var(--flex-space-md);
+    padding-inline: var(--flex-space-lg);
   }
   .editable-page__tabs {
     display: block;
-    margin-block-end: var(--flex-space-md);
+    margin-block-end: var(--flex-space-lg);
   }
   .editable-page__header {
     display: flex;
     align-items: center;
     gap: var(--flex-space-sm);
-    margin-block-end: var(--flex-space-md);
+    margin-block-end: var(--flex-space-lg);
     padding: var(--flex-space-xs);
     border-radius: var(--flex-radius-md);
     border: 1px solid transparent;
+  }
+  .editable-page__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flex-space-md);
   }
   .editable-page__header--selected {
     position: relative;

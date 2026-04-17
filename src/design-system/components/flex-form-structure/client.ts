@@ -5,11 +5,7 @@ import type {
 
 type DeliveryMode = 'static' | 'conversational' | 'hybrid'
 
-const DELIVERY_CYCLE: Record<DeliveryMode, DeliveryMode> = {
-  static: 'conversational',
-  conversational: 'hybrid',
-  hybrid: 'static',
-}
+const DELIVERY_MODES: DeliveryMode[] = ['static', 'conversational', 'hybrid']
 
 const DELIVERY_ICON: Record<DeliveryMode, string> = {
   static: 'list',
@@ -23,10 +19,18 @@ const DELIVERY_LABEL: Record<DeliveryMode, string> = {
   hybrid: 'Hybrid',
 }
 
+const DELIVERY_DESCRIPTION: Record<DeliveryMode, string> = {
+  static: 'Traditional form',
+  conversational: 'Chat-driven',
+  hybrid: 'Mixed',
+}
+
 class FlexFormStructure extends HTMLElement {
   private state: ProjectStateClient | null = null
   private collapsed = false
   private selectedPageId: string | null = null
+  private deliveryMenuOpenFor: string | null = null
+  private documentClickHandler: ((e: MouseEvent) => void) | null = null
 
   connectedCallback() {
     const root = this.closest('flex-form-editor')
@@ -86,9 +90,24 @@ class FlexFormStructure extends HTMLElement {
               </span>
             </button>
             <span class="form-structure__actions">
-              <button type="button" class="form-structure__icon-btn" data-action="delivery" data-page-id="${page.id}" title="Delivery: ${DELIVERY_LABEL[mode]} (click to cycle)" aria-label="Delivery mode: ${DELIVERY_LABEL[mode]}">
-                <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#${DELIVERY_ICON[mode]}" /></svg>
-              </button>
+              <span class="form-structure__delivery">
+                <button type="button" class="form-structure__icon-btn" data-action="delivery-toggle" data-page-id="${page.id}" title="Delivery: ${DELIVERY_LABEL[mode]}" aria-label="Delivery mode: ${DELIVERY_LABEL[mode]}" aria-haspopup="menu" aria-expanded="${this.deliveryMenuOpenFor === page.id}">
+                  <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#${DELIVERY_ICON[mode]}" /></svg>
+                </button>
+                ${
+                  this.deliveryMenuOpenFor === page.id
+                    ? `<div class="form-structure__delivery-menu" role="menu">
+                        ${DELIVERY_MODES.map(
+                          (m) => `
+                            <button type="button" role="menuitemradio" aria-checked="${m === mode}" class="form-structure__delivery-option${m === mode ? ' form-structure__delivery-option--current' : ''}" data-action="delivery-pick" data-page-id="${page.id}" data-mode="${m}">
+                              <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#${DELIVERY_ICON[m]}" /></svg>
+                              <span class="form-structure__delivery-label"><strong>${DELIVERY_LABEL[m]}</strong><span class="form-structure__delivery-desc">${DELIVERY_DESCRIPTION[m]}</span></span>
+                            </button>`,
+                        ).join('')}
+                      </div>`
+                    : ''
+                }
+              </span>
               <button type="button" class="form-structure__icon-btn" data-action="up" data-page-id="${page.id}" aria-label="Move up" ${canUp ? '' : 'disabled'}>
                 <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#arrow_upward" /></svg>
               </button>
@@ -153,26 +172,54 @@ class FlexFormStructure extends HTMLElement {
     }
 
     for (const btn of this.querySelectorAll<HTMLButtonElement>(
-      '[data-action="delivery"]',
+      '[data-action="delivery-toggle"]',
     )) {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation()
         const pageId = btn.dataset.pageId
-        if (!pageId || !this.state) return
-        const page = this.state.formSpec.pages.find((p) => p.id === pageId)
-        if (!page) return
-        const current = (page.deliveryMode as DeliveryMode) ?? 'static'
-        const next = DELIVERY_CYCLE[current]
+        if (!pageId) return
+        this.deliveryMenuOpenFor =
+          this.deliveryMenuOpenFor === pageId ? null : pageId
+        this.render()
+      })
+    }
+
+    for (const btn of this.querySelectorAll<HTMLButtonElement>(
+      '[data-action="delivery-pick"]',
+    )) {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const pageId = btn.dataset.pageId
+        const mode = btn.dataset.mode as DeliveryMode | undefined
+        if (!pageId || !mode) return
+        this.deliveryMenuOpenFor = null
         this.dispatchEvent(
           new CustomEvent('formeditor:stage-command', {
             detail: {
-              command: { kind: 'setDeliveryMode', pageId, mode: next },
-              explanation: `Set delivery mode to ${next}`,
+              command: { kind: 'setDeliveryMode', pageId, mode },
+              explanation: `Set delivery mode to ${mode}`,
             },
             bubbles: true,
             composed: true,
           }),
         )
+        this.render()
       })
+    }
+
+    // Close the delivery menu on outside click / Escape
+    if (this.deliveryMenuOpenFor && !this.documentClickHandler) {
+      this.documentClickHandler = (e: MouseEvent) => {
+        const target = e.target as Element | null
+        if (!target || !target.closest('.form-structure__delivery')) {
+          this.deliveryMenuOpenFor = null
+          this.removeDocumentClickHandler()
+          this.render()
+        }
+      }
+      document.addEventListener('click', this.documentClickHandler)
+    } else if (!this.deliveryMenuOpenFor && this.documentClickHandler) {
+      this.removeDocumentClickHandler()
     }
 
     for (const btn of this.querySelectorAll<HTMLButtonElement>(
@@ -208,6 +255,17 @@ class FlexFormStructure extends HTMLElement {
         composed: true,
       }),
     )
+  }
+
+  private removeDocumentClickHandler() {
+    if (this.documentClickHandler) {
+      document.removeEventListener('click', this.documentClickHandler)
+      this.documentClickHandler = null
+    }
+  }
+
+  disconnectedCallback() {
+    this.removeDocumentClickHandler()
   }
 }
 
