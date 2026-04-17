@@ -57,7 +57,6 @@ export const EditorPage: FC<{
         <script
           type="application/json"
           data-initial-state
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON payload for bootstrap
           dangerouslySetInnerHTML={{
             __html: safeJsonForScript({ formSpec, dataSpec: spec }),
           }}
@@ -65,7 +64,6 @@ export const EditorPage: FC<{
         <script
           type="application/json"
           data-shaping-log
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON payload for bootstrap
           dangerouslySetInnerHTML={{ __html: safeJsonForScript(log) }}
         />
 
@@ -91,8 +89,7 @@ export const EditorPage: FC<{
 export const PreviewPage: FC<{
   view: ProjectView
   pageIndex: number
-  basePath: string
-}> = ({ view, pageIndex, basePath }) => {
+}> = ({ view, pageIndex }) => {
   if (!view.formSpec || !view.spec) return <p>No form.</p>
   const page = view.formSpec.pages[pageIndex]
   if (!page) return <p>Page not found.</p>
@@ -119,7 +116,7 @@ export const PreviewPage: FC<{
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Preview: {page.title}</title>
-        <link rel="stylesheet" href={`${basePath}/static/styles.css`} />
+        <link rel="stylesheet" href={`${resolveUrl('/static/styles.css')}`} />
       </head>
       <body style="padding: var(--flex-space-3);">
         <FormPageView
@@ -130,6 +127,12 @@ export const PreviewPage: FC<{
           fields={{}}
           errors={[]}
           prevUrl={null}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'document.querySelectorAll("form").forEach(function(f){f.addEventListener("submit",function(e){e.preventDefault()})})',
+          }}
         />
       </body>
     </html>

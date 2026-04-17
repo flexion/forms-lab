@@ -191,13 +191,7 @@ export function createEditRoutes(
       if (!view.formSpec || !view.spec) {
         return c.html(<p>No form spec available.</p>)
       }
-      return c.html(
-        <PreviewPage
-          view={view}
-          pageIndex={pageIndex}
-          basePath={resolveUrl('')}
-        />,
-      )
+      return c.html(<PreviewPage view={view} pageIndex={pageIndex} />)
     } catch (err) {
       return handleError(c, err)
     }
