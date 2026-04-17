@@ -20,14 +20,17 @@ Story 4 (PR #42) shipped the chat-driven form-shaping path with a 25-command exe
 
 In scope (v1):
 
-- Direct UI for all 25 commands across pages, groups, and fields.
+- Direct UI for the high-frequency commands across pages, groups, and fields: `renamePage`, `addPage`, `removePage`, `setDeliveryMode`, `swapPages`, `renameGroup`, `addGroup`, `removeGroup`, `addField`, `removeField`, `relabelField`, `setRequired`, `changeFieldType`, `setFieldControl`, `setFieldSensitivity`, `setFieldCondition` (clear + basic three-input set), `moveField`.
 - Editable preview in place of today's read-only iframe; one page visible at a time.
 - Shared **staged buffer** in the editor; Save commits one git commit per batch with a humanized message; Discard drops the buffer.
 - Chat assistant Accept stages into the same buffer.
 - Inline-expand for less-common controls (sensitivity, control widget, condition, move-to-group).
 
-Out of scope:
+Out of scope (deferred to v1.1):
 
+- `splitPage`, `mergePages`, `splitGroup`, `mergeGroups` — require multi-select UX that doesn't exist yet. Available via chat assistant in the meantime.
+- `reorderPages`, `movePage` — chained `swapPages` via the arrow buttons covers the common case.
+- `reorderFields`, `moveGroup` — pattern matches `moveField`; add when needed.
 - Drag-and-drop (fast follow; arrows + dropdowns suffice for v1).
 - Server-side draft persistence — buffer is client-only; `beforeunload` warns on navigation.
 - Publish flow (story-5).
@@ -59,7 +62,7 @@ Out of scope:
 
 **1. Replace the iframe with `<flex-editable-page>`.** A new web component renders the current page inline using the existing `FormPageView` markup as the visual base, then layers edit affordances. Inline rendering is required so the parent editor can react to selection and project state changes against the staged buffer. The iframe-based read-only preview at `GET /preview?page=N` survives unchanged for embedding elsewhere.
 
-**2. Introduce a staging service** at `src/services/forms/shaping/staging.ts`. Pure function: takes a `ProjectState` plus an ordered `Command[]`, applies them via the existing executor in dry-run mode (no git), and returns the projected `ProjectState` along with a per-command validity report. The editor holds the staged batch in client memory; on Save it `POST`s the full batch to a new `/edit/save` endpoint; the executor commits exactly once.
+**2. Reuse the existing pure executor for staging.** `src/services/forms/shaping/executor.ts` already exports `executeBatch(state, commands)` that returns `{ ok, state }` or `{ ok: false, failedAt, command, error }` without touching git. The editor client and the new `/edit/save` route both call it. No new service file is needed. The editor holds the staged batch in client memory; on Save it `POST`s the full batch to `/edit/save`; the route applies and commits exactly once via `service.executeCommands` (which also calls `executeBatch` internally — confirmed by re-reading `src/services/project-service.ts`).
 
 **3. Unify the chat path.** `flex-assistant`'s Accept button stops calling `/edit/accept` and instead dispatches `formeditor:stage-batch` carrying the LLM's commands plus its `explanation` (used as the chat-batch summary in the staged-changes popover). The existing `/edit/intent` endpoint is unchanged. The new `POST /edit/save` is the single commit path; `/edit/accept` and `/edit/execute` are removed.
 
@@ -133,8 +136,8 @@ Same as above, but step 1 is `flex-assistant` dispatching `formeditor:stage-batc
 
 ### Unit (services)
 
-- `test/forms/shaping/staging.test.ts` — staging service: append valid command produces projected state; append invalid command returns error and leaves state intact; batch with cross-command dependencies (remove group then move field from it) reports correct `failedAt`.
-- `test/entrypoints/app/routes/owner/edit/save.test.ts` — `POST /edit/save` happy path commits and returns sha; stale parent returns 409; mid-batch failure preserves git state.
+- `executeBatch` is already covered by `test/forms/shaping/executor-batch.test.ts`; no new test file needed for staging.
+- `test/entrypoints/app/routes/owner/edit/save.test.ts` — `POST /edit/save` happy path commits and returns sha; stale parent returns 409; mid-batch failure preserves git state; commit message contains `summary` plus per-command humanize lines.
 
 ### Component (DOM)
 
@@ -160,7 +163,7 @@ Not applicable — the new editable components are interactive scaffolding aroun
 
 If implementation overruns, the following slice ships first as a usable v1:
 
-1. Staging service + `/edit/save` endpoint + `flex-form-editor` buffer/Save/Discard.
+1. `/edit/save` endpoint (reusing `executeBatch`) + `flex-form-editor` buffer/Save/Discard.
 2. Page-level direct UI (rename, +page, delete, set delivery mode, swap pages — extends `flex-form-structure`).
 3. Field-level direct UI in editable preview (label, required, type, delete, "…more" with sensitivity / control / move).
 4. Group-level direct UI (rename, +field, delete, split, merge).
