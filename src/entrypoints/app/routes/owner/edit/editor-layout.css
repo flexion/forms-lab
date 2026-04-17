@@ -42,7 +42,7 @@
   grid-row: 2;
   position: sticky;
   top: 0;
-  max-height: 100dvh;
+  height: 100dvh;
   overflow-y: auto;
   border-inline-end: 1px solid var(--flex-color-border);
   align-self: start;
@@ -74,8 +74,7 @@
   grid-row: 2;
   position: sticky;
   top: 0;
-  max-height: 100dvh;
-  overflow-y: hidden;
+  height: 100dvh;
   border-inline-start: 1px solid var(--flex-color-border);
   align-self: start;
 }
