@@ -5,7 +5,6 @@ import {
   Footer,
   FooterNav,
   FooterPrimary,
-  FooterReturnToTop,
   FooterSecondary,
 } from '../flex-footer'
 import { Header, HeaderNavItem, type HeaderUser } from '../flex-header'
@@ -142,7 +141,6 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           </main>
         )}
         <Footer variant="slim">
-          <FooterReturnToTop />
           <FooterPrimary>
             <FooterNav>
               <ul>
