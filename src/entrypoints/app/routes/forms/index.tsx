@@ -48,8 +48,8 @@ interface ResolvedSpecs {
 interface FormRouterDeps {
   sessionGateway: FormSessionGateway
   submissionGateway: SubmissionGateway
-  getSpecs: (specId: string, ref?: string) => ResolvedSpecs | null
-  listSpecs: () => ResolvedSpecs[]
+  getSpecs: (specId: string, ref?: string) => Promise<ResolvedSpecs | null>
+  listSpecs: () => Promise<ResolvedSpecs[]>
   /**
    * Optional hook that produces an "Open in editor" href for the preview
    * banner, given a spec id and branch. Returning null (or omitting this
@@ -139,8 +139,8 @@ export function createFormRouter(deps: FormRouterDeps) {
   const forms = new Hono()
 
   // Forms index (public)
-  forms.get('/', (c) => {
-    const allSpecs = listSpecs()
+  forms.get('/', async (c) => {
+    const allSpecs = await listSpecs()
     return c.html(
       <Layout user={c.get('user')} title="Forms" currentPath="/forms">
         <div class="flex-form" data-size="large">
@@ -175,12 +175,21 @@ export function createFormRouter(deps: FormRouterDeps) {
   })
 
   // My sessions (requires auth)
-  forms.get('/sessions', requireAuth(), (c) => {
+  forms.get('/sessions', requireAuth(), async (c) => {
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const sessions = sessionGateway.listByOwner(user.login)
     const active = sessions.filter((s) => s.status === 'active')
     const submitted = sessions.filter((s) => s.status === 'submitted')
+    // Resolve titles up front so the JSX below can stay synchronous.
+    const uniqueSpecIds = [...new Set(sessions.map((s) => s.specId))]
+    const titlesEntries = await Promise.all(
+      uniqueSpecIds.map(async (specId) => {
+        const specs = await getSpecs(specId)
+        return [specId, specs?.formSpec.title ?? specId] as const
+      }),
+    )
+    const titles = new Map<string, string>(titlesEntries)
     return c.html(
       <Layout user={user} title="My Sessions" currentPath="/forms">
         <div class="flex-form" data-size="large">
@@ -198,8 +207,7 @@ export function createFormRouter(deps: FormRouterDeps) {
                   <h2>In Progress</h2>
                   <ul class="l-stack">
                     {active.map((s) => {
-                      const specs = getSpecs(s.specId)
-                      const title = specs?.formSpec.title ?? s.specId
+                      const title = titles.get(s.specId) ?? s.specId
                       return (
                         <li key={s.id}>
                           <a
@@ -225,8 +233,7 @@ export function createFormRouter(deps: FormRouterDeps) {
                   <h2>Completed</h2>
                   <ul class="l-stack">
                     {submitted.map((s) => {
-                      const specs = getSpecs(s.specId)
-                      const title = specs?.formSpec.title ?? s.specId
+                      const title = titles.get(s.specId) ?? s.specId
                       return (
                         <li key={s.id}>
                           <strong>{title}</strong>
@@ -261,7 +268,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const branch = readBranch(c)
     const specId = c.req.param('specId')
     if (!specId) return c.notFound()
-    const specs = getSpecs(specId, branch)
+    const specs = await getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.html(
@@ -283,7 +290,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const branch = readBranch(c)
     const specId = c.req.param('specId')
     if (!specId) return c.notFound()
-    const specs = getSpecs(specId, branch)
+    const specs = await getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
@@ -301,7 +308,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const specId = c.req.param('specId')
     const sessionId = c.req.param('sessionId')
     if (!specId || !sessionId) return c.notFound()
-    const specs = getSpecs(specId, branch)
+    const specs = await getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
@@ -351,7 +358,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const specId = c.req.param('specId')
     const sessionId = c.req.param('sessionId')
     if (!specId || !sessionId) return c.notFound()
-    const specs = getSpecs(specId, branch)
+    const specs = await getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
@@ -434,7 +441,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const specId = c.req.param('specId')
     const sessionId = c.req.param('sessionId')
     if (!specId || !sessionId) return c.notFound()
-    const specs = getSpecs(specId, branch)
+    const specs = await getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
@@ -461,7 +468,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const specId = c.req.param('specId')
     const sessionId = c.req.param('sessionId')
     if (!specId || !sessionId) return c.notFound()
-    const specs = getSpecs(specId, branch)
+    const specs = await getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
@@ -493,7 +500,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const submission = submissionGateway.getSubmission(submissionId)
     if (!submission) return c.notFound()
     if (submission.ownerId !== user.login) return c.notFound()
-    const specs = getSpecs(submission.specId, branch)
+    const specs = await getSpecs(submission.specId, branch)
     return c.html(
       <Layout user={user} title="Confirmation" currentPath="/forms">
         {specs

@@ -34,8 +34,8 @@ function createTestApp() {
     createFormRouter({
       sessionGateway,
       submissionGateway,
-      getSpecs: (specId) => specRegistry.get(specId) ?? null,
-      listSpecs: () => [...specRegistry.values()],
+      getSpecs: async (specId) => specRegistry.get(specId) ?? null,
+      listSpecs: async () => [...specRegistry.values()],
     }),
   )
   return app
@@ -55,8 +55,8 @@ function createUnauthTestApp() {
     createFormRouter({
       sessionGateway,
       submissionGateway,
-      getSpecs: (specId) => specRegistry.get(specId) ?? null,
-      listSpecs: () => [...specRegistry.values()],
+      getSpecs: async (specId) => specRegistry.get(specId) ?? null,
+      listSpecs: async () => [...specRegistry.values()],
     }),
   )
   return app
@@ -380,8 +380,8 @@ describe('Form routes', () => {
       createFormRouter({
         sessionGateway,
         submissionGateway,
-        getSpecs: (specId) => specRegistry.get(specId) ?? null,
-        listSpecs: () => [...specRegistry.values()],
+        getSpecs: async (specId) => specRegistry.get(specId) ?? null,
+        listSpecs: async () => [...specRegistry.values()],
       }),
     )
     // otheruser creates a session in the same gateway
@@ -429,8 +429,8 @@ describe('Form routes', () => {
       createFormRouter({
         sessionGateway,
         submissionGateway,
-        getSpecs: (specId) => specRegistry.get(specId) ?? null,
-        listSpecs: () => [...specRegistry.values()],
+        getSpecs: async (specId) => specRegistry.get(specId) ?? null,
+        listSpecs: async () => [...specRegistry.values()],
       }),
     )
 
@@ -496,8 +496,8 @@ describe('Form routes', () => {
     const routerDeps = {
       sessionGateway,
       submissionGateway,
-      getSpecs: (specId: string) => specRegistry.get(specId) ?? null,
-      listSpecs: () => [...specRegistry.values()],
+      getSpecs: async (specId: string) => specRegistry.get(specId) ?? null,
+      listSpecs: async () => [...specRegistry.values()],
     } as const
 
     // User A creates a session
