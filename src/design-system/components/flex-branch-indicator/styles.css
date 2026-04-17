@@ -1,0 +1,48 @@
+/* flex-branch-indicator — pill that displays a branch name,
+   optionally marking it as the published branch or showing how many
+   commits it is ahead of its base. */
+
+.flex-branch-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--flex-space-xs);
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-bubble);
+  background: var(--flex-color-surface);
+  color: var(--flex-color-text);
+  font-family: var(--flex-font-mono);
+  font-size: var(--flex-text-tag);
+  line-height: 1.2;
+}
+
+.flex-branch-indicator__icon {
+  flex-shrink: 0;
+  fill: currentcolor;
+}
+
+.flex-branch-indicator__name {
+  font-weight: 600;
+}
+
+.flex-branch-indicator__badge {
+  padding: 0 var(--flex-space-xs);
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-warning-lighter);
+  color: var(--flex-color-text);
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.flex-branch-indicator__meta {
+  color: var(--flex-color-text-muted);
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-xs);
+}
+
+.flex-branch-indicator[data-published="true"] {
+  border-color: var(--flex-color-warning);
+}
