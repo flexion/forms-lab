@@ -1,4 +1,7 @@
 import type { FC } from 'hono/jsx'
+import { BranchIndicator } from '../../../../../design-system/components/flex-branch-indicator'
+import { BranchSwitcher } from '../../../../../design-system/components/flex-branch-switcher'
+import { ChangeIndicator } from '../../../../../design-system/components/flex-change-indicator'
 import type { FormFieldRequirement } from '../../../../../design-system/components/flex-form-field'
 import { FormPageView } from '../../../../../design-system/components/flex-form-page'
 import type { SessionUser } from '../../../../../services/auth/session'
@@ -29,6 +32,7 @@ export type EditorPageProps =
       log: ShapingLogEntry[]
       branch: string
       branches: BranchEntry[]
+      changed: { dataSpec: boolean; formSpec: boolean }
     }
 
 export const EditorPage: FC<EditorPageProps> = (props) => {
@@ -99,10 +103,12 @@ const EditingShell: FC<{
   log: ShapingLogEntry[]
   branch: string
   branches: BranchEntry[]
-}> = ({ view, owner, log, branch }) => {
+  changed: { dataSpec: boolean; formSpec: boolean }
+}> = ({ view, owner, log, branch, branches, changed }) => {
   const { project, formSpec, spec } = view
   const editBase = `/${owner}/${project.slug}/edit/${branch}`
   const previewBase = `/${owner}/${project.slug}/preview/${branch}`
+  const currentBranchEntry = branches.find((b) => b.name === branch)
 
   if (!formSpec || !spec) {
     return (
@@ -149,9 +155,47 @@ const EditingShell: FC<{
             <a href={resolveUrl(`/${owner}/${project.slug}`)}>{project.name}</a>
             {' / '}
             <strong>Edit</strong>
-            {' / '}
-            <span class="editor-breadcrumb__branch">{branch}</span>
           </h1>
+          <div class="editor-breadcrumb__branch-controls">
+            <BranchIndicator
+              name={branch}
+              isPublished={branch === 'main'}
+              ahead={currentBranchEntry?.ahead}
+            />
+            <BranchSwitcher
+              current={branch}
+              branches={branches}
+              compareHref={(b) =>
+                resolveUrl(`/${owner}/${project.slug}/edit/${b}`)
+              }
+              createHref={resolveUrl(
+                `/${owner}/${project.slug}/edit/${branch}/branch`,
+              )}
+            />
+            {changed.dataSpec ? (
+              <span class="editor-breadcrumb__change">
+                <span class="editor-breadcrumb__change-label">Data spec</span>
+                <ChangeIndicator variant="modified" />
+              </span>
+            ) : null}
+            {changed.formSpec ? (
+              <span class="editor-breadcrumb__change">
+                <span class="editor-breadcrumb__change-label">Form spec</span>
+                <ChangeIndicator variant="modified" />
+              </span>
+            ) : null}
+            {branch !== 'main' ? (
+              <a
+                href={resolveUrl(
+                  `/${owner}/${project.slug}/compare/main...${branch}`,
+                )}
+                class="flex-button editor-breadcrumb__review-link"
+                data-variant="outline"
+              >
+                Review changes
+              </a>
+            ) : null}
+          </div>
           <div class="editor-breadcrumb__actions">
             <div class="editor-breadcrumb__staged">
               <button

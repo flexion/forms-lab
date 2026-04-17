@@ -36,6 +36,29 @@
   color: var(--flex-color-text);
 }
 
+.editor-breadcrumb__branch-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-sm);
+  flex-wrap: wrap;
+}
+
+.editor-breadcrumb__change {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--flex-space-2xs);
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+}
+
+.editor-breadcrumb__change-label {
+  font-weight: 600;
+}
+
+.editor-breadcrumb__review-link {
+  margin-inline-start: var(--flex-space-xs);
+}
+
 /* --- Structure sidebar (sticky left) --- */
 
 .editor-structure {

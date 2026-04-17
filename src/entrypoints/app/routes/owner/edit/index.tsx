@@ -89,6 +89,7 @@ export function createEditRoutes(
       }
       const log = await service.getShapingLog(owner, slug, branch)
       const branches = await service.listBranches(slug)
+      const changed = await service.getChangedResources(slug, branch)
       return c.html(
         <Layout
           user={user}
@@ -103,6 +104,7 @@ export function createEditRoutes(
             log={log}
             branch={branch}
             branches={branches}
+            changed={changed}
           />
         </Layout>,
       )
