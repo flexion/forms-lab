@@ -82,7 +82,11 @@ export function createCompareRoutes(
     )
 
     return c.html(
-      <Layout user={user} title={`Compare ${parsed.base}...${parsed.head}`}>
+      <Layout
+        user={user}
+        title={`Compare ${parsed.base}...${parsed.head}`}
+        contentWidth="full"
+      >
         <ReviewPage
           owner={owner}
           slug={slug}
