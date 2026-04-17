@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Update the Forms Lab catalog so it truthfully reflects the command-based form-shaping work that merged in PR #42, and close evaluator-facing gaps before the final presentation.
+**Goal:** Update the Forms Lab catalog so it truthfully reflects the command-based form-shaping work that merged in PRs #42 and #54, and close evaluator-facing gaps before the final presentation.
 
 **Architecture:** Pure documentation work. No source code changes. Markdown edits in `catalog/` (decisions, architecture, walkthrough, stories, experiments, personas), one notes file (`flight-board.md`), and test updates in `test/catalog-walkthrough.test.ts` to cover the renumbered walkthrough.
 
@@ -17,6 +17,7 @@
 - `catalog/decisions/architecture/command-based-shaping.md` (ADR)
 - `catalog/decisions/architecture/llm-tool-use-as-validation-boundary.md` (ADR)
 - `catalog/decisions/architecture/coordinator-custom-elements.md` (ADR)
+- `catalog/decisions/architecture/unified-staged-buffer.md` (ADR — new after rebase)
 - `catalog/experiments/shaping-architecture/_suite.md` (experiment suite)
 - `catalog/experiments/shaping-architecture/full-rewrite.md` (experiment variant)
 - `catalog/experiments/shaping-architecture/command-based.md` (experiment variant)
@@ -334,6 +335,82 @@ git commit -m "docs(catalog): add ADR for coordinator custom elements pattern"
 
 ---
 
+## Task 4b: Write ADR — Unified staged buffer
+
+**Files:**
+- Create: `catalog/decisions/architecture/unified-staged-buffer.md`
+
+- [ ] **Step 1: Write the ADR**
+
+Create `catalog/decisions/architecture/unified-staged-buffer.md`:
+
+```markdown
+---
+status: stable
+tags: [architecture, design-system, shaping, git]
+decided: 2026-04-17
+---
+
+# Unified staged buffer for direct and LLM-assisted edits
+
+Direct-manipulation edits from the WYSIWYG editors and LLM-proposed batches from the chat assistant share a single client-side staged buffer. Maya commits the whole buffer with one click; the server writes exactly one git commit per Save via `POST /edit/save`.
+
+## Context
+
+PR #42 (form shaping) had two commit endpoints:
+
+- `POST /edit/execute` — manual commands emitted from the structure sidebar (page reorder, delivery mode) — one git commit per command.
+- `POST /edit/accept` — LLM-proposed batches from the chat assistant — one git commit per accepted batch.
+
+PR #54 added direct-manipulation WYSIWYG editors for the other ~20 command kinds (rename a field, toggle required, add a group, change a delivery mode, etc.). Extending the `/edit/execute` model to every keystroke would have produced a commit-per-keystroke history and eroded the atomic-batch guarantee that made the original executor valuable. It also would have kept LLM-originated edits and direct edits on separate paths, contradicting the "one foundation for both" claim in the [command-based shaping decision](command-based-shaping.md).
+
+## Decision
+
+**One staged buffer.** `flex-form-editor` holds a `Command[]` buffer. Every edit — whether from a WYSIWYG editor's event or from the chat assistant's Accept — dispatches `formeditor:stage-command` (single) or `formeditor:stage-batch` (many) and the coordinator appends to the buffer.
+
+**Projected state, not canonical state.** The coordinator keeps both canonical state (last committed) and projected state (canonical + buffer). Editors re-render from the projected state on every `formeditor:state-projected` event. Maya sees what the form will look like after Save, before committing.
+
+**One commit endpoint.** `POST /edit/save` is the only path that writes to git. Body: `{ commands, parentSha, summary?, source }`. The server parses every command with `commandSchema`, runs the executor, and writes one commit whose message is a per-command humanize join (optionally prefixed with a caller-supplied summary for chat-originated batches).
+
+**`parentSha` optimistic concurrency.** `/edit/save` returns `409 { error: 'stale', currentSha }` if `parentSha` doesn't match the project's current sha. Two tabs can no longer silently clobber each other.
+
+**`source` preserves audit distinction.** The shaping log records whether a commit originated from direct manipulation (`manual`), LLM assistance (`llm`), or a mix (`manual` when mixed, because the chat batch's contribution is one line among many). `/edit/accept` and `/edit/execute` were removed.
+
+## Consequences
+
+- A single Save commit can include direct edits and LLM-accepted batches interleaved. The commit message humanizes each command, with the LLM's explanation included as a summary prefix when the batch came from chat.
+- The buffer lives in client memory. A page reload loses it. `beforeunload` warns when the buffer is non-empty.
+- Discard clears the buffer and reprojects from canonical state.
+- The `parentSha` guard is simple and correct: no row-level locking, no 3-way merge — just a fresh sha comparison per Save.
+- Pattern generalizes: any future editor-style UI that wants atomic batch commits with mixed interaction sources can reuse the buffer + single-save shape.
+
+## Sources
+
+- Design note: [`notes/2026-04-16-direct-edit-ui-design.md`](../../../notes/2026-04-16-direct-edit-ui-design.md) (in-repo)
+- Code: `src/entrypoints/app/routes/owner/edit/index.tsx` (`/edit/save`), `src/design-system/components/flex-form-editor/`, `flex-staged-changes/`
+- Related: [Command-based form shaping](command-based-shaping.md), [Coordinator custom elements](coordinator-custom-elements.md)
+```
+
+- [ ] **Step 2: Verify the page renders**
+
+```bash
+bun run dev &
+sleep 2
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/catalog/decisions/architecture/unified-staged-buffer
+kill %1 2>/dev/null
+```
+
+Expected: `200`.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add catalog/decisions/architecture/unified-staged-buffer.md
+git commit -m "docs(catalog): add ADR for unified staged edit buffer"
+```
+
+---
+
 ## Task 5: Update story 4 with AC status and implementation notes
 
 **Files:**
@@ -350,17 +427,20 @@ Open `catalog/stories/4-maya-shapes-the-form-experience.md`. Replace the existin
 
 - [x] Maya can view the current FormSpec for a project
 - [x] Maya can describe changes in natural language and see the LLM propose concrete edits
-- [x] Proposed edits are shown as humanized command list (the commands *are* the diff)
-- [x] Maya can accept, reject, or refine a proposed batch
-- [x] Maya can reorder pages (manual swap) and pick per-page delivery modes
-- [x] Changes save atomically as a git commit per accepted batch, with a structured shaping log
-- [x] Live preview updates to show what Carlos would see after accepted edits
-- [ ] Dedicated LLM suggest-modes button (partial — the LLM can emit `setDeliveryMode` via tool use, but no one-click "suggest modes" surface)
-- [ ] Direct group-move UI (partial — command exists, no drag/dropdown; Maya achieves it via natural language for now)
+- [x] Proposed edits are shown as a humanized command list (the commands *are* the diff)
+- [x] Maya can accept, reject, or refine an LLM-proposed batch
+- [x] Maya can directly manipulate pages (rename, add, delete, reorder, set delivery mode)
+- [x] Maya can directly manipulate groups (rename, add, delete, add field)
+- [x] Maya can directly manipulate fields (rename, required toggle, change type/control/sensitivity, set condition, move, delete)
+- [x] Direct edits and LLM-accepted batches stage into one buffer; one Save = one git commit
+- [x] Save enforces optimistic concurrency via `parentSha` to prevent two-tab clobbering
+- [x] Preview renders the page as Carlos would see it; "Preview as applicant" toggles between edit and applicant view
+- [x] Changes are durably recorded in git plus a structured `shaping-log.json`
+- [ ] Dedicated one-click "suggest delivery modes" button (partial — the LLM can emit `setDeliveryMode` via tool use, but no dedicated button)
 
 ## Notes:
 
-- Maya's edits are proposals until accepted. Rejecting a batch discards nothing durable; accepting writes a git commit and a `shaping-log.json` entry.
+- Direct manipulation and LLM assistance share one foundation: both emit the same `Command` values, both stage into one client buffer, both commit via `POST /edit/save`. See [Unified staged buffer](../decisions/architecture/unified-staged-buffer.md).
 - The LLM uses constrained generation: each command kind is an AI SDK tool with a Zod schema. See [LLM tool-use as validation boundary](../decisions/architecture/llm-tool-use-as-validation-boundary.md).
 - Commands span both domain layers (structural edits to `FormSpec`, field edits to `DataCollectionSpec`). This is a deliberate broadening of Story 3's extraction output. See [Command-based form shaping](../decisions/architecture/command-based-shaping.md).
 - The editor UI uses a coordinator custom-element pattern rather than a client framework. See [Coordinator custom elements](../decisions/architecture/coordinator-custom-elements.md).
@@ -368,7 +448,7 @@ Open `catalog/stories/4-maya-shapes-the-form-experience.md`. Replace the existin
 
 ## Implementation Notes:
 
-**Shipped:**
+**Shipped (PR #42 — command-based shaping):**
 
 - Command vocabulary spanning page, group, and field operations (`src/services/forms/shaping/commands.ts`)
 - Atomic batch executor with rollback (`executor.ts`)
@@ -378,14 +458,23 @@ Open `catalog/stories/4-maya-shapes-the-form-experience.md`. Replace the existin
 - Git-backed audit trail: one commit per accepted batch plus structured `shaping-log.json`
 - Accept / reject / refine loop with persistent chat transcript
 
-**Deferred follow-ups (not blocking landing):**
+**Shipped (PR #54 — direct-manipulation edit UI):**
 
-- Dedicated direct UI for group-move (currently natural-language only)
-- Dedicated "suggest delivery modes" prompt button
-- Playwright behavioral tests for custom elements (executor is well-tested; end-to-end custom-element tests remain)
-- Integration tests for `/intent`, `/accept`, `/execute` JSON routes (especially a 403/400 regression test on `/accept`)
-- Optimistic concurrency guard (`expected-base-sha` on `/accept`) — acceptable for single-user v1
-- Move shared `commands.ts` + `humanize.ts` to `src/shared/shaping/` to eliminate humanizer duplication between server and `flex-command-proposal` — requires an ADR amendment to the `import type` exclusion in the dependency-rule test
+- WYSIWYG editors for page/group/field (`flex-editable-page`, `flex-editable-group`, `flex-editable-field`) — click-to-edit labels, chips for type/required, "…more" expander for sensitivity/control/condition/move-to-group/change-type
+- Unified staged-changes buffer held by `flex-form-editor`; `flex-staged-changes` popover lists pending commands with per-entry remove
+- Single commit endpoint `POST /edit/save`; `/edit/accept` and `/edit/execute` removed
+- `parentSha` optimistic-concurrency guard on `/edit/save`; 409 on stale parent
+- `flex-editable-page` replaces the preview iframe; "Preview as applicant" toggle shows the applicant-facing view
+- `source` field on shaping-log entries (`manual` vs `llm`) preserved across the unified path
+
+**Deferred follow-ups:**
+
+- Dedicated one-click "suggest delivery modes" prompt button (LLM can emit the command today, but no dedicated button)
+- Drag-and-drop for pages/groups/fields (arrows + dropdowns cover the common case)
+- Server-side draft persistence — staged buffer is client-only; `beforeunload` warns on navigation
+- Live preview of conversational delivery mode
+- Playwright behavioral tests for custom elements (executor and integration-save tests are green; end-to-end custom-element tests remain)
+- Move shared `commands.ts` + `humanize.ts` to `src/shared/shaping/` to eliminate humanizer duplication — requires an ADR amendment to the `import type` exclusion in the dependency-rule test
 ```
 
 - [ ] **Step 2: Run the catalog tests**
@@ -434,7 +523,7 @@ to:
 - **Isolated:** USWDS (design-system only), Bedrock (`services/ingestion/` and `services/forms/shaping/` only), AI SDK tool-use (`services/forms/shaping/` only), `bun:sqlite` (`services/storage.ts` and `services/user-store.ts` only), git CLI (`services/form-project-repo.ts` only), `markdown-it` (`services/content/markdown.ts` only)
 ```
 
-- [ ] **Step 3: Add the three new ADRs to `## Sources`**
+- [ ] **Step 3: Add the four new ADRs to `## Sources`**
 
 Find the `## Sources` section at the bottom. Change:
 
@@ -459,6 +548,7 @@ to:
 - [Command-based form shaping](../decisions/architecture/command-based-shaping.md)
 - [LLM tool-use as validation boundary](../decisions/architecture/llm-tool-use-as-validation-boundary.md)
 - [Coordinator custom elements](../decisions/architecture/coordinator-custom-elements.md)
+- [Unified staged buffer](../decisions/architecture/unified-staged-buffer.md)
 - [Data model](data-model.md) — domain types in detail
 - [System overview](system-overview.md) — infrastructure topology
 ```
@@ -488,16 +578,31 @@ git commit -m "docs(architecture): document shaping service and tool-use depende
 **Files:**
 - Modify: `catalog/architecture/threat-model.md`
 
-- [ ] **Step 1: Add two threats to the shaping section**
+- [ ] **Step 1: Fix stale route references in the mitigations list**
 
-Open `catalog/architecture/threat-model.md`. Find the `### Hono application to LLM (form shaping)` section (near line 188). Locate the existing `**Threats:**` list. Append two bullets to that list:
+Open `catalog/architecture/threat-model.md`. Find the `### Hono application to LLM (form shaping)` section (near line 188). In the `**Mitigations:**` list, find this line:
+
+```markdown
+- Form shaping routes (`/projects/:slug/edit`, `/projects/:slug/shape`) require `requireAuth()` and `requireOwner()` middleware; only authenticated project owners can trigger LLM-assisted edits.
+```
+
+Replace it with:
+
+```markdown
+- Form shaping routes (`GET /:owner/:slug/edit`, `POST /:owner/:slug/edit/intent`, `POST /:owner/:slug/edit/save`, `POST /:owner/:slug/edit/undo`) verify the authenticated user owns the project; only the owner can trigger LLM-assisted edits or commit a staged batch.
+- `POST /:owner/:slug/edit/save` enforces optimistic concurrency via a `parentSha` guard and returns `409` on stale parent — two tabs cannot silently clobber each other.
+```
+
+- [ ] **Step 2: Add two threats to the shaping section**
+
+In the same section, locate the existing `**Threats:**` list. Append two bullets to that list:
 
 ```markdown
 - **LLM cost abuse via refinement loop** — an authenticated project owner can submit refinement feedback repeatedly, driving unbounded LLM calls. Each call costs real money and takes seconds to complete.
 - **Prompt injection via `previousAttempt.feedback`** — refinement feedback is concatenated into the shaping prompt. A project owner could craft feedback that attempts to manipulate later LLM behavior. Attacker must already be authenticated and own the project, so severity is low; worth recording the surface.
 ```
 
-- [ ] **Step 2: Add corresponding rows to the threat summary table**
+- [ ] **Step 3: Add corresponding rows to the threat summary table**
 
 Find the threat summary table (it has rows like `| Prompt injection via form labels | ... |`). Add two new rows immediately below the existing shaping rows:
 
@@ -506,15 +611,15 @@ Find the threat summary table (it has rows like `| Prompt injection via form lab
 | Refinement-feedback prompt injection | Hono-LLM (form shaping) | Low | Low | Output validation, Zod schema enforcement | Partially mitigated |
 ```
 
-- [ ] **Step 3: Add a changelog entry**
+- [ ] **Step 4: Add a changelog entry**
 
 Find the changelog table at the bottom (rows like `| 2026-04-15 | Story 4 v2 | ... |`). Append one row (keep date ordering):
 
 ```markdown
-| 2026-04-17 | Story 4 review follow-up | Added refinement-loop abuse and refinement-feedback prompt-injection threats surfaced in story-4 code review |
+| 2026-04-17 | Story 4 review + PR #54 | Updated shaping route references for unified `/edit/save` (single commit endpoint, `parentSha` optimistic-concurrency guard). Added refinement-loop abuse and refinement-feedback prompt-injection threats surfaced in story-4 code review. |
 ```
 
-- [ ] **Step 4: Run architecture tests**
+- [ ] **Step 5: Run architecture tests**
 
 ```bash
 bun test test/catalog-architecture.test.ts
@@ -522,11 +627,11 @@ bun test test/catalog-architecture.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add catalog/architecture/threat-model.md
-git commit -m "docs(threat-model): add refinement-loop abuse and prompt injection threats"
+git commit -m "docs(threat-model): update shaping routes; add refinement-loop and prompt injection threats"
 ```
 
 ---
@@ -707,39 +812,42 @@ timing: "3 min"
 audience: [evaluator, general]
 ---
 
-# Shaping a Form with Natural Language
+# Shaping a Form — Direct Manipulation Meets LLM Assistance
 
-Forms Lab has two distinct LLM integration points. The first extracts structured specs from PDFs. The second — **form shaping** — lets Maya edit those specs by describing the change in plain language.
+Forms Lab has two distinct LLM integration points. The first extracts structured specs from PDFs. The second — **form shaping** — is how Maya edits those specs. Two interaction modes share one foundation: she can click to edit directly, or describe a higher-level intent to the assistant. Both paths stage into one buffer; one Save writes one git commit.
 
-## What It Does
+## Two Paths, One Substrate
 
-Maya types an intent into the editor: *"Combine the two employment pages into one"*, or *"Make the middle-name field optional and move it next to the last-name field"*. The LLM proposes a sequence of **domain commands**. Maya sees each proposed command as a plain-English line, reviews the preview of what the form will look like, and accepts, rejects, or refines the batch.
+**Direct manipulation (routine edits).** Maya clicks a field label and types a new one. She toggles "required" on and off. She picks a delivery mode from a dropdown. She reorders pages with arrows, adds a group, deletes a field. Each click emits a domain `Command` — the same type of value the LLM produces.
 
-On accept, the batch executes atomically and produces one git commit plus a structured entry in `forms/<slug>/shaping-log.json`.
+**LLM assistance (higher-level intents).** Maya types into the chat: *"Combine the two employment pages into one,"* or *"Split personal information by dependent status."* Claude proposes a batch of commands. Maya reviews them as plain-English lines, accepts, rejects, or refines.
+
+Both paths stage into the same client-side buffer. The breadcrumb shows "Save (N pending)." One click commits every pending change atomically as one git commit. The [unified staged buffer ADR](/catalog/decisions/architecture/unified-staged-buffer) covers the decision.
 
 ## The LLM Technique
 
 Shaping uses **constrained generation via AI SDK tool-use**, not free-form JSON.
 
-- Each command kind (`swapPages`, `moveGroup`, `relabelField`, `setRequired`, …) is registered as an AI SDK tool.
+- Each command kind (`swapPages`, `moveGroup`, `relabelField`, `setRequired`, `addField`, `changeFieldType`, …) is registered as an AI SDK tool.
 - Each tool's argument schema is the Zod schema for that command.
 - The LLM **cannot** emit a command that doesn't match the schema — well-formedness is a modeling constraint, not a parsing hope.
 - The server re-validates every command with the same Zod schema before the executor runs, and the executor performs state-aware semantic checks.
 
-Three layers defend the filesystem from LLM output: tool grammar, server-side schema validation, executor semantic validation.
-
-See [LLM tool-use as validation boundary](/catalog/decisions/architecture/llm-tool-use-as-validation-boundary) for the decision record.
+Three layers defend the filesystem from LLM output: tool grammar, server-side schema validation, executor semantic validation. See [LLM tool-use as validation boundary](/catalog/decisions/architecture/llm-tool-use-as-validation-boundary).
 
 ## Why It's Interesting
 
-- **Commands *are* the diff.** No separate differ runs. The humanized command list is both the proposal Maya reviews and the record of what changed.
-- **Atomic batches.** A batch either fully applies or doesn't. Partial edits never reach git.
-- **One foundation for two interaction modes.** A manual drag-drop in the structure panel would emit the same commands as the LLM. The LLM-driven path and the WYSIWYG path share one substrate.
-- **Git-backed audit trail.** Every accepted batch is a commit. Every intent is logged with its resulting commit SHA. The shaping history is reconstructable from git alone.
+- **Commands *are* the diff.** No separate differ runs. The humanized command list is both what Maya reviews and what gets recorded.
+- **Atomic batches.** Save writes one commit. Either the whole buffer applies or none of it does. Partial edits never reach git.
+- **One foundation for two interaction modes, demonstrated.** Direct manipulation and LLM assistance aren't parallel systems — they're the same system with different input sources. A click to rename a field and an LLM batch to split a page compose into one buffer before commit.
+- **Optimistic concurrency.** `parentSha` on every Save. Two tabs can't silently clobber.
+- **Git-backed audit trail.** Every Save is a commit. Every intent is logged with its resulting commit SHA. The shaping history is reconstructable from git alone.
 
 ## The Pivot
 
 The first implementation had the LLM rewrite the whole `FormSpec` as free-form JSON; the server diffed before and after. That broke in practice — the LLM drifted (swapping page contents but keeping IDs in place), intent was lost (the differ had to infer semantics from structural diffs), and noisy diffs were the norm. The approach was replaced on the same branch before merge.
+
+The payoff is visible in what came after. With commands as the canonical edit unit, the direct-manipulation WYSIWYG editors landed as a natural follow-up: a click emits a command; the command stages into the same buffer an LLM batch would land in; one Save path commits both. The "one foundation" claim turned into shipped code.
 
 See the [shaping architecture experiment](/catalog/experiments/shaping-architecture) for the side-by-side comparison, and the [command-based shaping decision](/catalog/decisions/architecture/command-based-shaping) for the rationale.
 
@@ -827,20 +935,21 @@ Rename that section to `## Extraction Pipeline` and add a new sibling section im
 A second inference path handles LLM-assisted form shaping:
 
 ​```
-Intent → AI SDK tool-use (Claude/Bedrock) → Command batch → Zod validation → Executor → Git commit
+Intent → AI SDK tool-use (Claude/Bedrock) → Command batch → Staged buffer → POST /edit/save → Zod + executor validation → Git commit
 ​```
 
 - **Interface**: `FormShaper` — given a spec and a user intent, returns a command batch
 - **Implementation**: `BedrockShaper` calls Claude with an array of registered AI SDK tools
+- **Staging**: Accepted LLM batches and direct-manipulation edits both stage into one client-side buffer before committing
 - **Validation**: Every command is re-validated with its Zod schema server-side before the executor runs
-- **Atomicity**: Either the whole batch applies or none of it does; partial edits never reach git
+- **Atomicity**: One Save = one commit = the whole buffer applied atomically, or none of it
 
 The two pipelines use the same Bedrock client but different sampling profiles. Extraction uses free-form structured output (the whole spec). Shaping uses tool-use mode, where the LLM can only emit calls matching registered tool schemas — well-formedness is a modeling constraint rather than a parse hope.
 
-See the [LLM tool-use as validation boundary decision](/catalog/decisions/architecture/llm-tool-use-as-validation-boundary).
+See the [LLM tool-use as validation boundary decision](/catalog/decisions/architecture/llm-tool-use-as-validation-boundary) and the [unified staged buffer decision](/catalog/decisions/architecture/unified-staged-buffer).
 ```
 
-(Note: the four-backtick fences above represent triple backticks in the file; the backtick-around-backtick is only to escape them inside this plan.)
+(Note: the four-backtick fences above are a rendering artifact of this plan document; write them as standard triple backticks in the actual file.)
 
 - [ ] **Step 2: Update the "See also" link at the bottom**
 
@@ -872,12 +981,28 @@ Open `catalog/walkthrough/08-live-demo.md`. Find the `## Upload and Extract` sec
 ```markdown
 ## Shape a Form
 
-1. From a project overview page, click **Edit**
-2. Type an intent into the assistant panel: *"Combine pages 2 and 3"* or *"Make the middle-name field optional"*
-3. See the LLM propose a batch of domain commands as plain-English lines
-4. Review the live preview of what the form becomes after the batch is applied
-5. Accept, reject, or type a refinement ("…but keep the employment page separate") to regenerate
-6. On accept: a git commit is written, the shaping log is appended to, and the structure panel updates
+From a project overview page, click **Edit**. Two paths into the same staged buffer:
+
+**Direct manipulation:**
+
+1. Click a field label in the preview to rename it
+2. Click the "required" chip to toggle
+3. Use the page tabs to switch between pages; use the arrow buttons to reorder
+4. Pick a delivery mode from the dropdown on a page
+5. Each click stages a command in the buffer; the breadcrumb shows **Save (N)**
+
+**LLM assistance:**
+
+1. Type an intent into the assistant panel: *"Combine pages 2 and 3"* or *"Split personal information by dependent status"*
+2. See a batch of commands proposed as plain-English lines
+3. Accept, reject, or refine ("…but keep the employment page separate")
+4. Accept stages the batch into the same shared buffer
+
+**Commit:**
+
+1. Click **Save** — one git commit writes the whole buffer; `parentSha` guard catches stale parents
+2. Toggle **Preview as applicant** to validate the result in the applicant-facing view
+3. Click **Discard** at any point to drop the pending buffer
 ```
 
 - [ ] **Step 2: Do NOT commit yet**
@@ -1039,7 +1164,7 @@ A qualitative comparison of two architectures for LLM-assisted editing of a form
 | Variant | Approach | Outcome |
 |---|---|---|
 | full-rewrite | LLM returns a revised `FormSpec` as free-form JSON; server diffs before/after | Abandoned mid-story |
-| command-based | LLM emits a sequence of domain commands via AI SDK tool-use | Shipped |
+| command-based | LLM emits a sequence of domain commands via AI SDK tool-use; direct-manipulation editors (PR #54) emit the same commands and share one staged buffer | Shipped; substrate extended to direct editing |
 
 ## Evaluation Method
 
@@ -1142,8 +1267,7 @@ Server-side, each command is re-validated with the same Zod schema before execut
 ## Trade-offs Taken
 
 - **Commands span both domain layers.** Page/group commands touch `FormSpec`; field commands touch `DataCollectionSpec`. This broadens Maya's edit surface past what Story 3 strictly required. Called out as a deliberate scope expansion in the command-based shaping ADR.
-- **Batch atomicity, not per-command acceptance.** Maya accepts or rejects a whole batch. Per-command approval is deferred — the architecture supports it but the UI doesn't.
-- **No optimistic-concurrency guard yet.** Two tabs editing the same project could confuse each other. Acceptable for single-user v1.
+- **Per-command acceptance deferred.** Maya accepts or rejects a whole LLM batch. Per-command approval is deferred — the architecture supports it but the UI doesn't.
 
 ## Validation Defense in Depth
 
@@ -1154,6 +1278,19 @@ Three layers defend `FormSpec`/`DataCollectionSpec` integrity from LLM output:
 3. **Executor semantic validation** (state-aware) — well-formed ≠ semantically valid; the executor runs state checks and can reject.
 
 See the [LLM tool-use as validation boundary decision](/catalog/decisions/architecture/llm-tool-use-as-validation-boundary).
+
+## Follow-on: Direct Manipulation on the Same Substrate
+
+The command-based architecture predicted that direct-manipulation editing would share a foundation with LLM-assisted editing. **PR #54 shipped that follow-on** — click-to-edit WYSIWYG editors for pages, groups, and fields. Every direct edit emits the same `Command` type the LLM produces. Both paths stage into one client-side buffer; one **Save** commits the whole buffer as one git commit via `POST /edit/save` with a `parentSha` optimistic-concurrency guard.
+
+This is what the prediction in the pivot rationale — *"manual UI operations (future drag-drop) would emit the same commands"* — actually looks like when realized:
+
+- A click on a field label emits `relabelField` via `formeditor:stage-command`.
+- An LLM batch from chat stages via `formeditor:stage-batch` into the same buffer.
+- The coordinator re-projects state from canonical + buffer after every change; editors re-render from the projected state.
+- Save is the single commit path. `/edit/accept` and `/edit/execute` were removed.
+
+See the [unified staged buffer decision](/catalog/decisions/architecture/unified-staged-buffer) for the rationale and the [coordinator custom elements decision](/catalog/decisions/architecture/coordinator-custom-elements) for the client-side pattern.
 ```
 
 - [ ] **Step 5: Render check**
@@ -1241,7 +1378,8 @@ In a browser, visit (or `curl -s -o /dev/null -w "%{http_code}\n"` each):
 - `/catalog/decisions/architecture/command-based-shaping` → 200, content renders
 - `/catalog/decisions/architecture/llm-tool-use-as-validation-boundary` → 200, content renders
 - `/catalog/decisions/architecture/coordinator-custom-elements` → 200, content renders
-- `/catalog/stories/4-maya-shapes-the-form-experience` → 200, ACs are checked correctly
+- `/catalog/decisions/architecture/unified-staged-buffer` → 200, content renders
+- `/catalog/stories/4-maya-shapes-the-form-experience` → 200, ACs reflect direct-manipulation and staged-buffer shipping
 - `/catalog/architecture/software-architecture` → 200, shaping service bullet visible
 - `/catalog/architecture/data-model` → 200, Shaping Commands section visible
 - `/catalog/architecture/threat-model` → 200, two new threat bullets + changelog row visible
@@ -1265,7 +1403,9 @@ From the repo root:
 git grep -n "\[.*\](\.\./decisions/architecture/command-based-shaping" -- catalog/
 git grep -n "\[.*\](\.\./decisions/architecture/llm-tool-use-as-validation-boundary" -- catalog/
 git grep -n "\[.*\](\.\./decisions/architecture/coordinator-custom-elements" -- catalog/
+git grep -n "\[.*\](\.\./decisions/architecture/unified-staged-buffer" -- catalog/
 git grep -n "/catalog/decisions/architecture/command-based-shaping" -- catalog/
+git grep -n "/catalog/decisions/architecture/unified-staged-buffer" -- catalog/
 git grep -n "/catalog/experiments/shaping-architecture" -- catalog/
 ```
 
