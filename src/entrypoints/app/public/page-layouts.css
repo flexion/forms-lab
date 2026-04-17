@@ -52,15 +52,12 @@
   grid-column: full;
 }
 
-/* Constrain and center l-page-content the same way as the sidebar layouts
-   so the content track aligns with the header's content edge. The grid's
-   own minmax(--flex-space-md, 1fr) gutters provide horizontal padding,
-   matching the header's padding-inline. inline-size: 100% is required
-   because body is display: flex (sticky footer pattern). */
+/* Constrain l-page-content to max-width, left-aligned.
+   The grid's own minmax(--flex-space-md, 1fr) gutters provide horizontal
+   padding. inline-size: 100% is required because body is display: flex. */
 .l-page-content {
   inline-size: 100%;
   max-inline-size: var(--flex-content-max-width);
-  margin-inline: auto;
   padding-block: var(--flex-space-lg);
 }
 
@@ -88,7 +85,6 @@
   gap: var(--flex-space-lg);
   inline-size: 100%;
   max-inline-size: var(--flex-content-max-width);
-  margin-inline: auto;
   padding-inline: var(--flex-space-md);
   padding-block: var(--flex-space-lg);
 }
@@ -134,7 +130,6 @@
   gap: var(--flex-space-lg);
   inline-size: 100%;
   max-inline-size: var(--flex-content-max-width);
-  margin-inline: auto;
   padding-inline: var(--flex-space-md);
   padding-block: var(--flex-space-lg);
 }

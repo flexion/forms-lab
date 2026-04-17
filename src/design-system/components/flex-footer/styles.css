@@ -46,7 +46,7 @@
 }
 
 .flex-footer__primary-container {
-  margin-inline: auto;
+
   max-inline-size: var(--flex-content-max-width);
   padding-inline: var(--flex-space-md);
 }
@@ -72,7 +72,7 @@
 /* --- Nav --- */
 
 .flex-footer__nav {
-  margin-inline: auto;
+
   max-inline-size: var(--flex-content-max-width);
   padding-inline: var(--flex-space-md);
 }
@@ -97,7 +97,7 @@
 }
 
 .flex-footer__secondary-container {
-  margin-inline: auto;
+
   max-inline-size: var(--flex-content-max-width);
   padding-inline: var(--flex-space-md);
   display: flex;
