@@ -61,12 +61,15 @@ export const BranchSwitcher: FC<BranchSwitcherProps> = ({
           class="flex-branch-switcher__create"
         >
           <input
-            class="flex-branch-switcher__create-input"
+            class="flex-text-input flex-branch-switcher__create-input"
             name="name"
             placeholder="new-branch-name"
             required
           />
-          <button type="submit" class="flex-branch-switcher__create-submit">
+          <button
+            type="submit"
+            class="flex-button flex-branch-switcher__create-submit"
+          >
             Create branch
           </button>
         </form>

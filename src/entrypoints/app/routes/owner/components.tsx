@@ -1,5 +1,6 @@
 import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../../fixtures/index'
+import { Alert } from '../../../../design-system/components/flex-alert'
 import type { SessionUser } from '../../../../services/auth/session'
 import type {
   CommitEntry,
@@ -568,34 +569,28 @@ const PendingReviewBanner: FC<{
           <h1 class="repo-header__title">{project.name}</h1>
         </div>
       </header>
-      <div class="flex-alert flex-alert--info" role="status">
-        <p>
-          <strong>Initial extraction ready for review</strong>
-        </p>
-        <p>
-          The imported form lives on branch <code>{branch}</code>. Nothing has
-          been published to <code>main</code> yet. Review the extracted
-          structure and merge when it looks right, or keep editing if it needs
-          corrections.
-        </p>
-        {isOwner && (
-          <div class="l-cluster">
-            <a
-              href={resolveUrl(`${repoBase}/compare/main...${branch}`)}
-              class="flex-button"
-            >
-              Review import
-            </a>
-            <a
-              href={resolveUrl(`${repoBase}/edit/${branch}`)}
-              class="flex-button"
-              data-variant="outline"
-            >
-              Continue editing
-            </a>
-          </div>
-        )}
-      </div>
+      <Alert variant="info" heading="Initial extraction ready for review">
+        The imported form lives on branch <code>{branch}</code>. Nothing has
+        been published to <code>main</code> yet. Review the extracted structure
+        and merge when it looks right, or keep editing if it needs corrections.
+      </Alert>
+      {isOwner && (
+        <div class="l-cluster">
+          <a
+            href={resolveUrl(`${repoBase}/compare/main...${branch}`)}
+            class="flex-button"
+          >
+            Review import
+          </a>
+          <a
+            href={resolveUrl(`${repoBase}/edit/${branch}`)}
+            class="flex-button"
+            data-variant="outline"
+          >
+            Continue editing
+          </a>
+        </div>
+      )}
     </div>
   )
 }

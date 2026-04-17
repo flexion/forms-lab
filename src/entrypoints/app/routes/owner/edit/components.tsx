@@ -1,4 +1,5 @@
 import type { FC } from 'hono/jsx'
+import { Alert } from '../../../../../design-system/components/flex-alert'
 import { BranchIndicator } from '../../../../../design-system/components/flex-branch-indicator'
 import { BranchSwitcher } from '../../../../../design-system/components/flex-branch-switcher'
 import { ChangeIndicator } from '../../../../../design-system/components/flex-change-indicator'
@@ -67,17 +68,18 @@ const NoBranchShell: FC<{
         action={resolveUrl(`/${owner}/${project.slug}/edit/main/branch`)}
         class="l-stack"
       >
-        <label class="flex-field">
-          <span class="flex-field__label">Branch name</span>
-          <input
-            type="text"
-            name="name"
-            required
-            minLength={3}
-            class="flex-field__input"
-            placeholder="e.g. tighten-labels"
-          />
+        <label class="flex-label" for="new-branch-name">
+          Branch name
         </label>
+        <input
+          id="new-branch-name"
+          type="text"
+          name="name"
+          required
+          minLength={3}
+          class="flex-text-input"
+          placeholder="e.g. tighten-labels"
+        />
         <input type="hidden" name="startPoint" value="main" />
         <div>
           <button type="submit" class="flex-button">
@@ -106,14 +108,10 @@ const EditingShell: FC<{
   if (!formSpec || !spec) {
     return (
       <div class="l-stack">
-        <div class="flex-alert" data-variant="info" role="status">
-          <div class="flex-alert__body">
-            <p class="flex-alert__text">
-              No form specification available. The form must be extracted before
-              editing.
-            </p>
-          </div>
-        </div>
+        <Alert variant="info">
+          No form specification available. The form must be extracted before
+          editing.
+        </Alert>
       </div>
     )
   }

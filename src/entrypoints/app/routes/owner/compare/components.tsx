@@ -152,7 +152,7 @@ export const ReviewPage: FC<ReviewPageProps> = (props) => {
               `/${props.owner}/${props.slug}/compare/${range}/merge`,
             )}
           >
-            <button type="submit" class="usa-button">
+            <button type="submit" class="flex-button">
               Merge to {props.base}
             </button>
           </form>
@@ -162,12 +162,13 @@ export const ReviewPage: FC<ReviewPageProps> = (props) => {
               `/${props.owner}/${props.slug}/compare/${range}/close`,
             )}
           >
-            <button type="submit" class="usa-button usa-button--outline">
+            <button type="submit" class="flex-button" data-variant="outline">
               Close
             </button>
           </form>
           <a
-            class="usa-button usa-button--unstyled"
+            class="flex-button"
+            data-variant="unstyled"
             href={resolveUrl(
               `/${props.owner}/${props.slug}/edit/${props.head}`,
             )}
@@ -254,11 +255,11 @@ export const ReviewPage: FC<ReviewPageProps> = (props) => {
             `/${props.owner}/${props.slug}/compare/${range}/comments`,
           )}
         >
-          <label class="compare__comment-label">
+          <label class="compare__comment-label flex-label">
             Comment
-            <textarea name="body" required />
+            <textarea class="flex-textarea" name="body" rows={4} required />
           </label>
-          <button type="submit" class="usa-button">
+          <button type="submit" class="flex-button">
             Comment
           </button>
         </form>
