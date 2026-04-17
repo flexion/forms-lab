@@ -38,6 +38,7 @@ export interface ProjectView {
   history: CommitEntry[]
   isOwner: boolean
   forkedFrom: { owner: string; slug: string } | null
+  currentSha: string
 }
 
 export interface ProjectService {
@@ -274,6 +275,7 @@ export function createProjectService(
       const project = resolveProject(owner, slug)
       const isOwner = user?.login === project.createdBy
       const forkedFrom = parseForkedFrom(project.forkedFrom)
+      const currentSha = await repo.headSha(slug, 'main')
 
       if (project.status === 'ready') {
         const { spec, formSpec, confidence, history } = await readSpecs(slug)
@@ -285,6 +287,7 @@ export function createProjectService(
           history,
           isOwner,
           forkedFrom,
+          currentSha,
         }
       }
 
@@ -296,6 +299,7 @@ export function createProjectService(
         history: [],
         isOwner,
         forkedFrom,
+        currentSha,
       }
     },
 
@@ -431,6 +435,7 @@ export function createProjectService(
       const project = resolveProject(owner, slug)
       const isOwner = user?.login === project.createdBy
       const forkedFrom = parseForkedFrom(project.forkedFrom)
+      const currentSha = await repo.headSha(slug, 'main')
 
       const { spec, formSpec, confidence, history } = await readSpecs(slug, sha)
       return {
@@ -441,6 +446,7 @@ export function createProjectService(
         history,
         isOwner,
         forkedFrom,
+        currentSha,
       }
     },
 

@@ -39,6 +39,7 @@ export interface FormProjectRepo {
     limit?: number,
   ): Promise<CommitEntry[]>
   cloneBare(sourceSlug: string, destSlug: string): Promise<void>
+  headSha(slug: string, ref: string): Promise<string>
 }
 
 export function createFormProjectRepo(basePath: string): FormProjectRepo {
@@ -292,6 +293,10 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
         const stderr = await new Response(proc.stderr).text()
         throw new Error(`git clone --bare failed: ${stderr}`)
       }
+    },
+
+    async headSha(slug: string, ref: string): Promise<string> {
+      return (await git(slug, ['rev-parse', ref])).trim()
     },
   }
 }
