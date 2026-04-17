@@ -201,6 +201,9 @@ export function createEditRoutes(
         source: 'manual' | 'llm'
       }
       const view = await service.getProject(owner, slug, user)
+      if (!view.isOwner || !view.formSpec || !view.spec) {
+        return c.json({ error: 'not allowed' }, 403)
+      }
       if (view.currentSha !== body.parentSha) {
         return c.json({ error: 'stale', currentSha: view.currentSha }, 409)
       }
@@ -221,7 +224,11 @@ export function createEditRoutes(
       )
       if (!result.ok) {
         return c.json(
-          { error: result.error, failedAt: result.failedAt, command: result.command },
+          {
+            error: result.error,
+            failedAt: result.failedAt,
+            command: result.command,
+          },
           400,
         )
       }

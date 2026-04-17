@@ -1,13 +1,13 @@
 import { afterAll, beforeAll, describe, expect, it } from 'bun:test'
 import { mkdirSync, rmSync } from 'node:fs'
 import { Hono } from 'hono'
+import { createEditRoutes } from '../../../src/entrypoints/app/routes/owner/edit'
 import type { SessionUser } from '../../../src/services/auth/session'
 import { createFormProjectRepo } from '../../../src/services/form-project-repo'
-import { createProjectService } from '../../../src/services/project-service'
-import { StrategyRegistry } from '../../../src/services/strategy-registry'
-import { createProjectStore } from '../../../src/services/storage'
 import type { FormShaper } from '../../../src/services/forms/shaping/types'
-import { createEditRoutes } from '../../../src/entrypoints/app/routes/owner/edit'
+import { createProjectService } from '../../../src/services/project-service'
+import { createProjectStore } from '../../../src/services/storage'
+import { StrategyRegistry } from '../../../src/services/strategy-registry'
 import { testDataSpec, testFormSpec } from '../fixtures'
 
 const TEST_DIR = 'test-data/save-route'
@@ -89,5 +89,63 @@ describe('POST /:owner/:slug/edit/save', () => {
     const body = (await res.json()) as { error: string; currentSha: string }
     expect(body.error).toBe('stale')
     expect(body.currentSha).toMatch(/^[0-9a-f]{40}$/)
+  })
+})
+
+describe('POST /:owner/:slug/edit/save ownership', () => {
+  let service: ReturnType<typeof createProjectService>
+  let slug: string
+  const owner: SessionUser = { login: 'owner', name: 'Owner', avatarUrl: '' }
+  const intruder: SessionUser = {
+    login: 'intruder',
+    name: 'Intruder',
+    avatarUrl: '',
+  }
+
+  const TEST_DIR_2 = 'test-data/save-route-ownership'
+  const DB_PATH_2 = `${TEST_DIR_2}/test.sqlite`
+  const REPOS_PATH_2 = `${TEST_DIR_2}/repos`
+
+  beforeAll(async () => {
+    rmSync(TEST_DIR_2, { recursive: true, force: true })
+    mkdirSync(REPOS_PATH_2, { recursive: true })
+    const store = createProjectStore(DB_PATH_2)
+    const repo = createFormProjectRepo(REPOS_PATH_2)
+    // biome-ignore lint/suspicious/noExplicitAny: dummy extractor
+    service = createProjectService(store, repo, dummyExtractor as any)
+    const project = await service.createProject(
+      'test',
+      Buffer.from('fake'),
+      owner,
+    )
+    slug = project.slug
+    await new Promise((r) => setTimeout(r, 500))
+  })
+
+  afterAll(() => rmSync(TEST_DIR_2, { recursive: true, force: true }))
+
+  it('rejects non-owner with 403', async () => {
+    const view = await service.getProject(owner.login, slug, owner)
+    const intruderApp = new Hono()
+    intruderApp.use('*', async (c, next) => {
+      c.set('user', intruder)
+      await next()
+    })
+    intruderApp.route(
+      '/',
+      createEditRoutes(service, new StrategyRegistry<FormShaper>()),
+    )
+    const res = await intruderApp.request(`/${owner.login}/${slug}/edit/save`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        commands: [],
+        parentSha: view.currentSha,
+        source: 'manual',
+      }),
+    })
+    expect(res.status).toBe(403)
+    const body = (await res.json()) as { error: string }
+    expect(body.error).toBe('not allowed')
   })
 })
