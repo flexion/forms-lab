@@ -91,7 +91,6 @@ flex-form-structure {
   font-weight: 600;
   line-height: 1.3;
   overflow-wrap: anywhere;
-  word-break: break-word;
 }
 
 .form-structure__row-meta {
@@ -137,7 +136,7 @@ flex-form-structure {
 }
 
 .form-structure__icon-btn--mini {
-  padding: 1px;
+  padding: 0;
 }
 
 .form-structure__reorder {
@@ -147,13 +146,13 @@ flex-form-structure {
 }
 
 [data-sidebar-icon] {
-  inline-size: 14px;
-  block-size: 14px;
+  inline-size: 12px;
+  block-size: 12px;
 }
 
 .form-structure__icon-btn--mini [data-sidebar-icon] {
-  inline-size: 10px;
-  block-size: 10px;
+  inline-size: 14px;
+  block-size: 14px;
 }
 
 .form-structure__delivery {

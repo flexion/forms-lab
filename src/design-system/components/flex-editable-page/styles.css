@@ -8,7 +8,7 @@
     display: flex;
     align-items: center;
     gap: var(--flex-space-sm);
-    margin-block-end: var(--flex-space-lg);
+    margin-block-end: var(--flex-space-xl);
     padding: var(--flex-space-xs);
     border-radius: var(--flex-radius-md);
     border: 1px solid transparent;
@@ -16,7 +16,7 @@
   .editable-page__body {
     display: flex;
     flex-direction: column;
-    gap: var(--flex-space-md);
+    gap: var(--flex-space-lg);
   }
   .editable-page__header--selected {
     position: relative;

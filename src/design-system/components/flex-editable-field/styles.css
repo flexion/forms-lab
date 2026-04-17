@@ -16,14 +16,21 @@
   }
   .editable-field__edit {
     position: relative;
+    margin-block: var(--flex-space-sm);
     border: 2px solid var(--flex-color-accent);
     border-radius: var(--flex-radius-md);
-    padding: var(--flex-space-md) var(--flex-space-sm) var(--flex-space-sm);
-    background: var(--flex-color-surface);
-    box-shadow: var(--flex-shadow-md), 0 0 0 4px var(--flex-color-bg-subtle);
+    padding: var(--flex-space-lg) var(--flex-space-md) var(--flex-space-md);
+    background: color-mix(
+      in srgb,
+      var(--flex-color-accent) 5%,
+      var(--flex-color-surface)
+    );
+    box-shadow:
+      0 0 0 6px color-mix(in srgb, var(--flex-color-accent) 12%, transparent),
+      var(--flex-shadow-md);
     display: flex;
     flex-direction: column;
-    gap: var(--flex-space-sm);
+    gap: var(--flex-space-md);
   }
   .editable-field__edit::before {
     content: 'Editing field';
