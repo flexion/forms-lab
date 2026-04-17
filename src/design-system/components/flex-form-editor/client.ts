@@ -166,6 +166,7 @@ class FlexFormEditor extends HTMLElement {
       this.appendToBuffer([detail.command])
       this.lastBatchWasChat = false
       this.lastBatchSize = 0
+      this.lastBatchSummary = ''
     })
 
     // Stage a batch of commands into the buffer

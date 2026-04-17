@@ -5,7 +5,7 @@
  * imports are hoisted before top-level statements.
  */
 
-import { afterAll, beforeEach, describe, expect, it } from 'bun:test'
+import { afterAll, afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { GlobalRegistrator } from '@happy-dom/global-registrator'
 
 GlobalRegistrator.register()
@@ -55,6 +55,14 @@ afterAll(() => {
 })
 
 describe('flex-form-editor save', () => {
+  let originalFetch: typeof globalThis.fetch
+  beforeEach(() => {
+    originalFetch = globalThis.fetch
+  })
+  afterEach(() => {
+    globalThis.fetch = originalFetch
+  })
+
   it('POSTs buffer to /edit/save and clears the buffer on success', async () => {
     const el = mountEditor()
     let posted: { url: string; body: Record<string, unknown> } | null = null
