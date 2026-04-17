@@ -20,6 +20,12 @@ export interface CommitEntry {
   date: string
 }
 
+export interface BranchEntry {
+  name: string
+  sha: string
+  ahead: number
+}
+
 export interface FormProjectRepo {
   init(slug: string): Promise<void>
   exists(slug: string): boolean
@@ -40,6 +46,8 @@ export interface FormProjectRepo {
   ): Promise<CommitEntry[]>
   cloneBare(sourceSlug: string, destSlug: string): Promise<void>
   headSha(slug: string, ref: string): Promise<string>
+  listBranches(slug: string): Promise<BranchEntry[]>
+  getBranchDiff(slug: string, base: string, head: string): Promise<string[]>
 }
 
 export function createFormProjectRepo(basePath: string): FormProjectRepo {
@@ -297,6 +305,54 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
 
     async headSha(slug: string, ref: string): Promise<string> {
       return (await git(slug, ['rev-parse', ref])).trim()
+    },
+
+    async listBranches(slug: string): Promise<BranchEntry[]> {
+      const output = await git(slug, [
+        'for-each-ref',
+        '--format=%(refname:short)%00%(objectname)',
+        'refs/heads/',
+      ])
+      if (!output.trim()) return []
+      const entries = output
+        .trim()
+        .split('\n')
+        .map((line) => {
+          const [name, sha] = line.split('\0')
+          return { name, sha }
+        })
+      const result: BranchEntry[] = []
+      for (const entry of entries) {
+        let ahead = 0
+        if (entry.name !== 'main') {
+          try {
+            const count = await git(slug, [
+              'rev-list',
+              '--count',
+              `main..${entry.name}`,
+            ])
+            ahead = parseInt(count.trim(), 10) || 0
+          } catch {
+            ahead = 0
+          }
+        }
+        result.push({ ...entry, ahead })
+      }
+      return result
+    },
+
+    async getBranchDiff(
+      slug: string,
+      base: string,
+      head: string,
+    ): Promise<string[]> {
+      const output = await git(slug, [
+        'diff',
+        '--name-only',
+        `${base}...${head}`,
+      ])
+      if (!output.trim()) return []
+      return output.trim().split('\n')
     },
   }
 }
