@@ -56,8 +56,10 @@ flex-assistant[data-closed] {
 .assistant__message {
   padding: var(--flex-space-sm) var(--flex-space-md);
   border-radius: var(--flex-radius-md, 0.5rem);
-  font-size: var(--flex-text-sm);
+  font-size: var(--flex-text-base);
+  line-height: 1.5;
   max-width: 90%;
+  color: var(--flex-color-text);
 }
 
 .assistant__message--user {
@@ -66,16 +68,17 @@ flex-assistant[data-closed] {
 }
 
 .assistant__message--assistant {
-  background: var(--flex-color-accent-subtle, #e8e0f8);
+  background: var(--flex-color-surface);
+  border: 1px solid var(--flex-color-border);
   align-self: flex-start;
 }
 
 .assistant__message--system {
-  background: var(--flex-color-bg);
+  background: var(--flex-color-surface);
   border: 1px solid var(--flex-color-border);
   align-self: center;
-  font-size: var(--flex-text-xs);
-  color: var(--flex-color-text-muted);
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text);
 }
 
 .assistant__input {

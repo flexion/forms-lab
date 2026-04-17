@@ -65,10 +65,12 @@
 }
 
 /* Full-width content — no max-width constraint.
-   Horizontal padding matches the header's internal padding. */
+   min-height: 0 allows it to shrink within the body flex column.
+   overflow: hidden prevents children from expanding past bounds. */
 .l-page-content--full {
-  padding-inline: var(--flex-space-md);
-  padding-block: var(--flex-space-lg);
+  padding: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Narrow and wide content-track variants.
