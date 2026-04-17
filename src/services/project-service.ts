@@ -122,6 +122,11 @@ export interface ProjectService {
     slug: string,
     branch?: string,
   ): Promise<ShapingLogEntry[]>
+  getShapingLogBetween(
+    slug: string,
+    base: string,
+    head: string,
+  ): Promise<ShapingLogEntry[]>
   listBranches(slug: string): Promise<BranchEntry[]>
   createBranch(
     slug: string,
@@ -206,6 +211,19 @@ export function createProjectService(
       confidence: confBuf ? JSON.parse(confBuf.toString()) : null,
       history,
     }
+  }
+
+  async function readShapingLog(
+    slug: string,
+    branch: string,
+  ): Promise<ShapingLogEntry[]> {
+    const buf = await repo.readFile(
+      slug,
+      branch,
+      'forms/default/shaping-log.json',
+    )
+    if (!buf) return []
+    return JSON.parse(buf.toString()) as ShapingLogEntry[]
   }
 
   function fireAndForgetExtraction(
@@ -638,13 +656,20 @@ export function createProjectService(
       branch = 'main',
     ): Promise<ShapingLogEntry[]> {
       resolveProject(owner, slug)
-      const buf = await repo.readFile(
-        slug,
-        branch,
-        'forms/default/shaping-log.json',
-      )
-      if (!buf) return []
-      return JSON.parse(buf.toString()) as ShapingLogEntry[]
+      return readShapingLog(slug, branch)
+    },
+
+    async getShapingLogBetween(
+      slug: string,
+      base: string,
+      head: string,
+    ): Promise<ShapingLogEntry[]> {
+      const [baseLog, headLog] = await Promise.all([
+        readShapingLog(slug, base),
+        readShapingLog(slug, head),
+      ])
+      const baseCommits = new Set(baseLog.map((entry) => entry.authorCommit))
+      return headLog.filter((entry) => !baseCommits.has(entry.authorCommit))
     },
 
     async listBranches(slug: string): Promise<BranchEntry[]> {

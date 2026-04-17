@@ -123,7 +123,27 @@ export const ReviewPage: FC<ReviewPageProps> = (props) => {
       <section id="changes" class="compare__panel">
         <SemanticDiff changes={toSemanticDiffChanges(props.changes)} />
       </section>
-      {/* History / Comments / Preview panels added in Tasks 19-21 */}
+      <section id="history" class="compare__panel">
+        {props.log.length === 0 ? (
+          <p class="compare__empty">No shaping events on this branch.</p>
+        ) : (
+          <ol class="compare__history">
+            {props.log.map((entry) => (
+              <li class="compare__history-entry">
+                <time class="compare__history-time">{entry.timestamp}</time>
+                <span
+                  class="compare__history-source"
+                  data-source={entry.source}
+                >
+                  {entry.source}
+                </span>
+                <p class="compare__history-explanation">{entry.explanation}</p>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
+      {/* Comments / Preview panels added in Tasks 20-21 */}
     </main>
   )
 }

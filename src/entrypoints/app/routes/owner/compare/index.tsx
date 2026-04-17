@@ -50,7 +50,11 @@ export function createCompareRoutes(
       base: parsed.base,
       head: parsed.head,
     })
-    const log = await project.getShapingLog(owner, slug, parsed.head)
+    const log = await project.getShapingLogBetween(
+      slug,
+      parsed.base,
+      parsed.head,
+    )
 
     return c.html(
       <Layout
