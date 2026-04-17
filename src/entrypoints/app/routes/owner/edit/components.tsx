@@ -42,6 +42,7 @@ export const EditorPage: FC<{
       data-slug={project.slug}
       data-edit-base={resolveUrl(editBase)}
       data-preview-base={resolveUrl(`/${owner}/${project.slug}/preview`)}
+      data-current-sha={view.currentSha}
     >
       <script
         type="application/json"
