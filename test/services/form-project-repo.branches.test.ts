@@ -10,40 +10,6 @@ describe('FormProjectRepo branches', () => {
   const slug = 'test-project'
   const author = 'tester'
 
-  function repoDir(): string {
-    return join(basePath, `${slug}.git`)
-  }
-
-  async function createBranchLowLevel(
-    branch: string,
-    base: string,
-  ): Promise<void> {
-    // Use plumbing to pre-create the branch ref before higher-level
-    // createBranch() exists. Resolves base to a SHA then writes refs/heads/<branch>.
-    const resolveProc = Bun.spawn(
-      ['git', '--git-dir', repoDir(), 'rev-parse', '--verify', base],
-      { stdout: 'pipe', stderr: 'pipe' },
-    )
-    const baseSha = (await new Response(resolveProc.stdout).text()).trim()
-    if ((await resolveProc.exited) !== 0) {
-      throw new Error(`failed to resolve base ${base}`)
-    }
-    const updateProc = Bun.spawn(
-      [
-        'git',
-        '--git-dir',
-        repoDir(),
-        'update-ref',
-        `refs/heads/${branch}`,
-        baseSha,
-      ],
-      { stdout: 'pipe', stderr: 'pipe' },
-    )
-    if ((await updateProc.exited) !== 0) {
-      throw new Error(`failed to create branch ${branch}`)
-    }
-  }
-
   beforeEach(async () => {
     basePath = mkdtempSync(join(tmpdir(), 'repo-branches-'))
     repo = createFormProjectRepo(basePath)
@@ -76,7 +42,7 @@ describe('FormProjectRepo branches', () => {
   }
 
   it('commit can target a non-main branch', async () => {
-    await createBranchLowLevel('feature', 'main')
+    await repo.createBranch(slug, 'feature', 'main')
     const sha = await repo.commit(
       slug,
       [{ path: 'a.txt', content: Buffer.from('changed') }],
@@ -92,7 +58,7 @@ describe('FormProjectRepo branches', () => {
   })
 
   it('listBranches reports ahead count for branches ahead of main', async () => {
-    await createBranchLowLevel('feature', 'main')
+    await repo.createBranch(slug, 'feature', 'main')
     await repo.commit(
       slug,
       [{ path: 'b.txt', content: Buffer.from('one') }],
@@ -119,7 +85,7 @@ describe('FormProjectRepo branches', () => {
   })
 
   it('getBranchDiff lists files changed between branches', async () => {
-    await createBranchLowLevel('feature', 'main')
+    await repo.createBranch(slug, 'feature', 'main')
     await repo.commit(
       slug,
       [
@@ -133,5 +99,51 @@ describe('FormProjectRepo branches', () => {
 
     const diff = await repo.getBranchDiff(slug, 'main', 'feature')
     expect(diff.sort()).toEqual(['a.txt', 'new.txt'])
+  })
+
+  it('creates and deletes a branch', async () => {
+    await repo.createBranch(slug, 'feature', 'main')
+    let branches = await repo.listBranches(slug)
+    expect(branches.map((b) => b.name).sort()).toEqual(['feature', 'main'])
+    await repo.deleteBranch(slug, 'feature')
+    branches = await repo.listBranches(slug)
+    expect(branches.map((b) => b.name)).toEqual(['main'])
+  })
+
+  it('fast-forward merges a branch into main', async () => {
+    await repo.createBranch(slug, 'feature', 'main')
+    await repo.commit(
+      slug,
+      [{ path: 'b.txt', content: Buffer.from('x') }],
+      'add b',
+      author,
+      { branch: 'feature' },
+    )
+    const result = await repo.mergeBranch(slug, 'feature', 'main')
+    expect(result.ok).toBe(true)
+    const branches = await repo.listBranches(slug)
+    const main = findBranch(branches, 'main')
+    const feature = findBranch(branches, 'feature')
+    expect(main.sha).toBe(feature.sha)
+  })
+
+  it('returns non-ff error when main has diverged', async () => {
+    await repo.createBranch(slug, 'feature', 'main')
+    await repo.commit(
+      slug,
+      [{ path: 'a.txt', content: Buffer.from('on-feature') }],
+      'feature change',
+      author,
+      { branch: 'feature' },
+    )
+    await repo.commit(
+      slug,
+      [{ path: 'a.txt', content: Buffer.from('on-main') }],
+      'main change',
+      author,
+    )
+    const result = await repo.mergeBranch(slug, 'feature', 'main')
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.reason).toBe('not-fast-forward')
   })
 })

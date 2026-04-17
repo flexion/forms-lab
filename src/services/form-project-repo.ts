@@ -26,6 +26,10 @@ export interface BranchEntry {
   ahead: number
 }
 
+export type MergeResult =
+  | { ok: true; sha: string }
+  | { ok: false; reason: 'not-fast-forward' | 'unknown-branch' }
+
 export interface FormProjectRepo {
   init(slug: string): Promise<void>
   exists(slug: string): boolean
@@ -49,6 +53,13 @@ export interface FormProjectRepo {
   headSha(slug: string, ref: string): Promise<string>
   listBranches(slug: string): Promise<BranchEntry[]>
   getBranchDiff(slug: string, base: string, head: string): Promise<string[]>
+  createBranch(slug: string, name: string, startPoint: string): Promise<void>
+  deleteBranch(slug: string, name: string): Promise<void>
+  mergeBranch(
+    slug: string,
+    source: string,
+    target: string,
+  ): Promise<MergeResult>
 }
 
 export function createFormProjectRepo(basePath: string): FormProjectRepo {
@@ -105,6 +116,18 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
     return Buffer.from(stdout)
   }
 
+  async function branchExists(
+    slug: string,
+    branchRef: string,
+  ): Promise<boolean> {
+    try {
+      await git(slug, ['rev-parse', '--verify', branchRef])
+      return true
+    } catch {
+      return false
+    }
+  }
+
   return {
     async init(slug: string): Promise<void> {
       const dir = repoDir(slug)
@@ -153,14 +176,7 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
 
       // Check whether the target branch already exists. A branch may be missing
       // even when the repo has commits (e.g. first commit on a new branch).
-      const hasBranch = await (async () => {
-        try {
-          await git(slug, ['rev-parse', '--verify', branchRef])
-          return true
-        } catch {
-          return false
-        }
-      })()
+      const hasBranch = await branchExists(slug, branchRef)
 
       try {
         // If the target branch exists, seed the temp index with its tree
@@ -356,6 +372,46 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
       ])
       if (!output.trim()) return []
       return output.trim().split('\n')
+    },
+
+    async createBranch(
+      slug: string,
+      name: string,
+      startPoint: string,
+    ): Promise<void> {
+      await git(slug, ['branch', name, startPoint])
+      await git(slug, ['update-server-info'])
+    },
+
+    async deleteBranch(slug: string, name: string): Promise<void> {
+      await git(slug, ['branch', '-D', name])
+      await git(slug, ['update-server-info'])
+    },
+
+    async mergeBranch(
+      slug: string,
+      source: string,
+      target: string,
+    ): Promise<MergeResult> {
+      const sourceRef = `refs/heads/${source}`
+      const targetRef = `refs/heads/${target}`
+      // Verify both branches exist
+      if (
+        !(await branchExists(slug, sourceRef)) ||
+        !(await branchExists(slug, targetRef))
+      ) {
+        return { ok: false, reason: 'unknown-branch' }
+      }
+      // Fast-forwardability: target must be an ancestor of source
+      try {
+        await git(slug, ['merge-base', '--is-ancestor', targetRef, sourceRef])
+      } catch {
+        return { ok: false, reason: 'not-fast-forward' }
+      }
+      const sourceSha = (await git(slug, ['rev-parse', sourceRef])).trim()
+      await git(slug, ['update-ref', targetRef, sourceSha])
+      await git(slug, ['update-server-info'])
+      return { ok: true, sha: sourceSha }
     },
   }
 }
