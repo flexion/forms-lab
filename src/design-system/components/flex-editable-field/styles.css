@@ -1,0 +1,39 @@
+@layer block {
+  flex-editable-field {
+    display: block;
+    border: 1px solid var(--flex-color-border);
+    border-radius: var(--flex-radius-sm);
+    padding: var(--flex-space-xs);
+  }
+  .editable-field__row {
+    display: flex;
+    align-items: center;
+    gap: var(--flex-space-2xs);
+    flex-wrap: wrap;
+  }
+  .editable-field__label-input {
+    flex: 1;
+    min-inline-size: var(--flex-content-narrow);
+  }
+  /* stylelint-disable-next-line declaration-property-value-allowed-list -- 7rem is a narrow fixed width for a type selector; no matching flex-content-* or flex-control-* token exists at this scale */
+  .editable-field__type {
+    min-inline-size: 7rem;
+  }
+  .editable-field__chip[aria-pressed='true'] {
+    background: var(--flex-color-accent);
+    border-color: var(--flex-color-accent);
+  }
+  .editable-field__more {
+    margin-block-start: var(--flex-space-xs);
+    padding: var(--flex-space-xs);
+    background: var(--flex-color-bg-subtle);
+    border-radius: var(--flex-radius-sm);
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--flex-space-xs) var(--flex-space-sm);
+    align-items: center;
+  }
+  .editable-field__more[hidden] {
+    display: none;
+  }
+}
