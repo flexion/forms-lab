@@ -1,6 +1,7 @@
 import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../../fixtures/index'
 import { Alert } from '../../../../design-system/components/flex-alert'
+import { SpecBrowser } from '../../../../design-system/components/flex-spec-browser'
 import type { SessionUser } from '../../../../services/auth/session'
 import type {
   CommitEntry,
@@ -8,158 +9,11 @@ import type {
 } from '../../../../services/form-project-repo'
 import type { ProjectView } from '../../../../services/project-service'
 import { resolveUrl } from '../../../../shared/base-path'
-import type {
-  DataCollectionSpec,
-  FieldConfidence,
-  FormSpec,
-  ProjectIndex,
-  UserProfile,
-} from '../../../../types/models'
+import type { ProjectIndex, UserProfile } from '../../../../types/models'
 
-// ---------------------------------------------------------------------------
-// Shared spec viewers (reused from old project components)
-// ---------------------------------------------------------------------------
-
-export const ConfidenceBadge: FC<{
-  confidence: number
-  flags?: string[]
-}> = ({ confidence, flags }) => {
-  if (confidence >= 0.8) return null
-  const level = confidence >= 0.5 ? 'medium' : 'low'
-  return (
-    <span
-      class="badge"
-      data-status={level === 'low' ? 'error' : 'draft'}
-      title={
-        flags?.join(', ') ?? `Confidence: ${Math.round(confidence * 100)}%`
-      }
-    >
-      {level === 'medium' ? 'Review' : 'Low confidence'}
-    </span>
-  )
-}
-
-export const SpecViewer: FC<{
-  spec: DataCollectionSpec
-  confidence: FieldConfidence[]
-  blobBasePath?: string
-}> = ({ spec, confidence, blobBasePath }) => {
-  const confidenceMap = new Map(confidence.map((c) => [c.fieldId, c]))
-  return (
-    <section class="l-stack">
-      <h2>
-        {blobBasePath ? (
-          <a href={resolveUrl(`${blobBasePath}/forms/default/spec.json`)}>
-            Extracted Data Requirements
-          </a>
-        ) : (
-          'Extracted Data Requirements'
-        )}
-      </h2>
-      <p class="text-muted">{spec.description}</p>
-      {spec.groups.map((group) => (
-        <div key={group.id} class="l-stack">
-          <h3>{group.title}</h3>
-          {group.description && <p class="text-muted">{group.description}</p>}
-          <table class="flex-table" data-variant="borderless" data-stacked>
-            <thead>
-              <tr>
-                <th scope="col">Field</th>
-                <th scope="col">Type</th>
-                <th scope="col">Required</th>
-                <th scope="col">Conditions</th>
-                <th scope="col">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {group.requirements.map((req) => {
-                const conf = confidenceMap.get(req.id)
-                return (
-                  <tr key={req.id}>
-                    <td data-label="Field">
-                      <strong>{req.label}</strong>
-                      {req.helpText && (
-                        <div class="text-muted text-sm">{req.helpText}</div>
-                      )}
-                    </td>
-                    <td data-label="Type">
-                      {req.fieldType.charAt(0).toUpperCase() +
-                        req.fieldType.slice(1)}
-                    </td>
-                    <td data-label="Required">{req.required ? 'Yes' : 'No'}</td>
-                    <td data-label="Conditions">
-                      {req.condition ? (
-                        <span class="condition-tag">
-                          When {req.condition.field} {req.condition.operator}{' '}
-                          {String(req.condition.value)}
-                        </span>
-                      ) : (
-                        <span class="text-muted">&mdash;</span>
-                      )}
-                    </td>
-                    <td data-label="Status">
-                      {conf ? (
-                        <ConfidenceBadge
-                          confidence={conf.confidence}
-                          flags={conf.flags}
-                        />
-                      ) : null}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-      ))}
-    </section>
-  )
-}
-
-export const FormSpecViewer: FC<{
-  formSpec: FormSpec
-  spec: DataCollectionSpec
-  blobBasePath?: string
-}> = ({ formSpec, spec, blobBasePath }) => {
-  const groupMap = new Map(spec.groups.map((g) => [g.id, g.title]))
-
-  return (
-    <section class="l-stack">
-      <h2>
-        {blobBasePath ? (
-          <a href={resolveUrl(`${blobBasePath}/forms/default/form.json`)}>
-            Form Layout
-          </a>
-        ) : (
-          'Form Layout'
-        )}
-      </h2>
-      <p class="text-muted">
-        Proposed page structure for the digital form experience.
-      </p>
-      <ol class="form-page-list">
-        {formSpec.pages.map((page, i) => (
-          <li key={page.id} class="form-page-card">
-            <span class="form-page-card__number">{i + 1}.</span>
-            <div class="form-page-card__body">
-              <span class="form-page-card__title">{page.title}</span>
-              {page.description && (
-                <div class="text-muted text-sm">{page.description}</div>
-              )}
-              <div class="form-page-card__groups">
-                {page.groups.map((gId) => groupMap.get(gId) ?? gId).join(', ')}
-              </div>
-            </div>
-            <span class="badge" data-delivery={page.deliveryMode}>
-              {page.deliveryMode.charAt(0).toUpperCase() +
-                page.deliveryMode.slice(1)}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </section>
-  )
-}
+// ConfidenceBadge lives in the design system. Re-exported here for backward
+// compatibility with any module that previously imported it from this file.
+export { ConfidenceBadge } from '../../../../design-system/components/flex-confidence-badge'
 
 // ---------------------------------------------------------------------------
 // 1. ProfilePage
@@ -423,22 +277,14 @@ export const ProjectOverview: FC<{
         </span>
       </div>
 
-      <div class="l-stack" data-space="lg">
-        {spec && (
-          <SpecViewer
-            spec={spec}
-            confidence={confidence ?? []}
-            blobBasePath={blobBasePath}
-          />
-        )}
-        {formSpec && spec && (
-          <FormSpecViewer
-            formSpec={formSpec}
-            spec={spec}
-            blobBasePath={blobBasePath}
-          />
-        )}
-      </div>
+      {spec && formSpec && (
+        <SpecBrowser
+          dataSpec={spec}
+          formSpec={formSpec}
+          confidence={confidence ?? []}
+          blobBasePath={blobBasePath}
+        />
+      )}
     </div>
   )
 }

@@ -12,6 +12,7 @@ import { meta as characterCount } from './components/flex-character-count/meta'
 import { meta as checkbox } from './components/flex-checkbox/meta'
 import { meta as collection } from './components/flex-collection/meta'
 import { meta as comboBox } from './components/flex-combo-box/meta'
+import { meta as confidenceBadge } from './components/flex-confidence-badge/meta'
 import { meta as datePicker } from './components/flex-date-picker/meta'
 import { meta as dateRangePicker } from './components/flex-date-range-picker/meta'
 import { meta as errorMessage } from './components/flex-error-message/meta'
@@ -41,6 +42,7 @@ import { meta as select } from './components/flex-select/meta'
 import { meta as semanticDiff } from './components/flex-semantic-diff/meta'
 import { meta as sideNavigation } from './components/flex-side-navigation/meta'
 import { meta as siteAlert } from './components/flex-site-alert/meta'
+import { meta as specBrowser } from './components/flex-spec-browser/meta'
 import { meta as stepIndicator } from './components/flex-step-indicator/meta'
 import { meta as summaryBox } from './components/flex-summary-box/meta'
 import { meta as tabGroup } from './components/flex-tab-group/meta'
@@ -68,6 +70,7 @@ const components: ComponentMeta[] = [
   checkbox,
   collection,
   comboBox,
+  confidenceBadge,
   datePicker,
   dateRangePicker,
   errorMessage,
@@ -97,6 +100,7 @@ const components: ComponentMeta[] = [
   semanticDiff,
   sideNavigation,
   siteAlert,
+  specBrowser,
   stepIndicator,
   summaryBox,
   table,

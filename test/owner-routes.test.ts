@@ -200,7 +200,10 @@ describe('GET /:owner/:slug (project overview)', () => {
     expect(res.status).toBe(200)
     const html = await res.text()
     expect(html).toContain('Test Form')
-    expect(html).toContain('Extracted Data Requirements')
+    // Spec browser renders sticky nav + collapsible panels instead of the
+    // old "Extracted Data Requirements" / "Form Layout" section headings.
+    expect(html).toContain('flex-spec-browser')
+    expect(html).toContain('On this form')
     expect(html).toContain('project-summary')
   })
 
