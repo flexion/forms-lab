@@ -292,41 +292,26 @@ class FlexFormEditor extends HTMLElement {
     this.assistant?.addMessage('system', 'Proposal discarded.')
   }
 
-  private async handleAccept() {
+  private handleAccept() {
     if (!this.proposal) return
-    const assistant = this.assistant
-    assistant?.addMessage('system', 'Applying changes...')
-
-    try {
-      const response = await fetch(`${this.editBase()}/accept`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          commands: this.proposal.commands,
-          explanation: this.proposal.explanation,
+    const proposal = this.proposal
+    this.proposal = null
+    this.dispatchEvent(
+      new CustomEvent('formeditor:stage-batch', {
+        detail: {
+          commands: proposal.commands,
+          summary: proposal.explanation,
           source: 'llm',
-        }),
-      })
-      if (!response.ok) {
-        const body = await response.json()
-        this.replaceLastSystemMessage(
-          `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(body.error ?? 'Unknown error')}</span>`,
-        )
-        return
-      }
-      const body = (await response.json()) as { state: ProjectStateClient }
-      this.canonicalState = body.state
-      this.state = body.state
-      this.buffer = []
-      this.proposal = null
-      this.broadcastSpec()
-      this.dispatchProjected()
-      this.replaceLastSystemMessage('Changes applied.')
-    } catch (err) {
-      this.replaceLastSystemMessage(
-        `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(err instanceof Error ? err.message : String(err))}</span>`,
-      )
-    }
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    )
+    this.assistant?.addMessage('system', `Staged: ${proposal.explanation}`)
+  }
+
+  acceptProposal() {
+    this.handleAccept()
   }
 
   private async handleManual(detail: {

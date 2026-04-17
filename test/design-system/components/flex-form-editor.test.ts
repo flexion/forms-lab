@@ -162,3 +162,38 @@ describe('flex-form-editor staged buffer', () => {
     expect(lastProjected!.state.formSpec.pages[0].title).toBe('Page 1')
   })
 })
+
+describe('flex-form-editor chat unification', () => {
+  let originalFetch: typeof globalThis.fetch
+  beforeEach(() => {
+    originalFetch = globalThis.fetch
+    document.body.innerHTML = ''
+  })
+  afterEach(() => {
+    globalThis.fetch = originalFetch
+  })
+
+  it('handleAccept stages the proposed batch instead of POSTing /accept', async () => {
+    const el = mountEditor() as any
+    let posted = false
+    globalThis.fetch = (async () => {
+      posted = true
+      return new Response('{}', { status: 200 })
+    }) as any
+
+    el.proposal = {
+      commands: [{ kind: 'renamePage', id: 'p1', title: 'Renamed' }],
+      explanation: 'Rename for clarity',
+      originalIntent: 'rename it',
+    }
+    let projected: { state: any; bufferLength: number } | null = null
+    el.addEventListener('formeditor:state-projected', (e: any) => {
+      projected = e.detail
+    })
+    el.acceptProposal()
+    await new Promise((r) => setTimeout(r, 0))
+
+    expect(posted).toBe(false)
+    expect(projected!.bufferLength).toBe(1)
+  })
+})
