@@ -196,6 +196,12 @@ export const PreviewPage: FC<{
           prevUrl={prevUrl}
         />
         <script dangerouslySetInnerHTML={{ __html: previewScript }} />
+        {/* Load the design-system web components so client-side controls
+            (date picker, combo box, etc.) hydrate. */}
+        <script
+          type="module"
+          src={resolveUrl('/static/components.js')}
+        ></script>
       </body>
     </html>
   )
