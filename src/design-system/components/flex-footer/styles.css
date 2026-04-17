@@ -10,9 +10,11 @@
 
 .flex-footer__return-to-top {
   padding-inline: var(--flex-space-md);
-  padding-block-end: 1.25rem;
-  padding-block-start: 1.25rem;
+  padding-block: 0.75rem;
   line-height: 0.9;
+  background-color: var(--flex-color-bg-subtle);
+  border-block-start: 1px solid var(--flex-color-border);
+  text-align: end;
 }
 
 .flex-footer__return-to-top a {
