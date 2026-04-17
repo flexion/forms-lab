@@ -9,6 +9,7 @@ import {
 } from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
 import { createFormProjectRepo } from '../../services/form-project-repo'
+import { createShapingRegistry } from '../../services/forms/shaping/registry'
 import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
@@ -25,6 +26,7 @@ import {
   LandingPage,
   NewProjectPage,
 } from './routes/owner/components'
+import { createEditRoutes } from './routes/owner/edit/index'
 import { createOwnerRoutes } from './routes/owner/index'
 
 const basePath = getBasePath()
@@ -50,6 +52,7 @@ const projectService = createProjectService(
   formProjectRepo,
   extractor,
 )
+const shapingRegistry = createShapingRegistry()
 
 // Apply session reader globally
 app.use('*', sessionReader())
@@ -228,6 +231,9 @@ app.get('/', (c) => {
     </Layout>,
   )
 })
+
+// Mount edit routes BEFORE owner routes (more specific patterns first)
+app.route('/', createEditRoutes(projectService, shapingRegistry))
 
 // Mount owner routes LAST (catch-all pattern /:owner)
 app.route('/', createOwnerRoutes(projectService, userStore))

@@ -185,6 +185,27 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 
 **Residual risk:** The `returnTo` parameter is not validated against a whitelist of internal paths -- an attacker could craft a sign-in link that redirects to an external site after authentication. Mitigation: validate that `returnTo` starts with `/` and does not contain `//` or protocol schemes. No server-side session revocation -- sessions rely on cookie expiry (7 days). No PKCE in the OAuth flow (GitHub OAuth Apps do not support PKCE; only GitHub Apps do). No rate limiting on the OAuth callback endpoint beyond GitHub's own rate limits.
 
+### Hono application to LLM (form shaping)
+
+**What crosses:** FormSpec and DataCollectionSpec sent to LLM for suggested edits. LLM-generated FormSpec mutations returned and validated before persistence.
+
+**Threats:**
+- **Prompt injection via form content** -- malicious field labels, group names, or page titles in the FormSpec could manipulate LLM behavior to produce unexpected output.
+- **Data leakage** -- FormSpec structure and field metadata sent to external LLM API could reveal sensitive information about the form domain.
+- **Response manipulation** -- compromised or malicious LLM response could inject invalid data structures or attempt to bypass validation.
+- **Strategy misconfiguration** -- incorrect LLM strategy registration could route requests to unintended models or APIs.
+- **Unauthorized FormSpec mutation** -- unauthenticated or non-owner users attempting to modify form structure.
+
+**Mitigations:**
+- LLM receives only FormSpec and DataCollectionSpec structure (field labels, groups, pages) -- no user-submitted PII or form filling data is sent.
+- All LLM output is validated against the FormSpec Zod schema before acceptance; invalid responses are rejected entirely and not persisted.
+- Form shaping routes (`/projects/:slug/edit`, `/projects/:slug/shape`) require `requireAuth()` and `requireOwner()` middleware; only authenticated project owners can trigger LLM-assisted edits.
+- Every FormSpec change is committed to git with the user's intent as the commit message and the authenticated user as the author, providing an immutable audit trail.
+- LLM strategies are registered at server startup via the `FormShapingStrategyRegistry`; strategies are not user-configurable at runtime.
+- Communication with external LLM APIs uses HTTPS; credentials managed via environment variables and sops-nix.
+
+**Residual risk:** Prompt injection via form field labels is partially mitigated by output validation but cannot be fully prevented -- a carefully crafted label could influence the LLM to produce valid but unexpected suggestions. The risk is limited because the LLM cannot produce invalid FormSpec output (schema validation rejects it) and cannot directly modify the filesystem (mutations are applied by authenticated application code). FormSpec metadata sent to the LLM could reveal domain-specific information about government forms, acceptable per the LLM provider's data handling policies but a consideration for production deployments with sensitive form domains.
+
 ## Non-data-flow threats
 
 ### Dependency supply chain
@@ -228,6 +249,10 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | Repository compromise | Webhook-Deploy | Low | Critical | Branch protection, required reviews | Partially mitigated |
 | Session hijacking | Browser-Hono Auth | Medium | High | AES-GCM encrypted cookies, HttpOnly, SameSite=Lax | Mitigated |
 | Open redirect via returnTo | Browser-Hono Auth | Low | Medium | None -- returnTo not validated | Unmitigated |
+| Prompt injection via form labels | Hono-LLM (form shaping) | Medium | Medium | Output validation, Zod schema enforcement | Partially mitigated |
+| FormSpec metadata leakage | Hono-LLM (form shaping) | Certain | Low | HTTPS, LLM provider data policies | Accepted |
+| Unauthorized FormSpec mutation | Hono-LLM (form shaping) | Low | High | requireAuth + requireOwner middleware | Mitigated |
+| LLM strategy misconfiguration | Hono-LLM (form shaping) | Low | Medium | Server startup registration, not user-configurable | Mitigated |
 | Dependency supply chain | N/A | Low | High | Lock file, small dependency tree | Partially mitigated |
 | SSH open to all IPs | Infrastructure | Medium | Critical | Key-based auth only, no password | Partially mitigated |
 | Secrets exposure on host | Infrastructure | Low | Critical | sops-nix encryption | Partially mitigated |
@@ -247,6 +272,8 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | 2026-04-09 | #14 | Corrected mitigations to match actual infrastructure after deploy PR #12 merge |
 | 2026-04-09 | #11 / Story 2 | Updated authentication boundary from planned to implemented; added open redirect risk |
 | 2026-04-14 | #50 / Story 3 | Replaced filesystem boundary with bare git repo boundary (form project storage moved to managed bare repos). Added new boundaries for read-only git HTTP serving and ProjectService permission enforcement. Updated auth boundary for user-scoped routes. |
+| 2026-04-14 | Story 4 | Added LLM form shaping trust boundary; prompt injection, unauthorized mutation, and data leakage threats |
+| 2026-04-15 | Story 4 v2 | Replaced full-spec rewrite with command-based shaping. LLM uses AI SDK tool-use mode to emit validated domain commands. Each command is individually executable and auditable. Command schemas replace free-form JSON validation as the primary integrity boundary for LLM output. |
 
 ## Sources
 

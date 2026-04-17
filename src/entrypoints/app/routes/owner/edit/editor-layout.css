@@ -1,0 +1,121 @@
+/* Three-panel editor: structure (sticky left) | preview (flows) | assistant (sticky right).
+   The page scrolls normally. Sidebars stick to the viewport and scroll independently. */
+
+.editor-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 320px;
+  grid-template-rows: auto auto;
+}
+
+.editor-breadcrumb {
+  grid-column: 1 / -1;
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  border-block-end: 1px solid var(--flex-color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editor-breadcrumb h1 {
+  font-size: var(--flex-text-base);
+  font-weight: 400;
+  margin: 0;
+}
+
+.editor-breadcrumb a {
+  color: var(--flex-color-text-muted);
+  text-decoration: none;
+}
+
+.editor-breadcrumb a:hover {
+  color: var(--flex-color-accent);
+}
+
+.editor-breadcrumb strong {
+  font-weight: 700;
+  color: var(--flex-color-text);
+}
+
+/* --- Structure sidebar (sticky left) --- */
+
+.editor-structure {
+  grid-row: 2;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  border-inline-end: 1px solid var(--flex-color-border);
+  align-self: start;
+}
+
+/* --- Preview (normal flow, no height constraint) --- */
+
+.editor-preview {
+  grid-row: 2;
+  display: flex;
+  justify-content: center;
+  padding: var(--flex-space-md);
+}
+
+.editor-preview__inner {
+  width: 100%;
+  max-width: var(--flex-content-max-width);
+}
+
+.editor-preview iframe {
+  width: 100%;
+  border: none;
+  min-height: 80vh;
+}
+
+/* --- Assistant sidebar (sticky right) --- */
+
+.editor-assistant {
+  grid-row: 2;
+  position: sticky;
+  top: 0;
+  border-inline-start: 1px solid var(--flex-color-border);
+  align-self: start;
+}
+
+/* When assistant is closed, hide its column */
+.editor-layout:has(flex-assistant[data-closed]) {
+  grid-template-columns: 240px 1fr 0;
+}
+
+/* When structure panel is collapsed */
+.editor-layout:has(.editor-structure[data-collapsed]) {
+  grid-template-columns: 48px 1fr 320px;
+}
+
+.editor-layout:has(flex-assistant[data-closed]):has(.editor-structure[data-collapsed]) {
+  grid-template-columns: 48px 1fr 0;
+}
+
+/* "Open assistant" button visibility */
+.editor-breadcrumb__open-assistant {
+  display: none;
+}
+
+.editor-layout:has(flex-assistant[data-closed]) .editor-breadcrumb__open-assistant {
+  display: inline-block;
+}
+
+@media (max-width: 64rem) {
+  .editor-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-structure {
+    position: static;
+    max-height: none;
+    border-inline-end: none;
+    border-block-end: 1px solid var(--flex-color-border);
+  }
+
+  .editor-assistant {
+    position: static;
+    max-height: none;
+    border-inline-start: none;
+    border-block-start: 1px solid var(--flex-color-border);
+  }
+}

@@ -18,3 +18,7 @@ import './components/flex-date-range-picker/client'
 import './components/flex-time-picker/client'
 import './components/flex-in-page-nav/client'
 import './components/flex-tab-group/client'
+
+import './components/flex-form-editor/client'
+import './components/flex-assistant/client'
+import './components/flex-form-structure/client'

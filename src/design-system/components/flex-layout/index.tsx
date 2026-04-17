@@ -5,7 +5,6 @@ import {
   Footer,
   FooterNav,
   FooterPrimary,
-  FooterReturnToTop,
   FooterSecondary,
 } from '../flex-footer'
 import { Header, HeaderNavItem, type HeaderUser } from '../flex-header'
@@ -15,6 +14,7 @@ interface LayoutProps {
   sidebar?: Child
   currentPath?: string
   user?: HeaderUser | null
+  contentWidth?: 'centered' | 'full'
 }
 
 export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
@@ -126,55 +126,66 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             </main>
           </div>
         ) : (
-          <main class="l-page-content">
-            <div class="l-stack">{props.children}</div>
+          <main
+            class={
+              props.contentWidth === 'full'
+                ? 'l-page-content--full'
+                : 'l-page-content'
+            }
+          >
+            {props.contentWidth === 'full' ? (
+              props.children
+            ) : (
+              <div class="l-stack">{props.children}</div>
+            )}
           </main>
         )}
-        <Footer variant="slim">
-          <FooterReturnToTop />
-          <FooterPrimary>
-            <FooterNav>
-              <ul>
-                <li>
-                  <a class="flex-footer__primary-link" href={resolveUrl('/')}>
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="flex-footer__primary-link"
-                    href={resolveUrl('/catalog')}
-                  >
-                    Catalog
-                  </a>
-                </li>
-                {props.user && (
+        {props.contentWidth !== 'full' && (
+          <Footer variant="slim">
+            <FooterPrimary>
+              <FooterNav>
+                <ul>
+                  <li>
+                    <a class="flex-footer__primary-link" href={resolveUrl('/')}>
+                      Home
+                    </a>
+                  </li>
                   <li>
                     <a
                       class="flex-footer__primary-link"
-                      href={resolveUrl(`/${props.user.login}`)}
+                      href={resolveUrl('/catalog')}
                     >
-                      Projects
+                      Catalog
                     </a>
                   </li>
-                )}
-                <li>
-                  <a
-                    class="flex-footer__primary-link"
-                    href={resolveUrl('/catalog/design-system')}
-                  >
-                    Design System
-                  </a>
-                </li>
-              </ul>
-            </FooterNav>
-          </FooterPrimary>
-          <FooterSecondary>
-            <p style="font-size: var(--flex-text-sm); color: var(--flex-color-text-muted);">
-              Forms Lab — LLM-Assisted Forms Platform
-            </p>
-          </FooterSecondary>
-        </Footer>
+                  {props.user && (
+                    <li>
+                      <a
+                        class="flex-footer__primary-link"
+                        href={resolveUrl(`/${props.user.login}`)}
+                      >
+                        Projects
+                      </a>
+                    </li>
+                  )}
+                  <li>
+                    <a
+                      class="flex-footer__primary-link"
+                      href={resolveUrl('/catalog/design-system')}
+                    >
+                      Design System
+                    </a>
+                  </li>
+                </ul>
+              </FooterNav>
+            </FooterPrimary>
+            <FooterSecondary>
+              <p style="font-size: var(--flex-text-sm); color: var(--flex-color-text-muted);">
+                Forms Lab — LLM-Assisted Forms Platform
+              </p>
+            </FooterSecondary>
+          </Footer>
+        )}
         <script
           type="module"
           src={resolveUrl('/static/components.js')}

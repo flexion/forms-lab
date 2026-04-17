@@ -73,7 +73,13 @@
 @import "../../../design-system/components/flex-diagram/styles.css" layer(block);
 @import "../../dashboard/deployment-table.css" layer(block);
 @import "../../../design-system/components/flex-strategy-selector/styles.css" layer(block);
+
+@import "../../../design-system/components/flex-form-editor/styles.css" layer(block);
+@import "../../../design-system/components/flex-assistant/styles.css" layer(block);
+@import "../../../design-system/components/flex-form-structure/styles.css" layer(block);
 @import "../routes/projects/styles.css" layer(block);
+@import "../routes/owner/edit/styles.css" layer(block);
+@import "../routes/owner/edit/editor-layout.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);

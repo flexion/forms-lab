@@ -1,5 +1,6 @@
 import type { DataCollectionSpec } from '../../src/services/data-collection/types'
-import type { FormSpec } from '../../src/services/forms/types'
+import type { FormSpec as FormSpecForms } from '../../src/services/forms/types'
+import type { FormSpec as FormSpecModels } from '../../src/types/models'
 
 /**
  * A benefits application spec exercising all 10 field types,
@@ -134,38 +135,44 @@ export const testDataSpec: DataCollectionSpec = {
 }
 
 /**
- * A FormSpec referencing testDataSpec.
+ * A FormSpec referencing testDataSpec (models.ts version with timestamps).
  * 3 pages: personal info, employment + income, additional details.
+ * Use for project-service and storage layer tests.
  */
-export const testFormSpec: FormSpec = {
+export const testFormSpec: FormSpecModels = {
   id: 'benefits-form',
   specId: 'benefits-app',
   title: 'Benefits Application Form',
-  description: 'Complete this form to apply for housing benefits.',
   pages: [
     {
       id: 'page-1',
       title: 'Personal Information',
       description: 'Please provide your contact details.',
       groups: ['personal-info'],
+      deliveryMode: 'static',
     },
     {
       id: 'page-2',
       title: 'Employment',
       groups: ['employment', 'income'],
+      deliveryMode: 'static',
     },
     {
       id: 'page-3',
       title: 'Additional Details',
       groups: ['additional'],
+      deliveryMode: 'static',
     },
   ],
+  createdAt: '2026-01-01T00:00:00Z',
+  updatedAt: '2026-01-01T00:00:00Z',
 }
 
 /**
- * A FormSpec with a conditional page for testing page-skip logic.
+ * A FormSpec with a conditional page for testing page-skip logic (forms/types.ts version).
+ * Use for forms service layer tests.
  */
-export const conditionalPageFormSpec: FormSpec = {
+export const conditionalPageFormSpec: FormSpecForms = {
   id: 'conditional-form',
   specId: 'benefits-app',
   title: 'Conditional Form',

@@ -12,11 +12,9 @@ flex-header {
   border-block-end: 1px solid var(--flex-color-border);
 }
 
-/* --- Inner container (matches banner/content max-width) --- */
+/* --- Inner container — full-width like GitHub's nav bar --- */
 
 .flex-header__inner {
-  margin-inline: auto;
-  max-inline-size: var(--flex-content-max-width);
   padding-inline: var(--flex-space-md);
   display: flex;
   align-items: center;

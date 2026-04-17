@@ -8,6 +8,8 @@ import type {
   RequirementGroup,
 } from '../data-collection/types'
 
+export type DeliveryMode = 'static' | 'conversational' | 'hybrid'
+
 // --- Form Spec Layer (how to present) ---
 
 export interface FormSpec {
@@ -24,6 +26,7 @@ export interface FormPage {
   description?: string
   groups: string[]
   condition?: FieldCondition
+  deliveryMode?: DeliveryMode
 }
 
 // --- Resolution Layer ---

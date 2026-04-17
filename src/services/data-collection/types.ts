@@ -29,6 +29,7 @@ export interface DataRequirement {
   condition?: FieldCondition
   sensitivity?: SensitivityLevel
   displayWidth?: '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+  control?: 'radio' | 'select' | 'checkbox' | 'toggle'
 }
 
 export type SensitivityLevel = 'low' | 'medium' | 'high' | 'pii'

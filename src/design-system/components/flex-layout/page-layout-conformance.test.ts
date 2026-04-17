@@ -24,11 +24,8 @@ test.describe('l-page-content', () => {
     expect(headingBox).not.toBeNull()
     expect(paragraphBox).not.toBeNull()
 
-    const viewportWidth = 1280
-    const center = viewportWidth / 2
-    expect(
-      Math.abs((headingBox?.x ?? 0) + (headingBox?.width ?? 0) / 2 - center),
-    ).toBeLessThan(2)
+    // Content is left-aligned (not centered), starting near the left gutter
+    expect(headingBox?.x ?? 0).toBeLessThan(50)
     expect(headingBox?.width ?? 0).toBeGreaterThan(900)
     expect(headingBox?.width ?? 0).toBeLessThan(1000)
   })
