@@ -9,6 +9,7 @@ import {
 } from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
 import { createFormProjectRepo } from '../../services/form-project-repo'
+import { createReviewService } from '../../services/forms/review'
 import { createShapingRegistry } from '../../services/forms/shaping/registry'
 import {
   createBedrockPdfExtractor,
@@ -21,6 +22,7 @@ import { getBasePath, resolveUrl } from '../../shared/base-path'
 import { requireAuth, sessionReader } from './middleware/auth'
 import { createAuthRoutes } from './routes/auth/index'
 import catalog from './routes/catalog/index'
+import { createCompareRoutes } from './routes/owner/compare/index'
 import {
   Dashboard,
   LandingPage,
@@ -53,6 +55,7 @@ const projectService = createProjectService(
   extractor,
 )
 const shapingRegistry = createShapingRegistry()
+const reviewService = createReviewService(formProjectRepo)
 
 // Apply session reader globally
 app.use('*', sessionReader())
@@ -234,6 +237,9 @@ app.get('/', (c) => {
 
 // Mount edit routes BEFORE owner routes (more specific patterns first)
 app.route('/', createEditRoutes(projectService, shapingRegistry))
+
+// Mount compare routes BEFORE owner routes (more specific patterns first)
+app.route('/', createCompareRoutes(projectService, reviewService))
 
 // Mount owner routes LAST (catch-all pattern /:owner)
 app.route('/', createOwnerRoutes(projectService, userStore))

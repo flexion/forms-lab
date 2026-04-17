@@ -1,0 +1,71 @@
+/* Review / compare route — header, tabs, and shared layout for Tasks 18-21 panels */
+
+.compare {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-md);
+}
+
+.compare__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-xs);
+  padding-block-end: var(--flex-space-md);
+  border-block-end: 1px solid var(--flex-color-border);
+}
+
+.compare__breadcrumb {
+  color: var(--flex-color-text-muted);
+  font-size: var(--flex-text-sm);
+}
+
+.compare__title {
+  margin: 0;
+  font-size: var(--flex-text-xl);
+}
+
+.compare__subtitle {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-2xs);
+}
+
+.compare__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-2xs);
+  color: var(--flex-color-text-muted);
+  font-size: var(--flex-text-sm);
+}
+
+.compare__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--flex-space-sm);
+  margin-block-start: var(--flex-space-xs);
+}
+
+.compare__actions form {
+  margin: 0;
+}
+
+.compare__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--flex-space-md);
+  padding-block-end: var(--flex-space-xs);
+  border-block-end: 1px solid var(--flex-color-border);
+}
+
+.compare__tabs a {
+  color: var(--flex-color-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.compare__tabs a:hover,
+.compare__tabs a:focus-visible {
+  text-decoration: underline;
+}
