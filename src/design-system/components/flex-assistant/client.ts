@@ -46,7 +46,7 @@ class FlexAssistant extends HTMLElement {
     this.innerHTML = `
       <div class="assistant">
         <div class="assistant__header">
-          <span class="assistant__title">AI Assistant</span>
+          <span class="assistant__title">Assistant</span>
           <button type="button" class="assistant__close" aria-label="Close assistant">&times;</button>
         </div>
         <div class="assistant__messages"></div>

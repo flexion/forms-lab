@@ -71,7 +71,7 @@ export const EditorPage: FC<{
             data-variant="outline"
             data-action="open-assistant"
           >
-            AI Assistant
+            Assistant
           </button>
         </div>
 
