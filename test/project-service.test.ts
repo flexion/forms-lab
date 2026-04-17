@@ -337,6 +337,7 @@ describe('ProjectService', () => {
         alice,
       )
       await waitForStatus(store, original.id, 'ready')
+      await repo.mergeBranch(original.slug, 'import', 'main')
 
       const fork = await service.forkProject('alice', original.slug, bob)
 
@@ -404,6 +405,7 @@ describe('ProjectService', () => {
     it('returns project view for existing project', async () => {
       const project = await service.createProject('View Me', SAMPLE_PDF, alice)
       await waitForStatus(store, project.id, 'ready')
+      await repo.mergeBranch(project.slug, 'import', 'main')
 
       const view = await service.getProject('alice', project.slug, alice)
       expect(view.project.name).toBe('View Me')

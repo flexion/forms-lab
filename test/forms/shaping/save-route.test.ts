@@ -42,6 +42,7 @@ describe('POST /:owner/:slug/edit/:branch/save', () => {
     )
     slug = project.slug
     await new Promise((r) => setTimeout(r, 500))
+    await repo.mergeBranch(slug, 'import', 'main')
     await service.createBranch(slug, BRANCH, 'main', testUser)
 
     app = new Hono()

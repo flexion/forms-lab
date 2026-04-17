@@ -128,6 +128,9 @@ async function createReadyProject(
     user,
   )
   await waitForReady(projectStore, project.id)
+  // Imports now land on an 'import' branch by design (story 5). Tests that
+  // want content on main need to merge the initial import first.
+  await repo.mergeBranch(project.slug, 'import', 'main')
   return projectStore.get(project.id) as ProjectIndex
 }
 

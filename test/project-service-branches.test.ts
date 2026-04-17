@@ -190,6 +190,7 @@ describe('ProjectService — branches', () => {
         alice,
       )
       await waitForStatus(store, project.id, 'ready')
+      await repo.mergeBranch(project.slug, 'import', 'main')
 
       // Create a branch from main
       await service.createBranch(project.slug, 'feature', 'main', alice)
@@ -236,6 +237,7 @@ describe('ProjectService — branches', () => {
         alice,
       )
       await waitForStatus(store, project.id, 'ready')
+      await repo.mergeBranch(project.slug, 'import', 'main')
 
       await service.createBranch(project.slug, 'feature', 'main', alice)
 

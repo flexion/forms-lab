@@ -39,6 +39,7 @@ describe('edit flow: mixed inline + chat batch produces one commit', () => {
     )
     slug = project.slug
     await new Promise((r) => setTimeout(r, 500))
+    await repo.mergeBranch(slug, 'import', 'main')
     app = new Hono()
     app.use('*', async (c, next) => {
       c.set('user', testUser)
