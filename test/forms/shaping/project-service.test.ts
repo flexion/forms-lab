@@ -160,6 +160,37 @@ describe('ProjectService — FormSpec mutation', () => {
   })
 })
 
+describe('ProjectService.getProject', () => {
+  let basePath: string
+  let store: ProjectStore
+  let repo: FormProjectRepo
+  let service: ProjectService
+  let slug: string
+
+  beforeEach(async () => {
+    basePath = mkdtempSync(join(tmpdir(), 'project-service-getproject-'))
+    store = createProjectStore(':memory:')
+    repo = createFormProjectRepo(basePath)
+    service = createProjectService(store, repo, stubExtractor())
+    const project = await service.createProject(
+      'Test Project',
+      SAMPLE_PDF,
+      alice,
+    )
+    slug = project.slug
+    await waitForStatus(store, project.id, 'ready')
+  })
+
+  afterEach(() => {
+    rmSync(basePath, { recursive: true, force: true })
+  })
+
+  it('returns the current sha for the project', async () => {
+    const view = await service.getProject('alice', slug, alice)
+    expect(view.currentSha).toMatch(/^[0-9a-f]{40}$/)
+  })
+})
+
 /** Poll store until project reaches expected status or timeout */
 async function waitForStatus(
   store: ProjectStore,

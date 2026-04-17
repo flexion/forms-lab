@@ -1,0 +1,80 @@
+@layer block {
+  flex-editable-group {
+    display: block;
+    margin-block-end: var(--flex-space-md);
+  }
+  .editable-group__fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .editable-group__fieldset--selected {
+    position: relative;
+    border: 2px solid var(--flex-color-accent);
+    border-radius: var(--flex-radius-md);
+    padding: var(--flex-space-md) var(--flex-space-sm) var(--flex-space-sm);
+    background: var(--flex-color-surface);
+    box-shadow: var(--flex-shadow-md), 0 0 0 4px var(--flex-color-bg-subtle);
+  }
+  .editable-group__fieldset--selected::before {
+    content: 'Editing group';
+    position: absolute;
+    inset-block-start: calc(-1 * var(--flex-space-xs));
+    inset-inline-start: var(--flex-space-sm);
+    background: var(--flex-color-accent);
+    color: var(--flex-color-surface);
+    font-size: var(--flex-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 2px var(--flex-space-xs);
+    border-radius: var(--flex-radius-sm);
+  }
+  .editable-group__legend {
+    font-weight: 600;
+    padding: 0;
+    cursor: pointer;
+    border-radius: var(--flex-radius-sm);
+    padding-inline: var(--flex-space-2xs);
+  }
+  .editable-group__legend:hover,
+  .editable-group__legend:focus-visible {
+    outline: 2px solid var(--flex-color-accent);
+  }
+  .editable-group__legend--selected {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--flex-space-sm);
+    cursor: default;
+    outline: none;
+  }
+  .editable-group__legend--selected:hover,
+  .editable-group__legend--selected:focus-visible {
+    outline: none;
+  }
+  .editable-group__title {
+    font-weight: 600;
+    cursor: text;
+    padding-inline: var(--flex-space-2xs);
+    border-radius: var(--flex-radius-sm);
+  }
+  .editable-group__title:hover,
+  .editable-group__title:focus-visible {
+    outline: 2px solid var(--flex-color-accent);
+  }
+  .editable-group__title-input {
+    font-weight: 600;
+    font-size: inherit;
+    margin-block-start: 0;
+  }
+  .editable-group__toolbar {
+    display: inline-flex;
+    gap: var(--flex-space-xs);
+  }
+  .editable-group__fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flex-space-xs);
+    margin-block-start: var(--flex-space-sm);
+  }
+}

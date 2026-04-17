@@ -15,10 +15,27 @@ export interface ShapingLogEntryClient {
   explanation: string
 }
 
+export type SelectionTarget = {
+  kind: 'page' | 'group' | 'field'
+  id: string
+}
+
 export type FormEditorEvent =
   | {
       type: 'formeditor:select'
-      detail: { kind: 'page' | 'group' | 'field'; id: string }
+      detail: SelectionTarget
+    }
+  | {
+      type: 'formeditor:deselect'
+      detail: Record<string, never>
+    }
+  | {
+      type: 'formeditor:selection-changed'
+      detail: { selection: SelectionTarget | null }
+    }
+  | {
+      type: 'formeditor:switch-page'
+      detail: { id: string }
     }
   | {
       type: 'formeditor:proposal-received'
@@ -32,12 +49,24 @@ export type FormEditorEvent =
       detail: { state: ProjectStateClient }
     }
   | {
+      type: 'formeditor:state-projected'
+      detail: { state: ProjectStateClient; bufferLength: number }
+    }
+  | {
       type: 'formeditor:command-failed'
       detail: { error: string; command: Command | null }
     }
   | {
       type: 'formeditor:manual-command'
       detail: { command: Command; explanation: string }
+    }
+  | {
+      type: 'formeditor:stage-command'
+      detail: { command: Command; explanation: string }
+    }
+  | {
+      type: 'formeditor:stage-batch'
+      detail: { commands: Command[]; summary: string; source: 'llm' }
     }
   | {
       type: 'formeditor:intent-submitted'

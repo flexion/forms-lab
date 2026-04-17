@@ -1,0 +1,88 @@
+@layer block {
+  flex-editable-page {
+    display: block;
+    padding-block: var(--flex-space-md);
+    padding-inline: var(--flex-space-lg);
+  }
+  .editable-page__header {
+    display: flex;
+    align-items: center;
+    gap: var(--flex-space-sm);
+    margin-block-end: var(--flex-space-xl);
+    padding: var(--flex-space-xs);
+    border-radius: var(--flex-radius-md);
+    border: 1px solid transparent;
+  }
+  .editable-page__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flex-space-lg);
+  }
+  .editable-page__header--selected {
+    position: relative;
+    border: 2px solid var(--flex-color-accent);
+    background: var(--flex-color-surface);
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: var(--flex-space-md) var(--flex-space-sm) var(--flex-space-sm);
+    box-shadow: var(--flex-shadow-md), 0 0 0 4px var(--flex-color-bg-subtle);
+  }
+  .editable-page__header--selected::before {
+    content: 'Editing page';
+    position: absolute;
+    inset-block-start: calc(-1 * var(--flex-space-xs));
+    inset-inline-start: var(--flex-space-sm);
+    background: var(--flex-color-accent);
+    color: var(--flex-color-surface);
+    font-size: var(--flex-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 2px var(--flex-space-xs);
+    border-radius: var(--flex-radius-sm);
+  }
+  .editable-page__title {
+    flex: 1;
+    font-weight: 600;
+    margin: 0;
+    cursor: pointer;
+    border-radius: var(--flex-radius-sm);
+    padding-inline: var(--flex-space-2xs);
+  }
+  .editable-page__title:hover,
+  .editable-page__title:focus-visible {
+    outline: 2px solid var(--flex-color-accent);
+  }
+  .editable-page__header--selected .editable-page__title {
+    cursor: text;
+  }
+  .editable-page__title-input {
+    flex: 1;
+    /* Match the h2 sizing from base.css so the input reads as a heading */
+    font-size: 1.43em;
+    font-weight: 600;
+    margin-block-start: 0;
+  }
+  .editable-page__toolbar {
+    display: flex;
+    gap: var(--flex-space-2xs);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .editable-page__delivery-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--flex-space-2xs);
+    font-size: var(--flex-text-xs);
+    color: var(--flex-color-text-muted);
+  }
+  .editable-page__delivery {
+    font-size: var(--flex-text-xs);
+  }
+  .editable-page__footer {
+    margin-block-start: var(--flex-space-md);
+  }
+  .editable-page__empty {
+    color: var(--flex-color-text-muted);
+    padding: var(--flex-space-md);
+  }
+}

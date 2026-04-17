@@ -173,14 +173,6 @@
   font-weight: 700;
 }
 
-/* Preview iframe */
-.editor-preview-frame {
-  inline-size: 100%;
-  block-size: 600px;
-  border: 1px solid var(--flex-color-border);
-  border-radius: var(--flex-radius-sm);
-  background: var(--flex-color-bg);
-}
 
 /* History list */
 .editor-history {
@@ -230,4 +222,22 @@
 
 .preview-field__label {
   font-weight: 600;
+}
+
+.editor-breadcrumb__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-xs);
+}
+
+.editor-breadcrumb__staged {
+  position: relative;
+}
+
+.editor-breadcrumb__staged flex-staged-changes {
+  position: absolute;
+  inset-block-start: calc(100% + var(--flex-space-2xs));
+  inset-inline-end: 0;
+  z-index: 10;
+  box-shadow: var(--flex-shadow-md);
 }

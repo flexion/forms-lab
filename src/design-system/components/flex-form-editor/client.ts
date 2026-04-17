@@ -1,5 +1,6 @@
 import type { Command } from '../../../services/forms/shaping/commands'
-import type { ProjectStateClient } from './protocol'
+import { executeBatch } from '../../../services/forms/shaping/executor'
+import type { ProjectStateClient, SelectionTarget } from './protocol'
 
 interface AssistantElement extends HTMLElement {
   addMessage: (role: string, html: string) => void
@@ -93,8 +94,14 @@ function describeCommand(cmd: Command, state: ProjectStateClient): string {
 
 class FlexFormEditor extends HTMLElement {
   private state: ProjectStateClient | null = null
+  private canonicalState: ProjectStateClient | null = null
+  private buffer: Command[] = []
+  private lastBatchWasChat = false
+  private lastBatchSize = 0
+  private lastBatchSummary = ''
   private proposal: ProposalState | null = null
   private selectedPageIndex = 0
+  private selection: SelectionTarget | null = null
 
   connectedCallback() {
     this.hydrateState()
@@ -107,6 +114,7 @@ class FlexFormEditor extends HTMLElement {
       passive: true,
     })
     queueMicrotask(() => this.broadcastSpec())
+    queueMicrotask(() => this.dispatchProjected())
   }
 
   private get assistant(): AssistantElement | null {
@@ -116,7 +124,10 @@ class FlexFormEditor extends HTMLElement {
   private hydrateState() {
     const stateScript = this.querySelector('script[data-initial-state]')
     if (stateScript?.textContent) {
-      this.state = JSON.parse(stateScript.textContent) as ProjectStateClient
+      this.canonicalState = JSON.parse(
+        stateScript.textContent,
+      ) as ProjectStateClient
+      this.state = this.canonicalState
     }
   }
 
@@ -137,15 +148,42 @@ class FlexFormEditor extends HTMLElement {
       this.handleIntent(detail.text)
     })
 
-    // From flex-form-structure: manual commands
-    this.addEventListener('formeditor:manual-command', (e) =>
-      this.handleManual((e as CustomEvent).detail),
-    )
-
-    // From flex-form-structure: page selection
+    // Selection events
     this.addEventListener('formeditor:select', (e) =>
       this.handleSelect((e as CustomEvent).detail),
     )
+    this.addEventListener('formeditor:deselect', () => this.clearSelection())
+
+    // Escape (document-level) clears selection
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.selection) {
+        this.clearSelection()
+      }
+    })
+
+    // Stage a single command into the buffer
+    this.addEventListener('formeditor:stage-command', (e) => {
+      const detail = (e as CustomEvent).detail as {
+        command: Command
+        explanation: string
+      }
+      this.appendToBuffer([detail.command])
+      this.lastBatchWasChat = false
+      this.lastBatchSize = 0
+      this.lastBatchSummary = ''
+    })
+
+    // Stage a batch of commands into the buffer
+    this.addEventListener('formeditor:stage-batch', (e) => {
+      const detail = (e as CustomEvent).detail as {
+        commands: Command[]
+        summary: string
+      }
+      this.appendToBuffer(detail.commands)
+      this.lastBatchWasChat = true
+      this.lastBatchSize = detail.commands.length
+      this.lastBatchSummary = detail.summary
+    })
 
     // Event delegation for accept/reject buttons inside assistant messages
     this.addEventListener('click', (e) => {
@@ -157,10 +195,29 @@ class FlexFormEditor extends HTMLElement {
         if (actionType === 'reject') this.handleReject()
         return
       }
-      // "Open assistant" button in breadcrumb
-      if (target.closest('[data-action="open-assistant"]')) {
-        this.assistant?.toggle()
+      const editorAction = target.closest<HTMLElement>('[data-action]')
+      if (editorAction) {
+        const a = editorAction.dataset.action
+        if (a === 'open-assistant') this.assistant?.toggle()
+        if (a === 'save-staged') this.saveStaged()
+        if (a === 'discard-staged') this.discardStaged()
+        if (a === 'toggle-staged') this.toggleStagedPopover()
+        return
       }
+      // Background click: clear selection if target is not inside any editable element
+      if (
+        this.selection &&
+        !target.closest(
+          'flex-editable-field, flex-editable-group, flex-editable-page, flex-form-structure, flex-assistant, flex-staged-changes',
+        )
+      ) {
+        this.clearSelection()
+      }
+    })
+
+    this.addEventListener('staged-changes:remove', (e) => {
+      const idx = (e as CustomEvent).detail.index as number
+      this.removeFromBuffer(idx)
     })
   }
 
@@ -249,77 +306,29 @@ class FlexFormEditor extends HTMLElement {
     this.assistant?.addMessage('system', 'Proposal discarded.')
   }
 
-  private async handleAccept() {
+  private handleAccept() {
     if (!this.proposal) return
-    const assistant = this.assistant
-    assistant?.addMessage('system', 'Applying changes...')
-
-    try {
-      const response = await fetch(`${this.editBase()}/accept`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          commands: this.proposal.commands,
-          explanation: this.proposal.explanation,
+    const proposal = this.proposal
+    this.proposal = null
+    this.dispatchEvent(
+      new CustomEvent('formeditor:stage-batch', {
+        detail: {
+          commands: proposal.commands,
+          summary: proposal.explanation,
           source: 'llm',
-        }),
-      })
-      if (!response.ok) {
-        const body = await response.json()
-        this.replaceLastSystemMessage(
-          `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(body.error ?? 'Unknown error')}</span>`,
-        )
-        return
-      }
-      const body = (await response.json()) as { state: ProjectStateClient }
-      this.state = body.state
-      this.proposal = null
-      this.broadcastSpec()
-      this.replaceLastSystemMessage('Changes applied.')
-    } catch (err) {
-      this.replaceLastSystemMessage(
-        `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(err instanceof Error ? err.message : String(err))}</span>`,
-      )
-    }
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    )
+    this.assistant?.addMessage('system', `Staged: ${proposal.explanation}`)
   }
 
-  private async handleManual(detail: {
-    command: Command
-    explanation: string
-  }) {
-    try {
-      const response = await fetch(`${this.editBase()}/execute`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          command: detail.command,
-          explanation: detail.explanation,
-        }),
-      })
-      if (!response.ok) {
-        const body = await response.json()
-        this.assistant?.addMessage(
-          'system',
-          `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(body.error ?? 'Unknown error')}</span>`,
-        )
-        return
-      }
-      const body = (await response.json()) as { state: ProjectStateClient }
-      this.state = body.state
-      this.broadcastSpec()
-      this.assistant?.addMessage('system', escapeHtml(detail.explanation))
-    } catch (err) {
-      this.assistant?.addMessage(
-        'system',
-        `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(err instanceof Error ? err.message : String(err))}</span>`,
-      )
-    }
+  acceptProposal() {
+    this.handleAccept()
   }
 
-  private handleSelect(detail: {
-    kind: 'page' | 'group' | 'field'
-    id: string
-  }) {
+  private handleSelect(detail: SelectionTarget) {
     if (detail.kind === 'page' && this.state) {
       const idx = this.state.formSpec.pages.findIndex((p) => p.id === detail.id)
       if (idx >= 0) {
@@ -327,6 +336,167 @@ class FlexFormEditor extends HTMLElement {
         this.reloadPreview()
       }
     }
+    this.selection = detail
+    this.broadcastSelection()
+  }
+
+  private clearSelection() {
+    if (!this.selection) return
+    this.selection = null
+    this.broadcastSelection()
+  }
+
+  private broadcastSelection() {
+    this.dispatchEvent(
+      new CustomEvent('formeditor:selection-changed', {
+        detail: { selection: this.selection },
+        bubbles: false,
+      }),
+    )
+  }
+
+  private appendToBuffer(commands: Command[]) {
+    if (!this.canonicalState) return
+    const candidate = [...this.buffer, ...commands]
+    const result = executeBatch(this.canonicalState, candidate)
+    if (!result.ok) {
+      this.dispatchEvent(
+        new CustomEvent('formeditor:command-failed', {
+          detail: { error: result.error, command: result.command },
+          bubbles: true,
+          composed: true,
+        }),
+      )
+      return
+    }
+    this.buffer = candidate
+    this.state = result.state
+    this.dispatchProjected()
+  }
+
+  private dispatchProjected() {
+    if (!this.state) return
+    this.dispatchEvent(
+      new CustomEvent('formeditor:state-projected', {
+        detail: { state: this.state, bufferLength: this.buffer.length },
+        bubbles: false,
+      }),
+    )
+    this.refreshStagedUi()
+    // Re-broadcast selection so children rebuilt by the re-render pick up
+    // the active selection state even though nothing actually changed.
+    if (this.selection) this.broadcastSelection()
+  }
+
+  private refreshStagedUi() {
+    const has = this.buffer.length > 0
+    for (const action of ['save-staged', 'discard-staged', 'toggle-staged']) {
+      const btn = this.querySelector<HTMLElement>(`[data-action="${action}"]`)
+      if (btn) btn.hidden = !has
+    }
+    const count = this.querySelector<HTMLElement>('[data-staged-count]')
+    if (count) count.textContent = String(this.buffer.length)
+    const popover = this.querySelector('flex-staged-changes') as
+      | (HTMLElement & {
+          update: (cmds: Command[], state: ProjectStateClient) => void
+        })
+      | null
+    if (popover && this.canonicalState) {
+      popover.update(this.buffer, this.canonicalState as unknown as any)
+      if (!has) popover.hidden = true
+    }
+  }
+
+  private toggleStagedPopover() {
+    const popover = this.querySelector<HTMLElement>('flex-staged-changes')
+    if (!popover) return
+    popover.hidden = !popover.hidden
+  }
+
+  private removeFromBuffer(index: number) {
+    if (!this.canonicalState) return
+    const next = this.buffer.filter((_, i) => i !== index)
+    const result = executeBatch(this.canonicalState, next)
+    if (!result.ok) {
+      // Removing a command exposed an invalidity in remaining ones.
+      // Drop everything at and after the failure to keep state consistent.
+      this.buffer = next.slice(0, result.failedAt)
+    } else {
+      this.buffer = next
+    }
+    const proj = executeBatch(this.canonicalState, this.buffer)
+    if (proj.ok) this.state = proj.state
+    this.lastBatchWasChat = false
+    this.dispatchProjected()
+  }
+
+  get bufferLength(): number {
+    return this.buffer.length
+  }
+
+  async saveStaged(): Promise<void> {
+    if (this.buffer.length === 0 || !this.canonicalState) return
+    const source: 'manual' | 'llm' =
+      this.lastBatchWasChat && this.buffer.length === this.lastBatchSize
+        ? 'llm'
+        : 'manual'
+    const summary = source === 'llm' ? this.lastBatchSummary : undefined
+    const parentSha = this.dataset.currentSha ?? ''
+    try {
+      const response = await fetch(`${this.editBase()}/save`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          commands: this.buffer,
+          parentSha,
+          summary,
+          source,
+        }),
+      })
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}))
+        this.dispatchEvent(
+          new CustomEvent('formeditor:command-failed', {
+            detail: {
+              error: body.error ?? 'Save failed',
+              command: body.command ?? null,
+            },
+            bubbles: true,
+            composed: true,
+          }),
+        )
+        return
+      }
+      const body = (await response.json()) as {
+        state: ProjectStateClient
+        sha: string
+      }
+      this.canonicalState = body.state
+      this.state = body.state
+      this.buffer = []
+      this.lastBatchWasChat = false
+      this.lastBatchSize = 0
+      this.lastBatchSummary = ''
+      this.dataset.currentSha = body.sha
+      this.dispatchProjected()
+    } catch (err) {
+      this.dispatchEvent(
+        new CustomEvent('formeditor:command-failed', {
+          detail: {
+            error: err instanceof Error ? err.message : String(err),
+            command: null,
+          },
+          bubbles: true,
+          composed: true,
+        }),
+      )
+    }
+  }
+
+  discardStaged(): void {
+    this.buffer = []
+    if (this.canonicalState) this.state = this.canonicalState
+    this.dispatchProjected()
   }
 
   private broadcastSpec() {

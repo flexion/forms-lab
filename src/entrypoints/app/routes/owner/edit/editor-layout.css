@@ -51,21 +51,16 @@
 
 .editor-preview {
   grid-row: 2;
-  display: flex;
-  justify-content: center;
+  display: block;
   padding: var(--flex-space-md);
 }
 
-.editor-preview__inner {
-  width: 100%;
-  max-width: var(--flex-content-max-width);
+.editor-preview > flex-editable-page {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: var(--flex-content-max-width);
 }
 
-.editor-preview iframe {
-  width: 100%;
-  border: none;
-  min-height: 80vh;
-}
 
 /* --- Assistant sidebar (sticky right) --- */
 
