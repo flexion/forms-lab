@@ -195,11 +195,14 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 - **Response manipulation** -- compromised or malicious LLM response could inject invalid data structures or attempt to bypass validation.
 - **Strategy misconfiguration** -- incorrect LLM strategy registration could route requests to unintended models or APIs.
 - **Unauthorized FormSpec mutation** -- unauthenticated or non-owner users attempting to modify form structure.
+- **LLM cost abuse via refinement loop** — an authenticated project owner can submit refinement feedback repeatedly, driving unbounded LLM calls. Each call costs real money and takes seconds to complete.
+- **Prompt injection via `previousAttempt.feedback`** — refinement feedback is concatenated into the shaping prompt. A project owner could craft feedback that attempts to manipulate later LLM behavior. Attacker must already be authenticated and own the project, so severity is low; worth recording the surface.
 
 **Mitigations:**
 - LLM receives only FormSpec and DataCollectionSpec structure (field labels, groups, pages) -- no user-submitted PII or form filling data is sent.
 - All LLM output is validated against the FormSpec Zod schema before acceptance; invalid responses are rejected entirely and not persisted.
-- Form shaping routes (`/projects/:slug/edit`, `/projects/:slug/shape`) require `requireAuth()` and `requireOwner()` middleware; only authenticated project owners can trigger LLM-assisted edits.
+- Form shaping routes (`GET /:owner/:slug/edit`, `POST /:owner/:slug/edit/intent`, `POST /:owner/:slug/edit/save`, `POST /:owner/:slug/edit/undo`) verify the authenticated user owns the project; only the owner can trigger LLM-assisted edits or commit a staged batch.
+- `POST /:owner/:slug/edit/save` enforces optimistic concurrency via a `parentSha` guard and returns `409` on stale parent — two tabs cannot silently clobber each other.
 - Every FormSpec change is committed to git with the user's intent as the commit message and the authenticated user as the author, providing an immutable audit trail.
 - LLM strategies are registered at server startup via the `FormShapingStrategyRegistry`; strategies are not user-configurable at runtime.
 - Communication with external LLM APIs uses HTTPS; credentials managed via environment variables and sops-nix.
@@ -253,6 +256,8 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | FormSpec metadata leakage | Hono-LLM (form shaping) | Certain | Low | HTTPS, LLM provider data policies | Accepted |
 | Unauthorized FormSpec mutation | Hono-LLM (form shaping) | Low | High | requireAuth + requireOwner middleware | Mitigated |
 | LLM strategy misconfiguration | Hono-LLM (form shaping) | Low | Medium | Server startup registration, not user-configurable | Mitigated |
+| Refinement-loop cost abuse | Hono-LLM (form shaping) | Low | Medium | Authentication + ownership check; no rate limit yet | Partially mitigated |
+| Refinement-feedback prompt injection | Hono-LLM (form shaping) | Low | Low | Output validation, Zod schema enforcement | Partially mitigated |
 | Dependency supply chain | N/A | Low | High | Lock file, small dependency tree | Partially mitigated |
 | SSH open to all IPs | Infrastructure | Medium | Critical | Key-based auth only, no password | Partially mitigated |
 | Secrets exposure on host | Infrastructure | Low | Critical | sops-nix encryption | Partially mitigated |
@@ -274,6 +279,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | 2026-04-14 | #50 / Story 3 | Replaced filesystem boundary with bare git repo boundary (form project storage moved to managed bare repos). Added new boundaries for read-only git HTTP serving and ProjectService permission enforcement. Updated auth boundary for user-scoped routes. |
 | 2026-04-14 | Story 4 | Added LLM form shaping trust boundary; prompt injection, unauthorized mutation, and data leakage threats |
 | 2026-04-15 | Story 4 v2 | Replaced full-spec rewrite with command-based shaping. LLM uses AI SDK tool-use mode to emit validated domain commands. Each command is individually executable and auditable. Command schemas replace free-form JSON validation as the primary integrity boundary for LLM output. |
+| 2026-04-17 | Story 4 review + PR #54 | Updated shaping route references for unified `/edit/save` (single commit endpoint, `parentSha` optimistic-concurrency guard). Added refinement-loop abuse and refinement-feedback prompt-injection threats surfaced in story-4 code review. |
 
 ## Sources
 
