@@ -66,14 +66,45 @@ export const EditorPage: FC<{
             {' / '}
             <strong>Edit</strong>
           </h1>
-          <button
-            type="button"
-            class="flex-button editor-breadcrumb__open-assistant"
-            data-variant="outline"
-            data-action="open-assistant"
-          >
-            Assistant
-          </button>
+          <div class="editor-breadcrumb__actions">
+            <div class="editor-breadcrumb__staged">
+              <button
+                type="button"
+                class="flex-button"
+                data-variant="ghost"
+                data-action="toggle-staged"
+                hidden
+              >
+                <span data-staged-count>0</span> pending
+              </button>
+              <flex-staged-changes hidden />
+            </div>
+            <button
+              type="button"
+              class="flex-button"
+              data-variant="outline"
+              data-action="discard-staged"
+              hidden
+            >
+              Discard
+            </button>
+            <button
+              type="button"
+              class="flex-button"
+              data-action="save-staged"
+              hidden
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              class="flex-button editor-breadcrumb__open-assistant"
+              data-variant="outline"
+              data-action="open-assistant"
+            >
+              Assistant
+            </button>
+          </div>
         </div>
 
         <aside class="editor-structure">

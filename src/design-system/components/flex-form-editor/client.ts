@@ -191,10 +191,19 @@ class FlexFormEditor extends HTMLElement {
         if (actionType === 'reject') this.handleReject()
         return
       }
-      // "Open assistant" button in breadcrumb
-      if (target.closest('[data-action="open-assistant"]')) {
-        this.assistant?.toggle()
+      const editorAction = target.closest<HTMLElement>('[data-action]')
+      if (editorAction) {
+        const a = editorAction.dataset.action
+        if (a === 'open-assistant') this.assistant?.toggle()
+        if (a === 'save-staged') this.saveStaged()
+        if (a === 'discard-staged') this.discardStaged()
+        if (a === 'toggle-staged') this.toggleStagedPopover()
       }
+    })
+
+    this.addEventListener('staged-changes:remove', (e) => {
+      const idx = (e as CustomEvent).detail.index as number
+      this.removeFromBuffer(idx)
     })
   }
 
@@ -396,6 +405,49 @@ class FlexFormEditor extends HTMLElement {
         bubbles: false,
       }),
     )
+    this.refreshStagedUi()
+  }
+
+  private refreshStagedUi() {
+    const has = this.buffer.length > 0
+    for (const action of ['save-staged', 'discard-staged', 'toggle-staged']) {
+      const btn = this.querySelector<HTMLElement>(`[data-action="${action}"]`)
+      if (btn) btn.hidden = !has
+    }
+    const count = this.querySelector<HTMLElement>('[data-staged-count]')
+    if (count) count.textContent = String(this.buffer.length)
+    const popover = this.querySelector('flex-staged-changes') as
+      | (HTMLElement & {
+          update: (cmds: Command[], state: ProjectStateClient) => void
+        })
+      | null
+    if (popover && this.canonicalState) {
+      popover.update(this.buffer, this.canonicalState as unknown as any)
+      if (!has) popover.hidden = true
+    }
+  }
+
+  private toggleStagedPopover() {
+    const popover = this.querySelector<HTMLElement>('flex-staged-changes')
+    if (!popover) return
+    popover.hidden = !popover.hidden
+  }
+
+  private removeFromBuffer(index: number) {
+    if (!this.canonicalState) return
+    const next = this.buffer.filter((_, i) => i !== index)
+    const result = executeBatch(this.canonicalState, next)
+    if (!result.ok) {
+      // Removing a command exposed an invalidity in remaining ones.
+      // Drop everything at and after the failure to keep state consistent.
+      this.buffer = next.slice(0, result.failedAt)
+    } else {
+      this.buffer = next
+    }
+    const proj = executeBatch(this.canonicalState, this.buffer)
+    if (proj.ok) this.state = proj.state
+    this.lastBatchWasChat = false
+    this.dispatchProjected()
   }
 
   get bufferLength(): number {
