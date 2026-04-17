@@ -44,7 +44,8 @@ class FlexEditableField extends HTMLElement {
     if (!f) return
     const required = f.required === true
     const typeOptions = FIELD_TYPES.map(
-      (t) => `<option value="${t}" ${t === f.fieldType ? 'selected' : ''}>${t}</option>`,
+      (t) =>
+        `<option value="${t}" ${t === f.fieldType ? 'selected' : ''}>${t}</option>`,
     ).join('')
     this.innerHTML = `
       <div class="editable-field__row">
@@ -92,7 +93,9 @@ class FlexEditableField extends HTMLElement {
   }
 
   private bind() {
-    const labelInput = this.querySelector<HTMLInputElement>('.editable-field__label-input')
+    const labelInput = this.querySelector<HTMLInputElement>(
+      '.editable-field__label-input',
+    )
     labelInput?.addEventListener('input', () => {
       if (this.debounceTimer) clearTimeout(this.debounceTimer)
       this.debounceTimer = setTimeout(() => {
@@ -105,7 +108,9 @@ class FlexEditableField extends HTMLElement {
       }, 400)
     })
 
-    const typeSel = this.querySelector<HTMLSelectElement>('.editable-field__type')
+    const typeSel = this.querySelector<HTMLSelectElement>(
+      '.editable-field__type',
+    )
     typeSel?.addEventListener('change', () => {
       if (!this.field) return
       this.dispatch(
@@ -118,91 +123,134 @@ class FlexEditableField extends HTMLElement {
       )
     })
 
-    this.querySelector('[data-action="toggle-required"]')?.addEventListener('click', () => {
-      if (!this.field) return
-      const next = !(this.field.required === true)
-      this.dispatch(
-        { kind: 'setRequired', id: this.field.id, required: next },
-        `Mark "${this.field.label}" ${next ? 'required' : 'optional'}`,
-      )
-    })
+    this.querySelector('[data-action="toggle-required"]')?.addEventListener(
+      'click',
+      () => {
+        if (!this.field) return
+        const next = !(this.field.required === true)
+        this.dispatch(
+          { kind: 'setRequired', id: this.field.id, required: next },
+          `Mark "${this.field.label}" ${next ? 'required' : 'optional'}`,
+        )
+      },
+    )
 
-    this.querySelector('[data-action="remove-field"]')?.addEventListener('click', () => {
-      if (!this.field) return
-      this.dispatch(
-        { kind: 'removeField', id: this.field.id },
-        `Remove "${this.field.label}"`,
-      )
-    })
+    this.querySelector('[data-action="remove-field"]')?.addEventListener(
+      'click',
+      () => {
+        if (!this.field) return
+        this.dispatch(
+          { kind: 'removeField', id: this.field.id },
+          `Remove "${this.field.label}"`,
+        )
+      },
+    )
 
-    this.querySelector('[data-action="toggle-more"]')?.addEventListener('click', () => {
-      this.moreOpen = !this.moreOpen
-      const more = this.querySelector<HTMLElement>('[data-more]')
-      if (more) more.hidden = !this.moreOpen
-      const btn = this.querySelector('[data-action="toggle-more"]')
-      btn?.setAttribute('aria-expanded', String(this.moreOpen))
-    })
+    this.querySelector('[data-action="toggle-more"]')?.addEventListener(
+      'click',
+      () => {
+        this.moreOpen = !this.moreOpen
+        const more = this.querySelector<HTMLElement>('[data-more]')
+        if (more) more.hidden = !this.moreOpen
+        const btn = this.querySelector('[data-action="toggle-more"]')
+        btn?.setAttribute('aria-expanded', String(this.moreOpen))
+      },
+    )
 
-    const sensSel = this.querySelector<HTMLSelectElement>('.editable-field__sensitivity')
+    const sensSel = this.querySelector<HTMLSelectElement>(
+      '.editable-field__sensitivity',
+    )
     sensSel?.addEventListener('change', () => {
       if (!this.field) return
       this.dispatch(
-        { kind: 'setFieldSensitivity', id: this.field.id, level: sensSel.value as (typeof SENSITIVITIES)[number] },
+        {
+          kind: 'setFieldSensitivity',
+          id: this.field.id,
+          level: sensSel.value as (typeof SENSITIVITIES)[number],
+        },
         `Set "${this.field.label}" sensitivity to ${sensSel.value}`,
       )
     })
 
-    const ctrlSel = this.querySelector<HTMLSelectElement>('.editable-field__control')
+    const ctrlSel = this.querySelector<HTMLSelectElement>(
+      '.editable-field__control',
+    )
     ctrlSel?.addEventListener('change', () => {
       if (!this.field || !ctrlSel.value) return
       this.dispatch(
-        { kind: 'setFieldControl', id: this.field.id, control: ctrlSel.value as (typeof CONTROLS)[number] },
+        {
+          kind: 'setFieldControl',
+          id: this.field.id,
+          control: ctrlSel.value as (typeof CONTROLS)[number],
+        },
         `Set "${this.field.label}" control to ${ctrlSel.value}`,
       )
     })
 
-    const moveInput = this.querySelector<HTMLInputElement>('.editable-field__move-target')
+    const moveInput = this.querySelector<HTMLInputElement>(
+      '.editable-field__move-target',
+    )
     moveInput?.addEventListener('change', () => {
       if (!this.field || !moveInput.value) return
       this.dispatch(
-        { kind: 'moveField', fieldId: this.field.id, toGroupId: moveInput.value },
+        {
+          kind: 'moveField',
+          fieldId: this.field.id,
+          toGroupId: moveInput.value,
+        },
         `Move "${this.field.label}" to ${moveInput.value}`,
       )
       moveInput.value = ''
     })
 
-    this.querySelector('[data-action="condition-clear"]')?.addEventListener('click', () => {
-      if (!this.field) return
-      this.dispatch(
-        { kind: 'setFieldCondition', id: this.field.id, condition: null },
-        `Clear condition on "${this.field.label}"`,
-      )
-    })
+    this.querySelector('[data-action="condition-clear"]')?.addEventListener(
+      'click',
+      () => {
+        if (!this.field) return
+        this.dispatch(
+          { kind: 'setFieldCondition', id: this.field.id, condition: null },
+          `Clear condition on "${this.field.label}"`,
+        )
+      },
+    )
 
-    this.querySelector('[data-action="condition-set"]')?.addEventListener('click', () => {
-      if (!this.field) return
-      const fieldRef = this.querySelector<HTMLInputElement>('.editable-field__cond-field')
-      const opSel = this.querySelector<HTMLSelectElement>('.editable-field__cond-op')
-      const valInput = this.querySelector<HTMLInputElement>('.editable-field__cond-value')
-      if (!fieldRef?.value || !opSel || !valInput?.value) return
-      this.dispatch(
-        {
-          kind: 'setFieldCondition',
-          id: this.field.id,
-          condition: {
-            field: fieldRef.value,
-            operator: opSel.value as 'equals' | 'notEquals' | 'contains',
-            value: valInput.value,
+    this.querySelector('[data-action="condition-set"]')?.addEventListener(
+      'click',
+      () => {
+        if (!this.field) return
+        const fieldRef = this.querySelector<HTMLInputElement>(
+          '.editable-field__cond-field',
+        )
+        const opSel = this.querySelector<HTMLSelectElement>(
+          '.editable-field__cond-op',
+        )
+        const valInput = this.querySelector<HTMLInputElement>(
+          '.editable-field__cond-value',
+        )
+        if (!fieldRef?.value || !opSel || !valInput?.value) return
+        this.dispatch(
+          {
+            kind: 'setFieldCondition',
+            id: this.field.id,
+            condition: {
+              field: fieldRef.value,
+              operator: opSel.value as 'equals' | 'notEquals' | 'contains',
+              value: valInput.value,
+            },
           },
-        },
-        `Show "${this.field.label}" when ${fieldRef.value} ${opSel.value} ${valInput.value}`,
-      )
-    })
+          `Show "${this.field.label}" when ${fieldRef.value} ${opSel.value} ${valInput.value}`,
+        )
+      },
+    )
   }
 }
 
 function escapeHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 if (!customElements.get('flex-editable-field')) {

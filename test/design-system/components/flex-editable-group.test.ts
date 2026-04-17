@@ -24,7 +24,9 @@ describe('flex-editable-group', () => {
     const el = document.createElement('flex-editable-group') as any
     document.body.appendChild(el)
     el.update(GROUP)
-    expect(el.querySelector('.editable-group__title-input')!.getAttribute('value')).toBe('Personal')
+    expect(
+      el.querySelector('.editable-group__title-input')!.getAttribute('value'),
+    ).toBe('Personal')
     expect(el.querySelector('[data-action="add-field"]')).not.toBeNull()
   })
 
@@ -33,11 +35,19 @@ describe('flex-editable-group', () => {
     document.body.appendChild(el)
     el.update(GROUP)
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => { staged = e.detail })
-    const input = el.querySelector('.editable-group__title-input') as HTMLInputElement
+    el.addEventListener('formeditor:stage-command', (e: any) => {
+      staged = e.detail
+    })
+    const input = el.querySelector(
+      '.editable-group__title-input',
+    ) as HTMLInputElement
     input.value = 'Identity'
     input.dispatchEvent(new Event('change', { bubbles: true }))
-    expect(staged.command).toEqual({ kind: 'renameGroup', id: 'g1', title: 'Identity' })
+    expect(staged.command).toEqual({
+      kind: 'renameGroup',
+      id: 'g1',
+      title: 'Identity',
+    })
   })
 
   it('emits addField on +field click', () => {
@@ -45,8 +55,12 @@ describe('flex-editable-group', () => {
     document.body.appendChild(el)
     el.update(GROUP)
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => { staged = e.detail })
-    el.querySelector('[data-action="add-field"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    el.addEventListener('formeditor:stage-command', (e: any) => {
+      staged = e.detail
+    })
+    el.querySelector('[data-action="add-field"]').dispatchEvent(
+      new MouseEvent('click', { bubbles: true }),
+    )
     expect(staged.command.kind).toBe('addField')
     expect(staged.command.groupId).toBe('g1')
   })
@@ -56,8 +70,12 @@ describe('flex-editable-group', () => {
     document.body.appendChild(el)
     el.update(GROUP)
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => { staged = e.detail })
-    el.querySelector('[data-action="remove-group"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    el.addEventListener('formeditor:stage-command', (e: any) => {
+      staged = e.detail
+    })
+    el.querySelector('[data-action="remove-group"]').dispatchEvent(
+      new MouseEvent('click', { bubbles: true }),
+    )
     expect(staged.command).toEqual({ kind: 'removeGroup', id: 'g1' })
   })
 })

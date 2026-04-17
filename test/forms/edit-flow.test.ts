@@ -1,12 +1,12 @@
 import { afterAll, beforeAll, describe, expect, it } from 'bun:test'
 import { mkdirSync, rmSync } from 'node:fs'
 import { Hono } from 'hono'
-import type { SessionUser } from '../../src/services/auth/session'
 import { createEditRoutes } from '../../src/entrypoints/app/routes/owner/edit'
+import type { SessionUser } from '../../src/services/auth/session'
 import { createFormProjectRepo } from '../../src/services/form-project-repo'
 import { createProjectService } from '../../src/services/project-service'
-import { StrategyRegistry } from '../../src/services/strategy-registry'
 import { createProjectStore } from '../../src/services/storage'
+import { StrategyRegistry } from '../../src/services/strategy-registry'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 const TEST_DIR = 'test-data/edit-flow'
@@ -63,7 +63,11 @@ describe('edit flow: mixed inline + chat batch produces one commit', () => {
       body: JSON.stringify({
         commands: [
           { kind: 'renamePage', id: firstPageId, title: 'Edited inline' },
-          { kind: 'setDeliveryMode', pageId: firstPageId, mode: 'conversational' },
+          {
+            kind: 'setDeliveryMode',
+            pageId: firstPageId,
+            mode: 'conversational',
+          },
         ],
         parentSha: view.currentSha,
         source: 'manual',

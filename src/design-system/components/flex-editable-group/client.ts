@@ -38,7 +38,9 @@ class FlexEditableGroup extends HTMLElement {
         }),
       )
     }
-    const titleInput = this.querySelector<HTMLInputElement>('.editable-group__title-input')
+    const titleInput = this.querySelector<HTMLInputElement>(
+      '.editable-group__title-input',
+    )
     titleInput?.addEventListener('change', () => {
       if (titleInput.value === g.title) return
       dispatch(
@@ -46,20 +48,35 @@ class FlexEditableGroup extends HTMLElement {
         `Rename group to "${titleInput.value}"`,
       )
     })
-    this.querySelector('[data-action="add-field"]')?.addEventListener('click', () =>
-      dispatch(
-        { kind: 'addField', groupId: g.id, label: 'New field', fieldType: 'text', required: false },
-        `Add field to "${g.title}"`,
-      ),
+    this.querySelector('[data-action="add-field"]')?.addEventListener(
+      'click',
+      () =>
+        dispatch(
+          {
+            kind: 'addField',
+            groupId: g.id,
+            label: 'New field',
+            fieldType: 'text',
+            required: false,
+          },
+          `Add field to "${g.title}"`,
+        ),
     )
-    this.querySelector('[data-action="remove-group"]')?.addEventListener('click', () =>
-      dispatch({ kind: 'removeGroup', id: g.id }, `Remove group "${g.title}"`),
+    this.querySelector('[data-action="remove-group"]')?.addEventListener(
+      'click',
+      () =>
+        dispatch(
+          { kind: 'removeGroup', id: g.id },
+          `Remove group "${g.title}"`,
+        ),
     )
     // Hand off to flex-editable-field children (component from Task 15 — may not exist yet)
     for (const child of this.querySelectorAll('flex-editable-field')) {
       const fieldId = (child as HTMLElement).dataset.fieldId
       const field = g.requirements.find((r) => r.id === fieldId)
-      const c = child as HTMLElement & { update?: (field: unknown, groupId: string) => void }
+      const c = child as HTMLElement & {
+        update?: (field: unknown, groupId: string) => void
+      }
       if (field && typeof c.update === 'function') {
         c.update(field, g.id)
       }
@@ -68,7 +85,11 @@ class FlexEditableGroup extends HTMLElement {
 }
 
 function escapeHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 if (!customElements.get('flex-editable-group')) {

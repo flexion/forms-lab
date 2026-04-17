@@ -177,11 +177,13 @@ class FlexEditablePage extends HTMLElement {
         )
     })
 
-    this.querySelector('[data-action="add-group"]')?.addEventListener('click', () =>
-      dispatch(
-        { kind: 'addGroup', pageId: current.id, title: 'New group' },
-        'Add group',
-      ),
+    this.querySelector('[data-action="add-group"]')?.addEventListener(
+      'click',
+      () =>
+        dispatch(
+          { kind: 'addGroup', pageId: current.id, title: 'New group' },
+          'Add group',
+        ),
     )
     for (const child of this.querySelectorAll('flex-editable-group')) {
       const id = (child as HTMLElement).dataset.groupId

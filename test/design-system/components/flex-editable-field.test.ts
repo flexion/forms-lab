@@ -1,7 +1,9 @@
 import { GlobalRegistrator } from '@happy-dom/global-registrator'
+
 if (!('window' in globalThis)) GlobalRegistrator.register()
 
 import { afterAll, beforeEach, describe, expect, it } from 'bun:test'
+
 await import('../../../src/design-system/components/flex-editable-field/client')
 
 const FIELD = {
@@ -22,7 +24,9 @@ describe('flex-editable-field chips', () => {
     const el = document.createElement('flex-editable-field') as any
     document.body.appendChild(el)
     el.update(FIELD, 'g1')
-    expect(el.querySelector('.editable-field__label-input')!.getAttribute('value')).toBe('Email')
+    expect(
+      el.querySelector('.editable-field__label-input')!.getAttribute('value'),
+    ).toBe('Email')
     expect(el.querySelector('.editable-field__type')).not.toBeNull()
     expect(el.querySelector('[data-action="toggle-required"]')).not.toBeNull()
     expect(el.querySelector('[data-action="remove-field"]')).not.toBeNull()
@@ -33,8 +37,12 @@ describe('flex-editable-field chips', () => {
     document.body.appendChild(el)
     el.update(FIELD, 'g1')
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => { staged = e.detail })
-    const input = el.querySelector('.editable-field__label-input') as HTMLInputElement
+    el.addEventListener('formeditor:stage-command', (e: any) => {
+      staged = e.detail
+    })
+    const input = el.querySelector(
+      '.editable-field__label-input',
+    ) as HTMLInputElement
     input.value = 'Email address'
     input.dispatchEvent(new Event('input', { bubbles: true }))
     await new Promise((r) => setTimeout(r, 450))
@@ -50,9 +58,17 @@ describe('flex-editable-field chips', () => {
     document.body.appendChild(el)
     el.update(FIELD, 'g1')
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => { staged = e.detail })
-    el.querySelector('[data-action="toggle-required"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))
-    expect(staged.command).toEqual({ kind: 'setRequired', id: 'f1', required: true })
+    el.addEventListener('formeditor:stage-command', (e: any) => {
+      staged = e.detail
+    })
+    el.querySelector('[data-action="toggle-required"]').dispatchEvent(
+      new MouseEvent('click', { bubbles: true }),
+    )
+    expect(staged.command).toEqual({
+      kind: 'setRequired',
+      id: 'f1',
+      required: true,
+    })
   })
 
   it('emits removeField on delete', () => {
@@ -60,8 +76,12 @@ describe('flex-editable-field chips', () => {
     document.body.appendChild(el)
     el.update(FIELD, 'g1')
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => { staged = e.detail })
-    el.querySelector('[data-action="remove-field"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    el.addEventListener('formeditor:stage-command', (e: any) => {
+      staged = e.detail
+    })
+    el.querySelector('[data-action="remove-field"]').dispatchEvent(
+      new MouseEvent('click', { bubbles: true }),
+    )
     expect(staged.command).toEqual({ kind: 'removeField', id: 'f1' })
   })
 
@@ -70,10 +90,16 @@ describe('flex-editable-field chips', () => {
     document.body.appendChild(el)
     el.update(FIELD, 'g1')
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => { staged = e.detail })
+    el.addEventListener('formeditor:stage-command', (e: any) => {
+      staged = e.detail
+    })
     const sel = el.querySelector('.editable-field__type') as HTMLSelectElement
     sel.value = 'phone'
     sel.dispatchEvent(new Event('change', { bubbles: true }))
-    expect(staged.command).toEqual({ kind: 'changeFieldType', id: 'f1', fieldType: 'phone' })
+    expect(staged.command).toEqual({
+      kind: 'changeFieldType',
+      id: 'f1',
+      fieldType: 'phone',
+    })
   })
 })

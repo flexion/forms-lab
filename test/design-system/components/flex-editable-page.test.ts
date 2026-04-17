@@ -1,7 +1,9 @@
 import { GlobalRegistrator } from '@happy-dom/global-registrator'
+
 if (!('window' in globalThis)) GlobalRegistrator.register()
 
 import { afterAll, beforeEach, describe, expect, it } from 'bun:test'
+
 await import('../../../src/design-system/components/flex-editable-page/client')
 
 afterAll(() => GlobalRegistrator.unregister())
@@ -24,7 +26,9 @@ const STATE = {
       {
         id: 'g1',
         title: 'Group',
-        requirements: [{ id: 'f1', label: 'Name', fieldType: 'text', required: false }],
+        requirements: [
+          { id: 'f1', label: 'Name', fieldType: 'text', required: false },
+        ],
       },
     ],
   },
@@ -42,7 +46,9 @@ describe('flex-editable-page', () => {
     const tabs = el.querySelectorAll('.editable-page__tab')
     expect(tabs.length).toBe(2)
     expect(tabs[0].getAttribute('aria-selected')).toBe('true')
-    expect(el.querySelector('.editable-page__title-input')!.value).toContain('Page A')
+    expect(el.querySelector('.editable-page__title-input')!.value).toContain(
+      'Page A',
+    )
   })
 
   it('emits select event on tab click', () => {
@@ -73,10 +79,16 @@ describe('flex-editable-page page actions', () => {
     el.addEventListener('formeditor:stage-command', (e: any) => {
       staged = e.detail
     })
-    const titleInput = el.querySelector('.editable-page__title-input') as HTMLInputElement
+    const titleInput = el.querySelector(
+      '.editable-page__title-input',
+    ) as HTMLInputElement
     titleInput.value = 'Renamed'
     titleInput.dispatchEvent(new Event('change', { bubbles: true }))
-    expect(staged.command).toEqual({ kind: 'renamePage', id: 'p1', title: 'Renamed' })
+    expect(staged.command).toEqual({
+      kind: 'renamePage',
+      id: 'p1',
+      title: 'Renamed',
+    })
   })
 
   it('emits stage-command addPage when +Page is clicked', () => {
@@ -116,7 +128,9 @@ describe('flex-editable-page page actions', () => {
     el.addEventListener('formeditor:stage-command', (e: any) => {
       staged = e.detail
     })
-    const select = el.querySelector('.editable-page__delivery') as HTMLSelectElement
+    const select = el.querySelector(
+      '.editable-page__delivery',
+    ) as HTMLSelectElement
     select.value = 'conversational'
     select.dispatchEvent(new Event('change', { bubbles: true }))
     expect(staged.command).toEqual({
