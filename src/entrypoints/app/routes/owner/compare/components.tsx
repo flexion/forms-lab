@@ -3,11 +3,11 @@ import {
   SemanticDiff,
   type SemanticDiffChange,
 } from '../../../../../design-system/components/flex-semantic-diff'
+import { SpecBrowser } from '../../../../../design-system/components/flex-spec-browser'
 import type {
   ChangeResource,
   SpecChange,
 } from '../../../../../services/forms/comparison'
-import type { PreviewPage as PreviewPageData } from '../../../../../services/forms/preview'
 import type { Comment } from '../../../../../services/forms/review'
 import type {
   ProjectView,
@@ -39,75 +39,6 @@ export interface ReviewPageProps {
   log: ShapingLogEntry[]
   baseView: ProjectView
   headView: ProjectView
-  basePreview: PreviewPageData[]
-  headPreview: PreviewPageData[]
-}
-
-const FormPreview: FC<{ pages: PreviewPageData[] }> = ({ pages }) => {
-  if (pages.length === 0) {
-    return <p class="compare__empty">No pages defined.</p>
-  }
-  return (
-    <div class="compare__preview-form">
-      {pages.map((page) => (
-        <article class="compare__preview-page">
-          <header class="compare__preview-page-header">
-            <h4 class="compare__preview-page-title">{page.title}</h4>
-            <span class="compare__preview-mode" data-mode={page.deliveryMode}>
-              {page.deliveryMode}
-            </span>
-          </header>
-          {page.description ? (
-            <p class="compare__preview-page-desc">{page.description}</p>
-          ) : null}
-          {page.groups.length === 0 ? (
-            <p class="compare__empty">No groups on this page.</p>
-          ) : (
-            page.groups.map((group) => (
-              <fieldset
-                class="compare__preview-group"
-                data-missing={group.missing ? 'true' : undefined}
-              >
-                <legend>{group.title}</legend>
-                {group.description ? (
-                  <p class="compare__preview-group-desc">{group.description}</p>
-                ) : null}
-                {group.fields.length === 0 ? (
-                  <p class="compare__empty">No fields.</p>
-                ) : (
-                  <ul class="compare__preview-fields">
-                    {group.fields.map((field) => (
-                      <li class="compare__preview-field">
-                        <span class="compare__preview-field-label">
-                          {field.label}
-                          {field.required ? (
-                            <span
-                              class="compare__preview-field-required"
-                              aria-label="required"
-                            >
-                              {' *'}
-                            </span>
-                          ) : null}
-                        </span>
-                        <span class="compare__preview-field-type">
-                          {field.fieldType}
-                        </span>
-                        {field.helpText ? (
-                          <span class="compare__preview-field-help">
-                            {field.helpText}
-                          </span>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </fieldset>
-            ))
-          )}
-        </article>
-      ))}
-    </div>
-  )
 }
 
 export const ReviewPage: FC<ReviewPageProps> = (props) => {
@@ -200,14 +131,30 @@ export const ReviewPage: FC<ReviewPageProps> = (props) => {
             <span class="compare__preview-side-label">Base</span>
             <strong class="compare__preview-side-name">{props.base}</strong>
           </header>
-          <FormPreview pages={props.basePreview} />
+          {props.baseView.spec && props.baseView.formSpec ? (
+            <SpecBrowser
+              dataSpec={props.baseView.spec}
+              formSpec={props.baseView.formSpec}
+              defaultExpanded="first"
+            />
+          ) : (
+            <p class="compare__empty">No specs on base yet.</p>
+          )}
         </div>
         <div class="compare__preview-side" data-ref="head">
           <header class="compare__preview-side-header">
             <span class="compare__preview-side-label">Head</span>
             <strong class="compare__preview-side-name">{props.head}</strong>
           </header>
-          <FormPreview pages={props.headPreview} />
+          {props.headView.spec && props.headView.formSpec ? (
+            <SpecBrowser
+              dataSpec={props.headView.spec}
+              formSpec={props.headView.formSpec}
+              defaultExpanded="first"
+            />
+          ) : (
+            <p class="compare__empty">No specs on head yet.</p>
+          )}
         </div>
       </section>
       <section id="history" class="compare__panel">
