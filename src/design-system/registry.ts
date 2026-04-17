@@ -37,6 +37,7 @@ import { meta as radio } from './components/flex-radio/meta'
 import { meta as rangeSlider } from './components/flex-range-slider/meta'
 import { meta as search } from './components/flex-search/meta'
 import { meta as select } from './components/flex-select/meta'
+import { meta as semanticDiff } from './components/flex-semantic-diff/meta'
 import { meta as sideNavigation } from './components/flex-side-navigation/meta'
 import { meta as siteAlert } from './components/flex-site-alert/meta'
 import { meta as stepIndicator } from './components/flex-step-indicator/meta'
@@ -91,6 +92,7 @@ const components: ComponentMeta[] = [
   rangeSlider,
   search,
   select,
+  semanticDiff,
   sideNavigation,
   siteAlert,
   stepIndicator,

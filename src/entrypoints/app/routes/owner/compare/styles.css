@@ -69,3 +69,15 @@
 .compare__tabs a:focus-visible {
   text-decoration: underline;
 }
+
+.compare__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-md);
+}
+
+.compare__empty {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+  font-size: var(--flex-text-sm);
+}

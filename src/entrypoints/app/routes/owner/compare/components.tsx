@@ -1,11 +1,32 @@
 import type { FC } from 'hono/jsx'
-import type { SpecChange } from '../../../../../services/forms/comparison'
+import {
+  SemanticDiff,
+  type SemanticDiffChange,
+} from '../../../../../design-system/components/flex-semantic-diff'
+import type {
+  ChangeResource,
+  SpecChange,
+} from '../../../../../services/forms/comparison'
 import type { Comment } from '../../../../../services/forms/review'
 import type {
   ProjectView,
   ShapingLogEntry,
 } from '../../../../../services/project-service'
 import { resolveUrl } from '../../../../../shared/base-path'
+
+const RESOURCE_LABELS: Record<ChangeResource, string> = {
+  'data-collection-spec': 'Data collection spec',
+  'form-spec': 'Form spec',
+}
+
+function toSemanticDiffChanges(changes: SpecChange[]): SemanticDiffChange[] {
+  return changes.map((change) => ({
+    category: change.category,
+    groupKey: change.resource,
+    groupLabel: RESOURCE_LABELS[change.resource],
+    description: change.description,
+  }))
+}
 
 export interface ReviewPageProps {
   owner: string
@@ -99,7 +120,10 @@ export const ReviewPage: FC<ReviewPageProps> = (props) => {
           Comments ({props.comments.length})
         </a>
       </nav>
-      {/* Panels added in Tasks 18-21 */}
+      <section id="changes" class="compare__panel">
+        <SemanticDiff changes={toSemanticDiffChanges(props.changes)} />
+      </section>
+      {/* History / Comments / Preview panels added in Tasks 19-21 */}
     </main>
   )
 }
