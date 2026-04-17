@@ -99,6 +99,13 @@ class FlexFormEditor extends HTMLElement {
   connectedCallback() {
     this.hydrateState()
     this.bindEvents()
+    this.sizeStickyPanels()
+    window.addEventListener('scroll', this.sizeStickyPanels.bind(this), {
+      passive: true,
+    })
+    window.addEventListener('resize', this.sizeStickyPanels.bind(this), {
+      passive: true,
+    })
     queueMicrotask(() => this.broadcastSpec())
   }
 
@@ -110,6 +117,16 @@ class FlexFormEditor extends HTMLElement {
     const stateScript = this.querySelector('script[data-initial-state]')
     if (stateScript?.textContent) {
       this.state = JSON.parse(stateScript.textContent) as ProjectStateClient
+    }
+  }
+
+  private sizeStickyPanels() {
+    const panels = this.querySelectorAll<HTMLElement>(
+      '.editor-structure, .editor-assistant',
+    )
+    for (const panel of panels) {
+      const top = Math.max(0, panel.getBoundingClientRect().top)
+      panel.style.height = `${window.innerHeight - top}px`
     }
   }
 
