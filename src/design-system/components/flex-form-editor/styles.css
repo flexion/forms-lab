@@ -1,3 +1,10 @@
+/* The coordinator element must participate in the flex height chain:
+   main.l-page-content--full (flex column)
+     → flex-form-editor (flex:1, flex column)
+       → .editor-layout (flex:1, grid) */
 flex-form-editor {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
