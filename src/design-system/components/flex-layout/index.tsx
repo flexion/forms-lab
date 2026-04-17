@@ -33,7 +33,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
         />
         <link rel="stylesheet" href={resolveUrl('/static/styles.css')} />
       </head>
-      <body>
+      <body data-viewport={props.contentWidth === 'full' ? 'full' : undefined}>
         <Banner
           ariaLabel="A digital services project by Flexion"
           headerText="A digital services project by Flexion"
