@@ -3,6 +3,7 @@ import type { FormFieldRequirement } from '../../../../../design-system/componen
 import { FormPageView } from '../../../../../design-system/components/flex-form-page'
 import type { SessionUser } from '../../../../../services/auth/session'
 import type {
+  BranchEntry,
   ProjectView,
   ShapingLogEntry,
 } from '../../../../../services/project-service'
@@ -12,14 +13,96 @@ function safeJsonForScript(value: unknown): string {
   return JSON.stringify(value).replace(/</g, '\\u003c')
 }
 
-export const EditorPage: FC<{
+export type EditorPageProps =
+  | {
+      mode: 'no-branch'
+      view: ProjectView
+      owner: string
+      user: SessionUser
+      branches: BranchEntry[]
+    }
+  | {
+      mode: 'editing'
+      view: ProjectView
+      owner: string
+      user: SessionUser
+      log: ShapingLogEntry[]
+      branch: string
+      branches: BranchEntry[]
+    }
+
+export const EditorPage: FC<EditorPageProps> = (props) => {
+  if (props.mode === 'no-branch') {
+    return <NoBranchShell {...props} />
+  }
+  return <EditingShell {...props} />
+}
+
+const NoBranchShell: FC<{
+  view: ProjectView
+  owner: string
+  user: SessionUser
+  branches: BranchEntry[]
+}> = ({ view, owner }) => {
+  const { project } = view
+  return (
+    <div class="l-stack">
+      <div class="editor-breadcrumb">
+        <h1>
+          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+          {' / '}
+          <a href={resolveUrl(`/${owner}/${project.slug}`)}>{project.name}</a>
+          {' / '}
+          <strong>Edit</strong>
+        </h1>
+      </div>
+
+      <section class="editor__no-branch l-stack">
+        <h2>Create a branch to start editing</h2>
+        <p>
+          The <code>main</code> branch is read-only. Create a branch to make
+          changes, then merge them back into <code>main</code> when they are
+          ready.
+        </p>
+        <form
+          method="post"
+          action={resolveUrl(`/${owner}/${project.slug}/edit/main/branch`)}
+          class="l-stack"
+        >
+          <label class="flex-field">
+            <span class="flex-field__label">Branch name</span>
+            <input
+              type="text"
+              name="name"
+              required
+              minLength={3}
+              class="flex-field__input"
+              placeholder="e.g. tighten-labels"
+            />
+          </label>
+          <input type="hidden" name="startPoint" value="main" />
+          <div>
+            <button type="submit" class="flex-button">
+              Create branch
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  )
+}
+
+const EditingShell: FC<{
   view: ProjectView
   owner: string
   user: SessionUser
   log: ShapingLogEntry[]
-}> = ({ view, owner, user: _user, log }) => {
+  branch: string
+  branches: BranchEntry[]
+}> = ({ view, owner, log, branch }) => {
   const { project, formSpec, spec } = view
-  const editBase = `/${owner}/${project.slug}/edit`
+  const editBase = `/${owner}/${project.slug}/edit/${branch}`
+  const previewBase = `/${owner}/${project.slug}/preview/${branch}`
 
   if (!formSpec || !spec) {
     return (
@@ -40,8 +123,9 @@ export const EditorPage: FC<{
     <flex-form-editor
       data-owner={owner}
       data-slug={project.slug}
+      data-branch={branch}
       data-edit-base={resolveUrl(editBase)}
-      data-preview-base={resolveUrl(`/${owner}/${project.slug}/preview`)}
+      data-preview-base={resolveUrl(previewBase)}
       data-current-sha={view.currentSha}
     >
       <script
@@ -65,6 +149,8 @@ export const EditorPage: FC<{
             <a href={resolveUrl(`/${owner}/${project.slug}`)}>{project.name}</a>
             {' / '}
             <strong>Edit</strong>
+            {' / '}
+            <span class="editor-breadcrumb__branch">{branch}</span>
           </h1>
           <div class="editor-breadcrumb__actions">
             <div class="editor-breadcrumb__staged">
@@ -99,7 +185,7 @@ export const EditorPage: FC<{
             <a
               class="flex-button"
               data-variant="outline"
-              href={resolveUrl(`/${owner}/${project.slug}/preview`)}
+              href={resolveUrl(previewBase)}
               target="_blank"
               rel="noopener"
             >

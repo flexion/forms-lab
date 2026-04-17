@@ -22,7 +22,8 @@ export function createEditRoutes(
 ): Hono {
   const app = new Hono()
 
-  // GET /:owner/:slug/edit — render editor shell (server-rendered HTML)
+  // GET /:owner/:slug/edit — redirect to a working branch, or show the
+  // "no branch yet" shell when only main exists.
   app.get('/:owner/:slug/edit', async (c) => {
     const owner = c.req.param('owner')
     const slug = c.req.param('slug')
@@ -41,14 +42,24 @@ export function createEditRoutes(
           403,
         )
       }
-      const log = await service.getShapingLog(owner, slug)
+      const branches = await service.listBranches(slug)
+      const preferred = branches.find((b) => b.name !== 'main')?.name
+      if (preferred) {
+        return c.redirect(resolveUrl(`/${owner}/${slug}/edit/${preferred}`))
+      }
       return c.html(
         <Layout
           user={user}
           title={`Edit ${view.project.name}`}
           contentWidth="full"
         >
-          <EditorPage view={view} owner={owner} user={user} log={log} />
+          <EditorPage
+            mode="no-branch"
+            view={view}
+            owner={owner}
+            user={user}
+            branches={branches}
+          />
         </Layout>,
       )
     } catch (err) {
@@ -56,18 +67,88 @@ export function createEditRoutes(
     }
   })
 
-  // POST /:owner/:slug/edit/intent — LLM shapes intent; returns JSON
-  app.post('/:owner/:slug/edit/intent', async (c) => {
+  // GET /:owner/:slug/edit/:branch — full editor scoped to a branch
+  app.get('/:owner/:slug/edit/:branch', async (c) => {
+    const owner = c.req.param('owner')
+    const slug = c.req.param('slug')
+    const branch = c.req.param('branch')
+    const user = c.get('user')
+    try {
+      if (!user) throw new UnauthenticatedError()
+      const view = await service.getProject(owner, slug, user, branch)
+      if (!view.isOwner) {
+        return c.html(
+          <Layout user={user}>
+            <ErrorPage
+              statusCode={403}
+              message="Only the project owner can edit the form."
+            />
+          </Layout>,
+          403,
+        )
+      }
+      const log = await service.getShapingLog(owner, slug, branch)
+      const branches = await service.listBranches(slug)
+      return c.html(
+        <Layout
+          user={user}
+          title={`Edit ${view.project.name}`}
+          contentWidth="full"
+        >
+          <EditorPage
+            mode="editing"
+            view={view}
+            owner={owner}
+            user={user}
+            log={log}
+            branch={branch}
+            branches={branches}
+          />
+        </Layout>,
+      )
+    } catch (err) {
+      return handleError(c, err)
+    }
+  })
+
+  // POST /:owner/:slug/edit/:branch/branch — create a new branch and redirect
+  // onto it. The `:branch` segment is a contextual URL (typically `main` on
+  // the no-branch shell); the new branch name comes from the form body.
+  app.post('/:owner/:slug/edit/:branch/branch', async (c) => {
     const owner = c.req.param('owner')
     const slug = c.req.param('slug')
     const user = c.get('user')
     try {
       if (!user) throw new UnauthenticatedError()
+      const body = await c.req.parseBody()
+      const name = String(body.name ?? '').trim()
+      const startPoint = String(body.startPoint ?? 'main')
+      if (!name) {
+        throw new AppError('Branch name is required', 400)
+      }
+      await service.createBranch(slug, name, startPoint, user)
+      return c.redirect(resolveUrl(`/${owner}/${slug}/edit/${name}`))
+    } catch (err) {
+      return handleError(c, err)
+    }
+  })
+
+  // POST /:owner/:slug/edit/:branch/intent — LLM shapes intent; returns JSON
+  app.post('/:owner/:slug/edit/:branch/intent', async (c) => {
+    const owner = c.req.param('owner')
+    const slug = c.req.param('slug')
+    const branch = c.req.param('branch')
+    const user = c.get('user')
+    try {
+      if (!user) throw new UnauthenticatedError()
+      if (branch === 'main') {
+        return c.json({ error: 'main is read-only' }, 403)
+      }
       const body = (await c.req.json()) as {
         intent: string
         previousAttempt?: { commands: Command[]; feedback: string }
       }
-      const view = await service.getProject(owner, slug, user)
+      const view = await service.getProject(owner, slug, user, branch)
       if (!view.isOwner || !view.formSpec || !view.spec) {
         return c.json({ error: 'not allowed' }, 403)
       }
@@ -97,38 +178,48 @@ export function createEditRoutes(
     }
   })
 
-  // POST /:owner/:slug/edit/undo — revert to previous commit
-  app.post('/:owner/:slug/edit/undo', async (c) => {
+  // POST /:owner/:slug/edit/:branch/undo — revert to previous commit
+  app.post('/:owner/:slug/edit/:branch/undo', async (c) => {
     const owner = c.req.param('owner')
     const slug = c.req.param('slug')
+    const branch = c.req.param('branch')
     const user = c.get('user')
     try {
       if (!user) throw new UnauthenticatedError()
+      if (branch === 'main') {
+        return c.json({ error: 'main is read-only' }, 403)
+      }
       const body = (await c.req.parseBody()) as { targetSha?: string }
       if (!body.targetSha) {
-        return c.redirect(resolveUrl(`/${owner}/${slug}/edit`))
+        return c.redirect(resolveUrl(`/${owner}/${slug}/edit/${branch}`))
       }
       await service.undoFormSpec(owner, slug, body.targetSha, user)
-      return c.redirect(resolveUrl(`/${owner}/${slug}/edit`))
+      return c.redirect(resolveUrl(`/${owner}/${slug}/edit/${branch}`))
     } catch (err) {
       return handleError(c, err)
     }
   })
 
-  // POST /:owner/:slug/edit/save — commit a staged batch
-  app.post('/:owner/:slug/edit/save', async (c) => {
+  // POST /:owner/:slug/edit/:branch/save — commit a staged batch against a
+  // branch. Stale-check via parentSha prevents lost writes when concurrent
+  // edits advance the branch tip.
+  app.post('/:owner/:slug/edit/:branch/save', async (c) => {
     const owner = c.req.param('owner')
     const slug = c.req.param('slug')
+    const branch = c.req.param('branch')
     const user = c.get('user')
     try {
       if (!user) throw new UnauthenticatedError()
+      if (branch === 'main') {
+        return c.json({ error: 'main is read-only' }, 403)
+      }
       const body = (await c.req.json()) as {
         commands: unknown[]
         parentSha: string
         summary?: string
         source: 'manual' | 'llm'
       }
-      const view = await service.getProject(owner, slug, user)
+      const view = await service.getProject(owner, slug, user, branch)
       if (!view.isOwner || !view.formSpec || !view.spec) {
         return c.json({ error: 'not allowed' }, 403)
       }
@@ -149,6 +240,7 @@ export function createEditRoutes(
         explanation,
         body.source,
         user,
+        { branch },
       )
       if (!result.ok) {
         return c.json(
@@ -169,7 +261,25 @@ export function createEditRoutes(
     }
   })
 
-  // GET /:owner/:slug/preview — render a page as Carlos would see it
+  // GET /:owner/:slug/preview/:branch — render a page as Carlos would see it,
+  // scoped to a specific branch.
+  app.get('/:owner/:slug/preview/:branch', async (c) => {
+    const owner = c.req.param('owner')
+    const slug = c.req.param('slug')
+    const branch = c.req.param('branch')
+    const pageIndex = Number(c.req.query('page') ?? 0)
+    try {
+      const view = await service.getProject(owner, slug, c.get('user'), branch)
+      if (!view.formSpec || !view.spec) {
+        return c.html(<p>No form spec available.</p>)
+      }
+      return c.html(<PreviewPage view={view} pageIndex={pageIndex} />)
+    } catch (err) {
+      return handleError(c, err)
+    }
+  })
+
+  // GET /:owner/:slug/preview — preview the main branch (read-only baseline)
   app.get('/:owner/:slug/preview', async (c) => {
     const owner = c.req.param('owner')
     const slug = c.req.param('slug')
