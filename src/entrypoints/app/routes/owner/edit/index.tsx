@@ -41,7 +41,11 @@ export function createEditRoutes(
       }
       const log = await service.getShapingLog(owner, slug)
       return c.html(
-        <Layout user={user} title={`Edit ${view.project.name}`}>
+        <Layout
+          user={user}
+          title={`Edit ${view.project.name}`}
+          contentWidth="full"
+        >
           <EditorPage view={view} owner={owner} user={user} log={log} />
         </Layout>,
       )

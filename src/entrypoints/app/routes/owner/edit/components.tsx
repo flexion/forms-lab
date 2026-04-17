@@ -37,43 +37,50 @@ export const EditorPage: FC<{
   }
 
   return (
-    <div class="form-editor l-stack">
-      <div class="l-cluster justify-between">
-        <h1>
-          <a href={resolveUrl(`/${owner}`)} class="text-muted">
-            {owner}
-          </a>{' '}
-          / <a href={resolveUrl(`/${owner}/${project.slug}`)}>{project.name}</a>{' '}
-          / Edit
-        </h1>
-      </div>
+    <flex-form-editor
+      data-owner={owner}
+      data-slug={project.slug}
+      data-edit-base={resolveUrl(editBase)}
+      data-preview-base={resolveUrl(`/${owner}/${project.slug}/preview`)}
+    >
+      <script
+        type="application/json"
+        data-initial-state
+        dangerouslySetInnerHTML={{
+          __html: safeJsonForScript({ formSpec, dataSpec: spec }),
+        }}
+      />
+      <script
+        type="application/json"
+        data-shaping-log
+        dangerouslySetInnerHTML={{ __html: safeJsonForScript(log) }}
+      />
 
-      <flex-form-editor
-        data-owner={owner}
-        data-slug={project.slug}
-        data-edit-base={resolveUrl(editBase)}
-        data-preview-base={resolveUrl(`/${owner}/${project.slug}/preview`)}
-      >
-        <script
-          type="application/json"
-          data-initial-state
-          dangerouslySetInnerHTML={{
-            __html: safeJsonForScript({ formSpec, dataSpec: spec }),
-          }}
-        />
-        <script
-          type="application/json"
-          data-shaping-log
-          dangerouslySetInnerHTML={{ __html: safeJsonForScript(log) }}
-        />
+      <div class="editor-layout">
+        <div class="editor-breadcrumb">
+          <h1>
+            <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+            {' / '}
+            <a href={resolveUrl(`/${owner}/${project.slug}`)}>{project.name}</a>
+            {' / '}
+            <strong>Edit</strong>
+          </h1>
+          <button
+            type="button"
+            class="flex-button editor-breadcrumb__open-assistant"
+            data-variant="outline"
+            data-action="open-assistant"
+          >
+            AI Assistant
+          </button>
+        </div>
 
-        <div class="editor-layout">
-          <div class="editor-panel editor-panel--main">
-            <flex-command-proposal />
-            <flex-form-structure />
-          </div>
-          <div class="editor-panel editor-panel--preview">
-            <h2>Preview</h2>
+        <aside class="editor-structure">
+          <flex-form-structure />
+        </aside>
+
+        <div class="editor-preview">
+          <div class="editor-preview__inner">
             <iframe
               class="editor-preview-frame"
               src={resolveUrl(`/${owner}/${project.slug}/preview?page=0`)}
@@ -81,8 +88,12 @@ export const EditorPage: FC<{
             />
           </div>
         </div>
-      </flex-form-editor>
-    </div>
+
+        <aside class="editor-assistant">
+          <flex-assistant />
+        </aside>
+      </div>
+    </flex-form-editor>
   )
 }
 

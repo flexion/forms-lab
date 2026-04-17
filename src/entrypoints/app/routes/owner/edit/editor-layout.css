@@ -1,0 +1,108 @@
+.editor-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 320px;
+  grid-template-rows: auto 1fr;
+  height: calc(100vh - 160px);
+  min-height: 400px;
+}
+
+.editor-breadcrumb {
+  grid-column: 1 / -1;
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  border-block-end: 1px solid var(--flex-color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editor-breadcrumb h1 {
+  font-size: var(--flex-text-base);
+  font-weight: 400;
+  margin: 0;
+}
+
+.editor-breadcrumb a {
+  color: var(--flex-color-text-muted);
+  text-decoration: none;
+}
+
+.editor-breadcrumb a:hover {
+  color: var(--flex-color-accent);
+}
+
+.editor-breadcrumb strong {
+  font-weight: 700;
+  color: var(--flex-color-text);
+}
+
+.editor-structure {
+  grid-row: 2;
+  border-inline-end: 1px solid var(--flex-color-border);
+  overflow-y: auto;
+}
+
+.editor-preview {
+  grid-row: 2;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: var(--flex-space-md);
+}
+
+.editor-preview__inner {
+  width: 100%;
+  max-width: var(--flex-content-max-width);
+}
+
+.editor-preview iframe {
+  width: 100%;
+  min-height: 100%;
+  border: none;
+}
+
+.editor-assistant {
+  grid-row: 2;
+  border-inline-start: 1px solid var(--flex-color-border);
+  min-height: 0;
+}
+
+/* When assistant is closed, hide its column */
+.editor-layout:has(flex-assistant[data-closed]) {
+  grid-template-columns: 240px 1fr 0;
+}
+
+/* "Open assistant" button visibility */
+.editor-breadcrumb__open-assistant {
+  display: none;
+}
+
+.editor-layout:has(flex-assistant[data-closed]) .editor-breadcrumb__open-assistant {
+  display: inline-block;
+}
+
+@media (max-width: 64rem) {
+  .editor-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr auto;
+    height: auto;
+  }
+
+  .editor-structure {
+    grid-row: 2;
+    border-inline-end: none;
+    border-block-end: 1px solid var(--flex-color-border);
+    max-height: 200px;
+  }
+
+  .editor-preview {
+    grid-row: 3;
+    min-height: 50vh;
+  }
+
+  .editor-assistant {
+    grid-row: 4;
+    border-inline-start: none;
+    border-block-start: 1px solid var(--flex-color-border);
+    max-height: 300px;
+  }
+}
