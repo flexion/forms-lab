@@ -30,7 +30,6 @@
     border-radius: var(--flex-radius-sm);
   }
   .editable-group__legend {
-    font-size: var(--flex-text-md);
     font-weight: 600;
     padding: 0;
     cursor: pointer;
@@ -65,10 +64,12 @@
   }
   .editable-group__title-input {
     font-weight: 600;
+    font-size: inherit;
+    margin-block-start: 0;
   }
   .editable-group__toolbar {
     display: inline-flex;
-    gap: var(--flex-space-2xs);
+    gap: var(--flex-space-xs);
   }
   .editable-group__fields {
     display: flex;

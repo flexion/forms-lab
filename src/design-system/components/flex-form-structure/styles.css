@@ -33,6 +33,12 @@ flex-form-structure {
   gap: var(--flex-space-xs);
   padding-inline: var(--flex-space-xs);
   border-radius: var(--flex-radius-sm);
+  transition: background-color 100ms ease;
+}
+
+.form-structure__page:hover,
+.form-structure__page:focus-within {
+  background: var(--flex-color-bg-subtle);
 }
 
 .form-structure__page--selected {
@@ -64,9 +70,9 @@ flex-form-structure {
   min-inline-size: 0;
 }
 
-.form-structure__row:hover,
 .form-structure__row:focus-visible {
-  background: var(--flex-color-bg-subtle);
+  outline: 2px solid var(--flex-color-accent);
+  outline-offset: -2px;
 }
 
 .form-structure__row-index {

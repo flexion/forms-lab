@@ -42,7 +42,6 @@
   }
   .editable-page__title {
     flex: 1;
-    font-size: var(--flex-text-lg);
     font-weight: 600;
     margin: 0;
     cursor: pointer;
@@ -58,8 +57,10 @@
   }
   .editable-page__title-input {
     flex: 1;
-    font-size: var(--flex-text-lg);
+    /* Match the h2 sizing from base.css so the input reads as a heading */
+    font-size: 1.43em;
     font-weight: 600;
+    margin-block-start: 0;
   }
   .editable-page__toolbar {
     display: flex;

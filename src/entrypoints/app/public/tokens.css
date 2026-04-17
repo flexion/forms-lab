@@ -104,6 +104,18 @@
   initial-value: #e0f7f6;
 }
 
+@property --flex-space-3xs {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 1px;
+}
+
+@property --flex-space-2xs {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 2px;
+}
+
 @property --flex-space-xs {
   syntax: "<length>";
   inherits: true;
@@ -1615,6 +1627,8 @@
   --flex-color-disabled-dark: var(--flex-gray-70); /* @uswds disabled-dark */
 
   /* Spacing tokens */
+  --flex-space-3xs: 1px;
+  --flex-space-2xs: 2px;
   --flex-space-xs: 4px;
   --flex-space-sm: 8px;
   --flex-space-md: 16px;
