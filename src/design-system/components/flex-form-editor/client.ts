@@ -297,9 +297,12 @@ class FlexFormEditor extends HTMLElement {
         return
       }
       const body = (await response.json()) as { state: ProjectStateClient }
+      this.canonicalState = body.state
       this.state = body.state
+      this.buffer = []
       this.proposal = null
       this.broadcastSpec()
+      this.dispatchProjected()
       this.replaceLastSystemMessage('Changes applied.')
     } catch (err) {
       this.replaceLastSystemMessage(
@@ -330,8 +333,11 @@ class FlexFormEditor extends HTMLElement {
         return
       }
       const body = (await response.json()) as { state: ProjectStateClient }
+      this.canonicalState = body.state
       this.state = body.state
+      this.buffer = []
       this.broadcastSpec()
+      this.dispatchProjected()
       this.assistant?.addMessage('system', escapeHtml(detail.explanation))
     } catch (err) {
       this.assistant?.addMessage(
