@@ -166,8 +166,15 @@ describe('review flow end-to-end', () => {
     expect(featureEntry!.sha).toBe(mainEntry!.sha)
 
     // 2. Make an edit on the feature branch — rename the only page.
+    //    The save endpoint requires a parentSha matching the branch tip.
+    const featureView = await service.getProject(
+      'danielnaab',
+      slug,
+      danielUser,
+      'feature',
+    )
     const acceptRes = await app.request(
-      `/danielnaab/${slug}/edit/feature/accept`,
+      `/danielnaab/${slug}/edit/feature/save`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -175,7 +182,8 @@ describe('review flow end-to-end', () => {
           commands: [
             { kind: 'renamePage', id: 'page-1', title: 'Contact Details' },
           ],
-          explanation: 'Rename intro page',
+          parentSha: featureView.currentSha,
+          summary: 'Rename intro page',
           source: 'manual',
         }),
       },
@@ -233,14 +241,15 @@ describe('review flow end-to-end', () => {
     const project = await createReadyProject(service, projectStore)
     const slug = project.slug
 
-    const res = await app.request(`/danielnaab/${slug}/edit/main/accept`, {
+    const res = await app.request(`/danielnaab/${slug}/edit/main/save`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         commands: [
           { kind: 'renamePage', id: 'page-1', title: 'Illegal rename' },
         ],
-        explanation: 'should be rejected',
+        parentSha: '0'.repeat(40),
+        summary: 'should be rejected',
         source: 'manual',
       }),
     })
