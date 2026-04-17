@@ -2,6 +2,7 @@ import { meta as accordion } from './components/flex-accordion/meta'
 import { meta as alert } from './components/flex-alert/meta'
 import { meta as banner } from './components/flex-banner/meta'
 import { meta as branchIndicator } from './components/flex-branch-indicator/meta'
+import { meta as branchSwitcher } from './components/flex-branch-switcher/meta'
 import { meta as breadcrumb } from './components/flex-breadcrumb/meta'
 import { meta as button } from './components/flex-button/meta'
 import { meta as buttonGroup } from './components/flex-button-group/meta'
@@ -54,6 +55,7 @@ const components: ComponentMeta[] = [
   alert,
   banner,
   branchIndicator,
+  branchSwitcher,
   breadcrumb,
   button,
   buttonGroup,

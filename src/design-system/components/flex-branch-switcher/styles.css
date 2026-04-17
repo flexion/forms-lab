@@ -1,0 +1,143 @@
+/* flex-branch-switcher — dropdown for selecting the active branch,
+   filtering the list, and creating a new branch inline. */
+
+flex-branch-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.flex-branch-switcher__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--flex-space-xs);
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-surface);
+  color: var(--flex-color-text);
+  font-family: var(--flex-font-mono);
+  font-size: var(--flex-text-base);
+  cursor: pointer;
+}
+
+.flex-branch-switcher__trigger:hover {
+  background: var(--flex-color-bg-subtle);
+}
+
+.flex-branch-switcher__trigger:focus-visible {
+  outline: var(--flex-focus-ring);
+  outline-offset: var(--flex-focus-offset);
+}
+
+.flex-branch-switcher__current {
+  font-weight: 600;
+}
+
+.flex-branch-switcher__caret {
+  color: var(--flex-color-text-muted);
+}
+
+.flex-branch-switcher__panel {
+  position: absolute;
+  inset-block-start: calc(100% + var(--flex-space-xs));
+  inset-inline-start: 0;
+  z-index: 10;
+  min-inline-size: 16rem;
+  padding: var(--flex-space-sm);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-md);
+  background: var(--flex-color-surface);
+  box-shadow: var(--flex-shadow-md);
+}
+
+.flex-branch-switcher__panel[hidden] {
+  display: none;
+}
+
+.flex-branch-switcher__filter {
+  box-sizing: border-box;
+  inline-size: 100%;
+  margin-block-end: var(--flex-space-sm);
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-base);
+}
+
+.flex-branch-switcher__list {
+  max-block-size: 16rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.flex-branch-switcher__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--flex-space-sm);
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  border-radius: var(--flex-radius-sm);
+}
+
+.flex-branch-switcher__option:hover {
+  background: var(--flex-color-bg-subtle);
+}
+
+.flex-branch-switcher__option[aria-selected="true"] {
+  background: var(--flex-color-info-lighter);
+}
+
+.flex-branch-switcher__link {
+  flex: 1;
+  color: var(--flex-color-text);
+  font-family: var(--flex-font-mono);
+  font-size: var(--flex-text-base);
+  text-decoration: none;
+}
+
+.flex-branch-switcher__link:hover {
+  text-decoration: underline;
+}
+
+.flex-branch-switcher__ahead {
+  color: var(--flex-color-text-muted);
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-xs);
+}
+
+.flex-branch-switcher__create {
+  display: flex;
+  gap: var(--flex-space-xs);
+  margin-block-start: var(--flex-space-sm);
+  padding-block-start: var(--flex-space-sm);
+  border-block-start: 1px solid var(--flex-color-border);
+}
+
+.flex-branch-switcher__create-input {
+  flex: 1;
+  box-sizing: border-box;
+  min-inline-size: 0;
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  font-family: var(--flex-font-mono);
+  font-size: var(--flex-text-base);
+}
+
+.flex-branch-switcher__create-submit {
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  border: 1px solid var(--flex-color-accent);
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-accent);
+  color: var(--flex-color-on-accent);
+  font-size: var(--flex-text-base);
+  cursor: pointer;
+}
+
+.flex-branch-switcher__create-submit:hover {
+  background: var(--flex-color-link-hover);
+  border-color: var(--flex-color-link-hover);
+}
