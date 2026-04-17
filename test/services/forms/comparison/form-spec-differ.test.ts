@@ -104,4 +104,21 @@ describe('diffFormSpecs', () => {
   it('returns empty for identical specs', () => {
     expect(diffFormSpecs(baseSpec, baseSpec)).toEqual([])
   })
+
+  it('describes undefined delivery mode as "unset" in modification text', () => {
+    const base: FormSpec = {
+      id: 'form1',
+      specId: 'form1',
+      title: 'Tax Form',
+      pages: [{ id: 'p1', title: 'Only', groups: [] }],
+    }
+    const head: FormSpec = {
+      ...base,
+      pages: [{ id: 'p1', title: 'Only', groups: [], deliveryMode: 'static' }],
+    }
+    const changes = diffFormSpecs(base, head)
+    const modified = changes.filter((c) => c.category === 'modified')
+    expect(modified).toHaveLength(1)
+    expect(modified[0].description).toContain('unset to static')
+  })
 })

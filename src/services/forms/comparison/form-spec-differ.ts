@@ -38,7 +38,7 @@ export function diffFormSpecs(base: FormSpec, head: FormSpec): SpecChange[] {
         category: 'modified',
         resource: 'form-spec',
         path: [`page:${id}`],
-        description: `Page "${headPage.title}" delivery mode: ${basePage.deliveryMode} to ${headPage.deliveryMode}`,
+        description: `Page "${headPage.title}" delivery mode: ${basePage.deliveryMode ?? 'unset'} to ${headPage.deliveryMode ?? 'unset'}`,
       })
     }
     changes.push(...diffPageGroups(id, headPage.title, basePage, headPage))
