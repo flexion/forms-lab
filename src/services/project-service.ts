@@ -13,6 +13,7 @@ import {
   UnauthenticatedError,
 } from './errors'
 import type {
+  BranchEntry,
   CommitEntry,
   FormProjectRepo,
   TreeEntry,
@@ -21,6 +22,8 @@ import type { Command } from './forms/shaping/commands'
 import { executeBatch } from './forms/shaping/executor'
 import type { PdfExtractor } from './pdf-extractor'
 import type { ProjectStore } from './storage'
+
+export type { BranchEntry } from './form-project-repo'
 
 export interface ShapingLogEntry {
   timestamp: string
@@ -51,6 +54,7 @@ export interface ProjectService {
     owner: string,
     slug: string,
     user: SessionUser | null,
+    branch?: string,
   ): Promise<ProjectView>
   listUserProjects(owner: string): ProjectIndex[]
   deleteProject(owner: string, slug: string, user: SessionUser): Promise<void>
@@ -104,6 +108,7 @@ export interface ProjectService {
     explanation: string,
     source: 'llm' | 'manual',
     user: SessionUser,
+    options?: { branch?: string },
   ): Promise<
     | {
         ok: true
@@ -112,7 +117,19 @@ export interface ProjectService {
       }
     | { ok: false; error: string; failedAt: number; command: Command }
   >
-  getShapingLog(owner: string, slug: string): Promise<ShapingLogEntry[]>
+  getShapingLog(
+    owner: string,
+    slug: string,
+    branch?: string,
+  ): Promise<ShapingLogEntry[]>
+  listBranches(slug: string): Promise<BranchEntry[]>
+  createBranch(
+    slug: string,
+    name: string,
+    startPoint: string,
+    user: SessionUser,
+  ): Promise<void>
+  deleteBranch(slug: string, name: string, user: SessionUser): Promise<void>
 }
 
 export function createProjectService(
@@ -165,6 +182,7 @@ export function createProjectService(
   async function readSpecs(
     slug: string,
     rev = 'main',
+    historyRev = 'main',
   ): Promise<{
     spec: DataCollectionSpec | null
     formSpec: FormSpec | null
@@ -175,7 +193,7 @@ export function createProjectService(
       repo.readFile(slug, rev, 'forms/default/spec.json'),
       repo.readFile(slug, rev, 'forms/default/form.json'),
       repo.readFile(slug, rev, 'forms/default/confidence.json'),
-      repo.log(slug, 'main'),
+      repo.log(slug, historyRev),
     ])
 
     return {
@@ -271,6 +289,7 @@ export function createProjectService(
       owner: string,
       slug: string,
       user: SessionUser | null,
+      branch = 'main',
     ): Promise<ProjectView> {
       const project = resolveProject(owner, slug)
       const isOwner = user?.login === project.createdBy
@@ -278,7 +297,11 @@ export function createProjectService(
       const currentSha = await repo.headSha(slug, 'main')
 
       if (project.status === 'ready') {
-        const { spec, formSpec, confidence, history } = await readSpecs(slug)
+        const { spec, formSpec, confidence, history } = await readSpecs(
+          slug,
+          branch,
+          branch,
+        )
         return {
           project,
           spec,
@@ -509,15 +532,25 @@ export function createProjectService(
       )
     },
 
-    async executeCommands(owner, slug, commands, explanation, source, user) {
+    async executeCommands(
+      owner,
+      slug,
+      commands,
+      explanation,
+      source,
+      user,
+      options,
+    ) {
       requireAuth(user)
       const project = resolveProject(owner, slug)
       requireOwner(project, user)
 
+      const branch = options?.branch ?? 'main'
+
       const [formBuf, specBuf, logBuf] = await Promise.all([
-        repo.readFile(slug, 'main', 'forms/default/form.json'),
-        repo.readFile(slug, 'main', 'forms/default/spec.json'),
-        repo.readFile(slug, 'main', 'forms/default/shaping-log.json'),
+        repo.readFile(slug, branch, 'forms/default/form.json'),
+        repo.readFile(slug, branch, 'forms/default/spec.json'),
+        repo.readFile(slug, branch, 'forms/default/shaping-log.json'),
       ])
       if (!formBuf || !specBuf) {
         throw new BadRequestError('Project has no FormSpec to edit yet')
@@ -580,6 +613,7 @@ export function createProjectService(
         ],
         `Apply shaping: ${explanation}`,
         user.login,
+        { branch },
       )
 
       newEntry.authorCommit = sha
@@ -597,15 +631,48 @@ export function createProjectService(
     async getShapingLog(
       owner: string,
       slug: string,
+      branch = 'main',
     ): Promise<ShapingLogEntry[]> {
       resolveProject(owner, slug)
       const buf = await repo.readFile(
         slug,
-        'main',
+        branch,
         'forms/default/shaping-log.json',
       )
       if (!buf) return []
       return JSON.parse(buf.toString()) as ShapingLogEntry[]
+    },
+
+    async listBranches(slug: string): Promise<BranchEntry[]> {
+      return repo.listBranches(slug)
+    },
+
+    async createBranch(
+      slug: string,
+      name: string,
+      startPoint: string,
+      user: SessionUser,
+    ): Promise<void> {
+      requireAuth(user)
+      const project = store.getBySlug(slug)
+      if (!project) throw new NotFoundError()
+      requireOwner(project, user)
+      await repo.createBranch(slug, name, startPoint)
+    },
+
+    async deleteBranch(
+      slug: string,
+      name: string,
+      user: SessionUser,
+    ): Promise<void> {
+      requireAuth(user)
+      if (name === 'main') {
+        throw new BadRequestError('Cannot delete main branch')
+      }
+      const project = store.getBySlug(slug)
+      if (!project) throw new NotFoundError()
+      requireOwner(project, user)
+      await repo.deleteBranch(slug, name)
     },
   }
 }
