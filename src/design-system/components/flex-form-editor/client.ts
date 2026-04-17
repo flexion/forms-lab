@@ -96,6 +96,9 @@ class FlexFormEditor extends HTMLElement {
   private state: ProjectStateClient | null = null
   private canonicalState: ProjectStateClient | null = null
   private buffer: Command[] = []
+  private lastBatchWasChat = false
+  private lastBatchSize = 0
+  private lastBatchSummary = ''
   private proposal: ProposalState | null = null
   private selectedPageIndex = 0
 
@@ -161,6 +164,8 @@ class FlexFormEditor extends HTMLElement {
         explanation: string
       }
       this.appendToBuffer([detail.command])
+      this.lastBatchWasChat = false
+      this.lastBatchSize = 0
     })
 
     // Stage a batch of commands into the buffer
@@ -170,6 +175,9 @@ class FlexFormEditor extends HTMLElement {
         summary: string
       }
       this.appendToBuffer(detail.commands)
+      this.lastBatchWasChat = true
+      this.lastBatchSize = detail.commands.length
+      this.lastBatchSummary = detail.summary
     })
 
     // Event delegation for accept/reject buttons inside assistant messages
@@ -387,6 +395,69 @@ class FlexFormEditor extends HTMLElement {
         bubbles: false,
       }),
     )
+  }
+
+  get bufferLength(): number {
+    return this.buffer.length
+  }
+
+  async saveStaged(): Promise<void> {
+    if (this.buffer.length === 0 || !this.canonicalState) return
+    const source: 'manual' | 'llm' =
+      this.lastBatchWasChat && this.buffer.length === this.lastBatchSize
+        ? 'llm'
+        : 'manual'
+    const summary = source === 'llm' ? this.lastBatchSummary : undefined
+    const parentSha = this.dataset.currentSha ?? ''
+    try {
+      const response = await fetch(`${this.editBase()}/save`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          commands: this.buffer,
+          parentSha,
+          summary,
+          source,
+        }),
+      })
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}))
+        this.dispatchEvent(
+          new CustomEvent('formeditor:command-failed', {
+            detail: {
+              error: body.error ?? 'Save failed',
+              command: body.command ?? null,
+            },
+            bubbles: true,
+            composed: true,
+          }),
+        )
+        return
+      }
+      const body = (await response.json()) as {
+        state: ProjectStateClient
+        sha: string
+      }
+      this.canonicalState = body.state
+      this.state = body.state
+      this.buffer = []
+      this.lastBatchWasChat = false
+      this.lastBatchSize = 0
+      this.lastBatchSummary = ''
+      this.dataset.currentSha = body.sha
+      this.dispatchProjected()
+    } catch (err) {
+      this.dispatchEvent(
+        new CustomEvent('formeditor:command-failed', {
+          detail: {
+            error: err instanceof Error ? err.message : String(err),
+            command: null,
+          },
+          bubbles: true,
+          composed: true,
+        }),
+      )
+    }
   }
 
   discardStaged(): void {

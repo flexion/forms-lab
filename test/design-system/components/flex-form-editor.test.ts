@@ -54,6 +54,55 @@ afterAll(() => {
   GlobalRegistrator.unregister()
 })
 
+describe('flex-form-editor save', () => {
+  it('POSTs buffer to /edit/save and clears the buffer on success', async () => {
+    const el = mountEditor()
+    let posted: { url: string; body: Record<string, unknown> } | null = null
+    const newSha = 'b'.repeat(40)
+    const newState = {
+      ...SAMPLE_STATE,
+      formSpec: {
+        ...SAMPLE_STATE.formSpec,
+        pages: [{ id: 'p1', title: 'Renamed', groups: ['g1'] }],
+      },
+    }
+    globalThis.fetch = (async (url: string, init?: RequestInit) => {
+      posted = {
+        url,
+        body: JSON.parse(init?.body as string) as Record<string, unknown>,
+      }
+      return new Response(JSON.stringify({ state: newState, sha: newSha }), {
+        status: 200,
+      })
+    }) as typeof globalThis.fetch
+
+    el.dispatchEvent(
+      new CustomEvent('formeditor:stage-command', {
+        detail: {
+          command: { kind: 'renamePage', id: 'p1', title: 'Renamed' },
+          explanation: 'Rename',
+        },
+      }),
+    )
+    const editor = el as unknown as {
+      saveStaged(): Promise<void>
+      bufferLength: number
+    }
+    await editor.saveStaged()
+
+    const p = posted as unknown as {
+      url: string
+      body: Record<string, unknown>
+    }
+    expect(p.url).toBe('/test/edit/save')
+    expect(p.body.commands as unknown[]).toHaveLength(1)
+    expect(p.body.parentSha).toBe('a'.repeat(40))
+    expect(p.body.source).toBe('manual')
+    expect(el.dataset.currentSha).toBe(newSha)
+    expect(editor.bufferLength).toBe(0)
+  })
+})
+
 describe('flex-form-editor staged buffer', () => {
   beforeEach(() => {
     document.body.innerHTML = ''
