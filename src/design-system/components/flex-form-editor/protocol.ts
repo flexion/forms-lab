@@ -32,12 +32,24 @@ export type FormEditorEvent =
       detail: { state: ProjectStateClient }
     }
   | {
+      type: 'formeditor:state-projected'
+      detail: { state: ProjectStateClient; bufferLength: number }
+    }
+  | {
       type: 'formeditor:command-failed'
       detail: { error: string; command: Command | null }
     }
   | {
       type: 'formeditor:manual-command'
       detail: { command: Command; explanation: string }
+    }
+  | {
+      type: 'formeditor:stage-command'
+      detail: { command: Command; explanation: string }
+    }
+  | {
+      type: 'formeditor:stage-batch'
+      detail: { commands: Command[]; summary: string; source: 'llm' }
     }
   | {
       type: 'formeditor:intent-submitted'
