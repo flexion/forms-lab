@@ -258,4 +258,86 @@ describe('review flow end-to-end', () => {
     expect(res.status).toBe(400)
     expect(await res.text()).toContain('invalid compare range')
   })
+
+  it('rejects merge without authentication', async () => {
+    // Build an app where the auth middleware assigns no user.
+    const { app, service, projectStore } = createTestApp(null)
+
+    // Seed a project as daniel directly against the service (bypasses
+    // the route, which would itself require auth).
+    const project = await createReadyProject(service, projectStore, danielUser)
+    const slug = project.slug
+
+    const res = await app.request(
+      `/danielnaab/${slug}/compare/main...feature/merge`,
+      {
+        method: 'POST',
+        redirect: 'manual',
+      },
+    )
+    // Unauthenticated requests should not be able to merge. The handler
+    // either redirects to the sign-in page or returns 401 JSON depending
+    // on the Accept header.
+    expect([302, 401]).toContain(res.status)
+    if (res.status === 302) {
+      expect(res.headers.get('Location')).toContain('/auth/signin')
+    }
+  })
+
+  it('rejects merge by non-owner', async () => {
+    const otherUser: SessionUser = {
+      login: 'eve',
+      name: 'Eve',
+      avatarUrl: '',
+    }
+    const { app, service, projectStore } = createTestApp(otherUser)
+
+    // Seed the project as danielnaab (the owner).
+    const project = await createReadyProject(service, projectStore, danielUser)
+    const slug = project.slug
+
+    const res = await app.request(
+      `/danielnaab/${slug}/compare/main...feature/merge`,
+      {
+        method: 'POST',
+        redirect: 'manual',
+      },
+    )
+    expect(res.status).toBe(403)
+  })
+
+  it('rejects comment without authentication', async () => {
+    const { app, service, projectStore } = createTestApp(null)
+    const project = await createReadyProject(service, projectStore, danielUser)
+    const slug = project.slug
+
+    const res = await app.request(
+      `/danielnaab/${slug}/compare/main...feature/comments`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'body=hello',
+        redirect: 'manual',
+      },
+    )
+    expect([302, 401]).toContain(res.status)
+    if (res.status === 302) {
+      expect(res.headers.get('Location')).toContain('/auth/signin')
+    }
+  })
+
+  it('rejects closing the main branch', async () => {
+    const { app, service, projectStore } = createTestApp()
+    const project = await createReadyProject(service, projectStore, danielUser)
+    const slug = project.slug
+
+    const res = await app.request(
+      `/danielnaab/${slug}/compare/feature...main/close`,
+      {
+        method: 'POST',
+        redirect: 'manual',
+      },
+    )
+    expect(res.status).toBe(400)
+  })
 })
