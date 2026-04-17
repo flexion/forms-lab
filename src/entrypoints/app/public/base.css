@@ -12,17 +12,8 @@ body {
   background: var(--flex-color-bg);
 }
 
-/* Full-viewport pages (editor): lock body to exact viewport height
-   so flex children get definite heights and panels scroll correctly. */
-body[data-viewport="full"] {
-  height: 100dvh;
-  min-block-size: 0;
-  overflow: hidden;
-}
-
 main {
   flex: 1;
-  min-height: 0;
 }
 
 h1,
