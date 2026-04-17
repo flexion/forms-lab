@@ -96,6 +96,15 @@ export const EditorPage: FC<{
             >
               Save
             </button>
+            <a
+              class="flex-button"
+              data-variant="outline"
+              href={resolveUrl(`/${owner}/${project.slug}/preview`)}
+              target="_blank"
+              rel="noopener"
+            >
+              Preview as applicant
+            </a>
             <button
               type="button"
               class="flex-button editor-breadcrumb__open-assistant"
@@ -147,6 +156,21 @@ export const PreviewPage: FC<{
     })
     .filter((g): g is NonNullable<typeof g> => g !== null)
 
+  const totalPages = view.formSpec.pages.length
+  const isLast = pageIndex >= totalPages - 1
+  const nextIndex = isLast ? pageIndex : pageIndex + 1
+  const prevUrl = pageIndex > 0 ? `?page=${pageIndex - 1}` : null
+  // The form submits with method="post" to actionUrl; on the preview we
+  // don't actually post, so navigate to the next page client-side.
+  const previewScript = `
+    document.querySelectorAll("form").forEach(function(f){
+      f.addEventListener("submit", function(e){
+        e.preventDefault();
+        window.location.search = ${JSON.stringify(isLast ? `?page=${pageIndex}` : `?page=${nextIndex}`)};
+      });
+    });
+  `
+
   return (
     <html lang="en">
       <head>
@@ -155,22 +179,23 @@ export const PreviewPage: FC<{
         <title>Preview: {page.title}</title>
         <link rel="stylesheet" href={`${resolveUrl('/static/styles.css')}`} />
       </head>
-      <body style="padding: var(--flex-space-3);">
+      <body style="padding: var(--flex-space-lg);">
+        <div
+          role="status"
+          style="max-inline-size: 60rem; margin-inline: auto; margin-block-end: var(--flex-space-md); padding: var(--flex-space-sm) var(--flex-space-md); border: 1px dashed var(--flex-color-border); border-radius: var(--flex-radius-sm); color: var(--flex-color-text-muted); font-size: var(--flex-text-sm);"
+        >
+          Previewing as an applicant would see the form — no data is submitted.
+        </div>
         <FormPageView
           page={{ title: page.title, description: page.description, groups }}
           actionUrl="#"
           currentPage={pageIndex + 1}
-          totalPages={view.formSpec.pages.length}
+          totalPages={totalPages}
           fields={{}}
           errors={[]}
-          prevUrl={null}
+          prevUrl={prevUrl}
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              'document.querySelectorAll("form").forEach(function(f){f.addEventListener("submit",function(e){e.preventDefault()})})',
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: previewScript }} />
       </body>
     </html>
   )
