@@ -1,10 +1,11 @@
-import { Hono } from 'hono'
+import { type Context, Hono } from 'hono'
 import { FormConfirmation } from '../../../../design-system/components/flex-form-confirmation'
 import type { FormError } from '../../../../design-system/components/flex-form-error-summary'
 import { FormLanding } from '../../../../design-system/components/flex-form-landing'
 import { FormPageView } from '../../../../design-system/components/flex-form-page'
 import { FormReview } from '../../../../design-system/components/flex-form-review'
 import { Layout } from '../../../../design-system/components/flex-layout'
+import { PreviewBanner } from '../../../../design-system/components/flex-preview-banner'
 import type {
   DataCollectionSpec,
   RequirementGroup,
@@ -29,14 +30,35 @@ import { validateFields } from '../../../../services/forms/validation'
 import { resolveUrl } from '../../../../shared/base-path'
 import { requireAuth } from '../../middleware/auth'
 
+/**
+ * Specs resolved for a given spec id and optional git ref.
+ *
+ * `sha` is the commit SHA the specs were resolved at. For in-memory
+ * implementations this may be a synthetic version string; for git-backed
+ * implementations it should be the actual commit SHA. Submissions are pinned
+ * to this value so they remain traceable to the exact form definition that
+ * produced them.
+ */
+interface ResolvedSpecs {
+  dataSpec: DataCollectionSpec
+  formSpec: FormSpec
+  sha: string
+}
+
 interface FormRouterDeps {
   sessionGateway: FormSessionGateway
   submissionGateway: SubmissionGateway
-  getSpecs: (
-    specId: string,
-  ) => { dataSpec: DataCollectionSpec; formSpec: FormSpec } | null
-  listSpecs: () => { dataSpec: DataCollectionSpec; formSpec: FormSpec }[]
+  getSpecs: (specId: string, ref?: string) => ResolvedSpecs | null
+  listSpecs: () => ResolvedSpecs[]
+  /**
+   * Optional hook that produces an "Open in editor" href for the preview
+   * banner, given a spec id and branch. Returning null (or omitting this
+   * dep) suppresses the link.
+   */
+  getEditHref?: (specId: string, branch: string) => string | null
 }
+
+const MAIN_BRANCH = 'main'
 
 function filterVisibleGroups(
   groups: RequirementGroup[],
@@ -71,8 +93,49 @@ function buildReviewPages(
     }))
 }
 
+/**
+ * Produce the path prefix for form URLs on a given branch. Main uses the
+ * bare `/forms/:specId` shape; other branches get the `/branches/:branch`
+ * infix.
+ */
+function formPathPrefix(specId: string, branch: string): string {
+  return branch === MAIN_BRANCH
+    ? `/forms/${specId}`
+    : `/forms/${specId}/branches/${branch}`
+}
+
+function isPreview(branch: string): boolean {
+  return branch !== MAIN_BRANCH
+}
+
+function previewBannerFor(
+  branch: string,
+  sha: string,
+  getEditHref: FormRouterDeps['getEditHref'],
+  specId: string,
+) {
+  if (!isPreview(branch)) return null
+  const editHref = getEditHref?.(specId, branch) ?? undefined
+  return <PreviewBanner branch={branch} sha={sha} editHref={editHref} />
+}
+
+/**
+ * Read the branch out of the current request. Branch-qualified routes are
+ * mounted under a sub-router where `:branch` is present as a param; the
+ * main-branch routes treat this as `'main'`.
+ */
+function readBranch(c: Context): string {
+  return c.req.param('branch') ?? MAIN_BRANCH
+}
+
 export function createFormRouter(deps: FormRouterDeps) {
-  const { sessionGateway, submissionGateway, getSpecs, listSpecs } = deps
+  const {
+    sessionGateway,
+    submissionGateway,
+    getSpecs,
+    listSpecs,
+    getEditHref,
+  } = deps
   const forms = new Hono()
 
   // Forms index (public)
@@ -185,31 +248,42 @@ export function createFormRouter(deps: FormRouterDeps) {
     )
   })
 
-  // Form landing page (public — viewing a form description is fine)
-  forms.get('/:specId', (c) => {
-    const specs = getSpecs(c.req.param('specId'))
+  // -----------------------------------------------------------------
+  // Handlers — parameterized on branch. Two sub-paths mount each one:
+  //   1. /:specId/...            (main branch — the legacy URL shape)
+  //   2. /:specId/branches/:branch/...
+  // Both call into these handlers with `readBranch(c)` returning the
+  // resolved branch name. The preview banner is rendered whenever the
+  // branch is non-main.
+  // -----------------------------------------------------------------
+
+  async function handleLanding(c: Context) {
+    const branch = readBranch(c)
+    const specId = c.req.param('specId')
+    if (!specId) return c.notFound()
+    const specs = getSpecs(specId, branch)
     if (!specs) return c.notFound()
+    const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.html(
       <Layout
         user={c.get('user')}
         title={specs.formSpec.title}
         currentPath="/forms"
       >
+        {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         <FormLanding
           formSpec={specs.formSpec}
-          startUrl={resolveUrl(`/forms/${specs.dataSpec.id}/sessions`)}
+          startUrl={resolveUrl(`${prefix}/sessions`)}
         />
       </Layout>,
     )
-  })
+  }
 
-  // All session routes require authentication
-  forms.use('/:specId/sessions/*', requireAuth())
-  forms.post('/:specId/sessions', requireAuth())
-
-  // Create session
-  forms.post('/:specId/sessions', (c) => {
-    const specs = getSpecs(c.req.param('specId'))
+  async function handleCreateSession(c: Context) {
+    const branch = readBranch(c)
+    const specId = c.req.param('specId')
+    if (!specId) return c.notFound()
+    const specs = getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
@@ -218,29 +292,30 @@ export function createFormRouter(deps: FormRouterDeps) {
       specs.formSpec.id,
       user.login,
     )
-    return c.redirect(
-      resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/0`),
-    )
-  })
+    const prefix = formPathPrefix(specs.dataSpec.id, branch)
+    return c.redirect(resolveUrl(`${prefix}/sessions/${session.id}/pages/0`))
+  }
 
-  // Render page
-  forms.get('/:specId/sessions/:sessionId/pages/:pageIndex', (c) => {
-    const specs = getSpecs(c.req.param('specId'))
+  async function handleRenderPage(c: Context) {
+    const branch = readBranch(c)
+    const specId = c.req.param('specId')
+    const sessionId = c.req.param('sessionId')
+    if (!specId || !sessionId) return c.notFound()
+    const specs = getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
-    const session = sessionGateway.getSession(c.req.param('sessionId'))
+    const session = sessionGateway.getSession(sessionId)
     if (!session) return c.notFound()
     if (session.ownerId !== user.login) return c.notFound()
     const pageIndex = Number(c.req.param('pageIndex'))
     const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
     if (pageIndex < 0 || pageIndex >= resolved.pages.length) return c.notFound()
+    const prefix = formPathPrefix(specs.dataSpec.id, branch)
     const prev = findPrevPage(resolved, pageIndex, session.fields)
     const prevUrl =
       prev !== null
-        ? resolveUrl(
-            `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`,
-          )
+        ? resolveUrl(`${prefix}/sessions/${session.id}/pages/${prev}`)
         : null
     return c.html(
       <Layout
@@ -248,6 +323,7 @@ export function createFormRouter(deps: FormRouterDeps) {
         title={resolved.pages[pageIndex].page.title}
         currentPath="/forms"
       >
+        {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         <FormPageView
           page={{
             title: resolved.pages[pageIndex].page.title,
@@ -258,7 +334,7 @@ export function createFormRouter(deps: FormRouterDeps) {
             ),
           }}
           actionUrl={resolveUrl(
-            `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`,
+            `${prefix}/sessions/${session.id}/pages/${pageIndex}`,
           )}
           currentPage={visiblePageNumber(resolved, pageIndex, session.fields)}
           totalPages={countVisiblePages(resolved, session.fields)}
@@ -268,15 +344,18 @@ export function createFormRouter(deps: FormRouterDeps) {
         />
       </Layout>,
     )
-  })
+  }
 
-  // Submit page (validate and advance)
-  forms.post('/:specId/sessions/:sessionId/pages/:pageIndex', async (c) => {
-    const specs = getSpecs(c.req.param('specId'))
+  async function handleSubmitPage(c: Context) {
+    const branch = readBranch(c)
+    const specId = c.req.param('specId')
+    const sessionId = c.req.param('sessionId')
+    if (!specId || !sessionId) return c.notFound()
+    const specs = getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
-    const session = sessionGateway.getSession(c.req.param('sessionId'))
+    const session = sessionGateway.getSession(sessionId)
     if (!session) return c.notFound()
     if (session.ownerId !== user.login) return c.notFound()
     const pageIndex = Number(c.req.param('pageIndex'))
@@ -297,6 +376,8 @@ export function createFormRouter(deps: FormRouterDeps) {
       (e) => e.errors && e.errors.length > 0,
     )
 
+    const prefix = formPathPrefix(specs.dataSpec.id, branch)
+
     if (hasErrors) {
       const mergedFields = { ...session.fields, ...validated }
       const errors: FormError[] = Object.entries(validated)
@@ -308,9 +389,7 @@ export function createFormRouter(deps: FormRouterDeps) {
       const prev = findPrevPage(resolved, pageIndex, mergedFields)
       const prevUrl =
         prev !== null
-          ? resolveUrl(
-              `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${prev}`,
-            )
+          ? resolveUrl(`${prefix}/sessions/${session.id}/pages/${prev}`)
           : null
       return c.html(
         <Layout
@@ -318,6 +397,7 @@ export function createFormRouter(deps: FormRouterDeps) {
           title={`Error: ${resolvedPage.page.title}`}
           currentPath="/forms"
         >
+          {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
           <FormPageView
             page={{
               title: resolvedPage.page.title,
@@ -325,7 +405,7 @@ export function createFormRouter(deps: FormRouterDeps) {
               groups: filterVisibleGroups(resolvedPage.groups, mergedFields),
             }}
             actionUrl={resolveUrl(
-              `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${pageIndex}`,
+              `${prefix}/sessions/${session.id}/pages/${pageIndex}`,
             )}
             currentPage={visiblePageNumber(resolved, pageIndex, mergedFields)}
             totalPages={countVisiblePages(resolved, mergedFields)}
@@ -343,65 +423,69 @@ export function createFormRouter(deps: FormRouterDeps) {
     const next = findNextPage(resolved, pageIndex, updatedSession.fields)
     if (next !== null) {
       return c.redirect(
-        resolveUrl(
-          `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages/${next}`,
-        ),
+        resolveUrl(`${prefix}/sessions/${session.id}/pages/${next}`),
       )
     }
-    return c.redirect(
-      resolveUrl(`/forms/${specs.dataSpec.id}/sessions/${session.id}/review`),
-    )
-  })
+    return c.redirect(resolveUrl(`${prefix}/sessions/${session.id}/review`))
+  }
 
-  // Review page
-  forms.get('/:specId/sessions/:sessionId/review', (c) => {
-    const specs = getSpecs(c.req.param('specId'))
+  async function handleReview(c: Context) {
+    const branch = readBranch(c)
+    const specId = c.req.param('specId')
+    const sessionId = c.req.param('sessionId')
+    if (!specId || !sessionId) return c.notFound()
+    const specs = getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
-    const session = sessionGateway.getSession(c.req.param('sessionId'))
+    const session = sessionGateway.getSession(sessionId)
     if (!session) return c.notFound()
     if (session.ownerId !== user.login) return c.notFound()
     const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
+    const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.html(
       <Layout user={user} title="Review" currentPath="/forms">
+        {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         <FormReview
           pages={buildReviewPages(resolved, session.fields)}
           fields={session.fields}
-          submitUrl={resolveUrl(
-            `/forms/${specs.dataSpec.id}/sessions/${session.id}/submit`,
-          )}
-          editBaseUrl={resolveUrl(
-            `/forms/${specs.dataSpec.id}/sessions/${session.id}/pages`,
-          )}
+          submitUrl={resolveUrl(`${prefix}/sessions/${session.id}/submit`)}
+          editBaseUrl={resolveUrl(`${prefix}/sessions/${session.id}/pages`)}
         />
       </Layout>,
     )
-  })
+  }
 
-  // Submit
-  forms.post('/:specId/sessions/:sessionId/submit', (c) => {
-    const specs = getSpecs(c.req.param('specId'))
+  async function handleSubmit(c: Context) {
+    const branch = readBranch(c)
+    const specId = c.req.param('specId')
+    const sessionId = c.req.param('sessionId')
+    if (!specId || !sessionId) return c.notFound()
+    const specs = getSpecs(specId, branch)
     if (!specs) return c.notFound()
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
-    const session = sessionGateway.getSession(c.req.param('sessionId'))
+    const session = sessionGateway.getSession(sessionId)
     if (!session) return c.notFound()
     if (session.ownerId !== user.login) return c.notFound()
     if (session.status === 'submitted') {
       return c.text('This form has already been submitted.', 409)
     }
     const submission = sessionGateway.submit(session.id)
+    // Pin the submission to the branch's current commit SHA so it remains
+    // traceable to the exact form definition that produced it.
+    submission.specVersion = specs.sha
     submissionGateway.save(submission)
+    const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.redirect(
       resolveUrl(
-        `/forms/${specs.dataSpec.id}/sessions/${session.id}/confirmation?submissionId=${submission.id}`,
+        `${prefix}/sessions/${session.id}/confirmation?submissionId=${submission.id}`,
       ),
     )
-  })
+  }
 
-  // Confirmation
-  forms.get('/:specId/sessions/:sessionId/confirmation', (c) => {
+  async function handleConfirmation(c: Context) {
+    const branch = readBranch(c)
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const submissionId = c.req.query('submissionId')
@@ -409,12 +493,65 @@ export function createFormRouter(deps: FormRouterDeps) {
     const submission = submissionGateway.getSubmission(submissionId)
     if (!submission) return c.notFound()
     if (submission.ownerId !== user.login) return c.notFound()
+    const specs = getSpecs(submission.specId, branch)
     return c.html(
       <Layout user={user} title="Confirmation" currentPath="/forms">
+        {specs
+          ? previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)
+          : null}
         <FormConfirmation submission={submission} />
       </Layout>,
     )
-  })
+  }
+
+  // Form landing page (public — viewing a form description is fine)
+  forms.get('/:specId', handleLanding)
+  forms.get('/:specId/branches/:branch', handleLanding)
+
+  // All session routes require authentication
+  forms.use('/:specId/sessions/*', requireAuth())
+  forms.use('/:specId/branches/:branch/sessions/*', requireAuth())
+  forms.post('/:specId/sessions', requireAuth())
+  forms.post('/:specId/branches/:branch/sessions', requireAuth())
+
+  // Create session
+  forms.post('/:specId/sessions', handleCreateSession)
+  forms.post('/:specId/branches/:branch/sessions', handleCreateSession)
+
+  // Render page
+  forms.get('/:specId/sessions/:sessionId/pages/:pageIndex', handleRenderPage)
+  forms.get(
+    '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex',
+    handleRenderPage,
+  )
+
+  // Submit page (validate and advance)
+  forms.post('/:specId/sessions/:sessionId/pages/:pageIndex', handleSubmitPage)
+  forms.post(
+    '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex',
+    handleSubmitPage,
+  )
+
+  // Review page
+  forms.get('/:specId/sessions/:sessionId/review', handleReview)
+  forms.get(
+    '/:specId/branches/:branch/sessions/:sessionId/review',
+    handleReview,
+  )
+
+  // Submit
+  forms.post('/:specId/sessions/:sessionId/submit', handleSubmit)
+  forms.post(
+    '/:specId/branches/:branch/sessions/:sessionId/submit',
+    handleSubmit,
+  )
+
+  // Confirmation
+  forms.get('/:specId/sessions/:sessionId/confirmation', handleConfirmation)
+  forms.get(
+    '/:specId/branches/:branch/sessions/:sessionId/confirmation',
+    handleConfirmation,
+  )
 
   return forms
 }

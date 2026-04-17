@@ -53,6 +53,7 @@
 @import "../../../design-system/components/flex-validation/styles.css" layer(block);
 @import "../../../design-system/components/flex-input-prefix-suffix/styles.css" layer(block);
 @import "../../../design-system/components/flex-site-alert/styles.css" layer(block);
+@import "../../../design-system/components/flex-preview-banner/styles.css" layer(block);
 @import "../../../design-system/components/flex-summary-box/styles.css" layer(block);
 @import "../../../design-system/components/flex-step-indicator/styles.css" layer(block);
 @import "../../../design-system/components/flex-process-list/styles.css" layer(block);

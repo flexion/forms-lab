@@ -31,6 +31,7 @@ import { meta as list } from './components/flex-list/meta'
 import { meta as memorableDate } from './components/flex-memorable-date/meta'
 import { meta as modal } from './components/flex-modal/meta'
 import { meta as pagination } from './components/flex-pagination/meta'
+import { meta as previewBanner } from './components/flex-preview-banner/meta'
 import { meta as processList } from './components/flex-process-list/meta'
 import { meta as prose } from './components/flex-prose/meta'
 import { meta as radio } from './components/flex-radio/meta'
@@ -86,6 +87,7 @@ const components: ComponentMeta[] = [
   memorableDate,
   modal,
   pagination,
+  previewBanner,
   processList,
   prose,
   radio,

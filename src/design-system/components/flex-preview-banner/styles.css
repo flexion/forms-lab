@@ -1,0 +1,59 @@
+/* flex-preview-banner — full-width warning bar that signals a form is being
+   viewed on a non-production branch. Rendered above the main layout so it is
+   the first thing a user sees. Uses warning tokens for consistency with other
+   non-production indicators (e.g. flex-branch-indicator). */
+
+.flex-preview-banner {
+  background-color: var(--flex-color-warning-lighter);
+  border-block-end: 2px solid var(--flex-color-warning);
+  color: var(--flex-color-text);
+  font-size: var(--flex-text-uswds);
+  line-height: 1.5;
+}
+
+.flex-preview-banner__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--flex-space-sm);
+  /* stylelint-disable-next-line declaration-property-value-allowed-list -- USWDS banner intrinsic width, matching flex-site-alert. */
+  max-inline-size: 64rem;
+  margin-inline: auto;
+  padding: var(--flex-space-sm) var(--flex-space-md);
+}
+
+.flex-preview-banner__label {
+  padding: 0 var(--flex-space-xs);
+  border-radius: var(--flex-radius-sm);
+  background-color: var(--flex-color-warning);
+  color: var(--flex-color-text);
+  font-family: var(--flex-font-sans);
+  font-size: var(--flex-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.flex-preview-banner__text {
+  flex: 1 1 20rem;
+}
+
+.flex-preview-banner__branch {
+  font-family: var(--flex-font-mono);
+}
+
+.flex-preview-banner__sha {
+  font-family: var(--flex-font-mono);
+  font-size: var(--flex-text-xs);
+}
+
+.flex-preview-banner__link {
+  color: var(--flex-color-text);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.flex-preview-banner__link:hover,
+.flex-preview-banner__link:focus {
+  text-decoration: none;
+}
