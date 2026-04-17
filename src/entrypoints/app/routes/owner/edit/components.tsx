@@ -1,4 +1,6 @@
 import type { FC } from 'hono/jsx'
+import type { FormFieldRequirement } from '../../../../../design-system/components/flex-form-field'
+import { FormPageView } from '../../../../../design-system/components/flex-form-page'
 import type { SessionUser } from '../../../../../services/auth/session'
 import type {
   ProjectView,
@@ -86,33 +88,50 @@ export const EditorPage: FC<{
   )
 }
 
-export const PreviewPage: FC<{ view: ProjectView; pageIndex: number }> = ({
-  view,
-  pageIndex,
-}) => {
+export const PreviewPage: FC<{
+  view: ProjectView
+  pageIndex: number
+  basePath: string
+}> = ({ view, pageIndex, basePath }) => {
   if (!view.formSpec || !view.spec) return <p>No form.</p>
   const page = view.formSpec.pages[pageIndex]
   if (!page) return <p>Page not found.</p>
   const groupMap = new Map(view.spec.groups.map((g) => [g.id, g]))
+
+  const groups = page.groups
+    .map((gid) => {
+      const group = groupMap.get(gid)
+      if (!group) return null
+      return {
+        id: group.id,
+        title: group.title,
+        description: group.description,
+        requirements: group.requirements.map(
+          (r) => r as unknown as FormFieldRequirement,
+        ),
+      }
+    })
+    .filter((g): g is NonNullable<typeof g> => g !== null)
+
   return (
-    <div class="editor-preview">
-      <h2>{page.title}</h2>
-      {page.groups.map((gid) => {
-        const group = groupMap.get(gid)
-        if (!group) return null
-        return (
-          <section class="editor-preview__group">
-            <h3>{group.title}</h3>
-            <ul>
-              {group.requirements.map((r) => (
-                <li>
-                  {r.label} <em class="text-muted">({r.fieldType})</em>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )
-      })}
-    </div>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Preview: {page.title}</title>
+        <link rel="stylesheet" href={`${basePath}/static/styles.css`} />
+      </head>
+      <body style="padding: var(--flex-space-3);">
+        <FormPageView
+          page={{ title: page.title, description: page.description, groups }}
+          actionUrl="#"
+          currentPage={pageIndex + 1}
+          totalPages={view.formSpec.pages.length}
+          fields={{}}
+          errors={[]}
+          prevUrl={null}
+        />
+      </body>
+    </html>
   )
 }
