@@ -7,6 +7,7 @@ import { meta as breadcrumb } from './components/flex-breadcrumb/meta'
 import { meta as button } from './components/flex-button/meta'
 import { meta as buttonGroup } from './components/flex-button-group/meta'
 import { meta as card } from './components/flex-card/meta'
+import { meta as changeIndicator } from './components/flex-change-indicator/meta'
 import { meta as characterCount } from './components/flex-character-count/meta'
 import { meta as checkbox } from './components/flex-checkbox/meta'
 import { meta as collection } from './components/flex-collection/meta'
@@ -60,6 +61,7 @@ const components: ComponentMeta[] = [
   button,
   buttonGroup,
   card,
+  changeIndicator,
   characterCount,
   checkbox,
   collection,
