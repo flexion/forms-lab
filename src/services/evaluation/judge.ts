@@ -1,5 +1,5 @@
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
-import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers'
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
 import { buildJudgePrompt } from './judge-prompt'
 import { type JudgeResponse, judgeResponseSchema } from './judge-schemas'
@@ -13,12 +13,8 @@ export interface FieldJudge {
 }
 
 export function createBedrockFieldJudge(model: string): FieldJudge {
-  const bedrockProfile = process.env.AWS_BEDROCK_PROFILE
-  const credentialProvider = bedrockProfile
-    ? fromIni({ profile: bedrockProfile })
-    : fromNodeProviderChain()
   const bedrock = createAmazonBedrock({
-    credentialProvider,
+    credentialProvider: fromNodeProviderChain(),
     region: process.env.AWS_BEDROCK_REGION ?? process.env.AWS_REGION,
   })
 

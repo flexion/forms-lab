@@ -1,5 +1,5 @@
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
-import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers'
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
 import type { ExtractionOptions, ExtractionResult } from '../types/models'
 import { extractionResponseSchema, formSpecSchema } from './extraction-schemas'
@@ -57,14 +57,8 @@ function parseJsonResponse<T>(
 }
 
 export function createBedrockPdfExtractor(): PdfExtractor {
-  // Use AWS SSO profile if configured, otherwise fall back to default chain
-  // (env vars, instance profile, etc.)
-  const bedrockProfile = process.env.AWS_BEDROCK_PROFILE
-  const credentialProvider = bedrockProfile
-    ? fromIni({ profile: bedrockProfile })
-    : fromNodeProviderChain()
   const bedrock = createAmazonBedrock({
-    credentialProvider,
+    credentialProvider: fromNodeProviderChain(),
     region: process.env.AWS_BEDROCK_REGION ?? process.env.AWS_REGION,
   })
 

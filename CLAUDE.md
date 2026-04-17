@@ -52,11 +52,6 @@ bun run cli webhook setup       # GitHub webhook configuration guide
 
 # Manual deployment
 bun run cli deploy homepage     # Update homepage service (dashboard)
-
-# Bedrock credentials (cross-account SSO)
-bun run cli bedrock-credentials login   # Login to Flexion LLM AWS SSO
-bun run cli bedrock-credentials push    # Copy SSO token to EC2 server
-bun run cli bedrock-credentials status  # Check if credentials are valid
 ```
 
 ### Deployment Architecture
