@@ -41,7 +41,7 @@ Single EC2 instance with Caddy reverse proxy. Branch-per-subpath deployment: eac
 ## Data Flow
 
 1. Maya uploads PDF → LLM extracts DataCollectionSpec + default FormSpec
-2. Maya shapes FormSpec (page flow, delivery modes) via authoring UI
+2. Maya shapes FormSpec via LLM-assisted command-based editor; each accepted batch executes atomically, produces a git commit, and is recorded in a structured shaping log
 3. Maya reviews changes via semantic diff, approves to publish
 4. Carlos fills published form → Submission captured against spec version
 5. Maya downloads completed PDF with submission data mapped to template

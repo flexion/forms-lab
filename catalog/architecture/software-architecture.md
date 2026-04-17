@@ -84,6 +84,7 @@ Core domain services. Each service directory has a `types.ts` (P3) and one or mo
 - **`data-collection/`** — The core domain model: what data a form collects. `DataCollectionSpec`, `DataRequirement`, field types, validation rules, conditions.
 - **`deployment/`** — GitHub API client and deployment metadata (branch state, commit info, PR status).
 - **`forms/`** — Form resolution, validation, navigation, sessions, and submission. `FormSpec`, `ResolvedForm`, `FormSession`.
+- **`forms/shaping/`** — LLM-assisted form shaping. Command vocabulary (`commands.ts`), atomic batch executor (`executor.ts`), humanizer (`humanize.ts`), client-safe projector (`projector.ts`), AI SDK tool registry (`tools.ts`), Bedrock-backed shaper (`bedrock-shaper.ts`). Each accepted batch produces one git commit plus a structured entry in `forms/<slug>/shaping-log.json`. See the [command-based shaping decision](../decisions/architecture/command-based-shaping.md).
 - **`ingestion/`** — PDF → structured spec extraction pipeline. Uses Bedrock (Claude) to parse PDFs into `DataCollectionSpec`s.
 - **`notifications/`** — Notification event types and Slack client used by the deploy pipeline.
 - **`storage.ts`** — SQLite stores: `ProjectStore` (project index), `CacheStore` (LLM extraction cache).
@@ -126,7 +127,7 @@ Neither choice is wrong. What matters is that the choice is explicit. Drifting i
 
 **Current state:**
 
-- **Isolated:** USWDS (design-system only), Bedrock (`services/ingestion/` only), `bun:sqlite` (`services/storage.ts` and `services/user-store.ts` only), git CLI (`services/form-project-repo.ts` only), `markdown-it` (`services/content/markdown.ts` only)
+- **Isolated:** USWDS (design-system only), Bedrock (`services/ingestion/` and `services/forms/shaping/` only), AI SDK tool-use (`services/forms/shaping/` only), `bun:sqlite` (`services/storage.ts` and `services/user-store.ts` only), git CLI (`services/form-project-repo.ts` only), `markdown-it` (`services/content/markdown.ts` only)
 - **Embraced:** `hono/jsx` (design-system components), Hono routing (entrypoints), Bun (runtime)
 
 When adding a new dependency, note the choice in the commit or ADR that introduces it. Future axes of change are cheaper to plan for when they're visible.
@@ -146,5 +147,9 @@ The principles are not sacred. They are tracked. An ADR amendment is a legitimat
 - [Architecture Principles ADR](../decisions/architecture/architecture-principles.md) — provenance for P1–P4
 - [Hono on Bun decision](../decisions/architecture/hono-on-bun.md)
 - [Git as persistence decision](../decisions/architecture/git-as-persistence.md)
+- [Command-based form shaping](../decisions/architecture/command-based-shaping.md)
+- [LLM tool-use as validation boundary](../decisions/architecture/llm-tool-use-as-validation-boundary.md)
+- [Coordinator custom elements](../decisions/architecture/coordinator-custom-elements.md)
+- [Unified staged buffer](../decisions/architecture/unified-staged-buffer.md)
 - [Data model](data-model.md) — domain types in detail
 - [System overview](system-overview.md) — infrastructure topology

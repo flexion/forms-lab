@@ -46,10 +46,28 @@ Located in `projects/<project-slug>/`:
 - `source.pdf` — Original uploaded PDF
 - Additional FormSpecs and assets as needed
 
+## Shaping Commands
+
+Edits to a `DataCollectionSpec` or `FormSpec` are expressed as a sequence of **commands** — a discriminated union of domain operations. Commands are the canonical representation of "what changed", produced both by LLM-assisted editing (tool-use mode) and by manual editor actions.
+
+- **Page operations** — reorder, swap, move, add, remove, rename, split, merge, set delivery mode
+- **Group operations** — move, rename, add, remove, split, merge
+- **Field operations** — move, reorder, relabel, set required, set help text, set control, set condition, add, remove
+
+A batch of commands executes atomically: validation happens per-command, and any failure rolls the whole batch back. Each accepted batch produces one git commit plus an entry in `forms/<slug>/shaping-log.json` capturing the originating intent, the command sequence, and the resulting commit SHA.
+
+See the [command-based shaping decision](../decisions/architecture/command-based-shaping.md) for rationale.
+
 ## Type Definitions
 
-All types are defined in `src/types/models.ts`.
+Each service owns its domain types (architecture principle P3):
+
+- `DataCollectionSpec`, `DataRequirement`, and field/validation types → [`src/services/data-collection/types.ts`](https://github.com/flexion/forms-lab/tree/main/src/services/data-collection/types.ts)
+- `FormSpec`, `FormPage`, `ResolvedForm`, `FormSession` → [`src/services/forms/types.ts`](https://github.com/flexion/forms-lab/tree/main/src/services/forms/types.ts)
+- Shaping commands (discriminated union + Zod schemas) → [`src/services/forms/shaping/commands.ts`](https://github.com/flexion/forms-lab/tree/main/src/services/forms/shaping/commands.ts)
+- Ingestion and extraction types → [`src/services/ingestion/types.ts`](https://github.com/flexion/forms-lab/tree/main/src/services/ingestion/types.ts)
 
 ## Sources
 
 - [Design spec: Data Model](https://github.com/flexion/llm-class-2026-winter-cohort/blob/main/notes/final-project/2026-04-07-design.md)
+- [Command-based form shaping](../decisions/architecture/command-based-shaping.md)
