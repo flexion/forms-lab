@@ -140,50 +140,52 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
             )}
           </main>
         )}
-        <Footer variant="slim">
-          <FooterPrimary>
-            <FooterNav>
-              <ul>
-                <li>
-                  <a class="flex-footer__primary-link" href={resolveUrl('/')}>
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="flex-footer__primary-link"
-                    href={resolveUrl('/catalog')}
-                  >
-                    Catalog
-                  </a>
-                </li>
-                {props.user && (
+        {props.contentWidth !== 'full' && (
+          <Footer variant="slim">
+            <FooterPrimary>
+              <FooterNav>
+                <ul>
+                  <li>
+                    <a class="flex-footer__primary-link" href={resolveUrl('/')}>
+                      Home
+                    </a>
+                  </li>
                   <li>
                     <a
                       class="flex-footer__primary-link"
-                      href={resolveUrl(`/${props.user.login}`)}
+                      href={resolveUrl('/catalog')}
                     >
-                      Projects
+                      Catalog
                     </a>
                   </li>
-                )}
-                <li>
-                  <a
-                    class="flex-footer__primary-link"
-                    href={resolveUrl('/catalog/design-system')}
-                  >
-                    Design System
-                  </a>
-                </li>
-              </ul>
-            </FooterNav>
-          </FooterPrimary>
-          <FooterSecondary>
-            <p style="font-size: var(--flex-text-sm); color: var(--flex-color-text-muted);">
-              Forms Lab — LLM-Assisted Forms Platform
-            </p>
-          </FooterSecondary>
-        </Footer>
+                  {props.user && (
+                    <li>
+                      <a
+                        class="flex-footer__primary-link"
+                        href={resolveUrl(`/${props.user.login}`)}
+                      >
+                        Projects
+                      </a>
+                    </li>
+                  )}
+                  <li>
+                    <a
+                      class="flex-footer__primary-link"
+                      href={resolveUrl('/catalog/design-system')}
+                    >
+                      Design System
+                    </a>
+                  </li>
+                </ul>
+              </FooterNav>
+            </FooterPrimary>
+            <FooterSecondary>
+              <p style="font-size: var(--flex-text-sm); color: var(--flex-color-text-muted);">
+                Forms Lab — LLM-Assisted Forms Platform
+              </p>
+            </FooterSecondary>
+          </Footer>
+        )}
         <script
           type="module"
           src={resolveUrl('/static/components.js')}
