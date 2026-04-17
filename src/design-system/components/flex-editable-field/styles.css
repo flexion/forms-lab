@@ -1,27 +1,79 @@
 @layer block {
   flex-editable-field {
     display: block;
-    border: 1px solid var(--flex-color-border);
+    position: relative;
+    padding: var(--flex-space-xs) var(--flex-space-sm);
     border-radius: var(--flex-radius-sm);
-    padding: var(--flex-space-xs);
+    border: 1px solid transparent;
   }
-  .editable-field__row {
+  flex-editable-field:hover,
+  flex-editable-field:focus-within {
+    border-color: var(--flex-color-border);
+    background: var(--flex-color-bg-subtle);
+  }
+  .editable-field__preview {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: var(--flex-space-2xs);
-    flex-wrap: wrap;
+  }
+  .editable-field__label-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: var(--flex-space-xs);
+  }
+  .editable-field__label {
+    font-weight: 600;
+    cursor: text;
+    border-radius: var(--flex-radius-sm);
+    padding-inline: var(--flex-space-2xs);
+  }
+  .editable-field__label:hover,
+  .editable-field__label:focus-visible {
+    outline: 2px solid var(--flex-color-accent);
+  }
+  .editable-field__required {
+    color: var(--flex-color-error);
+    font-weight: 700;
+  }
+  .editable-field__optional {
+    color: var(--flex-color-text-muted);
+    font-size: var(--flex-text-xs);
   }
   .editable-field__label-input {
-    flex: 1;
-    min-inline-size: var(--flex-content-narrow);
+    font-weight: 600;
   }
-  /* stylelint-disable-next-line declaration-property-value-allowed-list -- 7rem is a narrow fixed width for a type selector; no matching flex-content-* or flex-control-* token exists at this scale */
-  .editable-field__type {
-    min-inline-size: 7rem;
+  .editable-field__control {
+    max-inline-size: var(--flex-content-narrow);
+    pointer-events: none;
+  }
+  .editable-field__boolean {
+    display: inline-flex;
+    gap: var(--flex-space-xs);
+    align-items: center;
+  }
+  .editable-field__toolbar {
+    position: absolute;
+    inset-block-start: var(--flex-space-xs);
+    inset-inline-end: var(--flex-space-xs);
+    display: flex;
+    gap: var(--flex-space-2xs);
+    opacity: 0;
+    transition: opacity 120ms ease;
+    background: var(--flex-color-surface);
+    padding: var(--flex-space-2xs);
+    border-radius: var(--flex-radius-sm);
+    box-shadow: var(--flex-shadow-sm);
+  }
+  flex-editable-field:hover .editable-field__toolbar,
+  flex-editable-field:focus-within .editable-field__toolbar {
+    opacity: 1;
   }
   .editable-field__chip[aria-pressed='true'] {
     background: var(--flex-color-accent);
     border-color: var(--flex-color-accent);
+  }
+  .editable-field__type {
+    font-size: var(--flex-text-xs);
   }
   .editable-field__more {
     margin-block-start: var(--flex-space-xs);

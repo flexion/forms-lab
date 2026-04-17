@@ -17,16 +17,27 @@ const FIELD_TYPES = [
 const SENSITIVITIES = ['low', 'medium', 'high', 'pii'] as const
 const CONTROLS = ['radio', 'select', 'checkbox', 'toggle'] as const
 
+const INPUT_TYPE_FOR_FIELD: Record<(typeof FIELD_TYPES)[number], string> = {
+  text: 'text',
+  email: 'email',
+  phone: 'tel',
+  url: 'url',
+  number: 'number',
+  currency: 'number',
+  date: 'date',
+  boolean: 'checkbox',
+  choice: 'text',
+  longText: 'text',
+}
+
 class FlexEditableField extends HTMLElement {
   private field: DataRequirement | null = null
-  private groupId = ''
   private moreOpen = false
-  private debounceTimer: ReturnType<typeof setTimeout> | null = null
+  private editingLabel = false
 
-  update(field: DataRequirement, groupId: string): void {
+  update(field: DataRequirement, _groupId: string): void {
     this.field = field
-    this.groupId = groupId
-    this.render()
+    if (!this.editingLabel) this.render()
   }
 
   private dispatch(command: Command, explanation: string) {
@@ -43,23 +54,55 @@ class FlexEditableField extends HTMLElement {
     const f = this.field
     if (!f) return
     const required = f.required === true
-    const typeOptions = FIELD_TYPES.map(
-      (t) =>
-        `<option value="${t}" ${t === f.fieldType ? 'selected' : ''}>${t}</option>`,
-    ).join('')
+    const inputType = INPUT_TYPE_FOR_FIELD[f.fieldType] ?? 'text'
+
     this.innerHTML = `
-      <div class="editable-field__row">
-        <input type="text" class="editable-field__label-input flex-input" value="${escapeHtml(f.label)}" aria-label="Field label" />
-        <select class="editable-field__type flex-select" aria-label="Field type">${typeOptions}</select>
-        <button type="button" class="flex-button editable-field__chip" data-variant="ghost" data-action="toggle-required" aria-pressed="${required}">${required ? 'Required' : 'Optional'}</button>
-        <button type="button" class="flex-button" data-variant="ghost" data-action="toggle-more" aria-expanded="${this.moreOpen}">&hellip;more</button>
-        <button type="button" class="flex-button" data-variant="ghost" data-action="remove-field" aria-label="Remove field">&times;</button>
+      <div class="editable-field__preview">
+        <div class="editable-field__label-wrap">
+          <span class="editable-field__label" tabindex="0" data-action="edit-label" title="Click to rename">${escapeHtml(f.label)}</span>
+          ${required ? '<span class="editable-field__required" aria-hidden="true">*</span>' : '<span class="editable-field__optional">(optional)</span>'}
+        </div>
+        ${this.renderControl(f, inputType)}
+      </div>
+      <div class="editable-field__toolbar" role="toolbar" aria-label="Field actions">
+        ${this.renderTypeSelect(f)}
+        <button type="button" class="flex-button editable-field__chip" data-variant="ghost" data-action="toggle-required" aria-pressed="${required}" title="Toggle required">${required ? 'Required' : 'Optional'}</button>
+        <button type="button" class="flex-button" data-variant="ghost" data-action="toggle-more" aria-expanded="${this.moreOpen}" title="More settings">&hellip;</button>
+        <button type="button" class="flex-button" data-variant="ghost" data-action="remove-field" aria-label="Remove field" title="Delete field">&times;</button>
       </div>
       <div class="editable-field__more" ${this.moreOpen ? '' : 'hidden'} data-more>
         ${this.renderMore(f)}
       </div>
     `
     this.bind()
+  }
+
+  private renderControl(f: DataRequirement, inputType: string): string {
+    if (f.fieldType === 'longText') {
+      return `<textarea class="flex-textarea editable-field__control" rows="2" readonly tabindex="-1" aria-hidden="true"></textarea>`
+    }
+    if (f.fieldType === 'boolean') {
+      return `<label class="editable-field__boolean"><input type="checkbox" disabled tabindex="-1" />${escapeHtml(f.label)}</label>`
+    }
+    if (
+      f.fieldType === 'choice' &&
+      Array.isArray(f.choices) &&
+      f.choices.length > 0
+    ) {
+      const options = f.choices
+        .map((c) => `<option>${escapeHtml(c)}</option>`)
+        .join('')
+      return `<select class="flex-select editable-field__control" disabled tabindex="-1" aria-hidden="true"><option>&mdash;</option>${options}</select>`
+    }
+    return `<input type="${inputType}" class="flex-input editable-field__control" readonly tabindex="-1" aria-hidden="true" />`
+  }
+
+  private renderTypeSelect(f: DataRequirement): string {
+    const options = FIELD_TYPES.map(
+      (t) =>
+        `<option value="${t}" ${t === f.fieldType ? 'selected' : ''}>${t}</option>`,
+    ).join('')
+    return `<select class="editable-field__type flex-select" aria-label="Field type" title="Field type">${options}</select>`
   }
 
   private renderMore(f: DataRequirement): string {
@@ -71,7 +114,7 @@ class FlexEditableField extends HTMLElement {
         ${SENSITIVITIES.map((s) => `<option value="${s}" ${s === sensitivity ? 'selected' : ''}>${s}</option>`).join('')}
       </select>
       <label>Control</label>
-      <select class="editable-field__control flex-select">
+      <select class="editable-field__control-widget flex-select">
         <option value="">(default)</option>
         ${CONTROLS.map((c) => `<option value="${c}" ${c === control ? 'selected' : ''}>${c}</option>`).join('')}
       </select>
@@ -93,19 +136,13 @@ class FlexEditableField extends HTMLElement {
   }
 
   private bind() {
-    const labelInput = this.querySelector<HTMLInputElement>(
-      '.editable-field__label-input',
-    )
-    labelInput?.addEventListener('input', () => {
-      if (this.debounceTimer) clearTimeout(this.debounceTimer)
-      this.debounceTimer = setTimeout(() => {
-        if (!this.field) return
-        if (labelInput.value === this.field.label) return
-        this.dispatch(
-          { kind: 'relabelField', id: this.field.id, label: labelInput.value },
-          `Relabel "${this.field.label}" to "${labelInput.value}"`,
-        )
-      }, 400)
+    const labelEl = this.querySelector<HTMLElement>('.editable-field__label')
+    labelEl?.addEventListener('click', () => this.startEditingLabel())
+    labelEl?.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key === 'Enter') {
+        e.preventDefault()
+        this.startEditingLabel()
+      }
     })
 
     const typeSel = this.querySelector<HTMLSelectElement>(
@@ -173,7 +210,7 @@ class FlexEditableField extends HTMLElement {
     })
 
     const ctrlSel = this.querySelector<HTMLSelectElement>(
-      '.editable-field__control',
+      '.editable-field__control-widget',
     )
     ctrlSel?.addEventListener('change', () => {
       if (!this.field || !ctrlSel.value) return
@@ -242,6 +279,49 @@ class FlexEditableField extends HTMLElement {
         )
       },
     )
+  }
+
+  private startEditingLabel() {
+    if (this.editingLabel || !this.field) return
+    const labelEl = this.querySelector<HTMLElement>('.editable-field__label')
+    if (!labelEl) return
+    this.editingLabel = true
+    const currentLabel = this.field.label
+    const input = document.createElement('input')
+    input.type = 'text'
+    input.className = 'editable-field__label-input flex-input'
+    input.value = currentLabel
+    input.setAttribute('aria-label', 'Field label')
+    labelEl.replaceWith(input)
+    input.focus()
+    input.select()
+
+    let cancelled = false
+    const finish = () => {
+      if (!this.editingLabel) return
+      this.editingLabel = false
+      const newValue = input.value.trim()
+      if (!cancelled && newValue && newValue !== currentLabel && this.field) {
+        this.dispatch(
+          { kind: 'relabelField', id: this.field.id, label: newValue },
+          `Relabel "${currentLabel}" to "${newValue}"`,
+        )
+      } else {
+        this.render()
+      }
+    }
+    input.addEventListener('blur', finish)
+    input.addEventListener('keydown', (e) => {
+      const key = (e as KeyboardEvent).key
+      if (key === 'Enter') {
+        e.preventDefault()
+        input.blur()
+      } else if (key === 'Escape') {
+        e.preventDefault()
+        cancelled = true
+        input.blur()
+      }
+    })
   }
 }
 

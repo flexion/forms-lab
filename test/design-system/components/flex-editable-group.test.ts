@@ -20,17 +20,18 @@ describe('flex-editable-group', () => {
     document.body.innerHTML = ''
   })
 
-  it('renders the group title and a +field button', () => {
+  it('renders the group title as text and a +field button', () => {
     const el = document.createElement('flex-editable-group') as any
     document.body.appendChild(el)
     el.update(GROUP)
-    expect(
-      el.querySelector('.editable-group__title-input')!.getAttribute('value'),
-    ).toBe('Personal')
+    const title = el.querySelector('.editable-group__title')
+    expect(title).not.toBeNull()
+    expect(title.textContent).toBe('Personal')
+    expect(el.querySelector('.editable-group__title-input')).toBeNull()
     expect(el.querySelector('[data-action="add-field"]')).not.toBeNull()
   })
 
-  it('emits renameGroup on title change', () => {
+  it('enters edit mode on title click and commits renameGroup on blur', () => {
     const el = document.createElement('flex-editable-group') as any
     document.body.appendChild(el)
     el.update(GROUP)
@@ -38,11 +39,13 @@ describe('flex-editable-group', () => {
     el.addEventListener('formeditor:stage-command', (e: any) => {
       staged = e.detail
     })
+    ;(el.querySelector('.editable-group__title') as HTMLElement).click()
     const input = el.querySelector(
       '.editable-group__title-input',
     ) as HTMLInputElement
+    expect(input).not.toBeNull()
     input.value = 'Identity'
-    input.dispatchEvent(new Event('change', { bubbles: true }))
+    input.dispatchEvent(new Event('blur', { bubbles: true }))
     expect(staged.command).toEqual({
       kind: 'renameGroup',
       id: 'g1',

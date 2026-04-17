@@ -5,6 +5,7 @@ import type { ProjectStateClient } from '../flex-form-editor/protocol'
 class FlexEditablePage extends HTMLElement {
   private state: ProjectStateClient | null = null
   private pageIndex = 0
+  private editingTitle = false
 
   connectedCallback() {
     const root = this.closest('flex-form-editor')
@@ -13,7 +14,7 @@ class FlexEditablePage extends HTMLElement {
         const next = (e as CustomEvent).detail.state as ProjectStateClient
         this.state = next
         if (this.pageIndex >= next.formSpec.pages.length) this.pageIndex = 0
-        this.render()
+        if (!this.editingTitle) this.render()
       })
     }
   }
@@ -21,7 +22,17 @@ class FlexEditablePage extends HTMLElement {
   update(state: ProjectStateClient, pageIndex: number): void {
     this.state = state
     this.pageIndex = pageIndex
-    this.render()
+    if (!this.editingTitle) this.render()
+  }
+
+  private dispatch(command: Command, explanation: string) {
+    this.dispatchEvent(
+      new CustomEvent('formeditor:stage-command', {
+        detail: { command, explanation },
+        bubbles: true,
+        composed: true,
+      }),
+    )
   }
 
   private render() {
@@ -64,18 +75,16 @@ class FlexEditablePage extends HTMLElement {
       <div class="editable-page">
         <div class="editable-page__tabs" role="tablist">${tabs}</div>
         <header class="editable-page__header">
-          <input
-            type="text"
-            class="editable-page__title-input flex-input"
-            value="${escapeHtml(current.title)}"
-            aria-label="Page title"
-          />
-          <select class="editable-page__delivery flex-select" aria-label="Delivery mode">
-            <option value="static" ${deliveryMode === 'static' ? 'selected' : ''}>Static</option>
-            <option value="conversational" ${deliveryMode === 'conversational' ? 'selected' : ''}>Conversational</option>
-            <option value="hybrid" ${deliveryMode === 'hybrid' ? 'selected' : ''}>Hybrid</option>
-          </select>
-          <div class="editable-page__page-actions">
+          <h2 class="editable-page__title" tabindex="0" data-action="edit-title" title="Click to rename page">${escapeHtml(current.title)}</h2>
+          <div class="editable-page__toolbar" role="toolbar" aria-label="Page actions">
+            <label class="editable-page__delivery-label">
+              Delivery
+              <select class="editable-page__delivery flex-select" aria-label="Delivery mode">
+                <option value="static" ${deliveryMode === 'static' ? 'selected' : ''}>Static</option>
+                <option value="conversational" ${deliveryMode === 'conversational' ? 'selected' : ''}>Conversational</option>
+                <option value="hybrid" ${deliveryMode === 'hybrid' ? 'selected' : ''}>Hybrid</option>
+              </select>
+            </label>
             ${canMoveUp ? `<button type="button" class="flex-button" data-variant="ghost" data-action="page-up" aria-label="Move page up">&uarr;</button>` : ''}
             ${canMoveDown ? `<button type="button" class="flex-button" data-variant="ghost" data-action="page-down" aria-label="Move page down">&darr;</button>` : ''}
             <button type="button" class="flex-button" data-variant="ghost" data-action="add-page">+ Page</button>
@@ -108,32 +117,20 @@ class FlexEditablePage extends HTMLElement {
       })
     }
 
-    const dispatch = (command: Command, explanation: string) => {
-      this.dispatchEvent(
-        new CustomEvent('formeditor:stage-command', {
-          detail: { command, explanation },
-          bubbles: true,
-          composed: true,
-        }),
-      )
-    }
-
-    const titleInput = this.querySelector<HTMLInputElement>(
-      '.editable-page__title-input',
-    )
-    titleInput?.addEventListener('change', () => {
-      if (titleInput.value === current.title) return
-      dispatch(
-        { kind: 'renamePage', id: current.id, title: titleInput.value },
-        `Rename page to "${titleInput.value}"`,
-      )
+    const titleEl = this.querySelector<HTMLElement>('.editable-page__title')
+    titleEl?.addEventListener('click', () => this.startEditingTitle())
+    titleEl?.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key === 'Enter') {
+        e.preventDefault()
+        this.startEditingTitle()
+      }
     })
 
     const deliverySelect = this.querySelector<HTMLSelectElement>(
       '.editable-page__delivery',
     )
     deliverySelect?.addEventListener('change', () => {
-      dispatch(
+      this.dispatch(
         {
           kind: 'setDeliveryMode',
           pageId: current.id,
@@ -143,44 +140,50 @@ class FlexEditablePage extends HTMLElement {
       )
     })
 
-    const addBtn = this.querySelector('[data-action="add-page"]')
-    addBtn?.addEventListener('click', () =>
-      dispatch(
-        { kind: 'addPage', afterPageId: current.id, title: 'New page' },
-        'Add page',
-      ),
+    this.querySelector('[data-action="add-page"]')?.addEventListener(
+      'click',
+      () =>
+        this.dispatch(
+          { kind: 'addPage', afterPageId: current.id, title: 'New page' },
+          'Add page',
+        ),
     )
 
-    const removeBtn = this.querySelector('[data-action="remove-page"]')
-    removeBtn?.addEventListener('click', () =>
-      dispatch(
-        { kind: 'removePage', id: current.id },
-        `Remove page "${current.title}"`,
-      ),
+    this.querySelector('[data-action="remove-page"]')?.addEventListener(
+      'click',
+      () =>
+        this.dispatch(
+          { kind: 'removePage', id: current.id },
+          `Remove page "${current.title}"`,
+        ),
     )
 
-    const upBtn = this.querySelector('[data-action="page-up"]')
-    upBtn?.addEventListener('click', () => {
-      if (prevPageId)
-        dispatch(
-          { kind: 'swapPages', a: current.id, b: prevPageId },
-          'Move page up',
-        )
-    })
+    this.querySelector('[data-action="page-up"]')?.addEventListener(
+      'click',
+      () => {
+        if (prevPageId)
+          this.dispatch(
+            { kind: 'swapPages', a: current.id, b: prevPageId },
+            'Move page up',
+          )
+      },
+    )
 
-    const downBtn = this.querySelector('[data-action="page-down"]')
-    downBtn?.addEventListener('click', () => {
-      if (nextPageId)
-        dispatch(
-          { kind: 'swapPages', a: current.id, b: nextPageId },
-          'Move page down',
-        )
-    })
+    this.querySelector('[data-action="page-down"]')?.addEventListener(
+      'click',
+      () => {
+        if (nextPageId)
+          this.dispatch(
+            { kind: 'swapPages', a: current.id, b: nextPageId },
+            'Move page down',
+          )
+      },
+    )
 
     this.querySelector('[data-action="add-group"]')?.addEventListener(
       'click',
       () =>
-        dispatch(
+        this.dispatch(
           { kind: 'addGroup', pageId: current.id, title: 'New group' },
           'Add group',
         ),
@@ -191,6 +194,51 @@ class FlexEditablePage extends HTMLElement {
       const c = child as HTMLElement & { update?: (group: unknown) => void }
       if (g && typeof c.update === 'function') c.update(g)
     }
+  }
+
+  private startEditingTitle() {
+    if (this.editingTitle || !this.state) return
+    const pages = this.state.formSpec.pages
+    const current = pages[this.pageIndex] as FormPage | undefined
+    if (!current) return
+    const titleEl = this.querySelector<HTMLElement>('.editable-page__title')
+    if (!titleEl) return
+    this.editingTitle = true
+    const input = document.createElement('input')
+    input.type = 'text'
+    input.className = 'editable-page__title-input flex-input'
+    input.value = current.title
+    input.setAttribute('aria-label', 'Page title')
+    titleEl.replaceWith(input)
+    input.focus()
+    input.select()
+
+    let cancelled = false
+    const finish = () => {
+      if (!this.editingTitle) return
+      this.editingTitle = false
+      const next = input.value.trim()
+      if (!cancelled && next && next !== current.title) {
+        this.dispatch(
+          { kind: 'renamePage', id: current.id, title: next },
+          `Rename page to "${next}"`,
+        )
+      } else {
+        this.render()
+      }
+    }
+    input.addEventListener('blur', finish)
+    input.addEventListener('keydown', (e) => {
+      const key = (e as KeyboardEvent).key
+      if (key === 'Enter') {
+        e.preventDefault()
+        input.blur()
+      } else if (key === 'Escape') {
+        e.preventDefault()
+        cancelled = true
+        input.blur()
+      }
+    })
   }
 }
 

@@ -7,7 +7,8 @@
     border: 1px solid var(--flex-color-border);
     border-radius: var(--flex-radius-md);
     padding: var(--flex-space-sm);
-    max-inline-size: var(--flex-content-narrow);
+    min-inline-size: 22rem;
+    max-inline-size: min(32rem, 90vw);
   }
   .staged-changes__title {
     font-size: var(--flex-text-sm);

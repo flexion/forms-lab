@@ -11,41 +11,52 @@ const FIELD = {
   label: 'Email',
   fieldType: 'email',
   required: false,
+  // biome-ignore lint/suspicious/noExplicitAny: test fixture
 } as any
 
-describe('flex-editable-field chips', () => {
+describe('flex-editable-field', () => {
   beforeEach(() => {
     document.body.innerHTML = ''
   })
 
   afterAll(() => GlobalRegistrator.unregister())
 
-  it('renders label, type, required, delete chips', () => {
+  it('renders the label as text in preview mode', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: test access to update()
     const el = document.createElement('flex-editable-field') as any
     document.body.appendChild(el)
     el.update(FIELD, 'g1')
-    expect(
-      el.querySelector('.editable-field__label-input')!.getAttribute('value'),
-    ).toBe('Email')
+    const labelSpan = el.querySelector('.editable-field__label')
+    expect(labelSpan).not.toBeNull()
+    expect(labelSpan.textContent).toBe('Email')
+    // No input in preview mode
+    expect(el.querySelector('.editable-field__label-input')).toBeNull()
+    // Toolbar and expander trigger still present
     expect(el.querySelector('.editable-field__type')).not.toBeNull()
     expect(el.querySelector('[data-action="toggle-required"]')).not.toBeNull()
     expect(el.querySelector('[data-action="remove-field"]')).not.toBeNull()
+    expect(el.querySelector('[data-action="toggle-more"]')).not.toBeNull()
   })
 
-  it('emits relabelField on label change after debounce', async () => {
+  it('enters edit mode on label click; commits relabelField on blur', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: test access to update()
     const el = document.createElement('flex-editable-field') as any
     document.body.appendChild(el)
     el.update(FIELD, 'g1')
+    // biome-ignore lint/suspicious/noExplicitAny: test-scoped staged capture
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => {
-      staged = e.detail
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
     })
+
+    ;(el.querySelector('.editable-field__label') as HTMLElement).click()
     const input = el.querySelector(
       '.editable-field__label-input',
-    ) as HTMLInputElement
-    input.value = 'Email address'
-    input.dispatchEvent(new Event('input', { bubbles: true }))
-    await new Promise((r) => setTimeout(r, 450))
+    ) as HTMLInputElement | null
+    expect(input).not.toBeNull()
+    input!.value = 'Email address'
+    input!.dispatchEvent(new Event('blur', { bubbles: true }))
+
     expect(staged.command).toEqual({
       kind: 'relabelField',
       id: 'f1',
@@ -53,13 +64,42 @@ describe('flex-editable-field chips', () => {
     })
   })
 
-  it('emits setRequired on toggle', () => {
+  it('Escape cancels label edit without staging', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: test access to update()
     const el = document.createElement('flex-editable-field') as any
     document.body.appendChild(el)
     el.update(FIELD, 'g1')
+    // biome-ignore lint/suspicious/noExplicitAny: test-scoped staged capture
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => {
-      staged = e.detail
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
+    })
+
+    ;(el.querySelector('.editable-field__label') as HTMLElement).click()
+    const input = el.querySelector(
+      '.editable-field__label-input',
+    ) as HTMLInputElement | null
+    input!.value = 'Email address (draft)'
+    input!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+    )
+    input!.dispatchEvent(new Event('blur', { bubbles: true }))
+
+    expect(staged).toBeNull()
+    expect(el.querySelector('.editable-field__label')!.textContent).toBe(
+      'Email',
+    )
+  })
+
+  it('emits setRequired on toggle', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: test access to update()
+    const el = document.createElement('flex-editable-field') as any
+    document.body.appendChild(el)
+    el.update(FIELD, 'g1')
+    // biome-ignore lint/suspicious/noExplicitAny: test-scoped staged capture
+    let staged: any = null
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
     })
     el.querySelector('[data-action="toggle-required"]').dispatchEvent(
       new MouseEvent('click', { bubbles: true }),
@@ -72,12 +112,14 @@ describe('flex-editable-field chips', () => {
   })
 
   it('emits removeField on delete', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: test access to update()
     const el = document.createElement('flex-editable-field') as any
     document.body.appendChild(el)
     el.update(FIELD, 'g1')
+    // biome-ignore lint/suspicious/noExplicitAny: test-scoped staged capture
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => {
-      staged = e.detail
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
     })
     el.querySelector('[data-action="remove-field"]').dispatchEvent(
       new MouseEvent('click', { bubbles: true }),
@@ -86,12 +128,14 @@ describe('flex-editable-field chips', () => {
   })
 
   it('emits changeFieldType on type select', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: test access to update()
     const el = document.createElement('flex-editable-field') as any
     document.body.appendChild(el)
     el.update(FIELD, 'g1')
+    // biome-ignore lint/suspicious/noExplicitAny: test-scoped staged capture
     let staged: any = null
-    el.addEventListener('formeditor:stage-command', (e: any) => {
-      staged = e.detail
+    el.addEventListener('formeditor:stage-command', (e: Event) => {
+      staged = (e as CustomEvent).detail
     })
     const sel = el.querySelector('.editable-field__type') as HTMLSelectElement
     sel.value = 'phone'

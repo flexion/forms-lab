@@ -46,9 +46,8 @@ describe('flex-editable-page', () => {
     const tabs = el.querySelectorAll('.editable-page__tab')
     expect(tabs.length).toBe(2)
     expect(tabs[0].getAttribute('aria-selected')).toBe('true')
-    expect(el.querySelector('.editable-page__title-input')!.value).toContain(
-      'Page A',
-    )
+    expect(el.querySelector('.editable-page__title').textContent).toBe('Page A')
+    expect(el.querySelector('.editable-page__title-input')).toBeNull()
   })
 
   it('emits select event on tab click', () => {
@@ -71,7 +70,7 @@ describe('flex-editable-page page actions', () => {
     document.body.innerHTML = ''
   })
 
-  it('emits stage-command renamePage when title is edited', () => {
+  it('enters edit mode on title click and commits renamePage on blur', () => {
     const el = document.createElement('flex-editable-page') as any
     document.body.appendChild(el)
     el.update(STATE, 0)
@@ -79,11 +78,13 @@ describe('flex-editable-page page actions', () => {
     el.addEventListener('formeditor:stage-command', (e: any) => {
       staged = e.detail
     })
+    ;(el.querySelector('.editable-page__title') as HTMLElement).click()
     const titleInput = el.querySelector(
       '.editable-page__title-input',
     ) as HTMLInputElement
+    expect(titleInput).not.toBeNull()
     titleInput.value = 'Renamed'
-    titleInput.dispatchEvent(new Event('change', { bubbles: true }))
+    titleInput.dispatchEvent(new Event('blur', { bubbles: true }))
     expect(staged.command).toEqual({
       kind: 'renamePage',
       id: 'p1',

@@ -22,13 +22,47 @@
   }
   .editable-page__header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: var(--flex-space-sm);
     margin-block-end: var(--flex-space-md);
   }
   .editable-page__title {
+    flex: 1;
     font-size: var(--flex-text-lg);
     font-weight: 600;
     margin: 0;
+    cursor: text;
+    border-radius: var(--flex-radius-sm);
+    padding-inline: var(--flex-space-2xs);
+  }
+  .editable-page__title:hover,
+  .editable-page__title:focus-visible {
+    outline: 2px solid var(--flex-color-accent);
+  }
+  .editable-page__title-input {
+    flex: 1;
+    font-size: var(--flex-text-lg);
+    font-weight: 600;
+  }
+  .editable-page__toolbar {
+    display: flex;
+    gap: var(--flex-space-2xs);
+    align-items: center;
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+  .editable-page__header:hover .editable-page__toolbar,
+  .editable-page__header:focus-within .editable-page__toolbar {
+    opacity: 1;
+  }
+  .editable-page__delivery-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--flex-space-2xs);
+    font-size: var(--flex-text-xs);
+    color: var(--flex-color-text-muted);
+  }
+  .editable-page__delivery {
+    font-size: var(--flex-text-xs);
   }
 }

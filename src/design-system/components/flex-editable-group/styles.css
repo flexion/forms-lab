@@ -12,9 +12,32 @@
     gap: var(--flex-space-xs);
     margin-block-end: var(--flex-space-sm);
   }
+  .editable-group__title {
+    flex: 1;
+    font-size: var(--flex-text-md);
+    font-weight: 600;
+    margin: 0;
+    cursor: text;
+    border-radius: var(--flex-radius-sm);
+    padding-inline: var(--flex-space-2xs);
+  }
+  .editable-group__title:hover,
+  .editable-group__title:focus-visible {
+    outline: 2px solid var(--flex-color-accent);
+  }
   .editable-group__title-input {
     flex: 1;
     font-weight: 600;
+  }
+  .editable-group__toolbar {
+    display: flex;
+    gap: var(--flex-space-2xs);
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+  flex-editable-group:hover .editable-group__toolbar,
+  flex-editable-group:focus-within .editable-group__toolbar {
+    opacity: 1;
   }
   .editable-group__fields {
     display: flex;
