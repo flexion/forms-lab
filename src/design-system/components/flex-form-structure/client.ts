@@ -2,6 +2,7 @@ import type { ProjectStateClient } from '../flex-form-editor/protocol'
 
 class FlexFormStructure extends HTMLElement {
   private state: ProjectStateClient | null = null
+  private collapsed = false
 
   connectedCallback() {
     const root = this.closest('flex-form-editor')
@@ -20,10 +21,25 @@ class FlexFormStructure extends HTMLElement {
       return
     }
     const state = this.state
-    const pageHtml = state.formSpec.pages
-      .map((page, i) => {
-        const groupCount = page.groups.length
-        return `
+
+    if (this.collapsed) {
+      const miniItems = state.formSpec.pages
+        .map(
+          (page, i) =>
+            `<li><button type="button" data-page-id="${page.id}" class="form-structure__mini-item">${i + 1}</button></li>`,
+        )
+        .join('')
+      this.innerHTML = `
+        <div class="form-structure form-structure--collapsed">
+          <button type="button" class="form-structure__toggle" aria-label="Expand structure panel">&#9654;</button>
+          <ol class="form-structure__mini-list">${miniItems}</ol>
+        </div>
+      `
+    } else {
+      const pageHtml = state.formSpec.pages
+        .map((page, i) => {
+          const groupCount = page.groups.length
+          return `
           <li class="form-structure__page" data-page-id="${page.id}">
             <div class="form-structure__page-header">
               <span class="form-structure__page-title">${i + 1}. ${escapeHtml(page.title)}</span>
@@ -40,18 +56,57 @@ class FlexFormStructure extends HTMLElement {
             </div>
           </li>
         `
-      })
-      .join('')
-    this.innerHTML = `
-      <section class="form-structure">
-        <h2>Structure</h2>
-        <ol class="form-structure__page-list">${pageHtml}</ol>
-      </section>
-    `
+        })
+        .join('')
+      this.innerHTML = `
+        <section class="form-structure">
+          <div class="form-structure__header">
+            <h2>Structure</h2>
+            <button type="button" class="form-structure__toggle" aria-label="Collapse structure panel">&#9664;</button>
+          </div>
+          <ol class="form-structure__page-list">${pageHtml}</ol>
+        </section>
+      `
+    }
+
     this.bindHandlers()
   }
 
   private bindHandlers() {
+    const toggleBtn = this.querySelector<HTMLButtonElement>(
+      '.form-structure__toggle',
+    )
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        this.collapsed = !this.collapsed
+        const editorStructure = this.closest<HTMLElement>('.editor-structure')
+        if (editorStructure) {
+          if (this.collapsed) {
+            editorStructure.dataset.collapsed = ''
+          } else {
+            delete editorStructure.dataset.collapsed
+          }
+        }
+        this.render()
+      })
+    }
+
+    for (const btn of this.querySelectorAll<HTMLButtonElement>(
+      '.form-structure__mini-item',
+    )) {
+      btn.addEventListener('click', () => {
+        const pageId = btn.dataset.pageId
+        if (!pageId) return
+        this.dispatchEvent(
+          new CustomEvent('formeditor:select', {
+            detail: { kind: 'page', id: pageId },
+            bubbles: true,
+            composed: true,
+          }),
+        )
+      })
+    }
+
     for (const select of this.querySelectorAll<HTMLSelectElement>(
       '.form-structure__delivery',
     )) {

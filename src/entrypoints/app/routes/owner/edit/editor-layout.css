@@ -71,6 +71,15 @@
   grid-template-columns: 240px 1fr 0;
 }
 
+/* When structure panel is collapsed, shrink its column to ~48px */
+.editor-layout:has(.editor-structure[data-collapsed]) {
+  grid-template-columns: 48px 1fr 320px;
+}
+
+.editor-layout:has(flex-assistant[data-closed]):has(.editor-structure[data-collapsed]) {
+  grid-template-columns: 48px 1fr 0;
+}
+
 /* "Open assistant" button visibility */
 .editor-breadcrumb__open-assistant {
   display: none;
