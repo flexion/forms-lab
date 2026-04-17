@@ -9,10 +9,25 @@
     margin: 0;
   }
   .editable-group__fieldset--selected {
-    border: 1px solid var(--flex-color-accent);
+    position: relative;
+    border: 2px solid var(--flex-color-accent);
     border-radius: var(--flex-radius-md);
-    padding: var(--flex-space-sm);
+    padding: var(--flex-space-md) var(--flex-space-sm) var(--flex-space-sm);
     background: var(--flex-color-surface);
+    box-shadow: var(--flex-shadow-md), 0 0 0 4px var(--flex-color-bg-subtle);
+  }
+  .editable-group__fieldset--selected::before {
+    content: 'Editing group';
+    position: absolute;
+    inset-block-start: calc(-1 * var(--flex-space-xs));
+    inset-inline-start: var(--flex-space-sm);
+    background: var(--flex-color-accent);
+    color: var(--flex-color-surface);
+    font-size: var(--flex-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 2px var(--flex-space-xs);
+    border-radius: var(--flex-radius-sm);
   }
   .editable-group__legend {
     font-size: var(--flex-text-md);

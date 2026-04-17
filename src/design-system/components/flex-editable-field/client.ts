@@ -18,7 +18,12 @@ const FIELD_TYPES = [
 const SENSITIVITIES = ['low', 'medium', 'high', 'pii'] as const
 const CONTROLS = ['radio', 'select', 'checkbox', 'toggle'] as const
 
-const INPUT_TYPE_FOR_FIELD: Record<(typeof FIELD_TYPES)[number], string> = {
+type FieldType = (typeof FIELD_TYPES)[number]
+type Sensitivity = (typeof SENSITIVITIES)[number]
+type ControlWidget = (typeof CONTROLS)[number]
+type ConditionOp = 'equals' | 'notEquals' | 'contains'
+
+const INPUT_TYPE_FOR_FIELD: Record<FieldType, string> = {
   text: 'text',
   email: 'email',
   phone: 'tel',
@@ -33,6 +38,7 @@ const INPUT_TYPE_FOR_FIELD: Record<(typeof FIELD_TYPES)[number], string> = {
 
 class FlexEditableField extends HTMLElement {
   private field: DataRequirement | null = null
+  private draft: DataRequirement | null = null
   private selected = false
   private moreOpen = false
   private editingLabel = false
@@ -44,9 +50,15 @@ class FlexEditableField extends HTMLElement {
         const sel = (e as CustomEvent).detail
           .selection as SelectionTarget | null
         const wasSelected = this.selected
-        this.selected = sel?.kind === 'field' && sel.id === this.field?.id
-        if (wasSelected !== this.selected) {
-          if (!this.selected) this.moreOpen = false
+        const isSelected = sel?.kind === 'field' && sel.id === this.field?.id
+        if (!wasSelected && isSelected) {
+          this.selected = true
+          this.draft = this.field ? cloneField(this.field) : null
+          this.render()
+        } else if (wasSelected && !isSelected) {
+          this.selected = false
+          this.draft = null
+          this.moreOpen = false
           this.render()
         }
       })
@@ -55,6 +67,9 @@ class FlexEditableField extends HTMLElement {
 
   update(field: DataRequirement, _groupId: string): void {
     this.field = field
+    // If user isn't actively editing, keep the draft synced to the latest
+    // canonical data; if they are, leave their in-flight edits alone.
+    if (!this.selected) this.draft = null
     if (!this.editingLabel) this.render()
   }
 
@@ -71,8 +86,8 @@ class FlexEditableField extends HTMLElement {
   private render() {
     const f = this.field
     if (!f) return
-    if (this.selected) {
-      this.renderEdit(f)
+    if (this.selected && this.draft) {
+      this.renderEdit(this.draft)
     } else {
       this.renderPreview(f)
     }
@@ -108,7 +123,7 @@ class FlexEditableField extends HTMLElement {
   }
 
   private renderControl(f: DataRequirement): string {
-    const inputType = INPUT_TYPE_FOR_FIELD[f.fieldType] ?? 'text'
+    const inputType = INPUT_TYPE_FOR_FIELD[f.fieldType as FieldType] ?? 'text'
     if (f.fieldType === 'longText') {
       return `<textarea class="flex-textarea" readonly tabindex="-1" aria-hidden="true" rows="2"></textarea>`
     }
@@ -128,26 +143,33 @@ class FlexEditableField extends HTMLElement {
     return `<input class="flex-input" type="${inputType}" readonly tabindex="-1" aria-hidden="true" />`
   }
 
-  private renderEdit(f: DataRequirement) {
-    const required = f.required === true
+  private renderEdit(draft: DataRequirement) {
+    const required = draft.required === true
+    const dirty = this.isDirty()
     this.innerHTML = `
       <div class="editable-field__edit">
         <div class="editable-field__edit-header">
           <span class="editable-field__label-wrap">
-            <span class="editable-field__label" tabindex="0" data-action="edit-label" title="Click to rename">${escapeHtml(f.label)}</span>
+            <span class="editable-field__label" tabindex="0" data-action="edit-label" title="Click to rename">${escapeHtml(draft.label)}</span>
             ${required ? '<span class="editable-field__required" aria-hidden="true">*</span>' : '<span class="editable-field__optional">(optional)</span>'}
           </span>
           <div class="editable-field__toolbar" role="toolbar" aria-label="Field actions">
-            ${this.renderTypeSelect(f)}
+            ${this.renderTypeSelect(draft)}
             <button type="button" class="flex-button editable-field__chip" data-variant="ghost" data-action="toggle-required" aria-pressed="${required}" title="Toggle required">${required ? 'Required' : 'Optional'}</button>
             <button type="button" class="flex-button" data-variant="ghost" data-action="toggle-more" aria-expanded="${this.moreOpen}" title="More settings">&hellip;</button>
             <button type="button" class="flex-button" data-variant="ghost" data-action="remove-field" aria-label="Remove field" title="Delete field">&times;</button>
-            <button type="button" class="flex-button" data-variant="ghost" data-action="deselect-field" aria-label="Done editing" title="Done">Done</button>
           </div>
         </div>
-        ${this.renderControl(f)}
+        ${this.renderControl(draft)}
         <div class="editable-field__more" ${this.moreOpen ? '' : 'hidden'} data-more>
-          ${this.renderMore(f)}
+          ${this.renderMore(draft)}
+        </div>
+        <div class="editable-field__footer">
+          <span class="editable-field__dirty" aria-live="polite">${dirty ? 'Unsaved changes' : ''}</span>
+          <span class="editable-field__footer-actions">
+            <button type="button" class="flex-button" data-variant="outline" data-action="cancel-field">Cancel</button>
+            <button type="button" class="flex-button" data-action="save-field" ${dirty ? '' : 'disabled'}>Save</button>
+          </span>
         </div>
       </div>
     `
@@ -165,6 +187,7 @@ class FlexEditableField extends HTMLElement {
   private renderMore(f: DataRequirement): string {
     const sensitivity = f.sensitivity ?? 'low'
     const control = f.control ?? ''
+    const cond = f.condition ?? null
     return `
       <label>Sensitivity</label>
       <select class="editable-field__sensitivity flex-select">
@@ -179,20 +202,25 @@ class FlexEditableField extends HTMLElement {
       <input type="text" class="editable-field__move-target flex-input" placeholder="group id..." />
       <label>Condition</label>
       <div class="editable-field__condition">
-        <input type="text" class="editable-field__cond-field flex-input" placeholder="field id" />
+        <input type="text" class="editable-field__cond-field flex-input" placeholder="field id" value="${cond ? escapeHtml(cond.field) : ''}" />
         <select class="editable-field__cond-op flex-select">
-          <option value="equals">equals</option>
-          <option value="notEquals">not equals</option>
-          <option value="contains">contains</option>
+          ${(['equals', 'notEquals', 'contains'] as ConditionOp[])
+            .map(
+              (op) =>
+                `<option value="${op}" ${cond?.operator === op ? 'selected' : ''}>${op === 'equals' ? 'equals' : op === 'notEquals' ? 'not equals' : 'contains'}</option>`,
+            )
+            .join('')}
         </select>
-        <input type="text" class="editable-field__cond-value flex-input" placeholder="value" />
-        <button type="button" class="flex-button" data-variant="ghost" data-action="condition-set">Set</button>
+        <input type="text" class="editable-field__cond-value flex-input" placeholder="value" value="${cond ? escapeHtml(String(cond.value)) : ''}" />
         <button type="button" class="flex-button" data-variant="ghost" data-action="condition-clear">Clear</button>
       </div>
     `
   }
 
   private bindEdit() {
+    const draft = this.draft
+    if (!draft) return
+
     const labelEl = this.querySelector<HTMLElement>('.editable-field__label')
     labelEl?.addEventListener('click', (e) => {
       e.stopPropagation()
@@ -209,29 +237,19 @@ class FlexEditableField extends HTMLElement {
       '.editable-field__type',
     )
     typeSel?.addEventListener('change', () => {
-      if (!this.field) return
-      this.dispatch(
-        {
-          kind: 'changeFieldType',
-          id: this.field.id,
-          fieldType: typeSel.value as (typeof FIELD_TYPES)[number],
-        },
-        `Change "${this.field.label}" type to ${typeSel.value}`,
-      )
+      this.patchDraft({ fieldType: typeSel.value as FieldType })
     })
 
     this.querySelector('[data-action="toggle-required"]')?.addEventListener(
       'click',
       () => {
-        if (!this.field) return
-        const next = !(this.field.required === true)
-        this.dispatch(
-          { kind: 'setRequired', id: this.field.id, required: next },
-          `Mark "${this.field.label}" ${next ? 'required' : 'optional'}`,
-        )
+        this.patchDraft({ required: !(draft.required === true) })
       },
     )
 
+    // Remove and move-to-group are structural actions, not drafted:
+    // a delete is always a discrete intent, and moveField's target group
+    // isn't part of the field itself.
     this.querySelector('[data-action="remove-field"]')?.addEventListener(
       'click',
       () => {
@@ -240,6 +258,7 @@ class FlexEditableField extends HTMLElement {
           { kind: 'removeField', id: this.field.id },
           `Remove "${this.field.label}"`,
         )
+        this.deselect()
       },
     )
 
@@ -254,39 +273,30 @@ class FlexEditableField extends HTMLElement {
       },
     )
 
-    this.querySelector('[data-action="deselect-field"]')?.addEventListener(
+    this.querySelector('[data-action="cancel-field"]')?.addEventListener(
       'click',
       () => this.deselect(),
+    )
+
+    this.querySelector('[data-action="save-field"]')?.addEventListener(
+      'click',
+      () => this.saveDraft(),
     )
 
     const sensSel = this.querySelector<HTMLSelectElement>(
       '.editable-field__sensitivity',
     )
     sensSel?.addEventListener('change', () => {
-      if (!this.field) return
-      this.dispatch(
-        {
-          kind: 'setFieldSensitivity',
-          id: this.field.id,
-          level: sensSel.value as (typeof SENSITIVITIES)[number],
-        },
-        `Set "${this.field.label}" sensitivity to ${sensSel.value}`,
-      )
+      this.patchDraft({ sensitivity: sensSel.value as Sensitivity })
     })
 
     const ctrlSel = this.querySelector<HTMLSelectElement>(
       '.editable-field__control-widget',
     )
     ctrlSel?.addEventListener('change', () => {
-      if (!this.field || !ctrlSel.value) return
-      this.dispatch(
-        {
-          kind: 'setFieldControl',
-          id: this.field.id,
-          control: ctrlSel.value as (typeof CONTROLS)[number],
-        },
-        `Set "${this.field.label}" control to ${ctrlSel.value}`,
-      )
+      this.patchDraft({
+        control: (ctrlSel.value || undefined) as ControlWidget | undefined,
+      })
     })
 
     const moveInput = this.querySelector<HTMLInputElement>(
@@ -305,45 +315,115 @@ class FlexEditableField extends HTMLElement {
       moveInput.value = ''
     })
 
+    const condField = this.querySelector<HTMLInputElement>(
+      '.editable-field__cond-field',
+    )
+    const condOp = this.querySelector<HTMLSelectElement>(
+      '.editable-field__cond-op',
+    )
+    const condValue = this.querySelector<HTMLInputElement>(
+      '.editable-field__cond-value',
+    )
+    const syncCondition = () => {
+      const field = condField?.value.trim() ?? ''
+      const op = (condOp?.value ?? 'equals') as ConditionOp
+      const value = condValue?.value ?? ''
+      if (!field || !value) {
+        this.patchDraft({ condition: undefined })
+        return
+      }
+      this.patchDraft({
+        condition: { field, operator: op, value },
+      })
+    }
+    condField?.addEventListener('change', syncCondition)
+    condOp?.addEventListener('change', syncCondition)
+    condValue?.addEventListener('change', syncCondition)
+
     this.querySelector('[data-action="condition-clear"]')?.addEventListener(
       'click',
       () => {
-        if (!this.field) return
-        this.dispatch(
-          { kind: 'setFieldCondition', id: this.field.id, condition: null },
-          `Clear condition on "${this.field.label}"`,
-        )
+        this.patchDraft({ condition: undefined })
       },
     )
+  }
 
-    this.querySelector('[data-action="condition-set"]')?.addEventListener(
-      'click',
-      () => {
-        if (!this.field) return
-        const fieldRef = this.querySelector<HTMLInputElement>(
-          '.editable-field__cond-field',
-        )
-        const opSel = this.querySelector<HTMLSelectElement>(
-          '.editable-field__cond-op',
-        )
-        const valInput = this.querySelector<HTMLInputElement>(
-          '.editable-field__cond-value',
-        )
-        if (!fieldRef?.value || !opSel || !valInput?.value) return
-        this.dispatch(
-          {
-            kind: 'setFieldCondition',
-            id: this.field.id,
-            condition: {
-              field: fieldRef.value,
-              operator: opSel.value as 'equals' | 'notEquals' | 'contains',
-              value: valInput.value,
-            },
-          },
-          `Show "${this.field.label}" when ${fieldRef.value} ${opSel.value} ${valInput.value}`,
-        )
-      },
+  private patchDraft(patch: Partial<DataRequirement>) {
+    if (!this.draft) return
+    this.draft = { ...this.draft, ...patch }
+    this.render()
+  }
+
+  private isDirty(): boolean {
+    if (!this.draft || !this.field) return false
+    const d = this.draft
+    const f = this.field
+    if (d.label !== f.label) return true
+    if (d.fieldType !== f.fieldType) return true
+    if ((d.required === true) !== (f.required === true)) return true
+    if ((d.sensitivity ?? 'low') !== (f.sensitivity ?? 'low')) return true
+    if ((d.control ?? '') !== (f.control ?? '')) return true
+    if (
+      JSON.stringify(d.condition ?? null) !==
+      JSON.stringify(f.condition ?? null)
     )
+      return true
+    return false
+  }
+
+  private saveDraft() {
+    if (!this.draft || !this.field) {
+      this.deselect()
+      return
+    }
+    const d = this.draft
+    const f = this.field
+    const id = f.id
+    if (d.label !== f.label) {
+      this.dispatch(
+        { kind: 'relabelField', id, label: d.label },
+        `Relabel "${f.label}" to "${d.label}"`,
+      )
+    }
+    if (d.fieldType !== f.fieldType) {
+      this.dispatch(
+        { kind: 'changeFieldType', id, fieldType: d.fieldType as FieldType },
+        `Change "${f.label}" type to ${d.fieldType}`,
+      )
+    }
+    if ((d.required === true) !== (f.required === true)) {
+      this.dispatch(
+        { kind: 'setRequired', id, required: d.required === true },
+        `Mark "${f.label}" ${d.required === true ? 'required' : 'optional'}`,
+      )
+    }
+    const dSens = d.sensitivity ?? 'low'
+    const fSens = f.sensitivity ?? 'low'
+    if (dSens !== fSens) {
+      this.dispatch(
+        { kind: 'setFieldSensitivity', id, level: dSens as Sensitivity },
+        `Set "${f.label}" sensitivity to ${dSens}`,
+      )
+    }
+    const dCtrl = d.control ?? ''
+    const fCtrl = f.control ?? ''
+    if (dCtrl !== fCtrl && dCtrl) {
+      this.dispatch(
+        { kind: 'setFieldControl', id, control: dCtrl as ControlWidget },
+        `Set "${f.label}" control to ${dCtrl}`,
+      )
+    }
+    const dCond = JSON.stringify(d.condition ?? null)
+    const fCond = JSON.stringify(f.condition ?? null)
+    if (dCond !== fCond) {
+      this.dispatch(
+        { kind: 'setFieldCondition', id, condition: d.condition ?? null },
+        d.condition
+          ? `Show "${f.label}" when ${d.condition.field} ${d.condition.operator} ${d.condition.value}`
+          : `Clear condition on "${f.label}"`,
+      )
+    }
+    this.deselect()
   }
 
   private select() {
@@ -368,11 +448,11 @@ class FlexEditableField extends HTMLElement {
   }
 
   private startEditingLabel() {
-    if (this.editingLabel || !this.field) return
+    if (this.editingLabel || !this.draft) return
     const labelEl = this.querySelector<HTMLElement>('.editable-field__label')
     if (!labelEl) return
     this.editingLabel = true
-    const currentLabel = this.field.label
+    const currentLabel = this.draft.label
     const input = document.createElement('input')
     input.type = 'text'
     input.className = 'editable-field__label-input flex-input'
@@ -387,11 +467,8 @@ class FlexEditableField extends HTMLElement {
       if (!this.editingLabel) return
       this.editingLabel = false
       const newValue = input.value.trim()
-      if (!cancelled && newValue && newValue !== currentLabel && this.field) {
-        this.dispatch(
-          { kind: 'relabelField', id: this.field.id, label: newValue },
-          `Relabel "${currentLabel}" to "${newValue}"`,
-        )
+      if (!cancelled && newValue && newValue !== currentLabel) {
+        this.patchDraft({ label: newValue })
       } else {
         this.render()
       }
@@ -408,6 +485,14 @@ class FlexEditableField extends HTMLElement {
         input.blur()
       }
     })
+  }
+}
+
+function cloneField(f: DataRequirement): DataRequirement {
+  return {
+    ...f,
+    condition: f.condition ? { ...f.condition } : undefined,
+    choices: f.choices ? [...f.choices] : undefined,
   }
 }
 

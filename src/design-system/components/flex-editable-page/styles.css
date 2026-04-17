@@ -3,22 +3,8 @@
     display: block;
   }
   .editable-page__tabs {
-    display: flex;
-    gap: var(--flex-space-2xs);
-    border-block-end: 1px solid var(--flex-color-border);
+    display: block;
     margin-block-end: var(--flex-space-md);
-  }
-  .editable-page__tab {
-    background: transparent;
-    border: 0;
-    border-block-end: 2px solid transparent;
-    padding: var(--flex-space-xs) var(--flex-space-sm);
-    cursor: pointer;
-    font-size: var(--flex-text-sm);
-  }
-  .editable-page__tab[aria-selected='true'] {
-    border-block-end-color: var(--flex-color-accent);
-    font-weight: 600;
   }
   .editable-page__header {
     display: flex;
@@ -30,10 +16,26 @@
     border: 1px solid transparent;
   }
   .editable-page__header--selected {
-    border-color: var(--flex-color-accent);
+    position: relative;
+    border: 2px solid var(--flex-color-accent);
     background: var(--flex-color-surface);
     justify-content: space-between;
     flex-wrap: wrap;
+    padding: var(--flex-space-md) var(--flex-space-sm) var(--flex-space-sm);
+    box-shadow: var(--flex-shadow-md), 0 0 0 4px var(--flex-color-bg-subtle);
+  }
+  .editable-page__header--selected::before {
+    content: 'Editing page';
+    position: absolute;
+    inset-block-start: calc(-1 * var(--flex-space-xs));
+    inset-inline-start: var(--flex-space-sm);
+    background: var(--flex-color-accent);
+    color: var(--flex-color-surface);
+    font-size: var(--flex-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 2px var(--flex-space-xs);
+    border-radius: var(--flex-radius-sm);
   }
   .editable-page__title {
     flex: 1;

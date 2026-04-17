@@ -383,6 +383,9 @@ class FlexFormEditor extends HTMLElement {
       }),
     )
     this.refreshStagedUi()
+    // Re-broadcast selection so children rebuilt by the re-render pick up
+    // the active selection state even though nothing actually changed.
+    if (this.selection) this.broadcastSelection()
   }
 
   private refreshStagedUi() {

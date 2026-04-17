@@ -79,7 +79,7 @@ class FlexEditablePage extends HTMLElement {
     const tabs = pages
       .map(
         (p, i) =>
-          `<button type="button" role="tab" aria-selected="${i === this.pageIndex}" data-page-id="${p.id}" data-page-index="${i}" class="editable-page__tab">${i + 1}. ${escapeHtml(p.title)}</button>`,
+          `<button type="button" role="tab" aria-selected="${i === this.pageIndex}" data-page-id="${p.id}" data-page-index="${i}" class="flex-tab-group__tab editable-page__tab">${i + 1}. ${escapeHtml(p.title)}</button>`,
       )
       .join('')
 
@@ -114,7 +114,7 @@ class FlexEditablePage extends HTMLElement {
 
     this.innerHTML = `
       <div class="editable-page">
-        <div class="editable-page__tabs" role="tablist">${tabs}</div>
+        <flex-tab-group class="editable-page__tabs"><div role="tablist" aria-label="Form pages">${tabs}</div></flex-tab-group>
         ${headerMarkup}
         <div class="editable-page__body" data-page-id="${current.id}">
           ${groupsHtml}

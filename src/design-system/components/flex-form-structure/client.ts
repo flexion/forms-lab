@@ -1,8 +1,32 @@
-import type { ProjectStateClient } from '../flex-form-editor/protocol'
+import type {
+  ProjectStateClient,
+  SelectionTarget,
+} from '../flex-form-editor/protocol'
+
+type DeliveryMode = 'static' | 'conversational' | 'hybrid'
+
+const DELIVERY_CYCLE: Record<DeliveryMode, DeliveryMode> = {
+  static: 'conversational',
+  conversational: 'hybrid',
+  hybrid: 'static',
+}
+
+const DELIVERY_ICON: Record<DeliveryMode, string> = {
+  static: 'list',
+  conversational: 'chat',
+  hybrid: 'autorenew',
+}
+
+const DELIVERY_LABEL: Record<DeliveryMode, string> = {
+  static: 'Static',
+  conversational: 'Conversational',
+  hybrid: 'Hybrid',
+}
 
 class FlexFormStructure extends HTMLElement {
   private state: ProjectStateClient | null = null
   private collapsed = false
+  private selectedPageId: string | null = null
 
   connectedCallback() {
     const root = this.closest('flex-form-editor')
@@ -10,6 +34,15 @@ class FlexFormStructure extends HTMLElement {
       root.addEventListener('formeditor:state-projected', (e) => {
         this.state = (e as CustomEvent).detail.state
         this.render()
+      })
+      root.addEventListener('formeditor:selection-changed', (e) => {
+        const sel = (e as CustomEvent).detail
+          .selection as SelectionTarget | null
+        const next = sel?.kind === 'page' ? sel.id : null
+        if (next !== this.selectedPageId) {
+          this.selectedPageId = next
+          this.render()
+        }
       })
     }
     this.render()
@@ -26,7 +59,7 @@ class FlexFormStructure extends HTMLElement {
       const miniItems = state.formSpec.pages
         .map(
           (page, i) =>
-            `<li><button type="button" data-page-id="${page.id}" class="form-structure__mini-item">${i + 1}</button></li>`,
+            `<li><button type="button" data-page-id="${page.id}" class="form-structure__mini-item" title="${escapeHtml(page.title)}">${i + 1}</button></li>`,
         )
         .join('')
       this.innerHTML = `
@@ -39,21 +72,30 @@ class FlexFormStructure extends HTMLElement {
       const pageHtml = state.formSpec.pages
         .map((page, i) => {
           const groupCount = page.groups.length
+          const mode = (page.deliveryMode as DeliveryMode) ?? 'static'
+          const canUp = i > 0
+          const canDown = i < state.formSpec.pages.length - 1
+          const isSelected = page.id === this.selectedPageId
           return `
-          <li class="form-structure__page" data-page-id="${page.id}">
-            <div class="form-structure__page-header">
-              <span class="form-structure__page-title">${i + 1}. ${escapeHtml(page.title)}</span>
-              <span class="form-structure__group-count">${groupCount} group${groupCount === 1 ? '' : 's'}</span>
-            </div>
-            <select class="flex-select form-structure__delivery" data-page-id="${page.id}">
-              <option value="static" ${page.deliveryMode !== 'conversational' && page.deliveryMode !== 'hybrid' ? 'selected' : ''}>Static</option>
-              <option value="conversational" ${page.deliveryMode === 'conversational' ? 'selected' : ''}>Conversational</option>
-              <option value="hybrid" ${page.deliveryMode === 'hybrid' ? 'selected' : ''}>Hybrid</option>
-            </select>
-            <div class="form-structure__reorder">
-              ${i > 0 ? `<button type="button" data-action="up" data-page-id="${page.id}" aria-label="Move up">&uarr;</button>` : ''}
-              ${i < state.formSpec.pages.length - 1 ? `<button type="button" data-action="down" data-page-id="${page.id}" aria-label="Move down">&darr;</button>` : ''}
-            </div>
+          <li class="form-structure__page${isSelected ? ' form-structure__page--selected' : ''}" data-page-id="${page.id}">
+            <button type="button" class="form-structure__row" data-action="select" data-page-id="${page.id}">
+              <span class="form-structure__row-index" aria-hidden="true">${i + 1}</span>
+              <span class="form-structure__row-body">
+                <span class="form-structure__row-title">${escapeHtml(page.title)}</span>
+                <span class="form-structure__row-meta">${groupCount} group${groupCount === 1 ? '' : 's'}</span>
+              </span>
+            </button>
+            <span class="form-structure__actions">
+              <button type="button" class="form-structure__icon-btn" data-action="delivery" data-page-id="${page.id}" title="Delivery: ${DELIVERY_LABEL[mode]} (click to cycle)" aria-label="Delivery mode: ${DELIVERY_LABEL[mode]}">
+                <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#${DELIVERY_ICON[mode]}" /></svg>
+              </button>
+              <button type="button" class="form-structure__icon-btn" data-action="up" data-page-id="${page.id}" aria-label="Move up" ${canUp ? '' : 'disabled'}>
+                <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#arrow_upward" /></svg>
+              </button>
+              <button type="button" class="form-structure__icon-btn" data-action="down" data-page-id="${page.id}" aria-label="Move down" ${canDown ? '' : 'disabled'}>
+                <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#arrow_downward" /></svg>
+              </button>
+            </span>
           </li>
         `
         })
@@ -97,31 +139,34 @@ class FlexFormStructure extends HTMLElement {
       btn.addEventListener('click', () => {
         const pageId = btn.dataset.pageId
         if (!pageId) return
-        this.dispatchEvent(
-          new CustomEvent('formeditor:select', {
-            detail: { kind: 'page', id: pageId },
-            bubbles: true,
-            composed: true,
-          }),
-        )
+        this.dispatchSelect(pageId)
       })
     }
 
-    for (const select of this.querySelectorAll<HTMLSelectElement>(
-      '.form-structure__delivery',
+    for (const btn of this.querySelectorAll<HTMLButtonElement>(
+      '[data-action="select"]',
     )) {
-      select.addEventListener('change', () => {
-        const pageId = select.dataset.pageId
-        if (!pageId) return
+      btn.addEventListener('click', () => {
+        const pageId = btn.dataset.pageId
+        if (pageId) this.dispatchSelect(pageId)
+      })
+    }
+
+    for (const btn of this.querySelectorAll<HTMLButtonElement>(
+      '[data-action="delivery"]',
+    )) {
+      btn.addEventListener('click', () => {
+        const pageId = btn.dataset.pageId
+        if (!pageId || !this.state) return
+        const page = this.state.formSpec.pages.find((p) => p.id === pageId)
+        if (!page) return
+        const current = (page.deliveryMode as DeliveryMode) ?? 'static'
+        const next = DELIVERY_CYCLE[current]
         this.dispatchEvent(
           new CustomEvent('formeditor:stage-command', {
             detail: {
-              command: {
-                kind: 'setDeliveryMode',
-                pageId,
-                mode: select.value as 'static' | 'conversational' | 'hybrid',
-              },
-              explanation: `Set delivery mode to ${select.value}`,
+              command: { kind: 'setDeliveryMode', pageId, mode: next },
+              explanation: `Set delivery mode to ${next}`,
             },
             bubbles: true,
             composed: true,
@@ -129,30 +174,14 @@ class FlexFormStructure extends HTMLElement {
         )
       })
     }
-    for (const pageEl of this.querySelectorAll<HTMLElement>(
-      '.form-structure__page-header',
-    )) {
-      pageEl.style.cursor = 'pointer'
-      pageEl.addEventListener('click', () => {
-        const pageId =
-          pageEl.closest<HTMLElement>('[data-page-id]')?.dataset.pageId
-        if (!pageId) return
-        this.dispatchEvent(
-          new CustomEvent('formeditor:select', {
-            detail: { kind: 'page', id: pageId },
-            bubbles: true,
-            composed: true,
-          }),
-        )
-      })
-    }
+
     for (const btn of this.querySelectorAll<HTMLButtonElement>(
-      '[data-action]',
+      '[data-action="up"], [data-action="down"]',
     )) {
       btn.addEventListener('click', () => {
         const pageId = btn.dataset.pageId
         const direction = btn.dataset.action as 'up' | 'down'
-        if (!pageId || !this.state) return
+        if (!pageId || !this.state || btn.disabled) return
         const idx = this.state.formSpec.pages.findIndex((p) => p.id === pageId)
         const target = direction === 'up' ? idx - 1 : idx + 1
         if (target < 0 || target >= this.state.formSpec.pages.length) return
@@ -169,6 +198,16 @@ class FlexFormStructure extends HTMLElement {
         )
       })
     }
+  }
+
+  private dispatchSelect(pageId: string) {
+    this.dispatchEvent(
+      new CustomEvent('formeditor:select', {
+        detail: { kind: 'page', id: pageId },
+        bubbles: true,
+        composed: true,
+      }),
+    )
   }
 }
 
