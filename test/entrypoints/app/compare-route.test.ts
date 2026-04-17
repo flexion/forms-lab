@@ -271,6 +271,26 @@ describe('review flow end-to-end', () => {
     expect(await res.text()).toContain('invalid compare range')
   })
 
+  it('renders compare page for initial import (main has no specs yet)', async () => {
+    const { app, service, projectStore } = createTestApp()
+    // Seed a project but intentionally do NOT merge 'import' into main.
+    // This matches the fresh-import state where main only has the PDF.
+    const project = await service.createProject(
+      'Fresh Import',
+      Buffer.from('%PDF-1.4 sample'),
+      danielUser,
+    )
+    await waitForReady(projectStore, project.id)
+    const slug = project.slug
+
+    const res = await app.request(`/danielnaab/${slug}/compare/main...import`)
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    // Every head element should show as an addition since base is empty.
+    expect(html).toContain('ADDED')
+    expect(html).toContain('Personal Info')
+  })
+
   it('rejects merge without authentication', async () => {
     // Build an app where the auth middleware assigns no user.
     const { app, service, projectStore } = createTestApp(null)

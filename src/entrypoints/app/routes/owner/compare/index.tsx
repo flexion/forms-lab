@@ -41,21 +41,36 @@ export function createCompareRoutes(
     const baseView = await project.getProject(owner, slug, user, parsed.base)
     const headView = await project.getProject(owner, slug, user, parsed.head)
 
-    // Guard: if either view is missing specs, we can't diff
-    if (
-      !baseView.spec ||
-      !baseView.formSpec ||
-      !headView.spec ||
-      !headView.formSpec
-    ) {
+    // The head branch must have specs — without them there is nothing to
+    // review. The base branch, however, is allowed to have no specs (this is
+    // the typical state right after an initial PDF import: main has only the
+    // PDF + project.json, and the 'import' branch adds the specs). In that
+    // case we synthesize empty specs for the base so the diff surfaces every
+    // head element as an addition.
+    if (!headView.spec || !headView.formSpec) {
       return c.text('Specs not available for comparison', 400)
     }
 
+    const emptyDataSpec = {
+      id: headView.spec.id,
+      title: headView.spec.title,
+      description: headView.spec.description,
+      groups: [],
+    }
+    const emptyFormSpec = {
+      id: headView.formSpec.id,
+      specId: headView.formSpec.specId,
+      title: headView.formSpec.title,
+      pages: [],
+    }
+    const baseDataSpec = baseView.spec ?? emptyDataSpec
+    const baseFormSpec = baseView.formSpec ?? emptyFormSpec
+
     const changes = compareSpecs(
-      { dataSpec: baseView.spec, formSpec: baseView.formSpec },
+      { dataSpec: baseDataSpec, formSpec: baseFormSpec },
       { dataSpec: headView.spec, formSpec: headView.formSpec },
     )
-    const basePreview = buildFormPreview(baseView.spec, baseView.formSpec)
+    const basePreview = buildFormPreview(baseDataSpec, baseFormSpec)
     const headPreview = buildFormPreview(headView.spec, headView.formSpec)
     const comments = await review.comments.list({
       owner,
