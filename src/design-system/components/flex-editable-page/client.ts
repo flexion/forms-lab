@@ -22,6 +22,15 @@ class FlexEditablePage extends HTMLElement {
     })
     root.addEventListener('formeditor:selection-changed', (e) => {
       const sel = (e as CustomEvent).detail.selection as SelectionTarget | null
+      if (sel?.kind === 'page' && this.state) {
+        const idx = this.state.formSpec.pages.findIndex((p) => p.id === sel.id)
+        if (idx >= 0 && idx !== this.pageIndex) {
+          this.pageIndex = idx
+          this.pageSelected = true
+          this.render()
+          return
+        }
+      }
       const currentId = this.state?.formSpec.pages[this.pageIndex]?.id
       const wasSelected = this.pageSelected
       this.pageSelected =
