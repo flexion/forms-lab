@@ -147,11 +147,6 @@ class FlexFormEditor extends HTMLElement {
       this.handleIntent(detail.text)
     })
 
-    // From flex-form-structure: manual commands
-    this.addEventListener('formeditor:manual-command', (e) =>
-      this.handleManual((e as CustomEvent).detail),
-    )
-
     // From flex-form-structure: page selection
     this.addEventListener('formeditor:select', (e) =>
       this.handleSelect((e as CustomEvent).detail),
@@ -312,42 +307,6 @@ class FlexFormEditor extends HTMLElement {
 
   acceptProposal() {
     this.handleAccept()
-  }
-
-  private async handleManual(detail: {
-    command: Command
-    explanation: string
-  }) {
-    try {
-      const response = await fetch(`${this.editBase()}/execute`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          command: detail.command,
-          explanation: detail.explanation,
-        }),
-      })
-      if (!response.ok) {
-        const body = await response.json()
-        this.assistant?.addMessage(
-          'system',
-          `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(body.error ?? 'Unknown error')}</span>`,
-        )
-        return
-      }
-      const body = (await response.json()) as { state: ProjectStateClient }
-      this.canonicalState = body.state
-      this.state = body.state
-      this.buffer = []
-      this.broadcastSpec()
-      this.dispatchProjected()
-      this.assistant?.addMessage('system', escapeHtml(detail.explanation))
-    } catch (err) {
-      this.assistant?.addMessage(
-        'system',
-        `<span style="color:var(--flex-color-error)">Failed: ${escapeHtml(err instanceof Error ? err.message : String(err))}</span>`,
-      )
-    }
   }
 
   private handleSelect(detail: {
