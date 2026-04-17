@@ -2,7 +2,9 @@
 
 ## In Flight
 
-_(none)_
+| Story | Branch | Status | Worktree | Updated |
+|-------|--------|--------|----------|---------|
+| #5 Maya reviews proposed changes | story-5/review-changes | pr-open (#43) | .worktrees/story-5-review-changes | 2026-04-17 |
 
 ## Landed
 

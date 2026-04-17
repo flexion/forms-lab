@@ -4,7 +4,7 @@ title: Maya reviews her proposed changes before publishing
 milestone: "Final Project"
 labels: [user-story]
 state: open
-synced_at: 2026-04-09T14:40:12.308Z
+synced_at: 2026-04-16T22:12:05.773Z
 ---
 
 ## User Story:
@@ -13,19 +13,27 @@ As a **form creator (Maya)**, in order to **understand the impact of my changes 
 
 ## Preconditions:
 
-- Maya has made changes to a FormSpec (Slice 3 proposal mode)
-- Published version exists for comparison
+- Maya has made changes to a FormSpec (Story 4 shaping, on a named branch)
+- Published version exists on `main` for comparison
 
 ## Acceptance Criteria:
 
-- [ ] Maya can view a semantic diff between proposed and published DataCollectionSpec
-- [ ] Maya can view a semantic diff between proposed and published FormSpec
+- [ ] Branch model: `main` is the published state; named branches are working copies
+- [ ] `main` is read-only in the editor; Maya must create or select a branch to edit
+- [ ] Branch indicator and switcher in the editor header
+- [ ] Change indicators on modified resources in the editor sidebar
+- [ ] PR-style review page at `/:owner/:slug/compare/:base...:branch`
+- [ ] Maya can view a structural semantic diff between base and branch DataCollectionSpec
+- [ ] Maya can view a structural semantic diff between base and branch FormSpec
 - [ ] Diffs are domain-aware: "Added page 'Military Service'", "Reordered 'Offense Information' to page 4", not raw JSON diffs
+- [ ] Command log shown as narrative context alongside structural diff (History tab)
 - [ ] Side-by-side rendered previews show how the form looks before and after
-- [ ] Comparison uses URL-based protocol: `/catalog/compare/<resource>?from=<ref>&to=<ref>`
-- [ ] Maya can approve changes (merge proposal to published)
-- [ ] Maya can reject changes (discard proposal)
-- [ ] Approved changes link to a GitHub PR for audit trail
+- [ ] Maya can approve changes (merge branch to target)
+- [ ] Maya can reject changes (delete branch)
+- [ ] Comments on review pages (threads with author, timestamp, markdown body)
+- [ ] Branch-qualified form URLs for testing non-production forms (`/:owner/:slug/forms/:branch`)
+- [ ] Non-production forms display a visual preview banner
+- [ ] Submissions reference the exact commit SHA via `specVersion` field
 
 ## Success Metrics:
 
@@ -34,17 +42,18 @@ As a **form creator (Maya)**, in order to **understand the impact of my changes 
 
 ## Notes:
 
-- Comparison protocol is generic — works for any resource type (specs, personas, etc.)
-- `from` and `to` refs can be git SHAs, branch names, or special values like `published` and `proposal`
-- This slice implements the comparison infrastructure that future slices reuse
+- Comparison follows GitHub conventions: `/:owner/:slug/compare/:base...:branch`
+- Review page has four tabs: Changes, Preview, History, Comments
+- Comments stored in the branch's bare repo (`reviews/base...branch/comments.json`)
+- Agentic comment-driven form evolution deferred to #52
+- Branch-qualified forms work identically to production forms; submissions are standard but tagged with branch commit SHA
 
 ## Definition of Done:
 
 - [ ] Acceptance criteria met
 - [ ] Threat model updated -- any new trust boundaries, data flows, or attack surfaces are reflected in `catalog/architecture/threat-model.md`
 - [ ] Technical documentation updated -- architecture docs and decisions are current
-- [ ] Comparison protocol works for DataCollectionSpec and FormSpec
+- [ ] Comparison and diff infrastructure works for DataCollectionSpec and FormSpec
 - [ ] Tests pass
 - [ ] Type checking passes
-- [ ] CI pipeline green
 - [ ] Deployed and demoable
