@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { Layout } from '../../../../../design-system/components/flex-layout'
 import { compareSpecs } from '../../../../../services/forms/comparison'
+import { buildFormPreview } from '../../../../../services/forms/preview'
 import type { ReviewService } from '../../../../../services/forms/review'
 import type { ProjectService } from '../../../../../services/project-service'
 import { resolveUrl } from '../../../../../shared/base-path'
@@ -44,6 +45,8 @@ export function createCompareRoutes(
       { dataSpec: baseView.spec, formSpec: baseView.formSpec },
       { dataSpec: headView.spec, formSpec: headView.formSpec },
     )
+    const basePreview = buildFormPreview(baseView.spec, baseView.formSpec)
+    const headPreview = buildFormPreview(headView.spec, headView.formSpec)
     const comments = await review.comments.list({
       owner,
       slug,
@@ -72,6 +75,8 @@ export function createCompareRoutes(
           log={log}
           baseView={baseView}
           headView={headView}
+          basePreview={basePreview}
+          headPreview={headPreview}
         />
       </Layout>,
     )
