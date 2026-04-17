@@ -48,11 +48,7 @@ export function createEditRoutes(
         return c.redirect(resolveUrl(`/${owner}/${slug}/edit/${preferred}`))
       }
       return c.html(
-        <Layout
-          user={user}
-          title={`Edit ${view.project.name}`}
-          contentWidth="full"
-        >
+        <Layout user={user} title={`Edit ${view.project.name}`}>
           <EditorPage
             mode="no-branch"
             view={view}

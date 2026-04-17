@@ -50,49 +50,42 @@ const NoBranchShell: FC<{
 }> = ({ view, owner }) => {
   const { project } = view
   return (
-    <div class="l-stack">
-      <div class="editor-breadcrumb">
-        <h1>
-          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
-          {' / '}
-          <a href={resolveUrl(`/${owner}/${project.slug}`)}>{project.name}</a>
-          {' / '}
-          <strong>Edit</strong>
-        </h1>
-      </div>
-
-      <section class="editor__no-branch l-stack">
-        <h2>Create a branch to start editing</h2>
-        <p>
-          The <code>main</code> branch is read-only. Create a branch to make
-          changes, then merge them back into <code>main</code> when they are
-          ready.
-        </p>
-        <form
-          method="post"
-          action={resolveUrl(`/${owner}/${project.slug}/edit/main/branch`)}
-          class="l-stack"
-        >
-          <label class="flex-field">
-            <span class="flex-field__label">Branch name</span>
-            <input
-              type="text"
-              name="name"
-              required
-              minLength={3}
-              class="flex-field__input"
-              placeholder="e.g. tighten-labels"
-            />
-          </label>
-          <input type="hidden" name="startPoint" value="main" />
-          <div>
-            <button type="submit" class="flex-button">
-              Create branch
-            </button>
-          </div>
-        </form>
-      </section>
-    </div>
+    <section class="editor__no-branch l-stack">
+      <p class="editor__no-branch-crumbs">
+        <a href={resolveUrl(`/${owner}/${project.slug}`)}>
+          &larr; Back to {project.name}
+        </a>
+      </p>
+      <h2>Create a branch to start editing</h2>
+      <p>
+        The <code>main</code> branch is read-only. Create a branch to make
+        changes, then merge them back into <code>main</code> when they are
+        ready.
+      </p>
+      <form
+        method="post"
+        action={resolveUrl(`/${owner}/${project.slug}/edit/main/branch`)}
+        class="l-stack"
+      >
+        <label class="flex-field">
+          <span class="flex-field__label">Branch name</span>
+          <input
+            type="text"
+            name="name"
+            required
+            minLength={3}
+            class="flex-field__input"
+            placeholder="e.g. tighten-labels"
+          />
+        </label>
+        <input type="hidden" name="startPoint" value="main" />
+        <div>
+          <button type="submit" class="flex-button">
+            Create branch
+          </button>
+        </div>
+      </form>
+    </section>
   )
 }
 
