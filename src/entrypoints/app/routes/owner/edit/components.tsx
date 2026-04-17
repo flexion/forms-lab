@@ -112,13 +112,7 @@ export const EditorPage: FC<{
         </aside>
 
         <div class="editor-preview">
-          <div class="editor-preview__inner">
-            <iframe
-              class="editor-preview-frame"
-              src={resolveUrl(`/${owner}/${project.slug}/preview?page=0`)}
-              title="Form preview"
-            />
-          </div>
+          <flex-editable-page />
         </div>
 
         <aside class="editor-assistant">

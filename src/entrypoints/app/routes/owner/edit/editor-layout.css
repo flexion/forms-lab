@@ -61,11 +61,6 @@
   max-width: var(--flex-content-max-width);
 }
 
-.editor-preview iframe {
-  width: 100%;
-  border: none;
-  min-height: 80vh;
-}
 
 /* --- Assistant sidebar (sticky right) --- */
 

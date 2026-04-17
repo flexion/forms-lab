@@ -1,3 +1,5 @@
+import type { Command } from '../../../services/forms/shaping/commands'
+import type { FormPage } from '../../../services/forms/types'
 import type { ProjectStateClient } from '../flex-form-editor/protocol'
 
 class FlexEditablePage extends HTMLElement {
@@ -33,13 +35,13 @@ class FlexEditablePage extends HTMLElement {
       return
     }
     if (this.pageIndex >= pages.length) this.pageIndex = pages.length - 1
-    const current = pages[this.pageIndex]
+    const current = pages[this.pageIndex] as FormPage
 
     const canMoveDown = this.pageIndex < pages.length - 1
     const canMoveUp = this.pageIndex > 0
     const nextPageId = canMoveDown ? pages[this.pageIndex + 1].id : null
     const prevPageId = canMoveUp ? pages[this.pageIndex - 1].id : null
-    const deliveryMode = (current as any).deliveryMode ?? 'static'
+    const deliveryMode = current.deliveryMode ?? 'static'
 
     const tabs = pages
       .map(
@@ -74,7 +76,9 @@ class FlexEditablePage extends HTMLElement {
       </div>
     `
 
-    for (const tab of this.querySelectorAll<HTMLButtonElement>('.editable-page__tab')) {
+    for (const tab of this.querySelectorAll<HTMLButtonElement>(
+      '.editable-page__tab',
+    )) {
       tab.addEventListener('click', () => {
         const id = tab.dataset.pageId
         const idx = Number(tab.dataset.pageIndex)
@@ -91,7 +95,7 @@ class FlexEditablePage extends HTMLElement {
       })
     }
 
-    const dispatch = (command: any, explanation: string) => {
+    const dispatch = (command: Command, explanation: string) => {
       this.dispatchEvent(
         new CustomEvent('formeditor:stage-command', {
           detail: { command, explanation },
@@ -101,7 +105,9 @@ class FlexEditablePage extends HTMLElement {
       )
     }
 
-    const titleInput = this.querySelector<HTMLInputElement>('.editable-page__title-input')
+    const titleInput = this.querySelector<HTMLInputElement>(
+      '.editable-page__title-input',
+    )
     titleInput?.addEventListener('change', () => {
       if (titleInput.value === current.title) return
       dispatch(
@@ -110,10 +116,16 @@ class FlexEditablePage extends HTMLElement {
       )
     })
 
-    const deliverySelect = this.querySelector<HTMLSelectElement>('.editable-page__delivery')
+    const deliverySelect = this.querySelector<HTMLSelectElement>(
+      '.editable-page__delivery',
+    )
     deliverySelect?.addEventListener('change', () => {
       dispatch(
-        { kind: 'setDeliveryMode', pageId: current.id, mode: deliverySelect.value },
+        {
+          kind: 'setDeliveryMode',
+          pageId: current.id,
+          mode: deliverySelect.value as 'static' | 'conversational' | 'hybrid',
+        },
         `Set delivery mode to ${deliverySelect.value}`,
       )
     })
@@ -128,25 +140,38 @@ class FlexEditablePage extends HTMLElement {
 
     const removeBtn = this.querySelector('[data-action="remove-page"]')
     removeBtn?.addEventListener('click', () =>
-      dispatch({ kind: 'removePage', id: current.id }, `Remove page "${current.title}"`),
+      dispatch(
+        { kind: 'removePage', id: current.id },
+        `Remove page "${current.title}"`,
+      ),
     )
 
     const upBtn = this.querySelector('[data-action="page-up"]')
     upBtn?.addEventListener('click', () => {
       if (prevPageId)
-        dispatch({ kind: 'swapPages', a: current.id, b: prevPageId }, 'Move page up')
+        dispatch(
+          { kind: 'swapPages', a: current.id, b: prevPageId },
+          'Move page up',
+        )
     })
 
     const downBtn = this.querySelector('[data-action="page-down"]')
     downBtn?.addEventListener('click', () => {
       if (nextPageId)
-        dispatch({ kind: 'swapPages', a: current.id, b: nextPageId }, 'Move page down')
+        dispatch(
+          { kind: 'swapPages', a: current.id, b: nextPageId },
+          'Move page down',
+        )
     })
   }
 }
 
 function escapeHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 if (!customElements.get('flex-editable-page')) {

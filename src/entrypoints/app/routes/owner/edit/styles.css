@@ -173,14 +173,6 @@
   font-weight: 700;
 }
 
-/* Preview iframe */
-.editor-preview-frame {
-  inline-size: 100%;
-  block-size: 600px;
-  border: 1px solid var(--flex-color-border);
-  border-radius: var(--flex-radius-sm);
-  background: var(--flex-color-bg);
-}
 
 /* History list */
 .editor-history {
