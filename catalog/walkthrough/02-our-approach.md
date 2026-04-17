@@ -26,7 +26,8 @@ This separation means the LLM extraction produces a DataCollectionSpec, and the 
 
 ## What Makes This Different
 
-- **Not just chat**: The LLM does structured extraction, not conversational interaction
+- **Two LLM integration points, not one**: structured extraction (PDF → spec) and constrained command generation (intent → edit batch). Both use different techniques — free-form structured output vs. tool-use — for different problems.
+- **Not just chat**: The LLM does structured extraction and constrained command generation, not open-ended conversational interaction
 - **Systematic evaluation**: Every extraction is scored against ground truth with quantitative metrics
 - **Production-grade**: Full deployment pipeline, not a notebook demo
 - **Standards-compliant**: Output meets USWDS accessibility and design standards

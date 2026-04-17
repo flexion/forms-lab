@@ -1,6 +1,6 @@
 ---
 title: "Production Infrastructure"
-order: 5
+order: 6
 rubric: [environment-setup]
 timing: "2 min"
 audience: [evaluator]

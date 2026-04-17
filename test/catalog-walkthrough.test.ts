@@ -89,11 +89,12 @@ describe('Walkthrough Routes', () => {
       '01-the-problem',
       '02-our-approach',
       '03-llm-assisted-extraction',
-      '04-evaluation-and-experimentation',
-      '05-production-infrastructure',
-      '06-inference-pipeline',
-      '07-live-demo',
-      '08-whats-next',
+      '04-llm-assisted-form-shaping',
+      '05-evaluation-and-experimentation',
+      '06-production-infrastructure',
+      '07-inference-pipeline',
+      '08-live-demo',
+      '09-whats-next',
     ]
 
     for (const slug of slugs) {
@@ -106,7 +107,7 @@ describe('Walkthrough Routes', () => {
     it('shows correct total page count in navigation', async () => {
       const res = await app.request('/catalog/walkthrough/01-the-problem')
       const body = await res.text()
-      expect(body).toContain('1 of 8')
+      expect(body).toContain('1 of 9')
     })
   })
 })

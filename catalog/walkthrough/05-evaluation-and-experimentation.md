@@ -1,6 +1,6 @@
 ---
 title: "Evaluation & Experimentation"
-order: 4
+order: 5
 rubric: [model-functionality]
 timing: "3 min"
 audience: [evaluator]
