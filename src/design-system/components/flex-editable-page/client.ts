@@ -37,6 +37,16 @@ class FlexEditablePage extends HTMLElement {
     if (this.pageIndex >= pages.length) this.pageIndex = pages.length - 1
     const current = pages[this.pageIndex] as FormPage
 
+    const groupMap = new Map(this.state.dataSpec.groups.map((g) => [g.id, g]))
+    const groupsHtml = current.groups
+      .map((gid) => {
+        const g = groupMap.get(gid)
+        return g
+          ? `<flex-editable-group data-group-id="${g.id}"></flex-editable-group>`
+          : ''
+      })
+      .join('')
+
     const canMoveDown = this.pageIndex < pages.length - 1
     const canMoveUp = this.pageIndex > 0
     const nextPageId = canMoveDown ? pages[this.pageIndex + 1].id : null
@@ -72,7 +82,10 @@ class FlexEditablePage extends HTMLElement {
             <button type="button" class="flex-button" data-variant="ghost" data-action="remove-page" aria-label="Remove page">&times;</button>
           </div>
         </header>
-        <div class="editable-page__body" data-page-id="${current.id}"></div>
+        <div class="editable-page__body" data-page-id="${current.id}">
+          ${groupsHtml}
+          <button type="button" class="flex-button" data-variant="ghost" data-action="add-group">+ Group</button>
+        </div>
       </div>
     `
 
@@ -163,6 +176,19 @@ class FlexEditablePage extends HTMLElement {
           'Move page down',
         )
     })
+
+    this.querySelector('[data-action="add-group"]')?.addEventListener('click', () =>
+      dispatch(
+        { kind: 'addGroup', pageId: current.id, title: 'New group' },
+        'Add group',
+      ),
+    )
+    for (const child of this.querySelectorAll('flex-editable-group')) {
+      const id = (child as HTMLElement).dataset.groupId
+      const g = id ? groupMap.get(id) : undefined
+      const c = child as HTMLElement & { update?: (group: unknown) => void }
+      if (g && typeof c.update === 'function') c.update(g)
+    }
   }
 }
 

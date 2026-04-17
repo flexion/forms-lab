@@ -1,8 +1,11 @@
-import { GlobalRegistrator } from '@happy-dom/global-registrator'
-if (!('window' in globalThis)) GlobalRegistrator.register()
-
 import { afterAll, beforeEach, describe, expect, it } from 'bun:test'
+import { GlobalRegistrator } from '@happy-dom/global-registrator'
+
+GlobalRegistrator.register()
+
 await import('../../../src/design-system/components/flex-editable-group/client')
+
+afterAll(() => GlobalRegistrator.unregister())
 
 const GROUP = {
   id: 'g1',
@@ -16,8 +19,6 @@ describe('flex-editable-group', () => {
   beforeEach(() => {
     document.body.innerHTML = ''
   })
-
-  afterAll(() => GlobalRegistrator.unregister())
 
   it('renders the group title and a +field button', () => {
     const el = document.createElement('flex-editable-group') as any

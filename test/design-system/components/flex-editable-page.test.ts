@@ -140,3 +140,14 @@ describe('flex-editable-page page actions', () => {
     expect(staged.command).toEqual({ kind: 'swapPages', a: 'p1', b: 'p2' })
   })
 })
+
+describe('flex-editable-page renders groups', () => {
+  it('renders one flex-editable-group per group on the page', () => {
+    const el = document.createElement('flex-editable-page') as any
+    document.body.appendChild(el)
+    el.update(STATE, 0)
+    const groups = el.querySelectorAll('flex-editable-group')
+    expect(groups.length).toBe(1)
+    expect(groups[0].dataset.groupId).toBe('g1')
+  })
+})
