@@ -7,7 +7,7 @@ class FlexFormStructure extends HTMLElement {
   connectedCallback() {
     const root = this.closest('flex-form-editor')
     if (root) {
-      root.addEventListener('formeditor:spec-updated', (e) => {
+      root.addEventListener('formeditor:state-projected', (e) => {
         this.state = (e as CustomEvent).detail.state
         this.render()
       })
@@ -114,7 +114,7 @@ class FlexFormStructure extends HTMLElement {
         const pageId = select.dataset.pageId
         if (!pageId) return
         this.dispatchEvent(
-          new CustomEvent('formeditor:manual-command', {
+          new CustomEvent('formeditor:stage-command', {
             detail: {
               command: {
                 kind: 'setDeliveryMode',
@@ -158,7 +158,7 @@ class FlexFormStructure extends HTMLElement {
         if (target < 0 || target >= this.state.formSpec.pages.length) return
         const otherId = this.state.formSpec.pages[target].id
         this.dispatchEvent(
-          new CustomEvent('formeditor:manual-command', {
+          new CustomEvent('formeditor:stage-command', {
             detail: {
               command: { kind: 'swapPages', a: pageId, b: otherId },
               explanation: `Move page ${direction}`,
