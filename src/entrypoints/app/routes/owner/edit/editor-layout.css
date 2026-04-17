@@ -2,14 +2,12 @@
   display: grid;
   grid-template-columns: 240px 1fr 320px;
   grid-template-rows: auto 1fr;
-  /* Fill the remaining viewport space between header and footer.
-     body is display:flex column with main { flex:1 }, so this grid
-     fills the main element's height exactly. overflow:hidden ensures
-     the grid doesn't expand past its bounds — each panel scrolls
-     independently via overflow-y:auto. */
-  height: 100%;
-  min-height: 400px;
-  overflow: hidden;
+  /* flex:1 fills the remaining space in l-page-content--full.
+     min-height:0 overrides the grid default of min-height:auto,
+     which is essential: without it the grid expands to fit its
+     content and panels can never scroll. */
+  flex: 1;
+  min-height: 0;
 }
 
 .editor-breadcrumb {
@@ -43,12 +41,14 @@
 
 .editor-structure {
   grid-row: 2;
+  min-height: 0;
   border-inline-end: 1px solid var(--flex-color-border);
   overflow-y: auto;
 }
 
 .editor-preview {
   grid-row: 2;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   justify-content: center;
