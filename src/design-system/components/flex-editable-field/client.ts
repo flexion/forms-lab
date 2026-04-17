@@ -392,7 +392,9 @@ class FlexEditableField extends HTMLElement {
     if (d.fieldType !== f.fieldType) return true
     if ((d.required === true) !== (f.required === true)) return true
     if ((d.sensitivity ?? 'low') !== (f.sensitivity ?? 'low')) return true
-    if ((d.control ?? '') !== (f.control ?? '')) return true
+    // `setFieldControl` requires a concrete value; clearing back to the type
+    // default isn't expressible as a command, so it doesn't count as dirty.
+    if (d.control && d.control !== f.control) return true
     if (
       JSON.stringify(d.condition ?? null) !==
       JSON.stringify(f.condition ?? null)
