@@ -233,55 +233,57 @@ const GroupPanel: FC<{
       </summary>
       <div class="flex-spec-browser__panel-body">
         {group.description && <p class="text-muted">{group.description}</p>}
-        <table class="flex-table" data-variant="borderless" data-stacked>
-          <thead>
-            <tr>
-              <th scope="col">Field</th>
-              <th scope="col">Type</th>
-              <th scope="col">Required</th>
-              <th scope="col">Conditions</th>
-              <th scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {group.requirements.map((req) => {
-              const conf = confidenceMap.get(req.id)
-              return (
-                <tr key={req.id}>
-                  <td data-label="Field">
-                    <strong>{req.label}</strong>
-                    {req.helpText && (
-                      <div class="text-muted text-sm">{req.helpText}</div>
-                    )}
-                  </td>
-                  <td data-label="Type">
-                    {req.fieldType.charAt(0).toUpperCase() +
-                      req.fieldType.slice(1)}
-                  </td>
-                  <td data-label="Required">{req.required ? 'Yes' : 'No'}</td>
-                  <td data-label="Conditions">
-                    {req.condition ? (
-                      <span class="flex-spec-browser__condition">
-                        When {req.condition.field} {req.condition.operator}{' '}
-                        {String(req.condition.value)}
-                      </span>
-                    ) : (
-                      <span class="text-muted">&mdash;</span>
-                    )}
-                  </td>
-                  <td data-label="Status">
-                    {conf ? (
-                      <ConfidenceBadge
-                        confidence={conf.confidence}
-                        flags={conf.flags}
-                      />
-                    ) : null}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        <div class="flex-spec-browser__table-wrap">
+          <table class="flex-table" data-variant="borderless" data-stacked>
+            <thead>
+              <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Type</th>
+                <th scope="col">Required</th>
+                <th scope="col">Conditions</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {group.requirements.map((req) => {
+                const conf = confidenceMap.get(req.id)
+                return (
+                  <tr key={req.id}>
+                    <td data-label="Field">
+                      <strong>{req.label}</strong>
+                      {req.helpText && (
+                        <div class="text-muted text-sm">{req.helpText}</div>
+                      )}
+                    </td>
+                    <td data-label="Type">
+                      {req.fieldType.charAt(0).toUpperCase() +
+                        req.fieldType.slice(1)}
+                    </td>
+                    <td data-label="Required">{req.required ? 'Yes' : 'No'}</td>
+                    <td data-label="Conditions">
+                      {req.condition ? (
+                        <span class="flex-spec-browser__condition">
+                          When {req.condition.field} {req.condition.operator}{' '}
+                          {String(req.condition.value)}
+                        </span>
+                      ) : (
+                        <span class="text-muted">&mdash;</span>
+                      )}
+                    </td>
+                    <td data-label="Status">
+                      {conf ? (
+                        <ConfidenceBadge
+                          confidence={conf.confidence}
+                          flags={conf.flags}
+                        />
+                      ) : null}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </details>
   )

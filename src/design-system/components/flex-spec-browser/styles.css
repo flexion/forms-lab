@@ -223,6 +223,28 @@ flex-spec-browser {
   gap: var(--flex-space-sm);
   border-block-start: 1px solid var(--flex-color-border);
   padding-block-start: var(--flex-space-md);
+  min-inline-size: 0;
+}
+
+/* Horizontal overflow wrapper for the field table — lets the table
+   scroll inside its panel rather than pushing the whole page wider. */
+.flex-spec-browser__table-wrap {
+  overflow-x: auto;
+  max-inline-size: 100%;
+}
+
+.flex-spec-browser__table-wrap .flex-table {
+  margin: 0;
+  min-inline-size: max-content;
+}
+
+/* First column (Field label + helpText) is the only column that benefits
+   from wrapping long strings; other columns stay narrow. */
+.flex-spec-browser__table-wrap .flex-table td:first-child,
+.flex-spec-browser__table-wrap .flex-table th:first-child {
+  min-inline-size: 12rem;
+  max-inline-size: 24rem;
+  overflow-wrap: anywhere;
 }
 
 .flex-spec-browser__page-groups {
