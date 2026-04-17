@@ -4,9 +4,12 @@
   grid-template-rows: auto 1fr;
   /* Fill the remaining viewport space between header and footer.
      body is display:flex column with main { flex:1 }, so this grid
-     fills the main element's height exactly. */
+     fills the main element's height exactly. overflow:hidden ensures
+     the grid doesn't expand past its bounds — each panel scrolls
+     independently via overflow-y:auto. */
   height: 100%;
   min-height: 400px;
+  overflow: hidden;
 }
 
 .editor-breadcrumb {
