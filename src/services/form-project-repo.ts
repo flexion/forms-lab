@@ -35,6 +35,7 @@ export interface FormProjectRepo {
     files: FileEntry[],
     message: string,
     author: string,
+    options?: { branch?: string },
   ): Promise<string>
   readFile(slug: string, rev: string, path: string): Promise<Buffer | null>
   listTree(slug: string, rev: string, path: string): Promise<TreeEntry[]>
@@ -104,18 +105,6 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
     return Buffer.from(stdout)
   }
 
-  async function hasHead(slug: string): Promise<boolean> {
-    const proc = Bun.spawn(
-      ['git', '--git-dir', repoDir(slug), 'rev-parse', '--verify', 'HEAD'],
-      {
-        stdout: 'pipe',
-        stderr: 'pipe',
-      },
-    )
-    await proc.exited
-    return proc.exitCode === 0
-  }
-
   return {
     async init(slug: string): Promise<void> {
       const dir = repoDir(slug)
@@ -149,7 +138,10 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
       files: FileEntry[],
       message: string,
       author: string,
+      options?: { branch?: string },
     ): Promise<string> {
+      const branch = options?.branch ?? 'main'
+      const branchRef = `refs/heads/${branch}`
       const indexFile = join(repoDir(slug), `index-${crypto.randomUUID()}`)
       const authorEnv = {
         GIT_INDEX_FILE: indexFile,
@@ -159,10 +151,21 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
         GIT_COMMITTER_EMAIL: `${author}@users.noreply.github.com`,
       }
 
+      // Check whether the target branch already exists. A branch may be missing
+      // even when the repo has commits (e.g. first commit on a new branch).
+      const hasBranch = await (async () => {
+        try {
+          await git(slug, ['rev-parse', '--verify', branchRef])
+          return true
+        } catch {
+          return false
+        }
+      })()
+
       try {
-        // If HEAD exists, seed the temp index with the current tree
-        if (await hasHead(slug)) {
-          await git(slug, ['read-tree', 'HEAD'], { env: authorEnv })
+        // If the target branch exists, seed the temp index with its tree
+        if (hasBranch) {
+          await git(slug, ['read-tree', branchRef], { env: authorEnv })
         }
 
         // Add each file to the index
@@ -193,16 +196,16 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
 
         // Create the commit
         const commitArgs = ['commit-tree', treeSha, '-m', message]
-        if (await hasHead(slug)) {
-          commitArgs.push('-p', 'HEAD')
+        if (hasBranch) {
+          commitArgs.push('-p', branchRef)
         }
 
         const commitSha = (
           await git(slug, commitArgs, { env: authorEnv })
         ).trim()
 
-        // Update the main branch ref
-        await git(slug, ['update-ref', 'refs/heads/main', commitSha], {
+        // Advance the target branch ref
+        await git(slug, ['update-ref', branchRef, commitSha], {
           env: authorEnv,
         })
 
