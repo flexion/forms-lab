@@ -1,7 +1,4 @@
-import type {
-  ProjectStateClient,
-  SelectionTarget,
-} from '../flex-form-editor/protocol'
+import type { ProjectStateClient } from '../flex-form-editor/protocol'
 
 type DeliveryMode = 'static' | 'conversational' | 'hybrid'
 
@@ -28,7 +25,7 @@ const DELIVERY_DESCRIPTION: Record<DeliveryMode, string> = {
 class FlexFormStructure extends HTMLElement {
   private state: ProjectStateClient | null = null
   private collapsed = false
-  private selectedPageId: string | null = null
+  private activePageId: string | null = null
   private deliveryMenuOpenFor: string | null = null
   private documentClickHandler: ((e: MouseEvent) => void) | null = null
 
@@ -37,16 +34,16 @@ class FlexFormStructure extends HTMLElement {
     if (root) {
       root.addEventListener('formeditor:state-projected', (e) => {
         this.state = (e as CustomEvent).detail.state
-        this.render()
-      })
-      root.addEventListener('formeditor:selection-changed', (e) => {
-        const sel = (e as CustomEvent).detail
-          .selection as SelectionTarget | null
-        const next = sel?.kind === 'page' ? sel.id : null
-        if (next !== this.selectedPageId) {
-          this.selectedPageId = next
-          this.applySelectionClass()
+        if (this.state) {
+          const pages = this.state.formSpec.pages
+          if (
+            !this.activePageId ||
+            !pages.find((p) => p.id === this.activePageId)
+          ) {
+            this.activePageId = pages[0]?.id ?? null
+          }
         }
+        this.render()
       })
     }
     this.render()
@@ -108,7 +105,7 @@ class FlexFormStructure extends HTMLElement {
     const mode = (page.deliveryMode as DeliveryMode) ?? 'static'
     const canUp = i > 0
     const canDown = i < total - 1
-    const isSelected = page.id === this.selectedPageId
+    const isSelected = page.id === this.activePageId
     return `
       <li class="form-structure__page${isSelected ? ' form-structure__page--selected' : ''}" data-page-id="${page.id}">
         <button type="button" class="form-structure__row" data-action="select" data-page-id="${page.id}">
@@ -121,15 +118,17 @@ class FlexFormStructure extends HTMLElement {
         <span class="form-structure__actions">
           <span class="form-structure__delivery" data-delivery-for="${page.id}">
             <button type="button" class="form-structure__icon-btn" data-action="delivery-toggle" data-page-id="${page.id}" title="Delivery: ${DELIVERY_LABEL[mode]}" aria-label="Delivery mode: ${DELIVERY_LABEL[mode]}" aria-haspopup="menu" aria-expanded="false">
-              <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#${DELIVERY_ICON[mode]}" /></svg>
+              <svg class="flex-icon" data-size="3" data-sidebar-icon aria-hidden="true" focusable="false"><use href="/static/sprite.svg#${DELIVERY_ICON[mode]}" /></svg>
             </button>
           </span>
-          <button type="button" class="form-structure__icon-btn" data-action="up" data-page-id="${page.id}" aria-label="Move up" ${canUp ? '' : 'disabled'}>
-            <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#arrow_upward" /></svg>
-          </button>
-          <button type="button" class="form-structure__icon-btn" data-action="down" data-page-id="${page.id}" aria-label="Move down" ${canDown ? '' : 'disabled'}>
-            <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#arrow_downward" /></svg>
-          </button>
+          <span class="form-structure__reorder">
+            <button type="button" class="form-structure__icon-btn form-structure__icon-btn--mini" data-action="up" data-page-id="${page.id}" aria-label="Move up" ${canUp ? '' : 'disabled'}>
+              <svg class="flex-icon" data-size="3" data-sidebar-icon aria-hidden="true" focusable="false"><use href="/static/sprite.svg#arrow_upward" /></svg>
+            </button>
+            <button type="button" class="form-structure__icon-btn form-structure__icon-btn--mini" data-action="down" data-page-id="${page.id}" aria-label="Move down" ${canDown ? '' : 'disabled'}>
+              <svg class="flex-icon" data-size="3" data-sidebar-icon aria-hidden="true" focusable="false"><use href="/static/sprite.svg#arrow_downward" /></svg>
+            </button>
+          </span>
         </span>
       </li>
     `
@@ -143,7 +142,7 @@ class FlexFormStructure extends HTMLElement {
       const id = row.dataset.pageId
       row.classList.toggle(
         'form-structure__page--selected',
-        !!id && id === this.selectedPageId,
+        !!id && id === this.activePageId,
       )
     }
   }
@@ -170,7 +169,7 @@ class FlexFormStructure extends HTMLElement {
             menu.innerHTML = DELIVERY_MODES.map(
               (m) => `
                 <button type="button" role="menuitemradio" aria-checked="${m === currentMode}" class="form-structure__delivery-option${m === currentMode ? ' form-structure__delivery-option--current' : ''}" data-action="delivery-pick" data-page-id="${pageId}" data-mode="${m}">
-                  <svg class="flex-icon" data-size="3" aria-hidden="true" focusable="false"><use href="/static/sprite.svg#${DELIVERY_ICON[m]}" /></svg>
+                  <svg class="flex-icon" data-size="3" data-sidebar-icon aria-hidden="true" focusable="false"><use href="/static/sprite.svg#${DELIVERY_ICON[m]}" /></svg>
                   <span class="form-structure__delivery-label"><strong>${DELIVERY_LABEL[m]}</strong><span class="form-structure__delivery-desc">${DELIVERY_DESCRIPTION[m]}</span></span>
                 </button>
               `,
@@ -203,7 +202,7 @@ class FlexFormStructure extends HTMLElement {
     )) {
       btn.addEventListener('click', () => {
         const pageId = btn.dataset.pageId
-        if (pageId) this.dispatchSelect(pageId)
+        if (pageId) this.switchPage(pageId)
       })
     }
   }
@@ -219,7 +218,7 @@ class FlexFormStructure extends HTMLElement {
     )) {
       btn.addEventListener('click', () => {
         const pageId = btn.dataset.pageId
-        if (pageId) this.dispatchSelect(pageId)
+        if (pageId) this.switchPage(pageId)
       })
     }
 
@@ -336,10 +335,21 @@ class FlexFormStructure extends HTMLElement {
     this.render()
   }
 
-  private dispatchSelect(pageId: string) {
+  private switchPage(pageId: string) {
+    if (pageId === this.activePageId) return
+    this.activePageId = pageId
+    this.applySelectionClass()
     this.dispatchEvent(
-      new CustomEvent('formeditor:select', {
-        detail: { kind: 'page', id: pageId },
+      new CustomEvent('formeditor:switch-page', {
+        detail: { id: pageId },
+        bubbles: true,
+        composed: true,
+      }),
+    )
+    // Switching page should also clear any field/group/page edit selection.
+    this.dispatchEvent(
+      new CustomEvent('formeditor:deselect', {
+        detail: {},
         bubbles: true,
         composed: true,
       }),

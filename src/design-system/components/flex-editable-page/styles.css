@@ -4,10 +4,6 @@
     padding-block: var(--flex-space-md);
     padding-inline: var(--flex-space-lg);
   }
-  .editable-page__tabs {
-    display: block;
-    margin-block-end: var(--flex-space-lg);
-  }
   .editable-page__header {
     display: flex;
     align-items: center;

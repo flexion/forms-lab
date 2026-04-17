@@ -20,17 +20,18 @@ class FlexEditablePage extends HTMLElement {
       if (this.pageIndex >= next.formSpec.pages.length) this.pageIndex = 0
       if (!this.editingTitle) this.render()
     })
+    root.addEventListener('formeditor:switch-page', (e) => {
+      const id = (e as CustomEvent).detail.id as string
+      if (!this.state) return
+      const idx = this.state.formSpec.pages.findIndex((p) => p.id === id)
+      if (idx >= 0 && idx !== this.pageIndex) {
+        this.pageIndex = idx
+        this.pageSelected = false
+        this.render()
+      }
+    })
     root.addEventListener('formeditor:selection-changed', (e) => {
       const sel = (e as CustomEvent).detail.selection as SelectionTarget | null
-      if (sel?.kind === 'page' && this.state) {
-        const idx = this.state.formSpec.pages.findIndex((p) => p.id === sel.id)
-        if (idx >= 0 && idx !== this.pageIndex) {
-          this.pageIndex = idx
-          this.pageSelected = true
-          this.render()
-          return
-        }
-      }
       const currentId = this.state?.formSpec.pages[this.pageIndex]?.id
       const wasSelected = this.pageSelected
       this.pageSelected =
@@ -85,13 +86,6 @@ class FlexEditablePage extends HTMLElement {
     const prevPageId = canMoveUp ? pages[this.pageIndex - 1].id : null
     const deliveryMode = current.deliveryMode ?? 'static'
 
-    const tabs = pages
-      .map(
-        (p, i) =>
-          `<button type="button" role="tab" aria-selected="${i === this.pageIndex}" data-page-id="${p.id}" data-page-index="${i}" class="flex-tab-group__tab editable-page__tab">${i + 1}. ${escapeHtml(p.title)}</button>`,
-      )
-      .join('')
-
     const headerMarkup = this.pageSelected
       ? `<header class="editable-page__header editable-page__header--selected">
           <h2 class="editable-page__title" tabindex="0" data-action="edit-title" title="Click to rename page">${escapeHtml(current.title)}</h2>
@@ -123,7 +117,6 @@ class FlexEditablePage extends HTMLElement {
 
     this.innerHTML = `
       <div class="editable-page">
-        <flex-tab-group class="editable-page__tabs"><div role="tablist" aria-label="Form pages">${tabs}</div></flex-tab-group>
         ${headerMarkup}
         <div class="editable-page__body" data-page-id="${current.id}">
           ${groupsHtml}
@@ -131,25 +124,6 @@ class FlexEditablePage extends HTMLElement {
         ${footerMarkup}
       </div>
     `
-
-    for (const tab of this.querySelectorAll<HTMLButtonElement>(
-      '.editable-page__tab',
-    )) {
-      tab.addEventListener('click', () => {
-        const id = tab.dataset.pageId
-        const idx = Number(tab.dataset.pageIndex)
-        if (id === undefined) return
-        this.pageIndex = idx
-        this.dispatchEvent(
-          new CustomEvent('formeditor:deselect', {
-            detail: {},
-            bubbles: true,
-            composed: true,
-          }),
-        )
-        this.render()
-      })
-    }
 
     if (!this.pageSelected) {
       const titleEl = this.querySelector<HTMLElement>('.editable-page__title')

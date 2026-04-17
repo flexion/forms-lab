@@ -62,27 +62,25 @@ describe('flex-editable-page preview', () => {
     document.body.innerHTML = ''
   })
 
-  it('renders page tabs and a plain title header by default', () => {
+  it('renders the current page title as plain text by default', () => {
     const { el } = mount()
-    const tabs = el.querySelectorAll('.editable-page__tab')
-    expect(tabs.length).toBe(2)
-    expect(tabs[0].getAttribute('aria-selected')).toBe('true')
     expect(el.querySelector('.editable-page__title')!.textContent).toBe(
       'Page A',
     )
-    // No toolbar in preview
     expect(el.querySelector('.editable-page__toolbar')).toBeNull()
     expect(el.querySelector('[data-action="add-page"]')).toBeNull()
+    // No page-switcher tabs: sidebar is the only page navigation
+    expect(el.querySelector('.editable-page__tab')).toBeNull()
   })
 
-  it('tab click switches page and deselects', () => {
-    const { el } = mount()
-    let deselected = false
-    el.addEventListener('formeditor:deselect', () => {
-      deselected = true
-    })
-    ;(el.querySelectorAll('.editable-page__tab')[1] as HTMLElement).click()
-    expect(deselected).toBe(true)
+  it('switches the rendered page when the editor dispatches switch-page', () => {
+    const { root, el } = mount()
+    root.dispatchEvent(
+      new CustomEvent('formeditor:switch-page', {
+        detail: { id: 'p2' },
+        bubbles: false,
+      }),
+    )
     expect(el.querySelector('.editable-page__title')!.textContent).toBe(
       'Page B',
     )

@@ -34,6 +34,10 @@ export type FormEditorEvent =
       detail: { selection: SelectionTarget | null }
     }
   | {
+      type: 'formeditor:switch-page'
+      detail: { id: string }
+    }
+  | {
       type: 'formeditor:proposal-received'
       detail: { commands: Command[]; explanation: string }
     }
