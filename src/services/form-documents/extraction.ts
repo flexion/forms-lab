@@ -187,6 +187,7 @@ ${JSON.stringify(spec, null, 2)}`,
         spec,
         formSpec,
         confidence,
+        fieldMapping: {},
       }
     },
   }

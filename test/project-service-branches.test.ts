@@ -59,6 +59,7 @@ const SAMPLE_RESULT: ExtractionResult = {
     updatedAt: '2026-01-01T00:00:00Z',
   },
   confidence: [{ fieldId: 'field-name', confidence: 0.95 }],
+  fieldMapping: {},
 }
 
 function stubExtractor(result: ExtractionResult = SAMPLE_RESULT): PdfExtractor {

@@ -27,6 +27,7 @@ function createTestExtractionResult(): ExtractionResult {
     spec: testDataSpec,
     formSpec: testFormSpec,
     confidence: [{ fieldId: 'full-name', confidence: 0.95 }],
+    fieldMapping: {},
   }
 }
 

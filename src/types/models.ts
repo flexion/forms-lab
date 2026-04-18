@@ -181,6 +181,7 @@ export interface ExtractionResult {
   spec: DataCollectionSpec
   formSpec: FormSpec
   confidence: FieldConfidence[]
+  fieldMapping: Record<string, string>
 }
 
 export interface FieldConfidence {

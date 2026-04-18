@@ -47,6 +47,7 @@ function makeStubExtractor(output: DataCollectionSpec): PdfExtractor {
           updatedAt: '',
         },
         confidence: [],
+        fieldMapping: {},
       }
     },
   }

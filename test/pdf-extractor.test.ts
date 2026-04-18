@@ -40,6 +40,7 @@ const stubResult: ExtractionResult = {
     ],
   },
   confidence: [{ fieldId: 'f1', confidence: 0.95 }],
+  fieldMapping: {},
 }
 
 function createStubExtractor(
