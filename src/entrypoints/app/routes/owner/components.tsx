@@ -7,7 +7,10 @@ import type {
   CommitEntry,
   TreeEntry,
 } from '../../../../services/form-project-repo'
-import type { ProjectView } from '../../../../services/project-service'
+import type {
+  BranchEntry,
+  ProjectView,
+} from '../../../../services/project-service'
 import { resolveUrl } from '../../../../shared/base-path'
 import type { ProjectIndex, UserProfile } from '../../../../types/models'
 
@@ -132,7 +135,9 @@ export const ProjectOverview: FC<{
   user: SessionUser | null
   viewingSha?: string
   origin?: string
-}> = ({ view, owner, user, viewingSha, origin }) => {
+  branches?: BranchEntry[]
+  branch?: string
+}> = ({ view, owner, user, viewingSha, origin, branches, branch = 'main' }) => {
   const {
     project,
     spec,
@@ -170,7 +175,7 @@ export const ProjectOverview: FC<{
     spec?.groups.reduce((sum, g) => sum + g.requirements.length, 0) ?? 0
   const pageCount = formSpec?.pages.length ?? 0
   const lowConfCount = confidence?.filter((c) => c.confidence < 0.8).length ?? 0
-  const blobBasePath = `/${owner}/${project.slug}/blob/main`
+  const blobBasePath = `/${owner}/${project.slug}/blob/${branch}`
 
   const repoBase = `/${owner}/${project.slug}`
   const cloneUrl = `${origin ?? ''}/git/${project.slug}.git`
@@ -236,6 +241,27 @@ export const ProjectOverview: FC<{
 
       <RepoNav owner={owner} slug={project.slug} current="overview" />
 
+      {branches && branches.length > 1 && (
+        <form class="l-cluster" style="align-items: baseline;">
+          <label class="flex-label" for="branch-select">
+            Branch
+          </label>
+          <select
+            class="flex-select"
+            id="branch-select"
+            name="branch"
+            onchange={`window.location.search = '?branch=' + this.value`}
+          >
+            {branches.map((b) => (
+              <option key={b.name} value={b.name} selected={b.name === branch}>
+                {b.name}
+                {b.name === 'main' ? ' (published)' : ` (${b.ahead} ahead)`}
+              </option>
+            ))}
+          </select>
+        </form>
+      )}
+
       <div class="clone-bar">
         <code class="clone-bar__url">{cloneUrl}</code>
         <button
@@ -289,7 +315,7 @@ export const ProjectOverview: FC<{
   )
 }
 
-type RepoTab = 'overview' | 'history' | 'files'
+type RepoTab = 'overview' | 'pulls' | 'history' | 'files'
 
 const RepoNav: FC<{
   owner: string
@@ -299,6 +325,7 @@ const RepoNav: FC<{
   const base = `/${owner}/${slug}`
   const tabs: { id: RepoTab; label: string; href: string }[] = [
     { id: 'overview', label: 'Overview', href: base },
+    { id: 'pulls', label: 'Pull Requests', href: `${base}/pulls` },
     { id: 'history', label: 'History', href: `${base}/commits` },
     { id: 'files', label: 'Files', href: `${base}/tree/main` },
   ]
@@ -318,6 +345,102 @@ const RepoNav: FC<{
         ))}
       </ul>
     </nav>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// 2b. PullRequestsPage
+// ---------------------------------------------------------------------------
+
+export const PullRequestsPage: FC<{
+  view: ProjectView
+  owner: string
+  branches: BranchEntry[]
+}> = ({ view, owner, branches }) => {
+  const { project, isOwner, forkedFrom } = view
+  const repoBase = `/${owner}/${project.slug}`
+  const openPRs = branches.filter((b) => b.name !== 'main' && b.ahead > 0)
+
+  return (
+    <div class="l-stack">
+      <header class="repo-header">
+        <nav class="repo-header__path" aria-label="Repository path">
+          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+          <span class="repo-header__path-sep" aria-hidden="true">
+            /
+          </span>
+          <span class="repo-header__path-slug">{project.slug}</span>
+          {forkedFrom && (
+            <span class="repo-header__fork-badge">
+              forked from{' '}
+              <a href={resolveUrl(`/${forkedFrom.owner}/${forkedFrom.slug}`)}>
+                {forkedFrom.owner}/{forkedFrom.slug}
+              </a>
+            </span>
+          )}
+        </nav>
+        <div class="repo-header__title-row">
+          <h1 class="repo-header__title">{project.name}</h1>
+          <div class="repo-header__actions">
+            {isOwner && (
+              <a
+                href={resolveUrl(`${repoBase}/settings`)}
+                class="flex-button"
+                data-variant="outline"
+              >
+                Settings
+              </a>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <RepoNav owner={owner} slug={project.slug} current="pulls" />
+
+      <section class="l-stack">
+        <h2>Open</h2>
+        {openPRs.length === 0 ? (
+          <p class="text-muted">No open pull requests.</p>
+        ) : (
+          <table class="flex-table" data-variant="borderless" data-stacked>
+            <thead>
+              <tr>
+                <th scope="col">Branch</th>
+                <th scope="col">Ahead</th>
+                <th scope="col" />
+              </tr>
+            </thead>
+            <tbody>
+              {openPRs.map((b) => (
+                <tr key={b.name}>
+                  <td data-label="Branch">
+                    <a
+                      href={resolveUrl(`${repoBase}/compare/main...${b.name}`)}
+                    >
+                      {b.name}
+                    </a>
+                  </td>
+                  <td data-label="Ahead">
+                    {b.ahead} commit{b.ahead === 1 ? '' : 's'} ahead
+                  </td>
+                  <td>
+                    <a
+                      href={resolveUrl(`${repoBase}/compare/main...${b.name}`)}
+                      class="flex-button"
+                      data-variant="outline"
+                    >
+                      Review
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <h2>Merged</h2>
+        <p class="text-muted">Merged pull requests are not tracked yet.</p>
+      </section>
+    </div>
   )
 }
 
