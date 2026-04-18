@@ -3,7 +3,7 @@ import {
   SemanticDiff,
   type SemanticDiffChange,
 } from '../../../../../design-system/components/flex-semantic-diff'
-import { SpecBrowser } from '../../../../../design-system/components/flex-spec-browser'
+import { SpecDiffBrowser } from '../../../../../design-system/components/flex-spec-diff-browser'
 import type {
   ChangeResource,
   SpecChange,
@@ -125,37 +125,18 @@ export const ReviewPage: FC<ReviewPageProps> = (props) => {
       <section id="changes" class="compare__panel">
         <SemanticDiff changes={toSemanticDiffChanges(props.changes)} />
       </section>
-      <section id="preview" class="compare__panel compare__preview">
-        <div class="compare__preview-side" data-ref="base">
-          <header class="compare__preview-side-header">
-            <span class="compare__preview-side-label">Base</span>
-            <strong class="compare__preview-side-name">{props.base}</strong>
-          </header>
-          {props.baseView.spec && props.baseView.formSpec ? (
-            <SpecBrowser
-              dataSpec={props.baseView.spec}
-              formSpec={props.baseView.formSpec}
-              defaultExpanded="first"
-            />
-          ) : (
-            <p class="compare__empty">No specs on base yet.</p>
-          )}
-        </div>
-        <div class="compare__preview-side" data-ref="head">
-          <header class="compare__preview-side-header">
-            <span class="compare__preview-side-label">Head</span>
-            <strong class="compare__preview-side-name">{props.head}</strong>
-          </header>
-          {props.headView.spec && props.headView.formSpec ? (
-            <SpecBrowser
-              dataSpec={props.headView.spec}
-              formSpec={props.headView.formSpec}
-              defaultExpanded="first"
-            />
-          ) : (
-            <p class="compare__empty">No specs on head yet.</p>
-          )}
-        </div>
+      <section id="preview" class="compare__panel">
+        {props.headView.spec && props.headView.formSpec ? (
+          <SpecDiffBrowser
+            baseDataSpec={props.baseView.spec}
+            baseFormSpec={props.baseView.formSpec}
+            headDataSpec={props.headView.spec}
+            headFormSpec={props.headView.formSpec}
+            changes={props.changes}
+          />
+        ) : (
+          <p class="compare__empty">No specs on head yet.</p>
+        )}
       </section>
       <section id="history" class="compare__panel">
         {props.log.length === 0 ? (
