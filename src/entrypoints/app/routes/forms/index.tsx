@@ -48,6 +48,21 @@ interface ResolvedSpecs {
 interface FormRouterDeps {
   sessionGateway: FormSessionGateway
   submissionGateway: SubmissionGateway
+  specSnapshotStore?: {
+    get(specVersion: string): {
+      specVersion: string
+      specId: string
+      dataCollectionSpec: DataCollectionSpec
+      formSpec: FormSpec
+      cachedAt: string
+    } | null
+    put(
+      specVersion: string,
+      specId: string,
+      dataCollectionSpec: DataCollectionSpec,
+      formSpec: FormSpec,
+    ): void
+  }
   getSpecs: (specId: string, ref?: string) => Promise<ResolvedSpecs | null>
   listSpecs: () => Promise<ResolvedSpecs[]>
   /**
@@ -132,6 +147,7 @@ export function createFormRouter(deps: FormRouterDeps) {
   const {
     sessionGateway,
     submissionGateway,
+    specSnapshotStore,
     getSpecs,
     listSpecs,
     getEditHref,
@@ -481,6 +497,12 @@ export function createFormRouter(deps: FormRouterDeps) {
     }
     const submission = sessionGateway.submit(session.id)
     submissionGateway.save(submission)
+    specSnapshotStore?.put(
+      specs.sha,
+      specs.dataSpec.id,
+      specs.dataSpec,
+      specs.formSpec,
+    )
     const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.redirect(
       resolveUrl(
