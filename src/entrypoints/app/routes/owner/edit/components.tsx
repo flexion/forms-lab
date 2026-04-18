@@ -1,8 +1,12 @@
 import type { FC } from 'hono/jsx'
+import { Alert } from '../../../../../design-system/components/flex-alert'
+import { BranchSwitcher } from '../../../../../design-system/components/flex-branch-switcher'
+import { ChangeIndicator } from '../../../../../design-system/components/flex-change-indicator'
 import type { FormFieldRequirement } from '../../../../../design-system/components/flex-form-field'
 import { FormPageView } from '../../../../../design-system/components/flex-form-page'
 import type { SessionUser } from '../../../../../services/auth/session'
 import type {
+  BranchEntry,
   ProjectView,
   ShapingLogEntry,
 } from '../../../../../services/project-service'
@@ -12,26 +16,80 @@ function safeJsonForScript(value: unknown): string {
   return JSON.stringify(value).replace(/</g, '\\u003c')
 }
 
-export const EditorPage: FC<{
+export type EditorPageProps =
+  | {
+      mode: 'no-branch'
+      view: ProjectView
+      owner: string
+      user: SessionUser
+      branches: BranchEntry[]
+    }
+  | {
+      mode: 'editing'
+      view: ProjectView
+      owner: string
+      user: SessionUser
+      log: ShapingLogEntry[]
+      branch: string
+      branches: BranchEntry[]
+      changed: { dataSpec: boolean; formSpec: boolean }
+    }
+
+export const EditorPage: FC<EditorPageProps> = (props) => {
+  if (props.mode === 'no-branch') {
+    return <NoBranchShell {...props} />
+  }
+  return <EditingShell {...props} />
+}
+
+const NoBranchShell: FC<{
+  view: ProjectView
+  owner: string
+  user: SessionUser
+  branches: BranchEntry[]
+}> = ({ view, owner, branches }) => {
+  const { project } = view
+  return (
+    <section class="editor__no-branch l-stack">
+      <p class="editor__no-branch-crumbs">
+        <a href={resolveUrl(`/${owner}/${project.slug}`)}>
+          &larr; Back to {project.name}
+        </a>
+      </p>
+      <h2>Select a branch to edit</h2>
+      <p>
+        Choose an existing branch or create a new one. The <code>main</code>
+        branch is read-only.
+      </p>
+      <BranchSwitcher
+        current="main"
+        branches={branches}
+        branchHref={(b) => resolveUrl(`/${owner}/${project.slug}/edit/${b}`)}
+        createHref={resolveUrl(`/${owner}/${project.slug}/edit/main/branch`)}
+      />
+    </section>
+  )
+}
+
+const EditingShell: FC<{
   view: ProjectView
   owner: string
   user: SessionUser
   log: ShapingLogEntry[]
-}> = ({ view, owner, user: _user, log }) => {
+  branch: string
+  branches: BranchEntry[]
+  changed: { dataSpec: boolean; formSpec: boolean }
+}> = ({ view, owner, log, branch, branches, changed }) => {
   const { project, formSpec, spec } = view
-  const editBase = `/${owner}/${project.slug}/edit`
-
+  const editBase = `/${owner}/${project.slug}/edit/${branch}`
+  const previewBase = `/${owner}/${project.slug}/preview/${branch}`
   if (!formSpec || !spec) {
     return (
       <div class="l-stack">
-        <div class="flex-alert" data-variant="info" role="status">
-          <div class="flex-alert__body">
-            <p class="flex-alert__text">
-              No form specification available. The form must be extracted before
-              editing.
-            </p>
-          </div>
-        </div>
+        <Alert variant="info">
+          No form specification available. The form must be extracted before
+          editing.
+        </Alert>
       </div>
     )
   }
@@ -40,8 +98,9 @@ export const EditorPage: FC<{
     <flex-form-editor
       data-owner={owner}
       data-slug={project.slug}
+      data-branch={branch}
       data-edit-base={resolveUrl(editBase)}
-      data-preview-base={resolveUrl(`/${owner}/${project.slug}/preview`)}
+      data-preview-base={resolveUrl(previewBase)}
       data-current-sha={view.currentSha}
     >
       <script
@@ -66,6 +125,41 @@ export const EditorPage: FC<{
             {' / '}
             <strong>Edit</strong>
           </h1>
+          <div class="editor-breadcrumb__branch-controls">
+            <BranchSwitcher
+              current={branch}
+              branches={branches}
+              branchHref={(b) =>
+                resolveUrl(`/${owner}/${project.slug}/edit/${b}`)
+              }
+              createHref={resolveUrl(
+                `/${owner}/${project.slug}/edit/${branch}/branch`,
+              )}
+            />
+            {changed.dataSpec ? (
+              <span class="editor-breadcrumb__change">
+                <span class="editor-breadcrumb__change-label">Data spec</span>
+                <ChangeIndicator variant="modified" />
+              </span>
+            ) : null}
+            {changed.formSpec ? (
+              <span class="editor-breadcrumb__change">
+                <span class="editor-breadcrumb__change-label">Form spec</span>
+                <ChangeIndicator variant="modified" />
+              </span>
+            ) : null}
+            {branch !== 'main' ? (
+              <a
+                href={resolveUrl(
+                  `/${owner}/${project.slug}/compare/main...${branch}`,
+                )}
+                class="flex-button editor-breadcrumb__review-link"
+                data-variant="outline"
+              >
+                Review changes
+              </a>
+            ) : null}
+          </div>
           <div class="editor-breadcrumb__actions">
             <div class="editor-breadcrumb__staged">
               <button
@@ -99,7 +193,7 @@ export const EditorPage: FC<{
             <a
               class="flex-button"
               data-variant="outline"
-              href={resolveUrl(`/${owner}/${project.slug}/preview`)}
+              href={resolveUrl(previewBase)}
               target="_blank"
               rel="noopener"
             >

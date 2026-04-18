@@ -110,7 +110,9 @@ async function waitForReady(
   throw new Error(`Timed out waiting for project ${projectId} to become ready`)
 }
 
-/** Helper: create a project and wait for extraction to finish */
+/** Helper: create a project, wait for extraction, then publish it to main.
+ * Imports now land on an 'import' branch by design (story 5). Published-state
+ * tests want the content on main, so this helper merges for them. */
 async function createReadyProject(
   service: ProjectService,
   projectStore: ReturnType<typeof createProjectStore>,
@@ -123,6 +125,7 @@ async function createReadyProject(
     user,
   )
   await waitForReady(projectStore, project.id)
+  await repo.mergeBranch(project.slug, 'import', 'main')
   return projectStore.get(project.id) as ProjectIndex
 }
 
@@ -197,7 +200,10 @@ describe('GET /:owner/:slug (project overview)', () => {
     expect(res.status).toBe(200)
     const html = await res.text()
     expect(html).toContain('Test Form')
-    expect(html).toContain('Extracted Data Requirements')
+    // Spec browser renders sticky nav + collapsible panels instead of the
+    // old "Extracted Data Requirements" / "Form Layout" section headings.
+    expect(html).toContain('flex-spec-browser')
+    expect(html).toContain('On this form')
     expect(html).toContain('project-summary')
   })
 

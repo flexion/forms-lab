@@ -20,6 +20,16 @@ export interface CommitEntry {
   date: string
 }
 
+export interface BranchEntry {
+  name: string
+  sha: string
+  ahead: number
+}
+
+export type MergeResult =
+  | { ok: true; sha: string }
+  | { ok: false; reason: 'not-fast-forward' | 'unknown-branch' }
+
 export interface FormProjectRepo {
   init(slug: string): Promise<void>
   exists(slug: string): boolean
@@ -29,6 +39,7 @@ export interface FormProjectRepo {
     files: FileEntry[],
     message: string,
     author: string,
+    options?: { branch?: string },
   ): Promise<string>
   readFile(slug: string, rev: string, path: string): Promise<Buffer | null>
   listTree(slug: string, rev: string, path: string): Promise<TreeEntry[]>
@@ -40,6 +51,15 @@ export interface FormProjectRepo {
   ): Promise<CommitEntry[]>
   cloneBare(sourceSlug: string, destSlug: string): Promise<void>
   headSha(slug: string, ref: string): Promise<string>
+  listBranches(slug: string): Promise<BranchEntry[]>
+  getBranchDiff(slug: string, base: string, head: string): Promise<string[]>
+  createBranch(slug: string, name: string, startPoint: string): Promise<void>
+  deleteBranch(slug: string, name: string): Promise<void>
+  mergeBranch(
+    slug: string,
+    source: string,
+    target: string,
+  ): Promise<MergeResult>
 }
 
 export function createFormProjectRepo(basePath: string): FormProjectRepo {
@@ -96,16 +116,16 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
     return Buffer.from(stdout)
   }
 
-  async function hasHead(slug: string): Promise<boolean> {
-    const proc = Bun.spawn(
-      ['git', '--git-dir', repoDir(slug), 'rev-parse', '--verify', 'HEAD'],
-      {
-        stdout: 'pipe',
-        stderr: 'pipe',
-      },
-    )
-    await proc.exited
-    return proc.exitCode === 0
+  async function branchExists(
+    slug: string,
+    branchRef: string,
+  ): Promise<boolean> {
+    try {
+      await git(slug, ['rev-parse', '--verify', branchRef])
+      return true
+    } catch {
+      return false
+    }
   }
 
   return {
@@ -141,7 +161,10 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
       files: FileEntry[],
       message: string,
       author: string,
+      options?: { branch?: string },
     ): Promise<string> {
+      const branch = options?.branch ?? 'main'
+      const branchRef = `refs/heads/${branch}`
       const indexFile = join(repoDir(slug), `index-${crypto.randomUUID()}`)
       const authorEnv = {
         GIT_INDEX_FILE: indexFile,
@@ -151,10 +174,14 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
         GIT_COMMITTER_EMAIL: `${author}@users.noreply.github.com`,
       }
 
+      // Check whether the target branch already exists. A branch may be missing
+      // even when the repo has commits (e.g. first commit on a new branch).
+      const hasBranch = await branchExists(slug, branchRef)
+
       try {
-        // If HEAD exists, seed the temp index with the current tree
-        if (await hasHead(slug)) {
-          await git(slug, ['read-tree', 'HEAD'], { env: authorEnv })
+        // If the target branch exists, seed the temp index with its tree
+        if (hasBranch) {
+          await git(slug, ['read-tree', branchRef], { env: authorEnv })
         }
 
         // Add each file to the index
@@ -185,16 +212,16 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
 
         // Create the commit
         const commitArgs = ['commit-tree', treeSha, '-m', message]
-        if (await hasHead(slug)) {
-          commitArgs.push('-p', 'HEAD')
+        if (hasBranch) {
+          commitArgs.push('-p', branchRef)
         }
 
         const commitSha = (
           await git(slug, commitArgs, { env: authorEnv })
         ).trim()
 
-        // Update the main branch ref
-        await git(slug, ['update-ref', 'refs/heads/main', commitSha], {
+        // Advance the target branch ref
+        await git(slug, ['update-ref', branchRef, commitSha], {
           env: authorEnv,
         })
 
@@ -297,6 +324,94 @@ export function createFormProjectRepo(basePath: string): FormProjectRepo {
 
     async headSha(slug: string, ref: string): Promise<string> {
       return (await git(slug, ['rev-parse', ref])).trim()
+    },
+
+    async listBranches(slug: string): Promise<BranchEntry[]> {
+      const output = await git(slug, [
+        'for-each-ref',
+        '--format=%(refname:short)%00%(objectname)',
+        'refs/heads/',
+      ])
+      if (!output.trim()) return []
+      const entries = output
+        .trim()
+        .split('\n')
+        .map((line) => {
+          const [name, sha] = line.split('\0')
+          return { name, sha }
+        })
+      const result: BranchEntry[] = []
+      for (const entry of entries) {
+        let ahead = 0
+        if (entry.name !== 'main') {
+          try {
+            const count = await git(slug, [
+              'rev-list',
+              '--count',
+              `main..${entry.name}`,
+            ])
+            ahead = parseInt(count.trim(), 10) || 0
+          } catch {
+            ahead = 0
+          }
+        }
+        result.push({ ...entry, ahead })
+      }
+      return result
+    },
+
+    async getBranchDiff(
+      slug: string,
+      base: string,
+      head: string,
+    ): Promise<string[]> {
+      const output = await git(slug, [
+        'diff',
+        '--name-only',
+        `${base}...${head}`,
+      ])
+      if (!output.trim()) return []
+      return output.trim().split('\n')
+    },
+
+    async createBranch(
+      slug: string,
+      name: string,
+      startPoint: string,
+    ): Promise<void> {
+      await git(slug, ['branch', name, startPoint])
+      await git(slug, ['update-server-info'])
+    },
+
+    async deleteBranch(slug: string, name: string): Promise<void> {
+      await git(slug, ['branch', '-D', name])
+      await git(slug, ['update-server-info'])
+    },
+
+    async mergeBranch(
+      slug: string,
+      source: string,
+      target: string,
+    ): Promise<MergeResult> {
+      const sourceRef = `refs/heads/${source}`
+      const targetRef = `refs/heads/${target}`
+      // Verify both branches exist
+      if (
+        !(await branchExists(slug, sourceRef)) ||
+        !(await branchExists(slug, targetRef))
+      ) {
+        return { ok: false, reason: 'unknown-branch' }
+      }
+      // Fast-forwardability: target must be an ancestor of source
+      try {
+        await git(slug, ['merge-base', '--is-ancestor', targetRef, sourceRef])
+      } catch {
+        return { ok: false, reason: 'not-fast-forward' }
+      }
+      const sourceSha = (await git(slug, ['rev-parse', sourceRef])).trim()
+      await git(slug, ['update-ref', targetRef, sourceSha])
+      await git(slug, ['update-server-info'])
+      return { ok: true, sha: sourceSha }
     },
   }
 }

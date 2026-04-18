@@ -11,6 +11,7 @@ import {
   ErrorPage,
   ProfilePage,
   ProjectOverview,
+  PullRequestsPage,
   SettingsPage,
   TreePage,
 } from './components'
@@ -75,9 +76,13 @@ export function createOwnerRoutes(
     const owner = c.req.param('owner')
     const slug = c.req.param('slug')
     const user = c.get('user')
+    const branch = c.req.query('branch') ?? 'main'
 
     try {
-      const view = await service.getProject(owner, slug, user)
+      const [view, branches] = await Promise.all([
+        service.getProject(owner, slug, user, branch),
+        service.listBranches(slug),
+      ])
       const origin = getExternalOrigin(c)
       return c.html(
         <Layout user={user}>
@@ -86,7 +91,32 @@ export function createOwnerRoutes(
             owner={owner}
             user={user}
             origin={origin}
+            branches={branches}
+            branch={branch}
           />
+        </Layout>,
+      )
+    } catch (err) {
+      return handleError(c, err)
+    }
+  })
+
+  // -----------------------------------------------------------------------
+  // 2b. GET /:owner/:slug/pulls — Pull requests
+  // -----------------------------------------------------------------------
+  app.get('/:owner/:slug/pulls', async (c) => {
+    const owner = c.req.param('owner')
+    const slug = c.req.param('slug')
+    const user = c.get('user')
+
+    try {
+      const [view, branches] = await Promise.all([
+        service.getProject(owner, slug, user),
+        service.listBranches(slug),
+      ])
+      return c.html(
+        <Layout user={user} title={`Pull Requests — ${view.project.name}`}>
+          <PullRequestsPage view={view} owner={owner} branches={branches} />
         </Layout>,
       )
     } catch (err) {

@@ -1,0 +1,115 @@
+/* flex-semantic-diff — grouped list of spec changes with per-category
+   color accents. Callers pass a list of SpecChange records. Presentation
+   is stateless. */
+
+.flex-semantic-diff {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-lg);
+}
+
+.flex-semantic-diff__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+}
+
+.flex-semantic-diff__heading {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+  font-size: var(--flex-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.flex-semantic-diff__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-xs);
+}
+
+.flex-semantic-diff__change {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--flex-space-sm);
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  border: 1px solid var(--flex-color-border);
+  border-inline-start: 4px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-surface);
+}
+
+.flex-semantic-diff__badge {
+  flex-shrink: 0;
+  padding: 0 var(--flex-space-xs);
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-border);
+  color: var(--flex-color-text);
+  font-family: var(--flex-font-mono);
+  font-size: var(--flex-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.flex-semantic-diff__description {
+  color: var(--flex-color-text);
+  font-size: var(--flex-text-sm);
+  line-height: 1.4;
+}
+
+.flex-semantic-diff__change[data-category="added"] {
+  border-inline-start-color: var(--flex-color-success);
+}
+
+.flex-semantic-diff__change[data-category="added"] .flex-semantic-diff__badge {
+  background: var(--flex-color-success-lighter);
+  color: var(--flex-color-text);
+}
+
+.flex-semantic-diff__change[data-category="removed"] {
+  border-inline-start-color: var(--flex-color-error);
+}
+
+.flex-semantic-diff__change[data-category="removed"] .flex-semantic-diff__badge {
+  background: var(--flex-color-error-lighter);
+  color: var(--flex-color-text);
+}
+
+.flex-semantic-diff__change[data-category="modified"] {
+  border-inline-start-color: var(--flex-color-warning);
+}
+
+.flex-semantic-diff__change[data-category="modified"] .flex-semantic-diff__badge {
+  background: var(--flex-color-warning-lighter);
+  color: var(--flex-color-text);
+}
+
+.flex-semantic-diff__change[data-category="moved"] {
+  border-inline-start-color: var(--flex-color-accent);
+}
+
+.flex-semantic-diff__change[data-category="moved"] .flex-semantic-diff__badge {
+  background: var(--flex-color-info-lighter);
+  color: var(--flex-color-text);
+}
+
+.flex-semantic-diff__change[data-category="renamed"] {
+  border-inline-start-color: var(--flex-color-info);
+}
+
+.flex-semantic-diff__change[data-category="renamed"] .flex-semantic-diff__badge {
+  background: var(--flex-color-info-lighter);
+  color: var(--flex-color-text);
+}
+
+.flex-semantic-diff__empty {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+  font-size: var(--flex-text-sm);
+}

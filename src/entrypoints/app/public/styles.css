@@ -53,6 +53,7 @@
 @import "../../../design-system/components/flex-validation/styles.css" layer(block);
 @import "../../../design-system/components/flex-input-prefix-suffix/styles.css" layer(block);
 @import "../../../design-system/components/flex-site-alert/styles.css" layer(block);
+@import "../../../design-system/components/flex-preview-banner/styles.css" layer(block);
 @import "../../../design-system/components/flex-summary-box/styles.css" layer(block);
 @import "../../../design-system/components/flex-step-indicator/styles.css" layer(block);
 @import "../../../design-system/components/flex-process-list/styles.css" layer(block);
@@ -81,9 +82,17 @@
 @import "../../../design-system/components/flex-editable-group/styles.css" layer(block);
 @import "../../../design-system/components/flex-editable-field/styles.css" layer(block);
 @import "../../../design-system/components/flex-staged-changes/styles.css" layer(block);
+@import "../../../design-system/components/flex-branch-indicator/styles.css" layer(block);
+@import "../../../design-system/components/flex-branch-switcher/styles.css" layer(block);
+@import "../../../design-system/components/flex-change-indicator/styles.css" layer(block);
+@import "../../../design-system/components/flex-semantic-diff/styles.css" layer(block);
+@import "../../../design-system/components/flex-confidence-badge/styles.css" layer(block);
+@import "../../../design-system/components/flex-spec-browser/styles.css" layer(block);
+@import "../../../design-system/components/flex-spec-diff-browser/styles.css" layer(block);
 @import "../routes/projects/styles.css" layer(block);
 @import "../routes/owner/edit/styles.css" layer(block);
 @import "../routes/owner/edit/editor-layout.css" layer(block);
+@import "../routes/owner/compare/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);

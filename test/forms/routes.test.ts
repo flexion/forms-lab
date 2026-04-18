@@ -5,8 +5,13 @@ import { InMemoryFormSessionGateway } from '../../src/services/forms/session'
 import { InMemorySubmissionGateway } from '../../src/services/forms/submission'
 import { testDataSpec, testFormSpec } from './fixtures'
 
+const TEST_SHA = 'abc1234567890def1234567890abc1234567890'
+
 const specRegistry = new Map([
-  [testDataSpec.id, { dataSpec: testDataSpec, formSpec: testFormSpec }],
+  [
+    testDataSpec.id,
+    { dataSpec: testDataSpec, formSpec: testFormSpec, sha: TEST_SHA },
+  ],
 ])
 
 const TEST_USER = {
@@ -29,8 +34,8 @@ function createTestApp() {
     createFormRouter({
       sessionGateway,
       submissionGateway,
-      getSpecs: (specId) => specRegistry.get(specId) ?? null,
-      listSpecs: () => [...specRegistry.values()],
+      getSpecs: async (specId) => specRegistry.get(specId) ?? null,
+      listSpecs: async () => [...specRegistry.values()],
     }),
   )
   return app
@@ -50,8 +55,8 @@ function createUnauthTestApp() {
     createFormRouter({
       sessionGateway,
       submissionGateway,
-      getSpecs: (specId) => specRegistry.get(specId) ?? null,
-      listSpecs: () => [...specRegistry.values()],
+      getSpecs: async (specId) => specRegistry.get(specId) ?? null,
+      listSpecs: async () => [...specRegistry.values()],
     }),
   )
   return app
@@ -375,8 +380,8 @@ describe('Form routes', () => {
       createFormRouter({
         sessionGateway,
         submissionGateway,
-        getSpecs: (specId) => specRegistry.get(specId) ?? null,
-        listSpecs: () => [...specRegistry.values()],
+        getSpecs: async (specId) => specRegistry.get(specId) ?? null,
+        listSpecs: async () => [...specRegistry.values()],
       }),
     )
     // otheruser creates a session in the same gateway
@@ -391,6 +396,99 @@ describe('Form routes', () => {
     expect(matches).toHaveLength(1)
   })
 
+  it('GET /forms/:specId/branches/:branch shows preview banner', async () => {
+    const app = createTestApp()
+    const res = await app.request('/forms/benefits-app/branches/feature-x')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('flex-preview-banner')
+    expect(html).toContain('feature-x')
+    expect(html).toContain('Benefits Application Form')
+    // Start link should be branch-qualified
+    expect(html).toContain('/forms/benefits-app/branches/feature-x/sessions')
+  })
+
+  it('GET /forms/:specId (main) does not show the preview banner', async () => {
+    const app = createTestApp()
+    const res = await app.request('/forms/benefits-app')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).not.toContain('flex-preview-banner')
+  })
+
+  it('branch-qualified session flow pins submission specVersion to SHA', async () => {
+    const sessionGateway = new InMemoryFormSessionGateway()
+    const submissionGateway = new InMemorySubmissionGateway()
+    const app = new Hono()
+    app.use('*', async (c, next) => {
+      c.set('user', TEST_USER)
+      await next()
+    })
+    app.route(
+      '/forms',
+      createFormRouter({
+        sessionGateway,
+        submissionGateway,
+        getSpecs: async (specId) => specRegistry.get(specId) ?? null,
+        listSpecs: async () => [...specRegistry.values()],
+      }),
+    )
+
+    const createRes = await app.request(
+      '/forms/benefits-app/branches/feature-x/sessions',
+      { method: 'POST' },
+    )
+    expect(createRes.status).toBe(302)
+    const location = createRes.headers.get('Location') ?? ''
+    expect(location).toContain('/branches/feature-x/')
+    const sessionId = location.split('/sessions/')[1].split('/pages/')[0]
+    const baseUrl = `/forms/benefits-app/branches/feature-x/sessions/${sessionId}`
+
+    // Fill all pages
+    await app.request(`${baseUrl}/pages/0`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        fullName: 'Alice Johnson',
+        email: 'alice@example.com',
+      }),
+    })
+    await app.request(`${baseUrl}/pages/1`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        employed: 'Yes',
+        employmentType: 'Full-time',
+        monthlyIncome: '5000',
+      }),
+    })
+    await app.request(`${baseUrl}/pages/2`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        startDate: '2026-05-01',
+        dependents: '2',
+        agreeTerms: 'on',
+      }),
+    })
+
+    // The page render on the branch URL should include the preview banner
+    const pageGet = await app.request(`${baseUrl}/pages/0`)
+    const pageHtml = await pageGet.text()
+    expect(pageHtml).toContain('flex-preview-banner')
+    expect(pageHtml).toContain('feature-x')
+
+    // Submit and verify the submission is pinned to the test SHA
+    const submitRes = await app.request(`${baseUrl}/submit`, { method: 'POST' })
+    expect(submitRes.status).toBe(302)
+    const confirmLocation = submitRes.headers.get('Location') ?? ''
+    const submissionId = new URL(
+      confirmLocation,
+      'http://localhost',
+    ).searchParams.get('submissionId')
+    expect(submissionId).toBeTruthy()
+    const submission = submissionGateway.getSubmission(submissionId ?? '')
+    expect(submission).not.toBeNull()
+    expect(submission?.specVersion).toBe(TEST_SHA)
+  })
+
   it('user cannot access another user session', async () => {
     // Set up shared gateways
     const sessionGateway = new InMemoryFormSessionGateway()
@@ -398,9 +496,9 @@ describe('Form routes', () => {
     const routerDeps = {
       sessionGateway,
       submissionGateway,
-      getSpecs: (specId: string) => specRegistry.get(specId) ?? null,
-      listSpecs: () => [...specRegistry.values()],
-    }
+      getSpecs: async (specId: string) => specRegistry.get(specId) ?? null,
+      listSpecs: async () => [...specRegistry.values()],
+    } as const
 
     // User A creates a session
     const appA = new Hono()

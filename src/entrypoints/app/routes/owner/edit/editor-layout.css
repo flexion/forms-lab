@@ -1,7 +1,10 @@
 /* Three-panel editor: structure (sticky left) | preview (flows) | assistant (sticky right).
-   The page scrolls normally. Sidebars stick to the viewport and scroll independently. */
+   The page scrolls normally. The breadcrumb pins to the viewport top; sidebars stick
+   immediately below it and scroll independently. */
 
 .editor-layout {
+  --editor-breadcrumb-block-size: 3.5rem;
+
   display: grid;
   grid-template-columns: 240px 1fr 320px;
   grid-template-rows: auto auto;
@@ -9,8 +12,12 @@
 
 .editor-breadcrumb {
   grid-column: 1 / -1;
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
   padding: var(--flex-space-sm) var(--flex-space-md);
   border-block-end: 1px solid var(--flex-color-border);
+  background: var(--flex-color-bg);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,13 +43,37 @@
   color: var(--flex-color-text);
 }
 
+.editor-breadcrumb__branch-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-sm);
+  flex-wrap: wrap;
+}
+
+.editor-breadcrumb__change {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--flex-space-2xs);
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+}
+
+.editor-breadcrumb__change-label {
+  font-weight: 600;
+}
+
+.editor-breadcrumb__review-link {
+  margin-inline-start: var(--flex-space-xs);
+}
+
 /* --- Structure sidebar (sticky left) --- */
 
 .editor-structure {
   grid-row: 2;
   position: sticky;
-  top: 0;
+  inset-block-start: var(--editor-breadcrumb-block-size);
   overflow-y: auto;
+  max-block-size: calc(100dvh - var(--editor-breadcrumb-block-size));
   border-inline-end: 1px solid var(--flex-color-border);
   align-self: start;
 }
@@ -67,7 +98,8 @@
 .editor-assistant {
   grid-row: 2;
   position: sticky;
-  top: 0;
+  inset-block-start: var(--editor-breadcrumb-block-size);
+  max-block-size: calc(100dvh - var(--editor-breadcrumb-block-size));
   border-inline-start: 1px solid var(--flex-color-border);
   align-self: start;
 }

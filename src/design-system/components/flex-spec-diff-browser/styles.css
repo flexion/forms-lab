@@ -1,0 +1,333 @@
+/* flex-spec-diff-browser — annotated single-column diff of a form spec.
+   One head-side browser with change badges inline, "was" rows for
+   modified/renamed fields, and base-side entries spliced in for removed
+   pages/groups/fields. Uses native <details> for all disclosure. */
+
+flex-spec-diff-browser {
+  display: block;
+  container-type: inline-size;
+  container-name: spec-diff-browser;
+}
+
+.flex-spec-diff-browser {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-md);
+  min-inline-size: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Overview strip (counts + jump-links) */
+
+.flex-spec-diff-browser__overview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-2xs);
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-md);
+  background: var(--flex-color-surface);
+}
+
+.flex-spec-diff-browser__overview-empty {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+}
+
+.flex-spec-diff-browser__overview-counts {
+  margin: 0;
+  font-weight: 600;
+  color: var(--flex-color-text);
+  font-size: 1rem;
+}
+
+.flex-spec-diff-browser__overview-jumps {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+}
+
+.flex-spec-diff-browser__overview-jumps-label {
+  font-weight: 600;
+  color: var(--flex-color-text);
+}
+
+.flex-spec-diff-browser__overview-jump {
+  color: var(--flex-color-accent);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+}
+
+.flex-spec-diff-browser__overview-sep {
+  color: var(--flex-color-text-muted);
+}
+
+/* Panels (pages) */
+
+.flex-spec-diff-browser__panels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+}
+
+.flex-spec-diff-browser__panel {
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-md);
+  background: var(--flex-color-surface);
+  border-inline-start-width: 3px;
+}
+
+.flex-spec-diff-browser__panel[open] {
+  box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+}
+
+.flex-spec-diff-browser__panel-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-sm);
+  flex-wrap: wrap;
+  font-weight: 600;
+  font-size: 1.06rem;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::before {
+    content: "\25B8"; /* right-pointing triangle */
+    display: inline-block;
+    color: var(--flex-color-text-muted);
+    font-size: 0.85em;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  &:hover .flex-spec-diff-browser__panel-title {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: var(--flex-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.flex-spec-diff-browser__panel[open] > .flex-spec-diff-browser__panel-summary::before {
+  transform: rotate(90deg);
+}
+
+.flex-spec-diff-browser__panel-number {
+  color: var(--flex-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.flex-spec-diff-browser__panel-title {
+  flex: 1 1 auto;
+}
+
+.flex-spec-diff-browser__panel-body {
+  padding: 0 var(--flex-space-md) var(--flex-space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+  border-block-start: 1px solid var(--flex-color-border);
+  padding-block-start: var(--flex-space-md);
+  min-inline-size: 0;
+}
+
+/* Change-category tints on pages / groups / fields */
+
+.flex-spec-diff-browser__panel[data-change="added"],
+.flex-spec-diff-browser__group[data-change="added"],
+.flex-spec-diff-browser__field[data-change="added"] {
+  background: var(--flex-color-success-lighter);
+  border-inline-start-color: var(--flex-color-success);
+}
+
+.flex-spec-diff-browser__panel[data-change="modified"],
+.flex-spec-diff-browser__panel[data-change="renamed"],
+.flex-spec-diff-browser__group[data-change="modified"],
+.flex-spec-diff-browser__group[data-change="renamed"],
+.flex-spec-diff-browser__field[data-change="modified"],
+.flex-spec-diff-browser__field[data-change="renamed"] {
+  background: var(--flex-color-warning-lighter);
+  border-inline-start-color: var(--flex-color-warning);
+}
+
+.flex-spec-diff-browser__panel[data-change="removed"],
+.flex-spec-diff-browser__group[data-change="removed"],
+.flex-spec-diff-browser__field[data-change="removed"] {
+  background: var(--flex-color-error-lighter);
+  border-inline-start-color: var(--flex-color-error);
+}
+
+.flex-spec-diff-browser__panel[data-change="moved"],
+.flex-spec-diff-browser__group[data-change="moved"] {
+  background: var(--flex-color-info-lighter);
+  border-inline-start-color: var(--flex-color-info);
+}
+
+/* Strike the label on removed items so the "what disappeared" read lands. */
+
+.flex-spec-diff-browser__field[data-change="removed"]
+  .flex-spec-diff-browser__field-label {
+  text-decoration: line-through;
+  color: var(--flex-color-text-muted);
+}
+
+/* Groups (inside a page panel) */
+
+.flex-spec-diff-browser__groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+}
+
+.flex-spec-diff-browser__group {
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-surface);
+  border-inline-start-width: 3px;
+}
+
+.flex-spec-diff-browser__group-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-sm);
+  flex-wrap: wrap;
+  font-weight: 600;
+  font-size: 1rem;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::before {
+    content: "\25B8";
+    display: inline-block;
+    color: var(--flex-color-text-muted);
+    font-size: 0.8em;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  &:focus-visible {
+    outline: var(--flex-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.flex-spec-diff-browser__group[open]
+  > .flex-spec-diff-browser__group-summary::before {
+  transform: rotate(90deg);
+}
+
+.flex-spec-diff-browser__group-title {
+  flex: 1 1 auto;
+}
+
+.flex-spec-diff-browser__group-unchanged {
+  color: var(--flex-color-text-muted);
+  font-weight: 400;
+}
+
+.flex-spec-diff-browser__group-body {
+  padding: var(--flex-space-xs) var(--flex-space-sm) var(--flex-space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-2xs);
+  border-block-start: 1px solid var(--flex-color-border);
+  padding-block-start: var(--flex-space-xs);
+  min-inline-size: 0;
+}
+
+/* Fields */
+
+.flex-spec-diff-browser__field {
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  border-radius: var(--flex-radius-sm);
+  border-inline-start: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-2xs);
+}
+
+.flex-spec-diff-browser__field-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--flex-space-xs);
+  font-size: 1rem;
+}
+
+.flex-spec-diff-browser__field-row--was {
+  color: var(--flex-color-text-muted);
+  font-size: 0.9rem;
+  text-decoration: line-through;
+}
+
+.flex-spec-diff-browser__field-was-prefix {
+  font-style: italic;
+  text-decoration: none;
+}
+
+.flex-spec-diff-browser__field-label {
+  color: var(--flex-color-text);
+}
+
+.flex-spec-diff-browser__field-type {
+  color: var(--flex-color-text-muted);
+  font-family: var(--flex-font-mono);
+  font-size: 0.85rem;
+}
+
+.flex-spec-diff-browser__field-required {
+  color: var(--flex-color-text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Change badges (+ New, ~ Modified, etc.) */
+
+.flex-spec-diff-browser__badge {
+  display: inline-block;
+  font-size: var(--flex-text-tag);
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--flex-radius-bubble);
+  line-height: 1.4;
+  white-space: nowrap;
+
+  &[data-change="added"] {
+    background: var(--flex-color-success);
+    color: var(--flex-color-surface);
+  }
+
+  &[data-change="modified"],
+  &[data-change="renamed"] {
+    background: var(--flex-color-warning);
+    color: var(--flex-color-text);
+  }
+
+  &[data-change="removed"] {
+    background: var(--flex-color-error);
+    color: var(--flex-color-surface);
+  }
+
+  &[data-change="moved"] {
+    background: var(--flex-color-info);
+    color: var(--flex-color-surface);
+  }
+}

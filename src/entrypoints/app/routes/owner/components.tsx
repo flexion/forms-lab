@@ -1,164 +1,23 @@
 import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../../fixtures/index'
+import { Alert } from '../../../../design-system/components/flex-alert'
+import { BranchSwitcher } from '../../../../design-system/components/flex-branch-switcher'
+import { SpecBrowser } from '../../../../design-system/components/flex-spec-browser'
 import type { SessionUser } from '../../../../services/auth/session'
 import type {
   CommitEntry,
   TreeEntry,
 } from '../../../../services/form-project-repo'
-import type { ProjectView } from '../../../../services/project-service'
-import { resolveUrl } from '../../../../shared/base-path'
 import type {
-  DataCollectionSpec,
-  FieldConfidence,
-  FormSpec,
-  ProjectIndex,
-  UserProfile,
-} from '../../../../types/models'
+  BranchEntry,
+  ProjectView,
+} from '../../../../services/project-service'
+import { resolveUrl } from '../../../../shared/base-path'
+import type { ProjectIndex, UserProfile } from '../../../../types/models'
 
-// ---------------------------------------------------------------------------
-// Shared spec viewers (reused from old project components)
-// ---------------------------------------------------------------------------
-
-export const ConfidenceBadge: FC<{
-  confidence: number
-  flags?: string[]
-}> = ({ confidence, flags }) => {
-  if (confidence >= 0.8) return null
-  const level = confidence >= 0.5 ? 'medium' : 'low'
-  return (
-    <span
-      class="badge"
-      data-status={level === 'low' ? 'error' : 'draft'}
-      title={
-        flags?.join(', ') ?? `Confidence: ${Math.round(confidence * 100)}%`
-      }
-    >
-      {level === 'medium' ? 'Review' : 'Low confidence'}
-    </span>
-  )
-}
-
-export const SpecViewer: FC<{
-  spec: DataCollectionSpec
-  confidence: FieldConfidence[]
-  blobBasePath?: string
-}> = ({ spec, confidence, blobBasePath }) => {
-  const confidenceMap = new Map(confidence.map((c) => [c.fieldId, c]))
-  return (
-    <section class="l-stack">
-      <h2>
-        {blobBasePath ? (
-          <a href={resolveUrl(`${blobBasePath}/forms/default/spec.json`)}>
-            Extracted Data Requirements
-          </a>
-        ) : (
-          'Extracted Data Requirements'
-        )}
-      </h2>
-      <p class="text-muted">{spec.description}</p>
-      {spec.groups.map((group) => (
-        <div key={group.id} class="l-stack">
-          <h3>{group.title}</h3>
-          {group.description && <p class="text-muted">{group.description}</p>}
-          <table class="flex-table" data-variant="borderless" data-stacked>
-            <thead>
-              <tr>
-                <th scope="col">Field</th>
-                <th scope="col">Type</th>
-                <th scope="col">Required</th>
-                <th scope="col">Conditions</th>
-                <th scope="col">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {group.requirements.map((req) => {
-                const conf = confidenceMap.get(req.id)
-                return (
-                  <tr key={req.id}>
-                    <td data-label="Field">
-                      <strong>{req.label}</strong>
-                      {req.helpText && (
-                        <div class="text-muted text-sm">{req.helpText}</div>
-                      )}
-                    </td>
-                    <td data-label="Type">
-                      {req.fieldType.charAt(0).toUpperCase() +
-                        req.fieldType.slice(1)}
-                    </td>
-                    <td data-label="Required">{req.required ? 'Yes' : 'No'}</td>
-                    <td data-label="Conditions">
-                      {req.condition ? (
-                        <span class="condition-tag">
-                          When {req.condition.field} {req.condition.operator}{' '}
-                          {String(req.condition.value)}
-                        </span>
-                      ) : (
-                        <span class="text-muted">&mdash;</span>
-                      )}
-                    </td>
-                    <td data-label="Status">
-                      {conf ? (
-                        <ConfidenceBadge
-                          confidence={conf.confidence}
-                          flags={conf.flags}
-                        />
-                      ) : null}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-      ))}
-    </section>
-  )
-}
-
-export const FormSpecViewer: FC<{
-  formSpec: FormSpec
-  spec: DataCollectionSpec
-  blobBasePath?: string
-}> = ({ formSpec, spec, blobBasePath }) => {
-  const groupMap = new Map(spec.groups.map((g) => [g.id, g.title]))
-
-  return (
-    <section class="l-stack">
-      <h2>
-        {blobBasePath ? (
-          <a href={resolveUrl(`${blobBasePath}/forms/default/form.json`)}>
-            Form Layout
-          </a>
-        ) : (
-          'Form Layout'
-        )}
-      </h2>
-      <p class="text-muted">
-        Proposed page structure for the digital form experience.
-      </p>
-      <ol class="form-page-list">
-        {formSpec.pages.map((page, i) => (
-          <li key={page.id} class="form-page-card">
-            <span class="form-page-card__number">{i + 1}.</span>
-            <div class="form-page-card__body">
-              <span class="form-page-card__title">{page.title}</span>
-              {page.description && (
-                <div class="text-muted text-sm">{page.description}</div>
-              )}
-              <div class="form-page-card__groups">
-                {page.groups.map((gId) => groupMap.get(gId) ?? gId).join(', ')}
-              </div>
-            </div>
-            <span class="badge" data-delivery={page.deliveryMode}>
-              {page.deliveryMode.charAt(0).toUpperCase() +
-                page.deliveryMode.slice(1)}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </section>
-  )
-}
+// ConfidenceBadge lives in the design system. Re-exported here for backward
+// compatibility with any module that previously imported it from this file.
+export { ConfidenceBadge } from '../../../../design-system/components/flex-confidence-badge'
 
 // ---------------------------------------------------------------------------
 // 1. ProfilePage
@@ -277,8 +136,18 @@ export const ProjectOverview: FC<{
   user: SessionUser | null
   viewingSha?: string
   origin?: string
-}> = ({ view, owner, user, viewingSha, origin }) => {
-  const { project, spec, formSpec, confidence, isOwner, forkedFrom } = view
+  branches?: BranchEntry[]
+  branch?: string
+}> = ({ view, owner, user, viewingSha, origin, branches, branch = 'main' }) => {
+  const {
+    project,
+    spec,
+    formSpec,
+    confidence,
+    isOwner,
+    forkedFrom,
+    pendingBranch,
+  } = view
 
   if (project.status === 'extracting') {
     return (
@@ -289,12 +158,25 @@ export const ProjectOverview: FC<{
     return <ErrorBanner project={project} owner={owner} isOwner={isOwner} />
   }
 
+  // Extraction has landed on a working branch (e.g. 'import') and nothing
+  // has been published to main yet. Show a CTA to review/merge the branch.
+  if (!spec && pendingBranch) {
+    return (
+      <PendingReviewBanner
+        project={project}
+        owner={owner}
+        isOwner={isOwner}
+        branch={pendingBranch}
+      />
+    )
+  }
+
   const groupCount = spec?.groups.length ?? 0
   const fieldCount =
     spec?.groups.reduce((sum, g) => sum + g.requirements.length, 0) ?? 0
   const pageCount = formSpec?.pages.length ?? 0
   const lowConfCount = confidence?.filter((c) => c.confidence < 0.8).length ?? 0
-  const blobBasePath = `/${owner}/${project.slug}/blob/main`
+  const blobBasePath = `/${owner}/${project.slug}/blob/${branch}`
 
   const repoBase = `/${owner}/${project.slug}`
   const cloneUrl = `${origin ?? ''}/git/${project.slug}.git`
@@ -321,7 +203,14 @@ export const ProjectOverview: FC<{
           <h1 class="repo-header__title">{project.name}</h1>
           <div class="repo-header__actions">
             {isOwner && formSpec && (
-              <a href={resolveUrl(`${repoBase}/edit`)} class="flex-button">
+              <a
+                href={resolveUrl(
+                  branch && branch !== 'main'
+                    ? `${repoBase}/edit/${branch}`
+                    : `${repoBase}/edit`,
+                )}
+                class="flex-button"
+              >
                 Edit form structure
               </a>
             )}
@@ -359,6 +248,17 @@ export const ProjectOverview: FC<{
       </header>
 
       <RepoNav owner={owner} slug={project.slug} current="overview" />
+
+      {branches && branches.length > 1 && (
+        <BranchSwitcher
+          current={branch}
+          branches={branches}
+          branchHref={(b) =>
+            resolveUrl(`/${owner}/${project.slug}?branch=${b}`)
+          }
+          createHref={resolveUrl(`/${owner}/${project.slug}/edit/main/branch`)}
+        />
+      )}
 
       <div class="clone-bar">
         <code class="clone-bar__url">{cloneUrl}</code>
@@ -401,27 +301,19 @@ export const ProjectOverview: FC<{
         </span>
       </div>
 
-      <div class="l-stack" data-space="lg">
-        {spec && (
-          <SpecViewer
-            spec={spec}
-            confidence={confidence ?? []}
-            blobBasePath={blobBasePath}
-          />
-        )}
-        {formSpec && spec && (
-          <FormSpecViewer
-            formSpec={formSpec}
-            spec={spec}
-            blobBasePath={blobBasePath}
-          />
-        )}
-      </div>
+      {spec && formSpec && (
+        <SpecBrowser
+          dataSpec={spec}
+          formSpec={formSpec}
+          confidence={confidence ?? []}
+          blobBasePath={blobBasePath}
+        />
+      )}
     </div>
   )
 }
 
-type RepoTab = 'overview' | 'history' | 'files'
+type RepoTab = 'overview' | 'pulls' | 'history' | 'files'
 
 const RepoNav: FC<{
   owner: string
@@ -431,6 +323,7 @@ const RepoNav: FC<{
   const base = `/${owner}/${slug}`
   const tabs: { id: RepoTab; label: string; href: string }[] = [
     { id: 'overview', label: 'Overview', href: base },
+    { id: 'pulls', label: 'Pull Requests', href: `${base}/pulls` },
     { id: 'history', label: 'History', href: `${base}/commits` },
     { id: 'files', label: 'Files', href: `${base}/tree/main` },
   ]
@@ -450,6 +343,102 @@ const RepoNav: FC<{
         ))}
       </ul>
     </nav>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// 2b. PullRequestsPage
+// ---------------------------------------------------------------------------
+
+export const PullRequestsPage: FC<{
+  view: ProjectView
+  owner: string
+  branches: BranchEntry[]
+}> = ({ view, owner, branches }) => {
+  const { project, isOwner, forkedFrom } = view
+  const repoBase = `/${owner}/${project.slug}`
+  const openPRs = branches.filter((b) => b.name !== 'main' && b.ahead > 0)
+
+  return (
+    <div class="l-stack">
+      <header class="repo-header">
+        <nav class="repo-header__path" aria-label="Repository path">
+          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+          <span class="repo-header__path-sep" aria-hidden="true">
+            /
+          </span>
+          <span class="repo-header__path-slug">{project.slug}</span>
+          {forkedFrom && (
+            <span class="repo-header__fork-badge">
+              forked from{' '}
+              <a href={resolveUrl(`/${forkedFrom.owner}/${forkedFrom.slug}`)}>
+                {forkedFrom.owner}/{forkedFrom.slug}
+              </a>
+            </span>
+          )}
+        </nav>
+        <div class="repo-header__title-row">
+          <h1 class="repo-header__title">{project.name}</h1>
+          <div class="repo-header__actions">
+            {isOwner && (
+              <a
+                href={resolveUrl(`${repoBase}/settings`)}
+                class="flex-button"
+                data-variant="outline"
+              >
+                Settings
+              </a>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <RepoNav owner={owner} slug={project.slug} current="pulls" />
+
+      <section class="l-stack">
+        <h2>Open</h2>
+        {openPRs.length === 0 ? (
+          <p class="text-muted">No open pull requests.</p>
+        ) : (
+          <table class="flex-table" data-variant="borderless" data-stacked>
+            <thead>
+              <tr>
+                <th scope="col">Branch</th>
+                <th scope="col">Ahead</th>
+                <th scope="col" />
+              </tr>
+            </thead>
+            <tbody>
+              {openPRs.map((b) => (
+                <tr key={b.name}>
+                  <td data-label="Branch">
+                    <a
+                      href={resolveUrl(`${repoBase}/compare/main...${b.name}`)}
+                    >
+                      {b.name}
+                    </a>
+                  </td>
+                  <td data-label="Ahead">
+                    {b.ahead} commit{b.ahead === 1 ? '' : 's'} ahead
+                  </td>
+                  <td>
+                    <a
+                      href={resolveUrl(`${repoBase}/compare/main...${b.name}`)}
+                      class="flex-button"
+                      data-variant="outline"
+                    >
+                      Review
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <h2>Merged</h2>
+        <p class="text-muted">Merged pull requests are not tracked yet.</p>
+      </section>
+    </div>
   )
 }
 
@@ -522,6 +511,53 @@ const ExtractingBanner: FC<{
           </>
         )}
       </div>
+    </div>
+  )
+}
+
+const PendingReviewBanner: FC<{
+  project: ProjectIndex
+  owner: string
+  isOwner: boolean
+  branch: string
+}> = ({ project, owner, isOwner, branch }) => {
+  const repoBase = `/${owner}/${project.slug}`
+  return (
+    <div class="l-stack">
+      <header class="repo-header">
+        <nav class="repo-header__path" aria-label="Repository path">
+          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
+          <span class="repo-header__path-sep" aria-hidden="true">
+            /
+          </span>
+          <span class="repo-header__path-slug">{project.slug}</span>
+        </nav>
+        <div class="repo-header__title-row">
+          <h1 class="repo-header__title">{project.name}</h1>
+        </div>
+      </header>
+      <Alert variant="info" heading="Initial extraction ready for review">
+        The imported form lives on branch <code>{branch}</code>. Nothing has
+        been published to <code>main</code> yet. Review the extracted structure
+        and merge when it looks right, or keep editing if it needs corrections.
+      </Alert>
+      {isOwner && (
+        <div class="l-cluster">
+          <a
+            href={resolveUrl(`${repoBase}/compare/main...${branch}`)}
+            class="flex-button"
+          >
+            Review import
+          </a>
+          <a
+            href={resolveUrl(`${repoBase}/edit/${branch}`)}
+            class="flex-button"
+            data-variant="outline"
+          >
+            Continue editing
+          </a>
+        </div>
+      )}
     </div>
   )
 }

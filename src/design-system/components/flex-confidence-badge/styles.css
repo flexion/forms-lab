@@ -1,0 +1,21 @@
+/* flex-confidence-badge — inline status badge for extraction confidence */
+
+.flex-confidence-badge {
+  display: inline-block;
+  font-size: var(--flex-text-tag);
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--flex-radius-bubble);
+  line-height: 1.4;
+  white-space: nowrap;
+
+  &[data-level="medium"] {
+    background: var(--flex-color-warning-lighter);
+    color: var(--flex-color-text);
+  }
+
+  &[data-level="low"] {
+    background: var(--flex-color-error-lighter);
+    color: var(--flex-color-text);
+  }
+}

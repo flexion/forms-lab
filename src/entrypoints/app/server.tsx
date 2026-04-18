@@ -8,8 +8,13 @@ import {
   loadFixturePdf,
 } from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
+import type { DataCollectionSpec } from '../../services/data-collection/types'
 import { createFormProjectRepo } from '../../services/form-project-repo'
+import { createReviewService } from '../../services/forms/review'
+import { InMemoryFormSessionGateway } from '../../services/forms/session'
 import { createShapingRegistry } from '../../services/forms/shaping/registry'
+import { InMemorySubmissionGateway } from '../../services/forms/submission'
+import type { FormSpec } from '../../services/forms/types'
 import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
@@ -21,6 +26,8 @@ import { getBasePath, resolveUrl } from '../../shared/base-path'
 import { requireAuth, sessionReader } from './middleware/auth'
 import { createAuthRoutes } from './routes/auth/index'
 import catalog from './routes/catalog/index'
+import { createFormRouter } from './routes/forms/index'
+import { createCompareRoutes } from './routes/owner/compare/index'
 import {
   Dashboard,
   LandingPage,
@@ -53,6 +60,69 @@ const projectService = createProjectService(
   extractor,
 )
 const shapingRegistry = createShapingRegistry()
+const reviewService = createReviewService(formProjectRepo)
+const sessionGateway = new InMemoryFormSessionGateway()
+const submissionGateway = new InMemorySubmissionGateway()
+
+/**
+ * Adapter: resolve a DataCollectionSpec id to (owner, slug, spec, formSpec)
+ * by scanning ready projects. specId is assigned by the extractor and is
+ * independent of the project slug, so we scan all projects and read their
+ * main-branch spec to build the mapping. Slow-ish for many projects; fine
+ * at current scale. Branch-qualified refs are supported via the `ref`
+ * argument to `getSpecs`.
+ */
+async function readProjectSpecs(
+  slug: string,
+  ref: string,
+): Promise<{
+  dataSpec: DataCollectionSpec
+  formSpec: FormSpec
+  sha: string
+} | null> {
+  const [specBuf, formBuf, history] = await Promise.all([
+    formProjectRepo.readFile(slug, ref, 'forms/default/spec.json'),
+    formProjectRepo.readFile(slug, ref, 'forms/default/form.json'),
+    formProjectRepo.log(slug, ref, undefined, 1),
+  ])
+  if (!specBuf || !formBuf || history.length === 0) return null
+  return {
+    dataSpec: JSON.parse(specBuf.toString()) as DataCollectionSpec,
+    formSpec: JSON.parse(formBuf.toString()) as FormSpec,
+    sha: history[0].sha,
+  }
+}
+
+// Cached specId -> (owner, slug) mapping. Populated as a side effect of
+// `findProjectBySpecId` and consulted synchronously by `getEditHref`. This
+// is best-effort: newly-created projects won't have an entry until a
+// request for that spec lands. Acceptable for the demo; revisit if the
+// catalog grows large.
+const specIdIndex = new Map<string, { owner: string; slug: string }>()
+
+async function findProjectBySpecId(
+  specId: string,
+): Promise<{ slug: string; owner: string } | null> {
+  for (const project of projectStore.list()) {
+    if (project.status !== 'ready') continue
+    try {
+      const resolved = await readProjectSpecs(project.slug, 'main')
+      if (resolved) {
+        specIdIndex.set(resolved.dataSpec.id, {
+          owner: project.createdBy,
+          slug: project.slug,
+        })
+        if (resolved.dataSpec.id === specId) {
+          return { slug: project.slug, owner: project.createdBy }
+        }
+      }
+    } catch {
+      // Ignore repos that fail to read — project may be mid-extraction
+      // or have been externally removed.
+    }
+  }
+  return null
+}
 
 // Apply session reader globally
 app.use('*', sessionReader())
@@ -234,6 +304,57 @@ app.get('/', (c) => {
 
 // Mount edit routes BEFORE owner routes (more specific patterns first)
 app.route('/', createEditRoutes(projectService, shapingRegistry))
+
+// Mount compare routes BEFORE owner routes (more specific patterns first)
+app.route('/', createCompareRoutes(projectService, reviewService))
+
+// Mount form delivery routes under /forms. Fills and submissions are
+// git-backed; preview banner links back to the editor on non-main
+// branches.
+app.route(
+  '/forms',
+  createFormRouter({
+    sessionGateway,
+    submissionGateway,
+    async getSpecs(specId, ref) {
+      const project = await findProjectBySpecId(specId)
+      if (!project) return null
+      return readProjectSpecs(project.slug, ref ?? 'main')
+    },
+    async listSpecs() {
+      const result: {
+        dataSpec: DataCollectionSpec
+        formSpec: FormSpec
+        sha: string
+      }[] = []
+      for (const project of projectStore.list()) {
+        if (project.status !== 'ready') continue
+        try {
+          const resolved = await readProjectSpecs(project.slug, 'main')
+          if (resolved) {
+            specIdIndex.set(resolved.dataSpec.id, {
+              owner: project.createdBy,
+              slug: project.slug,
+            })
+            result.push(resolved)
+          }
+        } catch {
+          // Skip unreadable projects — best-effort listing.
+        }
+      }
+      return result
+    },
+    getEditHref(specId, branch) {
+      // Consult the cached specId -> (owner, slug) map populated by
+      // `findProjectBySpecId`. If there's no entry (e.g. the cache is
+      // cold or the spec is unknown) we omit the link rather than block
+      // rendering on an async lookup.
+      const entry = specIdIndex.get(specId)
+      if (!entry) return null
+      return resolveUrl(`/${entry.owner}/${entry.slug}/edit/${branch}`)
+    },
+  }),
+)
 
 // Mount owner routes LAST (catch-all pattern /:owner)
 app.route('/', createOwnerRoutes(projectService, userStore))

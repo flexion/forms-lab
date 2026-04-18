@@ -1,0 +1,320 @@
+/* flex-spec-browser — two-pane structured browser for form specs
+   Left pane: sticky nav of pages + groups.
+   Right pane: collapsible <details> panels. */
+
+flex-spec-browser {
+  display: block;
+  container-type: inline-size;
+  container-name: spec-browser;
+}
+
+.flex-spec-browser {
+  display: grid;
+  grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+  gap: var(--flex-space-xl);
+  align-items: start;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.flex-spec-browser__sidebar {
+  position: sticky;
+  inset-block-start: var(--flex-space-md);
+  max-block-size: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+.flex-spec-browser__nav {
+  border-inline-start: 1px solid var(--flex-color-border);
+  padding: 0;
+}
+
+.flex-spec-browser__nav-heading {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--flex-color-text);
+  margin: 0;
+  padding: 0.5rem 1rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.flex-spec-browser__nav-section {
+  margin-block-end: var(--flex-space-md);
+}
+
+.flex-spec-browser__nav-subheading {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--flex-color-text-muted);
+  margin: 0;
+  padding: 0.25rem 1rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.flex-spec-browser__nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.flex-spec-browser__nav-item {
+  margin: 0;
+}
+
+.flex-spec-browser__nav-link {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  line-height: 1.3;
+  color: var(--flex-color-accent);
+  text-decoration: none;
+  border-inline-start: 3px solid transparent;
+  margin-inline-start: -1px;
+
+  &:hover {
+    color: var(--flex-color-accent);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: var(--flex-focus-ring);
+    outline-offset: 0;
+  }
+}
+
+.flex-spec-browser__nav-link--current,
+.flex-spec-browser__nav-link[aria-current="true"] {
+  color: var(--flex-color-accent);
+  font-weight: 700;
+  border-inline-start-color: var(--flex-color-accent);
+}
+
+.flex-spec-browser__nav-link:visited:not(.flex-spec-browser__nav-link--current) {
+  color: var(--flex-color-ink);
+}
+
+.flex-spec-browser__nav-sublist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.flex-spec-browser__nav-link--sub {
+  padding-inline-start: 2rem;
+  font-size: 0.9rem;
+  color: var(--flex-color-text-muted);
+}
+
+.flex-spec-browser__nav-link--sub:hover {
+  color: var(--flex-color-accent);
+}
+
+.flex-spec-browser__nav-num {
+  color: var(--flex-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.flex-spec-browser__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-xl);
+  min-inline-size: 0;
+}
+
+.flex-spec-browser__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-md);
+}
+
+.flex-spec-browser__section-heading {
+  margin: 0;
+}
+
+.flex-spec-browser__panels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+}
+
+.flex-spec-browser__panel {
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-md);
+  background: var(--flex-color-surface);
+}
+
+.flex-spec-browser__panel[open] {
+  box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+}
+
+.flex-spec-browser__panel-summary {
+  cursor: pointer;
+  list-style: none;
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-sm);
+  flex-wrap: wrap;
+  font-weight: 600;
+  font-size: 1.06rem;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::before {
+    content: "\25B8"; /* right-pointing triangle */
+    display: inline-block;
+    color: var(--flex-color-text-muted);
+    font-size: 0.85em;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  &:hover .flex-spec-browser__panel-title {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: var(--flex-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.flex-spec-browser__panel[open] > .flex-spec-browser__panel-summary::before {
+  transform: rotate(90deg);
+}
+
+.flex-spec-browser__panel-number {
+  color: var(--flex-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.flex-spec-browser__panel-title {
+  flex: 1 1 auto;
+}
+
+.flex-spec-browser__panel-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--flex-space-sm);
+  font-weight: 400;
+  color: var(--flex-color-text-muted);
+  font-size: 0.95rem;
+}
+
+.flex-spec-browser__panel-count {
+  white-space: nowrap;
+}
+
+.flex-spec-browser__delivery {
+  display: inline-block;
+  font-size: var(--flex-text-tag);
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--flex-radius-bubble);
+  line-height: 1.4;
+
+  &[data-delivery="static"] {
+    background: var(--flex-color-surface);
+    border: 1px solid var(--flex-color-border);
+    color: var(--flex-color-text-muted);
+  }
+
+  &[data-delivery="conversational"] {
+    background: var(--flex-color-info-lighter);
+    color: var(--flex-color-text);
+  }
+
+  &[data-delivery="hybrid"] {
+    background: var(--flex-color-warning-lighter);
+    color: var(--flex-color-text);
+  }
+}
+
+.flex-spec-browser__panel-body {
+  padding: 0 var(--flex-space-md) var(--flex-space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+  border-block-start: 1px solid var(--flex-color-border);
+  padding-block-start: var(--flex-space-md);
+  min-inline-size: 0;
+}
+
+/* Horizontal overflow wrapper for the field table — lets the table
+   scroll inside its panel rather than pushing the whole page wider. */
+.flex-spec-browser__table-wrap {
+  overflow-x: auto;
+  max-inline-size: 100%;
+}
+
+.flex-spec-browser__table-wrap .flex-table {
+  margin: 0;
+  min-inline-size: max-content;
+}
+
+/* First column (Field label + helpText) is the only column that benefits
+   from wrapping long strings; other columns stay narrow. */
+.flex-spec-browser__table-wrap .flex-table td:first-child,
+.flex-spec-browser__table-wrap .flex-table th:first-child {
+  min-inline-size: 12rem;
+  max-inline-size: 24rem;
+  overflow-wrap: anywhere;
+}
+
+.flex-spec-browser__page-groups {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+}
+
+.flex-spec-browser__page-group-title {
+  font-weight: 600;
+}
+
+.flex-spec-browser__page-group-fields {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+
+  & > li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--flex-space-sm);
+  }
+}
+
+.flex-spec-browser__condition {
+  font-family: var(--flex-font-mono, monospace);
+  font-size: 0.9rem;
+  background: var(--flex-color-surface);
+  border: 1px solid var(--flex-color-border);
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--flex-radius-sm);
+  color: var(--flex-color-text-muted);
+}
+
+/* Narrow containers: stack, and drop stickiness.
+   Uses container queries so the browser responds to its own width rather
+   than the viewport — critical when two browsers sit side-by-side in a
+   compare view on a wide screen. */
+@container spec-browser (max-width: 48rem) {
+  .flex-spec-browser {
+    grid-template-columns: 1fr;
+  }
+
+  .flex-spec-browser__sidebar {
+    position: static;
+    max-block-size: none;
+  }
+}

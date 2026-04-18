@@ -66,6 +66,14 @@ export interface Submission {
   ownerId: string
   data: Record<string, unknown>
   submittedAt: string
+  /**
+   * Git commit SHA (or equivalent version identifier) of the form spec at
+   * the time of submission. Pinned by the route handler so that the
+   * collected data remains traceable to the exact form definition that
+   * produced it — including submissions against non-main branches during
+   * preview.
+   */
+  specVersion?: string
 }
 
 // --- Persistence Gateways ---

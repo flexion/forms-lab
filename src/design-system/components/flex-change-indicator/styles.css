@@ -1,0 +1,35 @@
+/* flex-change-indicator — small dot (and optional label) indicating
+   whether an item was modified, added, or removed. */
+
+.flex-change-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--flex-space-xs);
+  color: var(--flex-color-text-muted);
+  font-size: var(--flex-text-xs);
+  line-height: 1;
+}
+
+.flex-change-indicator__dot {
+  display: inline-block;
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: 50%;
+  background: var(--flex-color-text-muted);
+}
+
+.flex-change-indicator[data-variant="modified"] .flex-change-indicator__dot {
+  background: var(--flex-color-warning);
+}
+
+.flex-change-indicator[data-variant="added"] .flex-change-indicator__dot {
+  background: var(--flex-color-success);
+}
+
+.flex-change-indicator[data-variant="removed"] .flex-change-indicator__dot {
+  background: var(--flex-color-error);
+}
+
+.flex-change-indicator__label {
+  color: var(--flex-color-text);
+}

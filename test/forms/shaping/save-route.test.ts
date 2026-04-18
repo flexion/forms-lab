@@ -22,10 +22,11 @@ const dummyExtractor = {
   },
 }
 
-describe('POST /:owner/:slug/edit/save', () => {
+describe('POST /:owner/:slug/edit/:branch/save', () => {
   let app: Hono
   let service: ReturnType<typeof createProjectService>
   let slug: string
+  const BRANCH = 'work-branch'
 
   beforeAll(async () => {
     rmSync(TEST_DIR, { recursive: true, force: true })
@@ -41,6 +42,8 @@ describe('POST /:owner/:slug/edit/save', () => {
     )
     slug = project.slug
     await new Promise((r) => setTimeout(r, 500))
+    await repo.mergeBranch(slug, 'import', 'main')
+    await service.createBranch(slug, BRANCH, 'main', testUser)
 
     app = new Hono()
     app.use('*', async (c, next) => {
@@ -56,18 +59,26 @@ describe('POST /:owner/:slug/edit/save', () => {
   afterAll(() => rmSync(TEST_DIR, { recursive: true, force: true }))
 
   it('commits a batch and returns new sha', async () => {
-    const view = await service.getProject(testUser.login, slug, testUser)
+    const view = await service.getProject(
+      testUser.login,
+      slug,
+      testUser,
+      BRANCH,
+    )
     const firstPageId = view.formSpec!.pages[0].id
 
-    const res = await app.request(`/${testUser.login}/${slug}/edit/save`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        commands: [{ kind: 'renamePage', id: firstPageId, title: 'New' }],
-        parentSha: view.currentSha,
-        source: 'manual',
-      }),
-    })
+    const res = await app.request(
+      `/${testUser.login}/${slug}/edit/${BRANCH}/save`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          commands: [{ kind: 'renamePage', id: firstPageId, title: 'New' }],
+          parentSha: view.currentSha,
+          source: 'manual',
+        }),
+      },
+    )
 
     expect(res.status).toBe(200)
     const body = (await res.json()) as { sha: string; state: unknown }
@@ -76,7 +87,26 @@ describe('POST /:owner/:slug/edit/save', () => {
   })
 
   it('rejects stale parentSha with 409', async () => {
-    const res = await app.request(`/${testUser.login}/${slug}/edit/save`, {
+    const res = await app.request(
+      `/${testUser.login}/${slug}/edit/${BRANCH}/save`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          commands: [],
+          parentSha: '0'.repeat(40),
+          source: 'manual',
+        }),
+      },
+    )
+    expect(res.status).toBe(409)
+    const body = (await res.json()) as { error: string; currentSha: string }
+    expect(body.error).toBe('stale')
+    expect(body.currentSha).toMatch(/^[0-9a-f]{40}$/)
+  })
+
+  it('rejects edits on main with 403', async () => {
+    const res = await app.request(`/${testUser.login}/${slug}/edit/main/save`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
@@ -85,16 +115,14 @@ describe('POST /:owner/:slug/edit/save', () => {
         source: 'manual',
       }),
     })
-    expect(res.status).toBe(409)
-    const body = (await res.json()) as { error: string; currentSha: string }
-    expect(body.error).toBe('stale')
-    expect(body.currentSha).toMatch(/^[0-9a-f]{40}$/)
+    expect(res.status).toBe(403)
   })
 })
 
-describe('POST /:owner/:slug/edit/save ownership', () => {
+describe('POST /:owner/:slug/edit/:branch/save ownership', () => {
   let service: ReturnType<typeof createProjectService>
   let slug: string
+  const BRANCH = 'owner-branch'
   const owner: SessionUser = { login: 'owner', name: 'Owner', avatarUrl: '' }
   const intruder: SessionUser = {
     login: 'intruder',
@@ -120,12 +148,13 @@ describe('POST /:owner/:slug/edit/save ownership', () => {
     )
     slug = project.slug
     await new Promise((r) => setTimeout(r, 500))
+    await service.createBranch(slug, BRANCH, 'main', owner)
   })
 
   afterAll(() => rmSync(TEST_DIR_2, { recursive: true, force: true }))
 
   it('rejects non-owner with 403', async () => {
-    const view = await service.getProject(owner.login, slug, owner)
+    const view = await service.getProject(owner.login, slug, owner, BRANCH)
     const intruderApp = new Hono()
     intruderApp.use('*', async (c, next) => {
       c.set('user', intruder)
@@ -135,15 +164,18 @@ describe('POST /:owner/:slug/edit/save ownership', () => {
       '/',
       createEditRoutes(service, new StrategyRegistry<FormShaper>()),
     )
-    const res = await intruderApp.request(`/${owner.login}/${slug}/edit/save`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        commands: [],
-        parentSha: view.currentSha,
-        source: 'manual',
-      }),
-    })
+    const res = await intruderApp.request(
+      `/${owner.login}/${slug}/edit/${BRANCH}/save`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          commands: [],
+          parentSha: view.currentSha,
+          source: 'manual',
+        }),
+      },
+    )
     expect(res.status).toBe(403)
     const body = (await res.json()) as { error: string }
     expect(body.error).toBe('not allowed')

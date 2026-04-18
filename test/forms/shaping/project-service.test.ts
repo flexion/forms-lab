@@ -72,6 +72,7 @@ describe('ProjectService — FormSpec mutation', () => {
         alice,
       )
       await waitForStatus(store, project.id, 'ready')
+      await repo.mergeBranch(project.slug, 'import', 'main')
 
       const view = await service.getProject('alice', project.slug, alice)
       if (!view.formSpec) throw new Error('FormSpec is null')
@@ -123,6 +124,7 @@ describe('ProjectService — FormSpec mutation', () => {
     it('throws UnauthenticatedError when user is null', async () => {
       const project = await service.createProject('Test', SAMPLE_PDF, alice)
       await waitForStatus(store, project.id, 'ready')
+      await repo.mergeBranch(project.slug, 'import', 'main')
 
       const history = await service.getFormSpecHistory('alice', project.slug)
       expect(
@@ -138,6 +140,7 @@ describe('ProjectService — FormSpec mutation', () => {
     it('throws ForbiddenError for non-owner', async () => {
       const project = await service.createProject('Test', SAMPLE_PDF, alice)
       await waitForStatus(store, project.id, 'ready')
+      await repo.mergeBranch(project.slug, 'import', 'main')
 
       const history = await service.getFormSpecHistory('alice', project.slug)
       expect(
@@ -148,6 +151,7 @@ describe('ProjectService — FormSpec mutation', () => {
     it('throws BadRequestError when target revision has no FormSpec', async () => {
       const project = await service.createProject('Test', SAMPLE_PDF, alice)
       await waitForStatus(store, project.id, 'ready')
+      await repo.mergeBranch(project.slug, 'import', 'main')
 
       // Get initial commit (before extraction)
       const allHistory = await service.getHistory('alice', project.slug)

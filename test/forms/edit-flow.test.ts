@@ -39,6 +39,7 @@ describe('edit flow: mixed inline + chat batch produces one commit', () => {
     )
     slug = project.slug
     await new Promise((r) => setTimeout(r, 500))
+    await repo.mergeBranch(slug, 'import', 'main')
     app = new Hono()
     app.use('*', async (c, next) => {
       c.set('user', testUser)
@@ -54,10 +55,12 @@ describe('edit flow: mixed inline + chat batch produces one commit', () => {
   afterAll(() => rmSync(TEST_DIR, { recursive: true, force: true }))
 
   it('saves a buffer of mixed-source commands as one commit', async () => {
-    const view = await service.getProject('maya', slug, testUser)
+    const branch = 'feature-branch'
+    await service.createBranch(slug, branch, 'main', testUser)
+    const view = await service.getProject('maya', slug, testUser, branch)
     const firstPageId = view.formSpec!.pages[0].id
 
-    const res = await app.request(`/maya/${slug}/edit/save`, {
+    const res = await app.request(`/maya/${slug}/edit/${branch}/save`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
@@ -75,7 +78,7 @@ describe('edit flow: mixed inline + chat batch produces one commit', () => {
     })
     expect(res.status).toBe(200)
 
-    const log = await service.getShapingLog('maya', slug)
+    const log = await service.getShapingLog('maya', slug, branch)
     const last = log[0]
     expect(last.commands).toHaveLength(2)
     expect(last.explanation).toContain('Rename page')

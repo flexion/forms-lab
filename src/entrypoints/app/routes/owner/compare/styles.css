@@ -1,0 +1,215 @@
+/* Review / compare route — header, tabs, and shared layout for Tasks 18-21 panels */
+
+.compare {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-md);
+  /* Sit inside l-page-content--full with consistent horizontal padding so the
+     content doesn't run to the viewport edges. */
+  padding: var(--flex-space-lg) var(--flex-space-md);
+  min-inline-size: 0;
+}
+
+.compare__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-xs);
+  padding-block-end: var(--flex-space-md);
+  border-block-end: 1px solid var(--flex-color-border);
+}
+
+.compare__breadcrumb {
+  color: var(--flex-color-text-muted);
+  font-size: var(--flex-text-sm);
+}
+
+.compare__title {
+  margin: 0;
+  font-size: var(--flex-text-xl);
+}
+
+.compare__subtitle {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-2xs);
+}
+
+.compare__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-2xs);
+  color: var(--flex-color-text-muted);
+  font-size: var(--flex-text-sm);
+}
+
+.compare__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--flex-space-sm);
+  margin-block-start: var(--flex-space-xs);
+}
+
+.compare__actions form {
+  margin: 0;
+}
+
+.compare__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--flex-space-md);
+  padding-block-end: var(--flex-space-xs);
+  border-block-end: 1px solid var(--flex-color-border);
+}
+
+.compare__tabs a {
+  color: var(--flex-color-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.compare__tabs a:hover,
+.compare__tabs a:focus-visible {
+  text-decoration: underline;
+}
+
+.compare__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-md);
+}
+
+.compare__empty {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+  font-size: var(--flex-text-sm);
+}
+
+/* History panel */
+
+.compare__history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+}
+
+.compare__history-entry {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: baseline;
+  gap: var(--flex-space-sm);
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-surface);
+}
+
+.compare__history-time {
+  color: var(--flex-color-text-muted);
+  font-family: var(--flex-font-mono);
+  font-size: var(--flex-text-xs);
+}
+
+.compare__history-source {
+  padding: 0 var(--flex-space-xs);
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-border);
+  color: var(--flex-color-text);
+  font-family: var(--flex-font-mono);
+  font-size: var(--flex-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.compare__history-source[data-source="llm"] {
+  background: var(--flex-color-info-lighter);
+}
+
+.compare__history-source[data-source="manual"] {
+  background: var(--flex-color-success-lighter);
+}
+
+.compare__history-explanation {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--flex-color-text);
+  font-size: var(--flex-text-sm);
+}
+
+/* Comments panel */
+
+.compare__comments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+}
+
+.compare__comment {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-2xs);
+  padding: var(--flex-space-sm) var(--flex-space-md);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-surface);
+}
+
+.compare__comment-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--flex-space-sm);
+}
+
+.compare__comment-author {
+  color: var(--flex-color-text);
+  font-size: var(--flex-text-sm);
+}
+
+.compare__comment-time {
+  color: var(--flex-color-text-muted);
+  font-family: var(--flex-font-mono);
+  font-size: var(--flex-text-xs);
+}
+
+.compare__comment-body {
+  color: var(--flex-color-text);
+  font-size: var(--flex-text-sm);
+  white-space: pre-wrap;
+}
+
+.compare__comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+  margin: 0;
+}
+
+.compare__comment-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-2xs);
+  font-weight: 600;
+}
+
+.compare__comment-form textarea {
+  min-height: 6rem;
+  padding: var(--flex-space-xs);
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-surface);
+  color: var(--flex-color-text);
+  font-family: inherit;
+  font-size: var(--flex-text-sm);
+}
+
+.compare__comment-form button {
+  align-self: flex-start;
+}
+

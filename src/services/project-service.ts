@@ -13,6 +13,7 @@ import {
   UnauthenticatedError,
 } from './errors'
 import type {
+  BranchEntry,
   CommitEntry,
   FormProjectRepo,
   TreeEntry,
@@ -21,6 +22,8 @@ import type { Command } from './forms/shaping/commands'
 import { executeBatch } from './forms/shaping/executor'
 import type { PdfExtractor } from './pdf-extractor'
 import type { ProjectStore } from './storage'
+
+export type { BranchEntry } from './form-project-repo'
 
 export interface ShapingLogEntry {
   timestamp: string
@@ -39,6 +42,10 @@ export interface ProjectView {
   isOwner: boolean
   forkedFrom: { owner: string; slug: string } | null
   currentSha: string
+  // Name of an unmerged working branch (e.g., 'import') when the viewed
+  // branch has no specs yet. Enables the overview to surface a "pending
+  // review" CTA.
+  pendingBranch: string | null
 }
 
 export interface ProjectService {
@@ -51,6 +58,7 @@ export interface ProjectService {
     owner: string,
     slug: string,
     user: SessionUser | null,
+    branch?: string,
   ): Promise<ProjectView>
   listUserProjects(owner: string): ProjectIndex[]
   deleteProject(owner: string, slug: string, user: SessionUser): Promise<void>
@@ -104,6 +112,7 @@ export interface ProjectService {
     explanation: string,
     source: 'llm' | 'manual',
     user: SessionUser,
+    options?: { branch?: string },
   ): Promise<
     | {
         ok: true
@@ -112,7 +121,28 @@ export interface ProjectService {
       }
     | { ok: false; error: string; failedAt: number; command: Command }
   >
-  getShapingLog(owner: string, slug: string): Promise<ShapingLogEntry[]>
+  getShapingLog(
+    owner: string,
+    slug: string,
+    branch?: string,
+  ): Promise<ShapingLogEntry[]>
+  getShapingLogBetween(
+    slug: string,
+    base: string,
+    head: string,
+  ): Promise<ShapingLogEntry[]>
+  listBranches(slug: string): Promise<BranchEntry[]>
+  createBranch(
+    slug: string,
+    name: string,
+    startPoint: string,
+    user: SessionUser,
+  ): Promise<void>
+  deleteBranch(slug: string, name: string, user: SessionUser): Promise<void>
+  getChangedResources(
+    slug: string,
+    branch: string,
+  ): Promise<{ dataSpec: boolean; formSpec: boolean }>
 }
 
 export function createProjectService(
@@ -165,6 +195,7 @@ export function createProjectService(
   async function readSpecs(
     slug: string,
     rev = 'main',
+    historyRev = 'main',
   ): Promise<{
     spec: DataCollectionSpec | null
     formSpec: FormSpec | null
@@ -175,7 +206,7 @@ export function createProjectService(
       repo.readFile(slug, rev, 'forms/default/spec.json'),
       repo.readFile(slug, rev, 'forms/default/form.json'),
       repo.readFile(slug, rev, 'forms/default/confidence.json'),
-      repo.log(slug, 'main'),
+      repo.log(slug, historyRev),
     ])
 
     return {
@@ -184,6 +215,19 @@ export function createProjectService(
       confidence: confBuf ? JSON.parse(confBuf.toString()) : null,
       history,
     }
+  }
+
+  async function readShapingLog(
+    slug: string,
+    branch: string,
+  ): Promise<ShapingLogEntry[]> {
+    const buf = await repo.readFile(
+      slug,
+      branch,
+      'forms/default/shaping-log.json',
+    )
+    if (!buf) return []
+    return JSON.parse(buf.toString()) as ShapingLogEntry[]
   }
 
   function fireAndForgetExtraction(
@@ -195,6 +239,12 @@ export function createProjectService(
     extractor
       .extract(pdf)
       .then(async (result) => {
+        // Initial extraction lands on an "import" branch so the owner can
+        // iterate before publishing to main via the review workflow.
+        const branches = await repo.listBranches(slug)
+        if (!branches.some((b) => b.name === 'import')) {
+          await repo.createBranch(slug, 'import', 'main')
+        }
         await repo.commit(
           slug,
           [
@@ -213,6 +263,7 @@ export function createProjectService(
           ],
           'Extract form specifications',
           author,
+          { branch: 'import' },
         )
         store.update(projectId, { status: 'ready' })
       })
@@ -271,6 +322,7 @@ export function createProjectService(
       owner: string,
       slug: string,
       user: SessionUser | null,
+      branch = 'main',
     ): Promise<ProjectView> {
       const project = resolveProject(owner, slug)
       const isOwner = user?.login === project.createdBy
@@ -278,7 +330,22 @@ export function createProjectService(
       const currentSha = await repo.headSha(slug, 'main')
 
       if (project.status === 'ready') {
-        const { spec, formSpec, confidence, history } = await readSpecs(slug)
+        const { spec, formSpec, confidence, history } = await readSpecs(
+          slug,
+          branch,
+          branch,
+        )
+        // Surface a pending working branch when the viewed branch has no
+        // specs yet (typical state right after an extraction when nothing
+        // has been merged to main). Caller decides how to present it.
+        let pendingBranch: string | null = null
+        if (!spec || !formSpec) {
+          const branches = await repo.listBranches(slug)
+          const firstWorking = branches.find(
+            (b) => b.name !== branch && b.ahead > 0,
+          )
+          pendingBranch = firstWorking?.name ?? null
+        }
         return {
           project,
           spec,
@@ -288,6 +355,7 @@ export function createProjectService(
           isOwner,
           forkedFrom,
           currentSha,
+          pendingBranch,
         }
       }
 
@@ -300,6 +368,7 @@ export function createProjectService(
         isOwner,
         forkedFrom,
         currentSha,
+        pendingBranch: null,
       }
     },
 
@@ -447,6 +516,7 @@ export function createProjectService(
         isOwner,
         forkedFrom,
         currentSha,
+        pendingBranch: null,
       }
     },
 
@@ -509,15 +579,25 @@ export function createProjectService(
       )
     },
 
-    async executeCommands(owner, slug, commands, explanation, source, user) {
+    async executeCommands(
+      owner,
+      slug,
+      commands,
+      explanation,
+      source,
+      user,
+      options,
+    ) {
       requireAuth(user)
       const project = resolveProject(owner, slug)
       requireOwner(project, user)
 
+      const branch = options?.branch ?? 'main'
+
       const [formBuf, specBuf, logBuf] = await Promise.all([
-        repo.readFile(slug, 'main', 'forms/default/form.json'),
-        repo.readFile(slug, 'main', 'forms/default/spec.json'),
-        repo.readFile(slug, 'main', 'forms/default/shaping-log.json'),
+        repo.readFile(slug, branch, 'forms/default/form.json'),
+        repo.readFile(slug, branch, 'forms/default/spec.json'),
+        repo.readFile(slug, branch, 'forms/default/shaping-log.json'),
       ])
       if (!formBuf || !specBuf) {
         throw new BadRequestError('Project has no FormSpec to edit yet')
@@ -580,6 +660,7 @@ export function createProjectService(
         ],
         `Apply shaping: ${explanation}`,
         user.login,
+        { branch },
       )
 
       newEntry.authorCommit = sha
@@ -597,15 +678,67 @@ export function createProjectService(
     async getShapingLog(
       owner: string,
       slug: string,
+      branch = 'main',
     ): Promise<ShapingLogEntry[]> {
       resolveProject(owner, slug)
-      const buf = await repo.readFile(
-        slug,
-        'main',
-        'forms/default/shaping-log.json',
-      )
-      if (!buf) return []
-      return JSON.parse(buf.toString()) as ShapingLogEntry[]
+      return readShapingLog(slug, branch)
+    },
+
+    async getShapingLogBetween(
+      slug: string,
+      base: string,
+      head: string,
+    ): Promise<ShapingLogEntry[]> {
+      const [baseLog, headLog] = await Promise.all([
+        readShapingLog(slug, base),
+        readShapingLog(slug, head),
+      ])
+      const baseCommits = new Set(baseLog.map((entry) => entry.authorCommit))
+      return headLog.filter((entry) => !baseCommits.has(entry.authorCommit))
+    },
+
+    async listBranches(slug: string): Promise<BranchEntry[]> {
+      return repo.listBranches(slug)
+    },
+
+    async createBranch(
+      slug: string,
+      name: string,
+      startPoint: string,
+      user: SessionUser,
+    ): Promise<void> {
+      requireAuth(user)
+      const project = store.getBySlug(slug)
+      if (!project) throw new NotFoundError()
+      requireOwner(project, user)
+      await repo.createBranch(slug, name, startPoint)
+    },
+
+    async deleteBranch(
+      slug: string,
+      name: string,
+      user: SessionUser,
+    ): Promise<void> {
+      requireAuth(user)
+      if (name === 'main') {
+        throw new BadRequestError('Cannot delete main branch')
+      }
+      const project = store.getBySlug(slug)
+      if (!project) throw new NotFoundError()
+      requireOwner(project, user)
+      await repo.deleteBranch(slug, name)
+    },
+
+    async getChangedResources(
+      slug: string,
+      branch: string,
+    ): Promise<{ dataSpec: boolean; formSpec: boolean }> {
+      if (branch === 'main') return { dataSpec: false, formSpec: false }
+      const files = await repo.getBranchDiff(slug, 'main', branch)
+      return {
+        dataSpec: files.includes('forms/default/spec.json'),
+        formSpec: files.includes('forms/default/form.json'),
+      }
     },
   }
 }

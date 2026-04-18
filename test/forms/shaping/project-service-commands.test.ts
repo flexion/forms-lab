@@ -41,6 +41,7 @@ describe('ProjectService.executeCommands', () => {
     slug = project.slug
     // Wait for fire-and-forget extraction to commit the form/spec files
     await new Promise((resolve) => setTimeout(resolve, 500))
+    await repo.mergeBranch(slug, 'import', 'main')
   })
 
   afterAll(() => {
