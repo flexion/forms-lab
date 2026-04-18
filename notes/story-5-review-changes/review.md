@@ -15,7 +15,7 @@ From issue #5:
 - [x] Structural semantic diff for DataCollectionSpec and FormSpec
 - [x] Domain-aware diff descriptions (ADDED/REMOVED/MODIFIED/MOVED/RENAMED with prose)
 - [x] Command log shown as History tab
-- [x] Side-by-side rendered previews
+- [x] Rendered preview of changes — delivered as an **annotated single view** (`flex-spec-diff-browser`) instead of literal side-by-side. Rationale documented in `preview-diff-design.md`: the annotated view scales to both small refinements (collapses unchanged) and initial imports (shows the form top-to-bottom with `+ New` badges), and avoids the "wall of text" problem of two mirrored panels on large forms.
 - [x] Approve (fast-forward merge) and reject (close) actions
 - [x] Comments on review pages (git-backed, threadable)
 - [x] Branch-qualified form URLs (`/forms/:specId/branches/:branch`) with preview banner
@@ -58,7 +58,7 @@ From per-task code reviews:
 
 ## Test Coverage
 
-- 691 tests, 0 failures
+- 707 tests, 0 failures
 - New unit coverage: comparison differs (15 tests), review service (8 tests), project-service branches (10 tests), comments store (3 tests), form-project-repo branches (8 tests)
 - E2E integration test walks create-branch -> edit -> compare -> merge through HTTP handlers, including auth rejection paths
 
