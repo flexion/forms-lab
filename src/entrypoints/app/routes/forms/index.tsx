@@ -258,7 +258,13 @@ export function createFormRouter(deps: FormRouterDeps) {
                       const title = titles.get(s.specId) ?? s.specId
                       return (
                         <li key={s.id}>
-                          <strong>{title}</strong>
+                          <a
+                            href={resolveUrl(
+                              `/forms/sessions/${s.id}/submission`,
+                            )}
+                          >
+                            <strong>{title}</strong>
+                          </a>
                           <span class="u-text-muted">
                             {' '}
                             — submitted{' '}
@@ -536,6 +542,48 @@ export function createFormRouter(deps: FormRouterDeps) {
       </Layout>,
     )
   }
+
+  async function handleSubmissionDetail(c: Context) {
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
+    const sessionId = c.req.param('sessionId')
+    if (!sessionId) return c.notFound()
+    const session = sessionGateway.getSession(sessionId)
+    if (!session) return c.notFound()
+    if (session.ownerId !== user.login) return c.notFound()
+    if (session.status !== 'submitted') return c.notFound()
+
+    let dataSpec: DataCollectionSpec | null = null
+    let formSpec: FormSpec | null = null
+    const snapshot = specSnapshotStore?.get(session.specVersion)
+    if (snapshot) {
+      dataSpec = snapshot.dataCollectionSpec
+      formSpec = snapshot.formSpec
+    } else {
+      const specs = await getSpecs(session.specId)
+      if (specs) {
+        dataSpec = specs.dataSpec
+        formSpec = specs.formSpec
+      }
+    }
+    if (!dataSpec || !formSpec) return c.notFound()
+
+    const resolved = resolveFormSpec(formSpec, dataSpec)
+    const reviewPages = buildReviewPages(resolved, session.fields)
+
+    return c.html(
+      <Layout user={user} title="Submission Details" currentPath="/forms">
+        <FormReview
+          pages={reviewPages}
+          fields={session.fields}
+          readOnly
+        />
+      </Layout>,
+    )
+  }
+
+  // Submission detail (read-only review of completed form)
+  forms.get('/sessions/:sessionId/submission', handleSubmissionDetail)
 
   // Form landing page
   forms.get('/:specId', handleLanding)
