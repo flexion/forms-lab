@@ -260,6 +260,10 @@ export function createProjectService(
               path: 'forms/default/confidence.json',
               content: Buffer.from(JSON.stringify(result.confidence, null, 2)),
             },
+            {
+              path: 'forms/default/field-mapping.json',
+              content: Buffer.from(JSON.stringify(result.fieldMapping, null, 2)),
+            },
           ],
           'Extract form specifications',
           author,

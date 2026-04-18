@@ -2,8 +2,9 @@ import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
 import type { CacheStore } from '../storage'
+import { enumerateFields } from './field-mapping'
 import { extractionResponseSchema, formSpecSchema } from './schemas'
-import type { ExtractionOptions, ExtractionResult } from './types'
+import type { ExtractionOptions, ExtractionResult, FieldMapping } from './types'
 
 export interface PdfExtractor {
   extract(pdf: Buffer, options?: ExtractionOptions): Promise<ExtractionResult>
@@ -183,11 +184,49 @@ ${JSON.stringify(spec, null, 2)}`,
 
       const formSpec = parseJsonResponse(formSpecResult.text, formSpecSchema)
 
+      // Step 3: Enumerate PDF AcroForm fields and map to spec fieldNames
+      const pdfFieldNames = await enumerateFields(pdf)
+      let fieldMapping: FieldMapping = {}
+
+      if (pdfFieldNames.length > 0) {
+        const allFieldNames = spec.groups
+          .flatMap((g) => g.requirements)
+          .map((r) => ({ fieldName: r.fieldName, label: r.label }))
+
+        const mappingResult = await generateText({
+          model: bedrock(model),
+          maxOutputTokens: 4096,
+          messages: [
+            {
+              role: 'user',
+              content: `Map these DataCollectionSpec fields to the PDF form fields. Return ONLY valid JSON (no markdown, no explanation) as an object where keys are spec fieldNames and values are PDF field names.
+
+Spec fields:
+${JSON.stringify(allFieldNames, null, 2)}
+
+PDF AcroForm field names:
+${JSON.stringify(pdfFieldNames, null, 2)}
+
+Rules:
+- Only include mappings where you are confident the spec field corresponds to the PDF field
+- Key = spec fieldName (camelCase), Value = exact PDF field name string
+- If a spec field has no clear PDF counterpart, omit it`,
+            },
+          ],
+        })
+
+        const mappingText = mappingResult.text.trim()
+        const jsonStr = mappingText.startsWith('```')
+          ? mappingText.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '')
+          : mappingText
+        fieldMapping = JSON.parse(jsonStr) as FieldMapping
+      }
+
       return {
         spec,
         formSpec,
         confidence,
-        fieldMapping: {},
+        fieldMapping,
       }
     },
   }
