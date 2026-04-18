@@ -8,9 +8,9 @@ import {
   ForbiddenError,
   UnauthenticatedError,
 } from '../../../src/services/errors'
+import type { PdfExtractor } from '../../../src/services/form-documents/extraction'
 import type { FormProjectRepo } from '../../../src/services/form-project-repo'
 import { createFormProjectRepo } from '../../../src/services/form-project-repo'
-import type { PdfExtractor } from '../../../src/services/form-documents/extraction'
 import {
   createProjectService,
   type ProjectService,

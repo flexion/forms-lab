@@ -9,6 +9,11 @@ import {
 } from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
 import type { DataCollectionSpec } from '../../services/data-collection/types'
+import {
+  createBedrockPdfExtractor,
+  createCachedPdfExtractor,
+} from '../../services/form-documents/extraction'
+import type { FieldMapping } from '../../services/form-documents/types'
 import { createFormProjectRepo } from '../../services/form-project-repo'
 import { createReviewService } from '../../services/forms/review'
 import { createShapingRegistry } from '../../services/forms/shaping/registry'
@@ -16,11 +21,6 @@ import { createSpecSnapshotStore } from '../../services/forms/spec-snapshot-stor
 import { SqliteFormSessionGateway } from '../../services/forms/sqlite-session-gateway'
 import { SqliteSubmissionGateway } from '../../services/forms/sqlite-submission-gateway'
 import type { FormSpec } from '../../services/forms/types'
-import {
-  createBedrockPdfExtractor,
-  createCachedPdfExtractor,
-} from '../../services/form-documents/extraction'
-import type { FieldMapping } from '../../services/form-documents/types'
 import { createProjectService } from '../../services/project-service'
 import { createCacheStore, createProjectStore } from '../../services/storage'
 import { createUserStore } from '../../services/user-store'

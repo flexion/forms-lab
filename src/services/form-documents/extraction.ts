@@ -217,7 +217,9 @@ Rules:
 
         const mappingText = mappingResult.text.trim()
         const jsonStr = mappingText.startsWith('```')
-          ? mappingText.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '')
+          ? mappingText
+              .replace(/^```(?:json)?\s*\n?/, '')
+              .replace(/\n?```\s*$/, '')
           : mappingText
         fieldMapping = JSON.parse(jsonStr) as FieldMapping
       }

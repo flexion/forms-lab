@@ -16,7 +16,12 @@ const REPOS_PATH = `${TEST_DIR}/repos`
 const testUser: SessionUser = { login: 'maya', name: 'Maya', avatarUrl: '' }
 const dummyExtractor = {
   async extract() {
-    return { spec: testDataSpec, formSpec: testFormSpec, confidence: [], fieldMapping: {} }
+    return {
+      spec: testDataSpec,
+      formSpec: testFormSpec,
+      confidence: [],
+      fieldMapping: {},
+    }
   },
 }
 

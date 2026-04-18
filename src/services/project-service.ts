@@ -12,6 +12,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from './errors'
+import type { PdfExtractor } from './form-documents/extraction'
 import type {
   BranchEntry,
   CommitEntry,
@@ -20,7 +21,6 @@ import type {
 } from './form-project-repo'
 import type { Command } from './forms/shaping/commands'
 import { executeBatch } from './forms/shaping/executor'
-import type { PdfExtractor } from './form-documents/extraction'
 import type { ProjectStore } from './storage'
 
 export type { BranchEntry } from './form-project-repo'
@@ -262,7 +262,9 @@ export function createProjectService(
             },
             {
               path: 'forms/default/field-mapping.json',
-              content: Buffer.from(JSON.stringify(result.fieldMapping, null, 2)),
+              content: Buffer.from(
+                JSON.stringify(result.fieldMapping, null, 2),
+              ),
             },
           ],
           'Extract form specifications',
