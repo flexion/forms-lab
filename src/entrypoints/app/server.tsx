@@ -19,7 +19,7 @@ import type { FormSpec } from '../../services/forms/types'
 import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
-} from '../../services/pdf-extractor'
+} from '../../services/form-documents/extraction'
 import { createProjectService } from '../../services/project-service'
 import { createCacheStore, createProjectStore } from '../../services/storage'
 import { createUserStore } from '../../services/user-store'

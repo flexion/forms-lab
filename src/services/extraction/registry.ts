@@ -1,5 +1,5 @@
-import type { PdfExtractor } from '../ingestion/pdf-extractor'
-import { createBedrockPdfExtractor } from '../ingestion/pdf-extractor'
+import type { PdfExtractor } from '../form-documents/extraction'
+import { createBedrockPdfExtractor } from '../form-documents/extraction'
 import { StrategyRegistry } from '../strategy-registry'
 import { HAIKU_MODEL_ID, OPUS_MODEL_ID, SONNET_MODEL_ID } from './models'
 

@@ -4,7 +4,7 @@ import { runEvaluation } from '../../../services/evaluation/harness'
 import { pdfFieldExtractionKind } from '../../../services/evaluation/kinds/pdf-field-extraction'
 import { evaluationRunSchema } from '../../../services/evaluation/schemas'
 import { createExtractorRegistry } from '../../../services/extraction/registry'
-import { createCachedPdfExtractor } from '../../../services/ingestion/pdf-extractor'
+import { createCachedPdfExtractor } from '../../../services/form-documents/extraction'
 import { createCacheStore } from '../../../services/storage'
 
 function printUsage(): void {

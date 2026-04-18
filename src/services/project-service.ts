@@ -20,7 +20,7 @@ import type {
 } from './form-project-repo'
 import type { Command } from './forms/shaping/commands'
 import { executeBatch } from './forms/shaping/executor'
-import type { PdfExtractor } from './pdf-extractor'
+import type { PdfExtractor } from './form-documents/extraction'
 import type { ProjectStore } from './storage'
 
 export type { BranchEntry } from './form-project-repo'

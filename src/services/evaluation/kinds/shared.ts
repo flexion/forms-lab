@@ -2,7 +2,7 @@ import type {
   DataCollectionSpec,
   DataRequirement,
 } from '../../data-collection/types'
-import type { FieldConfidence } from '../../ingestion/types'
+import type { FieldConfidence } from '../../form-documents/types'
 
 /**
  * Output format for PDF field extraction
