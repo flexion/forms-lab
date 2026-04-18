@@ -34,39 +34,37 @@ export const SpecBrowser: FC<SpecBrowserProps> = ({
       <aside class="flex-spec-browser__sidebar">
         <nav class="flex-spec-browser__nav" aria-label="On this form">
           <h2 class="flex-spec-browser__nav-heading">On this form</h2>
-          <div class="flex-spec-browser__nav-section">
-            <h3 class="flex-spec-browser__nav-subheading">Pages</h3>
-            <ul class="flex-spec-browser__nav-list">
-              {formSpec.pages.map((page, i) => (
-                <li key={page.id} class="flex-spec-browser__nav-item">
-                  <a
-                    class="flex-spec-browser__nav-link"
-                    href={`#${pageDomId(page.id)}`}
-                    data-spec-nav-link
-                  >
-                    <span class="flex-spec-browser__nav-num">{i + 1}.</span>{' '}
-                    {page.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div class="flex-spec-browser__nav-section">
-            <h3 class="flex-spec-browser__nav-subheading">Groups</h3>
-            <ul class="flex-spec-browser__nav-list">
-              {dataSpec.groups.map((group) => (
-                <li key={group.id} class="flex-spec-browser__nav-item">
-                  <a
-                    class="flex-spec-browser__nav-link"
-                    href={`#${groupDomId(group.id)}`}
-                    data-spec-nav-link
-                  >
-                    {group.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul class="flex-spec-browser__nav-list">
+            {formSpec.pages.map((page, i) => (
+              <li key={page.id} class="flex-spec-browser__nav-item">
+                <a
+                  class="flex-spec-browser__nav-link"
+                  href={`#${pageDomId(page.id)}`}
+                  data-spec-nav-link
+                >
+                  <span class="flex-spec-browser__nav-num">{i + 1}.</span>{' '}
+                  {page.title}
+                </a>
+                <ul class="flex-spec-browser__nav-sublist">
+                  {page.groups.map((gid) => {
+                    const group = groupMap.get(gid)
+                    if (!group) return null
+                    return (
+                      <li key={gid} class="flex-spec-browser__nav-item">
+                        <a
+                          class="flex-spec-browser__nav-link flex-spec-browser__nav-link--sub"
+                          href={`#${groupDomId(gid)}`}
+                          data-spec-nav-link
+                        >
+                          {group.title}
+                        </a>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </li>
+            ))}
+          </ul>
         </nav>
       </aside>
 

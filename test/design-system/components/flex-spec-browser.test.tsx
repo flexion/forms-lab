@@ -89,18 +89,18 @@ describe('flex-spec-browser', () => {
     // Wrapper custom element
     expect(html).toContain('<flex-spec-browser')
 
-    // Nav sections
+    // Nav heading
     expect(html).toContain('On this form')
-    expect(html).toContain('>Pages</h3>')
-    expect(html).toContain('>Groups</h3>')
 
     // Nav links for pages
     expect(html).toContain('href="#page-p-start"')
     expect(html).toContain('href="#page-p-contact"')
 
-    // Nav links for groups (at minimum one per group in sidebar)
+    // Groups nested under their parent pages in the sidebar nav
     expect(html).toContain('href="#group-g-identity"')
     expect(html).toContain('href="#group-g-contact"')
+    expect(html).toContain('flex-spec-browser__nav-sublist')
+    expect(html).toContain('flex-spec-browser__nav-link--sub')
   })
 
   it('renders <details> panels with correct ids, expanded by default', () => {

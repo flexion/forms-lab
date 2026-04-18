@@ -96,6 +96,22 @@ flex-spec-browser {
   color: var(--flex-color-ink);
 }
 
+.flex-spec-browser__nav-sublist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.flex-spec-browser__nav-link--sub {
+  padding-inline-start: 2rem;
+  font-size: 0.9rem;
+  color: var(--flex-color-text-muted);
+}
+
+.flex-spec-browser__nav-link--sub:hover {
+  color: var(--flex-color-accent);
+}
+
 .flex-spec-browser__nav-num {
   color: var(--flex-color-text-muted);
   font-variant-numeric: tabular-nums;

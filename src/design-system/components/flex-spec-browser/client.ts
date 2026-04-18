@@ -1,6 +1,8 @@
 class FlexSpecBrowserElement extends HTMLElement {
   private observer: IntersectionObserver | null = null
   private links = new Map<string, HTMLAnchorElement>()
+  private panels: HTMLElement[] = []
+  private visiblePanels = new Set<string>()
 
   connectedCallback() {
     // Defer one frame so the DOM (especially <details> content sizing) settles.
@@ -13,10 +15,10 @@ class FlexSpecBrowserElement extends HTMLElement {
   }
 
   private init() {
-    const panels = Array.from(
+    this.panels = Array.from(
       this.querySelectorAll<HTMLElement>('[data-spec-panel]'),
     )
-    if (panels.length === 0) return
+    if (this.panels.length === 0) return
 
     // Build a lookup from panel id -> its nav link in the sidebar.
     const linkNodes = this.querySelectorAll<HTMLAnchorElement>(
@@ -31,15 +33,30 @@ class FlexSpecBrowserElement extends HTMLElement {
     this.observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          const link = this.links.get((entry.target as HTMLElement).id)
-          if (!link) continue
-          const active = entry.isIntersecting && entry.intersectionRatio > 0.15
-          link.classList.toggle('flex-spec-browser__nav-link--current', active)
-          if (active) {
-            link.setAttribute('aria-current', 'true')
+          if (entry.isIntersecting && entry.intersectionRatio > 0.15) {
+            this.visiblePanels.add(entry.target.id)
           } else {
-            link.removeAttribute('aria-current')
+            this.visiblePanels.delete(entry.target.id)
           }
+        }
+        // Find topmost visible panel by DOM order
+        const orderedIds = this.panels.map((p) => p.id)
+        let activeId: string | null = null
+        for (const id of orderedIds) {
+          if (this.visiblePanels.has(id)) {
+            activeId = id
+            break
+          }
+        }
+        // Update all links — only the topmost visible panel is highlighted
+        for (const [id, link] of this.links) {
+          const isActive = id === activeId
+          link.classList.toggle(
+            'flex-spec-browser__nav-link--current',
+            isActive,
+          )
+          if (isActive) link.setAttribute('aria-current', 'true')
+          else link.removeAttribute('aria-current')
         }
       },
       {
@@ -48,7 +65,7 @@ class FlexSpecBrowserElement extends HTMLElement {
       },
     )
 
-    for (const panel of panels) {
+    for (const panel of this.panels) {
       this.observer.observe(panel)
     }
 
