@@ -298,6 +298,7 @@ export function createFormRouter(deps: FormRouterDeps) {
       specs.dataSpec.id,
       specs.formSpec.id,
       user.login,
+      specs.sha,
     )
     const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.redirect(resolveUrl(`${prefix}/sessions/${session.id}/pages/0`))
@@ -479,9 +480,6 @@ export function createFormRouter(deps: FormRouterDeps) {
       return c.text('This form has already been submitted.', 409)
     }
     const submission = sessionGateway.submit(session.id)
-    // Pin the submission to the branch's current commit SHA so it remains
-    // traceable to the exact form definition that produced it.
-    submission.specVersion = specs.sha
     submissionGateway.save(submission)
     const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.redirect(

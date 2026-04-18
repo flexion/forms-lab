@@ -12,6 +12,7 @@ export class InMemoryFormSessionGateway implements FormSessionGateway {
     specId: string,
     formSpecId: string,
     ownerId: string,
+    specVersion: string,
   ): FormSession {
     const session: FormSession = {
       id: crypto.randomUUID(),
@@ -21,6 +22,7 @@ export class InMemoryFormSessionGateway implements FormSessionGateway {
       fields: {},
       status: 'active',
       createdAt: new Date().toISOString(),
+      specVersion,
     }
     this.sessions.set(session.id, session)
     return session
@@ -57,6 +59,8 @@ export class InMemoryFormSessionGateway implements FormSessionGateway {
       ownerId: session.ownerId,
       data,
       submittedAt: new Date().toISOString(),
+      specVersion: session.specVersion,
+      sessionId: session.id,
     }
     return submission
   }

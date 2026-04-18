@@ -52,6 +52,7 @@ export interface FormSession {
   fields: Record<string, FieldEntry>
   status: 'active' | 'submitted'
   createdAt: string
+  specVersion: string
 }
 
 export interface FieldEntry {
@@ -66,14 +67,8 @@ export interface Submission {
   ownerId: string
   data: Record<string, unknown>
   submittedAt: string
-  /**
-   * Git commit SHA (or equivalent version identifier) of the form spec at
-   * the time of submission. Pinned by the route handler so that the
-   * collected data remains traceable to the exact form definition that
-   * produced it — including submissions against non-main branches during
-   * preview.
-   */
-  specVersion?: string
+  specVersion: string
+  sessionId: string
 }
 
 // --- Persistence Gateways ---
@@ -83,6 +78,7 @@ export interface FormSessionGateway {
     specId: string,
     formSpecId: string,
     ownerId: string,
+    specVersion: string,
   ): FormSession
   getSession(id: string): FormSession | null
   listByOwner(ownerId: string): FormSession[]
@@ -93,6 +89,7 @@ export interface FormSessionGateway {
 export interface SubmissionGateway {
   save(submission: Submission): void
   getSubmission(id: string): Submission | null
+  listByOwner(ownerId: string): Submission[]
 }
 
 /**
