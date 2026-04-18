@@ -227,16 +227,14 @@ describe('review flow end-to-end', () => {
     expect(mergeRes.status).toBe(302)
     expect(mergeRes.headers.get('Location')).toContain(`/danielnaab/${slug}`)
 
-    // 5. main should now be fast-forwarded to feature's SHA.
+    // 5. main should now be fast-forwarded to feature's SHA, and the
+    //    feature branch should be auto-deleted after merge.
     const afterMerge = await repo.listBranches(slug)
     const mainAfterMerge = afterMerge.find((b) => b.name === 'main')
-    const featureAfterMerge = afterMerge.find((b) => b.name === 'feature')
     expect(mainAfterMerge).toBeDefined()
-    expect(featureAfterMerge).toBeDefined()
-    // biome-ignore lint/style/noNonNullAssertion: guarded above
-    expect(mainAfterMerge!.sha).toBe(featureAfterMerge!.sha)
     // biome-ignore lint/style/noNonNullAssertion: guarded above
     expect(mainAfterMerge!.sha).toBe(acceptBody.sha)
+    expect(afterMerge.find((b) => b.name === 'feature')).toBeUndefined()
   })
 
   it('rejects edits on main', async () => {

@@ -10,10 +10,18 @@ export function createReviewService(repo: FormProjectRepo) {
 
     async merge(ref: ReviewRef): Promise<MergeOutcome> {
       const result = await repo.mergeBranch(ref.slug, ref.head, ref.base)
-      if (result.ok) return { status: 'merged', sha: result.sha }
-      if (result.reason === 'not-fast-forward')
-        return { status: 'conflict', reason: 'not-fast-forward' }
-      return { status: 'missing-branch' }
+      if (!result.ok) {
+        if (result.reason === 'not-fast-forward')
+          return { status: 'conflict', reason: 'not-fast-forward' }
+        return { status: 'missing-branch' }
+      }
+      // Clean up the source branch now that its content lives on the target.
+      try {
+        await repo.deleteBranch(ref.slug, ref.head)
+      } catch {
+        // Branch deletion is best-effort; the merge already succeeded.
+      }
+      return { status: 'merged', sha: result.sha }
     },
 
     async close(ref: ReviewRef): Promise<void> {
