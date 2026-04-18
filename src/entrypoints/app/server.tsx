@@ -11,9 +11,10 @@ import { Layout } from '../../design-system/components/flex-layout'
 import type { DataCollectionSpec } from '../../services/data-collection/types'
 import { createFormProjectRepo } from '../../services/form-project-repo'
 import { createReviewService } from '../../services/forms/review'
-import { InMemoryFormSessionGateway } from '../../services/forms/session'
 import { createShapingRegistry } from '../../services/forms/shaping/registry'
-import { InMemorySubmissionGateway } from '../../services/forms/submission'
+import { createSpecSnapshotStore } from '../../services/forms/spec-snapshot-store'
+import { SqliteFormSessionGateway } from '../../services/forms/sqlite-session-gateway'
+import { SqliteSubmissionGateway } from '../../services/forms/sqlite-submission-gateway'
 import type { FormSpec } from '../../services/forms/types'
 import {
   createBedrockPdfExtractor,
@@ -61,8 +62,11 @@ const projectService = createProjectService(
 )
 const shapingRegistry = createShapingRegistry()
 const reviewService = createReviewService(formProjectRepo)
-const sessionGateway = new InMemoryFormSessionGateway()
-const submissionGateway = new InMemorySubmissionGateway()
+const formsDbPath = process.env.FORMS_DB_PATH ?? 'data/forms.sqlite'
+mkdirSync(dirname(formsDbPath), { recursive: true })
+const sessionGateway = new SqliteFormSessionGateway(formsDbPath)
+const submissionGateway = new SqliteSubmissionGateway(formsDbPath)
+const specSnapshotStore = createSpecSnapshotStore(formsDbPath)
 
 /**
  * Adapter: resolve a DataCollectionSpec id to (owner, slug, spec, formSpec)
@@ -316,6 +320,7 @@ app.route(
   createFormRouter({
     sessionGateway,
     submissionGateway,
+    specSnapshotStore,
     async getSpecs(specId, ref) {
       const project = await findProjectBySpecId(specId)
       if (!project) return null

@@ -48,6 +48,21 @@ interface ResolvedSpecs {
 interface FormRouterDeps {
   sessionGateway: FormSessionGateway
   submissionGateway: SubmissionGateway
+  specSnapshotStore?: {
+    get(specVersion: string): {
+      specVersion: string
+      specId: string
+      dataCollectionSpec: DataCollectionSpec
+      formSpec: FormSpec
+      cachedAt: string
+    } | null
+    put(
+      specVersion: string,
+      specId: string,
+      dataCollectionSpec: DataCollectionSpec,
+      formSpec: FormSpec,
+    ): void
+  }
   getSpecs: (specId: string, ref?: string) => Promise<ResolvedSpecs | null>
   listSpecs: () => Promise<ResolvedSpecs[]>
   /**
@@ -132,19 +147,29 @@ export function createFormRouter(deps: FormRouterDeps) {
   const {
     sessionGateway,
     submissionGateway,
+    specSnapshotStore,
     getSpecs,
     listSpecs,
     getEditHref,
   } = deps
   const forms = new Hono()
 
-  // Forms index (public)
+  // All form routes require authentication
+  forms.use('*', requireAuth())
+
+  // Forms index
   forms.get('/', async (c) => {
     const allSpecs = await listSpecs()
     return c.html(
       <Layout user={c.get('user')} title="Forms" currentPath="/forms">
         <div class="flex-form" data-size="large">
-          <h1>Available Forms</h1>
+          <div
+            class="l-cluster"
+            style="justify-content: space-between; align-items: baseline;"
+          >
+            <h1>Available Forms</h1>
+            <a href={resolveUrl('/forms/sessions')}>My sessions</a>
+          </div>
           {allSpecs.length === 0 ? (
             <p>No forms available.</p>
           ) : (
@@ -174,8 +199,8 @@ export function createFormRouter(deps: FormRouterDeps) {
     )
   })
 
-  // My sessions (requires auth)
-  forms.get('/sessions', requireAuth(), async (c) => {
+  // My sessions
+  forms.get('/sessions', async (c) => {
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const sessions = sessionGateway.listByOwner(user.login)
@@ -236,7 +261,13 @@ export function createFormRouter(deps: FormRouterDeps) {
                       const title = titles.get(s.specId) ?? s.specId
                       return (
                         <li key={s.id}>
-                          <strong>{title}</strong>
+                          <a
+                            href={resolveUrl(
+                              `/forms/sessions/${s.id}/submission`,
+                            )}
+                          >
+                            <strong>{title}</strong>
+                          </a>
                           <span class="u-text-muted">
                             {' '}
                             — submitted{' '}
@@ -298,6 +329,7 @@ export function createFormRouter(deps: FormRouterDeps) {
       specs.dataSpec.id,
       specs.formSpec.id,
       user.login,
+      specs.sha,
     )
     const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.redirect(resolveUrl(`${prefix}/sessions/${session.id}/pages/0`))
@@ -479,10 +511,13 @@ export function createFormRouter(deps: FormRouterDeps) {
       return c.text('This form has already been submitted.', 409)
     }
     const submission = sessionGateway.submit(session.id)
-    // Pin the submission to the branch's current commit SHA so it remains
-    // traceable to the exact form definition that produced it.
-    submission.specVersion = specs.sha
     submissionGateway.save(submission)
+    specSnapshotStore?.put(
+      specs.sha,
+      specs.dataSpec.id,
+      specs.dataSpec,
+      specs.formSpec,
+    )
     const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.redirect(
       resolveUrl(
@@ -511,15 +546,47 @@ export function createFormRouter(deps: FormRouterDeps) {
     )
   }
 
-  // Form landing page (public — viewing a form description is fine)
+  async function handleSubmissionDetail(c: Context) {
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
+    const sessionId = c.req.param('sessionId')
+    if (!sessionId) return c.notFound()
+    const session = sessionGateway.getSession(sessionId)
+    if (!session) return c.notFound()
+    if (session.ownerId !== user.login) return c.notFound()
+    if (session.status !== 'submitted') return c.notFound()
+
+    let dataSpec: DataCollectionSpec | null = null
+    let formSpec: FormSpec | null = null
+    const snapshot = specSnapshotStore?.get(session.specVersion)
+    if (snapshot) {
+      dataSpec = snapshot.dataCollectionSpec
+      formSpec = snapshot.formSpec
+    } else {
+      const specs = await getSpecs(session.specId)
+      if (specs) {
+        dataSpec = specs.dataSpec
+        formSpec = specs.formSpec
+      }
+    }
+    if (!dataSpec || !formSpec) return c.notFound()
+
+    const resolved = resolveFormSpec(formSpec, dataSpec)
+    const reviewPages = buildReviewPages(resolved, session.fields)
+
+    return c.html(
+      <Layout user={user} title="Submission Details" currentPath="/forms">
+        <FormReview pages={reviewPages} fields={session.fields} readOnly />
+      </Layout>,
+    )
+  }
+
+  // Submission detail (read-only review of completed form)
+  forms.get('/sessions/:sessionId/submission', handleSubmissionDetail)
+
+  // Form landing page
   forms.get('/:specId', handleLanding)
   forms.get('/:specId/branches/:branch', handleLanding)
-
-  // All session routes require authentication
-  forms.use('/:specId/sessions/*', requireAuth())
-  forms.use('/:specId/branches/:branch/sessions/*', requireAuth())
-  forms.post('/:specId/sessions', requireAuth())
-  forms.post('/:specId/branches/:branch/sessions', requireAuth())
 
   // Create session
   forms.post('/:specId/sessions', handleCreateSession)

@@ -10,4 +10,8 @@ export class InMemorySubmissionGateway implements SubmissionGateway {
   getSubmission(id: string): Submission | null {
     return this.submissions.get(id) ?? null
   }
+
+  listByOwner(ownerId: string): Submission[] {
+    return [...this.submissions.values()].filter((s) => s.ownerId === ownerId)
+  }
 }

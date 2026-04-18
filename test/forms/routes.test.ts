@@ -309,12 +309,12 @@ describe('Form routes', () => {
     expect(location).toContain('/auth/signin')
   })
 
-  it('landing page is accessible without auth', async () => {
+  it('landing page requires auth', async () => {
     const app = createUnauthTestApp()
     const res = await app.request('/forms/benefits-app')
-    expect(res.status).toBe(200)
-    const html = await res.text()
-    expect(html).toContain('Benefits Application Form')
+    expect(res.status).toBe(302)
+    const location = res.headers.get('Location')
+    expect(location).toContain('/auth/signin')
   })
 
   it('GET /forms shows available forms', async () => {
@@ -326,12 +326,12 @@ describe('Form routes', () => {
     expect(html).toContain('Benefits Application Form')
   })
 
-  it('forms index is accessible without auth', async () => {
+  it('forms index requires auth', async () => {
     const app = createUnauthTestApp()
     const res = await app.request('/forms')
-    expect(res.status).toBe(200)
-    const html = await res.text()
-    expect(html).toContain('Available Forms')
+    expect(res.status).toBe(302)
+    const location = res.headers.get('Location')
+    expect(location).toContain('/auth/signin')
   })
 
   it('GET /forms/sessions shows user sessions', async () => {
@@ -523,6 +523,65 @@ describe('Form routes', () => {
     const res = await appB.request(
       `/forms/benefits-app/sessions/${sessionId}/pages/0`,
     )
+    expect(res.status).toBe(404)
+  })
+
+  it('GET /forms/sessions/:sessionId/submission shows read-only review', async () => {
+    const app = createTestApp()
+
+    // Create and complete a session
+    const createRes = await app.request('/forms/benefits-app/sessions', {
+      method: 'POST',
+    })
+    const location = createRes.headers.get('Location')
+    const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
+    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+
+    await app.request(`${baseUrl}/pages/0`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        fullName: 'Alice Johnson',
+        email: 'alice@example.com',
+      }),
+    })
+    await app.request(`${baseUrl}/pages/1`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        employed: 'Yes',
+        employmentType: 'Full-time',
+        monthlyIncome: '5000',
+      }),
+    })
+    await app.request(`${baseUrl}/pages/2`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        startDate: '2026-05-01',
+        dependents: '2',
+        agreeTerms: 'on',
+      }),
+    })
+    await app.request(`${baseUrl}/submit`, { method: 'POST' })
+
+    const res = await app.request(`/forms/sessions/${sessionId}/submission`)
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toContain('Alice Johnson')
+    expect(html).toContain('alice@example.com')
+    expect(html).toContain('Full-time')
+    expect(html).not.toContain('>Change<')
+    expect(html).not.toContain('>Submit<')
+    expect(html).toContain('Submission details')
+  })
+
+  it('submission detail returns 404 for active session', async () => {
+    const app = createTestApp()
+    const createRes = await app.request('/forms/benefits-app/sessions', {
+      method: 'POST',
+    })
+    const location = createRes.headers.get('Location')
+    const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
+
+    const res = await app.request(`/forms/sessions/${sessionId}/submission`)
     expect(res.status).toBe(404)
   })
 })

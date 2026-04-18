@@ -21,8 +21,9 @@ interface ReviewPage {
 interface FormReviewProps {
   pages: ReviewPage[]
   fields: Record<string, FormFieldEntry>
-  submitUrl: string
-  editBaseUrl: string
+  submitUrl?: string
+  editBaseUrl?: string
+  readOnly?: boolean
 }
 
 export const FormReview: FC<FormReviewProps> = ({
@@ -30,19 +31,22 @@ export const FormReview: FC<FormReviewProps> = ({
   fields,
   submitUrl,
   editBaseUrl,
+  readOnly,
 }) => {
   return (
     <Form size="large">
-      <h1>Review your answers</h1>
-      <p>Check your answers before submitting.</p>
+      <h1>{readOnly ? 'Submission details' : 'Review your answers'}</h1>
+      {!readOnly && <p>Check your answers before submitting.</p>}
       {pages.map((page, pageIndex) => (
         <section key={page.id}>
           <div class="l-cluster" style="justify-content: space-between">
             <h2>{page.title}</h2>
-            <a href={`${editBaseUrl}/${pageIndex}`}>
-              Change
-              <span class="u-visually-hidden"> {page.title}</span>
-            </a>
+            {!readOnly && editBaseUrl && (
+              <a href={`${editBaseUrl}/${pageIndex}`}>
+                Change
+                <span class="u-visually-hidden"> {page.title}</span>
+              </a>
+            )}
           </div>
           {page.groups.map((group) => (
             <dl key={group.id} class="flex-summary-list">
@@ -66,11 +70,13 @@ export const FormReview: FC<FormReviewProps> = ({
           ))}
         </section>
       ))}
-      <form method="post" action={submitUrl}>
-        <button type="submit" class="flex-button">
-          Submit
-        </button>
-      </form>
+      {!readOnly && submitUrl && (
+        <form method="post" action={submitUrl}>
+          <button type="submit" class="flex-button">
+            Submit
+          </button>
+        </form>
+      )}
     </Form>
   )
 }
