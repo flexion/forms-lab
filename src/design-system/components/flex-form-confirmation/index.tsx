@@ -9,6 +9,7 @@ interface FormSubmissionSummary {
 
 interface FormConfirmationProps {
   submission: FormSubmissionSummary
+  pdfDownloadUrl?: string
 }
 
 function formatDate(isoString: string): string {
@@ -24,7 +25,10 @@ function formatDate(isoString: string): string {
   })
 }
 
-export const FormConfirmation: FC<FormConfirmationProps> = ({ submission }) => {
+export const FormConfirmation: FC<FormConfirmationProps> = ({
+  submission,
+  pdfDownloadUrl,
+}) => {
   return (
     <Form size="large">
       <Alert variant="success" heading="Your form has been submitted">
@@ -43,6 +47,13 @@ export const FormConfirmation: FC<FormConfirmationProps> = ({ submission }) => {
           </dd>
         </div>
       </dl>
+      {pdfDownloadUrl && (
+        <p>
+          <a href={pdfDownloadUrl} class="flex-button flex-button--outline">
+            Download completed PDF
+          </a>
+        </p>
+      )}
       <p>
         <a href="/">Return to home</a>
       </p>

@@ -550,7 +550,12 @@ export function createFormRouter(deps: FormRouterDeps) {
         {specs
           ? previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)
           : null}
-        <FormConfirmation submission={submission} />
+        <FormConfirmation
+          submission={submission}
+          pdfDownloadUrl={resolveUrl(
+            `/forms/${submission.specId}/submissions/${submission.id}/pdf`,
+          )}
+        />
       </Layout>,
     )
   }
@@ -583,9 +588,26 @@ export function createFormRouter(deps: FormRouterDeps) {
     const resolved = resolveFormSpec(formSpec, dataSpec)
     const reviewPages = buildReviewPages(resolved, session.fields)
 
+    const submissions = submissionGateway.listByOwner(user.login)
+    const submission = submissions.find((s) => s.sessionId === sessionId)
+
     return c.html(
       <Layout user={user} title="Submission Details" currentPath="/forms">
         <FormReview pages={reviewPages} fields={session.fields} readOnly />
+        {submission && (
+          <div class="flex-form" data-size="large">
+            <p>
+              <a
+                href={resolveUrl(
+                  `/forms/${session.specId}/submissions/${submission.id}/pdf`,
+                )}
+                class="flex-button flex-button--outline"
+              >
+                Download completed PDF
+              </a>
+            </p>
+          </div>
+        )}
       </Layout>,
     )
   }
