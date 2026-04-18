@@ -163,7 +163,10 @@ export function createFormRouter(deps: FormRouterDeps) {
     return c.html(
       <Layout user={c.get('user')} title="Forms" currentPath="/forms">
         <div class="flex-form" data-size="large">
-          <div class="l-cluster" style="justify-content: space-between; align-items: baseline;">
+          <div
+            class="l-cluster"
+            style="justify-content: space-between; align-items: baseline;"
+          >
             <h1>Available Forms</h1>
             <a href={resolveUrl('/forms/sessions')}>My sessions</a>
           </div>
@@ -573,11 +576,7 @@ export function createFormRouter(deps: FormRouterDeps) {
 
     return c.html(
       <Layout user={user} title="Submission Details" currentPath="/forms">
-        <FormReview
-          pages={reviewPages}
-          fields={session.fields}
-          readOnly
-        />
+        <FormReview pages={reviewPages} fields={session.fields} readOnly />
       </Layout>,
     )
   }
