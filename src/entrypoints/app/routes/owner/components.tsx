@@ -203,7 +203,14 @@ export const ProjectOverview: FC<{
           <h1 class="repo-header__title">{project.name}</h1>
           <div class="repo-header__actions">
             {isOwner && formSpec && (
-              <a href={resolveUrl(`${repoBase}/edit`)} class="flex-button">
+              <a
+                href={resolveUrl(
+                  branch && branch !== 'main'
+                    ? `${repoBase}/edit/${branch}`
+                    : `${repoBase}/edit`,
+                )}
+                class="flex-button"
+              >
                 Edit form structure
               </a>
             )}
