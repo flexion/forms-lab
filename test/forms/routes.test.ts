@@ -309,12 +309,12 @@ describe('Form routes', () => {
     expect(location).toContain('/auth/signin')
   })
 
-  it('landing page is accessible without auth', async () => {
+  it('landing page requires auth', async () => {
     const app = createUnauthTestApp()
     const res = await app.request('/forms/benefits-app')
-    expect(res.status).toBe(200)
-    const html = await res.text()
-    expect(html).toContain('Benefits Application Form')
+    expect(res.status).toBe(302)
+    const location = res.headers.get('Location')
+    expect(location).toContain('/auth/signin')
   })
 
   it('GET /forms shows available forms', async () => {
@@ -326,12 +326,12 @@ describe('Form routes', () => {
     expect(html).toContain('Benefits Application Form')
   })
 
-  it('forms index is accessible without auth', async () => {
+  it('forms index requires auth', async () => {
     const app = createUnauthTestApp()
     const res = await app.request('/forms')
-    expect(res.status).toBe(200)
-    const html = await res.text()
-    expect(html).toContain('Available Forms')
+    expect(res.status).toBe(302)
+    const location = res.headers.get('Location')
+    expect(location).toContain('/auth/signin')
   })
 
   it('GET /forms/sessions shows user sessions', async () => {

@@ -154,13 +154,19 @@ export function createFormRouter(deps: FormRouterDeps) {
   } = deps
   const forms = new Hono()
 
-  // Forms index (public)
+  // All form routes require authentication
+  forms.use('*', requireAuth())
+
+  // Forms index
   forms.get('/', async (c) => {
     const allSpecs = await listSpecs()
     return c.html(
       <Layout user={c.get('user')} title="Forms" currentPath="/forms">
         <div class="flex-form" data-size="large">
-          <h1>Available Forms</h1>
+          <div class="l-cluster" style="justify-content: space-between; align-items: baseline;">
+            <h1>Available Forms</h1>
+            <a href={resolveUrl('/forms/sessions')}>My sessions</a>
+          </div>
           {allSpecs.length === 0 ? (
             <p>No forms available.</p>
           ) : (
@@ -190,8 +196,8 @@ export function createFormRouter(deps: FormRouterDeps) {
     )
   })
 
-  // My sessions (requires auth)
-  forms.get('/sessions', requireAuth(), async (c) => {
+  // My sessions
+  forms.get('/sessions', async (c) => {
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const sessions = sessionGateway.listByOwner(user.login)
@@ -531,15 +537,9 @@ export function createFormRouter(deps: FormRouterDeps) {
     )
   }
 
-  // Form landing page (public — viewing a form description is fine)
+  // Form landing page
   forms.get('/:specId', handleLanding)
   forms.get('/:specId/branches/:branch', handleLanding)
-
-  // All session routes require authentication
-  forms.use('/:specId/sessions/*', requireAuth())
-  forms.use('/:specId/branches/:branch/sessions/*', requireAuth())
-  forms.post('/:specId/sessions', requireAuth())
-  forms.post('/:specId/branches/:branch/sessions', requireAuth())
 
   // Create session
   forms.post('/:specId/sessions', handleCreateSession)
