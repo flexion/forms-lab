@@ -1,6 +1,7 @@
 import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../../fixtures/index'
 import { Alert } from '../../../../design-system/components/flex-alert'
+import { BranchSwitcher } from '../../../../design-system/components/flex-branch-switcher'
 import { SpecBrowser } from '../../../../design-system/components/flex-spec-browser'
 import type { SessionUser } from '../../../../services/auth/session'
 import type {
@@ -242,24 +243,14 @@ export const ProjectOverview: FC<{
       <RepoNav owner={owner} slug={project.slug} current="overview" />
 
       {branches && branches.length > 1 && (
-        <form class="l-cluster" style="align-items: baseline;">
-          <label class="flex-label" for="branch-select">
-            Branch
-          </label>
-          <select
-            class="flex-select"
-            id="branch-select"
-            name="branch"
-            onchange={`window.location.search = '?branch=' + this.value`}
-          >
-            {branches.map((b) => (
-              <option key={b.name} value={b.name} selected={b.name === branch}>
-                {b.name}
-                {b.name === 'main' ? ' (published)' : ` (${b.ahead} ahead)`}
-              </option>
-            ))}
-          </select>
-        </form>
+        <BranchSwitcher
+          current={branch}
+          branches={branches}
+          branchHref={(b) =>
+            resolveUrl(`/${owner}/${project.slug}?branch=${b}`)
+          }
+          createHref={resolveUrl(`/${owner}/${project.slug}/edit/main/branch`)}
+        />
       )}
 
       <div class="clone-bar">

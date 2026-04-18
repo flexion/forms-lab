@@ -43,10 +43,6 @@ export function createEditRoutes(
         )
       }
       const branches = await service.listBranches(slug)
-      const preferred = branches.find((b) => b.name !== 'main')?.name
-      if (preferred) {
-        return c.redirect(resolveUrl(`/${owner}/${slug}/edit/${preferred}`))
-      }
       return c.html(
         <Layout user={user} title={`Edit ${view.project.name}`}>
           <EditorPage

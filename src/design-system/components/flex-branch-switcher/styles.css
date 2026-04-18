@@ -141,3 +141,25 @@ flex-branch-switcher {
   background: var(--flex-color-link-hover);
   border-color: var(--flex-color-link-hover);
 }
+
+.flex-branch-switcher__icon {
+  flex-shrink: 0;
+  fill: currentcolor;
+}
+
+.flex-branch-switcher__badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 0.4rem;
+  border-radius: var(--flex-radius-sm);
+  background: var(--flex-color-warning-lighter);
+  color: var(--flex-color-text);
+}
+
+.flex-branch-switcher__trigger-meta {
+  font-size: 0.82rem;
+  color: var(--flex-color-text-muted);
+  font-weight: 400;
+}

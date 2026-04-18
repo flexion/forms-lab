@@ -1,6 +1,5 @@
 import type { FC } from 'hono/jsx'
 import { Alert } from '../../../../../design-system/components/flex-alert'
-import { BranchIndicator } from '../../../../../design-system/components/flex-branch-indicator'
 import { BranchSwitcher } from '../../../../../design-system/components/flex-branch-switcher'
 import { ChangeIndicator } from '../../../../../design-system/components/flex-change-indicator'
 import type { FormFieldRequirement } from '../../../../../design-system/components/flex-form-field'
@@ -48,7 +47,7 @@ const NoBranchShell: FC<{
   owner: string
   user: SessionUser
   branches: BranchEntry[]
-}> = ({ view, owner }) => {
+}> = ({ view, owner, branches }) => {
   const { project } = view
   return (
     <section class="editor__no-branch l-stack">
@@ -57,36 +56,17 @@ const NoBranchShell: FC<{
           &larr; Back to {project.name}
         </a>
       </p>
-      <h2>Create a branch to start editing</h2>
+      <h2>Select a branch to edit</h2>
       <p>
-        The <code>main</code> branch is read-only. Create a branch to make
-        changes, then merge them back into <code>main</code> when they are
-        ready.
+        Choose an existing branch or create a new one. The <code>main</code>
+        branch is read-only.
       </p>
-      <form
-        method="post"
-        action={resolveUrl(`/${owner}/${project.slug}/edit/main/branch`)}
-        class="l-stack"
-      >
-        <label class="flex-label" for="new-branch-name">
-          Branch name
-        </label>
-        <input
-          id="new-branch-name"
-          type="text"
-          name="name"
-          required
-          minLength={3}
-          class="flex-text-input"
-          placeholder="e.g. tighten-labels"
-        />
-        <input type="hidden" name="startPoint" value="main" />
-        <div>
-          <button type="submit" class="flex-button">
-            Create branch
-          </button>
-        </div>
-      </form>
+      <BranchSwitcher
+        current="main"
+        branches={branches}
+        branchHref={(b) => resolveUrl(`/${owner}/${project.slug}/edit/${b}`)}
+        createHref={resolveUrl(`/${owner}/${project.slug}/edit/main/branch`)}
+      />
     </section>
   )
 }
@@ -103,8 +83,6 @@ const EditingShell: FC<{
   const { project, formSpec, spec } = view
   const editBase = `/${owner}/${project.slug}/edit/${branch}`
   const previewBase = `/${owner}/${project.slug}/preview/${branch}`
-  const currentBranchEntry = branches.find((b) => b.name === branch)
-
   if (!formSpec || !spec) {
     return (
       <div class="l-stack">
@@ -148,15 +126,10 @@ const EditingShell: FC<{
             <strong>Edit</strong>
           </h1>
           <div class="editor-breadcrumb__branch-controls">
-            <BranchIndicator
-              name={branch}
-              isPublished={branch === 'main'}
-              ahead={currentBranchEntry?.ahead}
-            />
             <BranchSwitcher
               current={branch}
               branches={branches}
-              compareHref={(b) =>
+              branchHref={(b) =>
                 resolveUrl(`/${owner}/${project.slug}/edit/${b}`)
               }
               createHref={resolveUrl(
