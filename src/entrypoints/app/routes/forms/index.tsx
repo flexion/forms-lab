@@ -10,6 +10,8 @@ import type {
   DataCollectionSpec,
   RequirementGroup,
 } from '../../../../services/data-collection/types'
+import { fillPdf } from '../../../../services/form-documents/filling'
+import type { FieldMapping } from '../../../../services/form-documents/types'
 import {
   countVisiblePages,
   findNextPage,
@@ -71,6 +73,11 @@ interface FormRouterDeps {
    * dep) suppresses the link.
    */
   getEditHref?: (specId: string, branch: string) => string | null
+  getSourcePdf?: (specId: string, specVersion: string) => Promise<Buffer | null>
+  getFieldMapping?: (
+    specId: string,
+    specVersion: string,
+  ) => Promise<FieldMapping | null>
 }
 
 const MAIN_BRANCH = 'main'
@@ -151,6 +158,8 @@ export function createFormRouter(deps: FormRouterDeps) {
     getSpecs,
     listSpecs,
     getEditHref,
+    getSourcePdf,
+    getFieldMapping,
   } = deps
   const forms = new Hono()
 
@@ -581,8 +590,45 @@ export function createFormRouter(deps: FormRouterDeps) {
     )
   }
 
+  async function handlePdfDownload(c: Context) {
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
+    const submissionId = c.req.param('submissionId')
+    if (!submissionId) return c.notFound()
+
+    const submission = submissionGateway.getSubmission(submissionId)
+    if (!submission) return c.notFound()
+    if (submission.ownerId !== user.login) return c.notFound()
+
+    if (!getSourcePdf || !getFieldMapping) return c.notFound()
+
+    const sourcePdf = await getSourcePdf(
+      submission.specId,
+      submission.specVersion,
+    )
+    if (!sourcePdf) return c.notFound()
+
+    const fieldMapping = await getFieldMapping(
+      submission.specId,
+      submission.specVersion,
+    )
+    if (!fieldMapping) return c.notFound()
+
+    const result = await fillPdf(sourcePdf, fieldMapping, submission.data)
+
+    return new Response(result.pdf.buffer as ArrayBuffer, {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${submission.specId}-${submissionId}.pdf"`,
+      },
+    })
+  }
+
   // Submission detail (read-only review of completed form)
   forms.get('/sessions/:sessionId/submission', handleSubmissionDetail)
+
+  // PDF download
+  forms.get('/:specId/submissions/:submissionId/pdf', handlePdfDownload)
 
   // Form landing page
   forms.get('/:specId', handleLanding)
