@@ -13,7 +13,6 @@ import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
 } from '../../services/form-documents/extraction'
-import type { FieldMapping } from '../../services/form-documents/types'
 import { createFormProjectRepo } from '../../services/form-project-repo'
 import { createReviewService } from '../../services/forms/review'
 import { createShapingRegistry } from '../../services/forms/shaping/registry'
@@ -359,7 +358,7 @@ app.route(
       if (!entry) return null
       return resolveUrl(`/${entry.owner}/${entry.slug}/edit/${branch}`)
     },
-    async getSourcePdf(specId, specVersion) {
+    async getSourcePdf(specId, _specVersion) {
       const project = await findProjectBySpecId(specId)
       if (!project) return null
       return formProjectRepo.readFile(
