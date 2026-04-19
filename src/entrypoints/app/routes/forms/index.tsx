@@ -879,10 +879,12 @@ export function createFormRouter(deps: FormRouterDeps) {
       )
     } catch (error) {
       console.error('Filling agent error:', error)
-      return c.text(
-        `Error processing message: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        500,
-      )
+      const isLive = c.req.header('X-Live-Chat') === 'true'
+      const errMsg = error instanceof Error ? error.message : 'Unknown error'
+      if (isLive) {
+        return c.json({ response: `Error: ${errMsg}`, finished: false })
+      }
+      return c.text(`Error processing message: ${errMsg}`, 500)
     }
 
     // Append user and assistant messages to conversation
