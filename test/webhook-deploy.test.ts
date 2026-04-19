@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import {
   deployMainBranch,
+  teardownBranch,
   triggerDeploy,
   triggerDeployWithStatus,
 } from '../src/entrypoints/webhook/deploy'
@@ -93,6 +94,48 @@ describe('triggerDeploy', () => {
     expect(typeof result.error === 'string' || result.error === undefined).toBe(
       true,
     )
+  })
+})
+
+describe('teardownBranch', () => {
+  beforeEach(() => {
+    process.env.TEARDOWN_SCRIPT = 'echo'
+  })
+
+  afterEach(() => {
+    delete process.env.TEARDOWN_SCRIPT
+  })
+
+  it('returns success when script exits with code 0', async () => {
+    const result = await teardownBranch('feature/x')
+
+    expect(result.success).toBe(true)
+    expect(result.error).toBeUndefined()
+  })
+
+  it('passes the branch name as an argument to the teardown script', async () => {
+    const result = await teardownBranch('experiment/done')
+
+    expect(result.success).toBe(true)
+    expect(result.stdout?.includes('experiment/done')).toBe(true)
+  })
+
+  it('returns failure when script exits non-zero', async () => {
+    process.env.TEARDOWN_SCRIPT = 'false'
+
+    const result = await teardownBranch('feature/x')
+
+    expect(result.success).toBe(false)
+    expect(result.error).toBeDefined()
+  })
+
+  it('returns error when script is missing', async () => {
+    process.env.TEARDOWN_SCRIPT = '/nonexistent/teardown-script-xyz'
+
+    const result = await teardownBranch('feature/x')
+
+    expect(result.success).toBe(false)
+    expect(result.error).toBeDefined()
   })
 })
 

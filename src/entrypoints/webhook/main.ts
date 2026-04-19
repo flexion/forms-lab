@@ -1,6 +1,10 @@
 import { Hono } from 'hono'
 import { createGitHubClient } from '../../services/deployment/github'
-import { deployMainBranch, triggerDeployWithStatus } from './deploy'
+import {
+  deployMainBranch,
+  teardownBranch,
+  triggerDeployWithStatus,
+} from './deploy'
 import type { PushPayload } from './handler'
 import { parseDeleteEvent, parsePushEvent, verifySignature } from './handler'
 import { createSystemctlExec, startInactiveBranchUnits } from './recovery'
@@ -52,6 +56,22 @@ app.post('/', async (c) => {
   // Handle branch deletion
   const deletion = parseDeleteEvent(payload)
   if (deletion) {
+    // Refuse to tear down protected branches even if GitHub reports a
+    // deletion for them — defence in depth; the teardown script itself
+    // already guards against this.
+    if (deletion.branch === 'main') {
+      return c.json(
+        { ignored: true, reason: 'Refusing to tear down main' },
+        200,
+      )
+    }
+
+    // Tear down the filesystem + systemd state on the box. Fire-and-forget:
+    // webhook responds 202 immediately, the box settles asynchronously.
+    teardownBranch(deletion.branch).catch((err) => {
+      console.error(`Teardown failed for ${deletion.branch}:`, err)
+    })
+
     if (githubClient && deletion.owner && deletion.repo) {
       markDeploymentInactive(
         deletion.owner,

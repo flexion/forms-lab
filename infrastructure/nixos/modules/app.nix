@@ -1,6 +1,59 @@
 { config, pkgs, ... }:
 
+let
+  # Systemd generator: at boot time, before multi-user.target resolves,
+  # look at /srv/forms-lab/caddy.d/branch-*.caddy and for each branch
+  # write a symlink in /run/systemd/system/multi-user.target.wants/ that
+  # points at the branch's template instance. This is how you give a
+  # dynamic set of template instances an [Install] relationship on
+  # NixOS — you can't write to /etc/systemd/system/multi-user.target.wants/
+  # (read-only, NixOS-managed) and `systemctl enable` on a template
+  # instance fails because the instance unit file doesn't exist.
+  #
+  # /run is tmpfs and writable, so this runs cleanly on every boot.
+  branchAppGenerator = pkgs.writeShellScript "forms-lab-branch-app-generator" ''
+    set -euo pipefail
+
+    # systemd passes three target directories; we want the second
+    # ("early" per `man systemd.generator` — generators may place
+    # generated units there, which systemd treats as equivalent to
+    # /etc/systemd/system).
+    EARLY_DIR="''${2:-}"
+    [ -z "$EARLY_DIR" ] && exit 0
+
+    CADDY_DIR=/srv/forms-lab/caddy.d
+    [ -d "$CADDY_DIR" ] || exit 0
+
+    WANTS_DIR="$EARLY_DIR/multi-user.target.wants"
+    mkdir -p "$WANTS_DIR"
+
+    # Unit file lives in the nix store; the bare template unit is the
+    # target for every per-branch instance symlink.
+    TEMPLATE_UNIT=/etc/systemd/system/forms-lab-app@.service
+
+    for caddy_file in "$CADDY_DIR"/branch-*.caddy; do
+      [ -f "$caddy_file" ] || continue
+      base=$(${pkgs.coreutils}/bin/basename "$caddy_file" .caddy)
+      branch=''${base#branch-}
+      [ -z "$branch" ] && continue
+
+      # Systemd interprets a symlink named foo@bar.service inside a
+      # .wants/ directory as "want instance bar of template foo@.service".
+      ${pkgs.coreutils}/bin/ln -sf "$TEMPLATE_UNIT" "$WANTS_DIR/forms-lab-app@$branch.service"
+    done
+  '';
+in
 {
+  # Install the generator at /etc/systemd/system-generators/, which
+  # systemd reads on every boot before unit resolution. NixOS has no
+  # dedicated option for generators, but environment.etc works — systemd
+  # consults /etc/systemd/system-generators/ in addition to the
+  # package-provided /lib/systemd/system-generators/ directory.
+  environment.etc."systemd/system-generators/forms-lab-branch-apps" = {
+    source = branchAppGenerator;
+    mode = "0755";
+  };
+
   # Template unit for branch app services
   # Instantiated by the deploy script as forms-lab-app@<branch>.service
   systemd.services."forms-lab-app@" = {
@@ -8,14 +61,12 @@
     after = [ "network.target" ];
     onFailure = [ "forms-lab-notify-failure@%n.service" ];
 
-    # wantedBy on a template populates the [Install] section of the
-    # generated unit file. The bare template itself still cannot be
-    # enabled, but each instance — forms-lab-app@<branch>.service — now
-    # has a [Install] section that `systemctl enable` can act on, which
-    # symlinks it into multi-user.target.wants/ so it restarts on
-    # reboot. Without this, `enable` is a no-op ("static") and branch
-    # apps stay dead after a reboot.
-    wantedBy = [ "multi-user.target" ];
+    # Note: we intentionally do NOT set `wantedBy = [ "multi-user.target" ]`
+    # on this bare template. NixOS would interpret that as creating a
+    # useless `forms-lab-app@multi-user.service` instance on every
+    # rebuild. Reboot-safety is instead provided by the generator above:
+    # it reads /srv/forms-lab/caddy.d/branch-*.caddy at boot and wants
+    # each instance that has a Caddy route.
 
     path = [ pkgs.git ];
 
