@@ -1,6 +1,6 @@
 ---
 kind: shaping-commands
-implementation: sonnet
+implementation: bedrock-sonnet
 status: current
 course-topics: [evaluation, model-selection]
 ---

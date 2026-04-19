@@ -1,6 +1,6 @@
 ---
 kind: shaping-commands
-implementation: opus
+implementation: bedrock-opus
 status: current
 course-topics: [evaluation, model-selection]
 ---

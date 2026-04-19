@@ -1,6 +1,6 @@
 ---
 kind: shaping-commands
-implementation: haiku
+implementation: bedrock-haiku
 status: current
 course-topics: [evaluation, model-selection]
 ---
