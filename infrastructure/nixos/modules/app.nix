@@ -20,8 +20,17 @@
       Restart = "on-failure";
       RestartSec = 5;
 
+      # Flap control: if the unit fails 5 times within 5 minutes, stop
+      # retrying and leave it in a failed state instead of burning CPU.
+      # systemd interprets these at the [Unit]/[Service] level — NixOS
+      # exposes them via startLimit* keys on the service attrset.
+
       # Environment loaded from a per-branch env file written by deploy script
       EnvironmentFile = "/srv/forms-lab/%i/.env";
     };
+
+    # Flap control — prevents a broken branch from retrying forever.
+    startLimitBurst = 5;
+    startLimitIntervalSec = 300;
   };
 }

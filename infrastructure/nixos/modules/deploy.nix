@@ -150,6 +150,14 @@ ENVEOF
     /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
       /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl start "forms-lab-app@$UNIT_NAME.service"
 
+    # Enable the instance so it survives reboots. Template units are not
+    # wantedBy multi-user.target on their own — each instance must be
+    # individually symlinked into multi-user.target.wants/. Without this,
+    # a reboot leaves branch apps dead until something explicitly starts
+    # them (which the webhook's startup recovery also handles as a
+    # belt-and-braces fallback).
+    /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl enable "forms-lab-app@$UNIT_NAME.service" || true
+
     # Write Caddy route snippet to persistent config directory
     CADDY_DIR="$DEPLOY_ROOT/caddy.d"
     mkdir -p "$CADDY_DIR"
