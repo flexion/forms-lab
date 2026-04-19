@@ -1,5 +1,4 @@
 import { type Context, Hono } from 'hono'
-import { ChatPanel } from '../../../../design-system/components/flex-chat-panel'
 import { FormConfirmation } from '../../../../design-system/components/flex-form-confirmation'
 import type { FormError } from '../../../../design-system/components/flex-form-error-summary'
 import { FormField } from '../../../../design-system/components/flex-form-field'
@@ -731,15 +730,15 @@ export function createFormRouter(deps: FormRouterDeps) {
       messages = conversationGateway.getMessages(sessionId)
     }
 
-    // Check if conversation is finished (all fields collected)
+    // Check if conversation is finished by inspecting the last assistant message
+    // If the last message says the conversation is complete, we're done
+    const lastMessage = messages[messages.length - 1]
+    const finished =
+      lastMessage?.role === 'assistant' &&
+      (lastMessage.content.toLowerCase().includes('complete') ||
+        lastMessage.content.toLowerCase().includes('all set'))
+
     const visibleGroups = filterVisibleGroups(page.groups, session.fields)
-    const allFields = visibleGroups.flatMap((g) =>
-      g.requirements.map((r) => r.fieldName),
-    )
-    const collectedFields = Object.keys(session.fields).filter((f) =>
-      allFields.includes(f),
-    )
-    const finished = collectedFields.length === allFields.length
 
     const prefix = formPathPrefix(specs.dataSpec.id, branch)
 
@@ -754,7 +753,17 @@ export function createFormRouter(deps: FormRouterDeps) {
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         <div class="conversational-form-layout">
           <div class="conversational-form-layout__form">
-            <h1>{page.page.title}</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-block-end: var(--flex-space-md);">
+              <h1 style="margin: 0;">{page.page.title}</h1>
+              <a
+                href={resolveUrl(
+                  `${prefix}/sessions/${session.id}/pages/${pageIndex}`,
+                )}
+                class="flex-button flex-button--outline flex-button--sm"
+              >
+                Back to Form View
+              </a>
+            </div>
             {page.page.description && <p>{page.page.description}</p>}
             {visibleGroups.map((group) => (
               <fieldset key={group.id}>
@@ -769,16 +778,23 @@ export function createFormRouter(deps: FormRouterDeps) {
                 ))}
               </fieldset>
             ))}
-            {finished && (
-              <div class="flex-form-nav">
+            <div
+              class="flex-form-nav"
+              style="margin-block-start: var(--flex-space-lg);"
+            >
+              {finished ? (
                 <a
                   href={resolveUrl(`${prefix}/sessions/${session.id}/review`)}
                   class="flex-button"
                 >
-                  Continue to review
+                  Continue to Review
                 </a>
-              </div>
-            )}
+              ) : (
+                <p style="color: var(--flex-color-text-muted); font-size: var(--flex-text-sm);">
+                  Chat with the assistant to complete this section
+                </p>
+              )}
+            </div>
           </div>
           <aside class="conversational-form-layout__assistant">
             <flex-assistant data-session-id={sessionId} />

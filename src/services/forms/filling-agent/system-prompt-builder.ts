@@ -124,9 +124,15 @@ Example: When user provides firstName, respond with "Thanks! I've recorded your 
   sections.push(
     `Fields remaining to collect: ${remainingCount} required fields\n`,
   )
-  sections.push(
-    "Begin by asking for the first uncollected required field, or respond to the user's message if they've already provided information.",
-  )
+  if (remainingCount === 0) {
+    sections.push(
+      '\nAll required fields have been collected! End your response with: "This section is now complete. You can continue to the next step."\n',
+    )
+  } else {
+    sections.push(
+      "Begin by asking for the first uncollected required field, or respond to the user's message if they've already provided information.",
+    )
+  }
 
   return sections.join('\n')
 }
