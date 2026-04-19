@@ -8,4 +8,3 @@ export type {
   ToolCallRecord,
 } from './types'
 export { ScriptedFillingAgent } from './scripted'
-export { BedrockFillingAgent } from './bedrock'
