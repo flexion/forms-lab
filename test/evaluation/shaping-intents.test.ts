@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import {
   fixtureProjectState,
   shapingIntentFixtures,
-} from '../../src/services/evaluation'
+} from '../../src/services/evaluation/fixtures/shaping-intents'
 
 describe('shaping intent fixtures', () => {
   it('provides 6 scripted intents', () => {
