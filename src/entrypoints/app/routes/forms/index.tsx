@@ -2,6 +2,7 @@ import { type Context, Hono } from 'hono'
 import { ChatPanel } from '../../../../design-system/components/flex-chat-panel'
 import { FormConfirmation } from '../../../../design-system/components/flex-form-confirmation'
 import type { FormError } from '../../../../design-system/components/flex-form-error-summary'
+import { FormField } from '../../../../design-system/components/flex-form-field'
 import { FormLanding } from '../../../../design-system/components/flex-form-landing'
 import { FormPageView } from '../../../../design-system/components/flex-form-page'
 import { FormReview } from '../../../../design-system/components/flex-form-review'
@@ -741,33 +742,56 @@ export function createFormRouter(deps: FormRouterDeps) {
     const finished = collectedFields.length === allFields.length
 
     const prefix = formPathPrefix(specs.dataSpec.id, branch)
-    const showFormToggle = deliveryMode === 'hybrid'
+
+    // Prepare initial messages for flex-assistant
+    const initialMessages = messages.map((m) => ({
+      role: m.role,
+      html: m.content,
+    }))
 
     return c.html(
       <Layout user={user} title={page.page.title} currentPath="/forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
-        <div class="flex-form" data-size="large">
-          <h1>{page.page.title}</h1>
-          {page.page.description && <p>{page.page.description}</p>}
-          {showFormToggle && (
-            <p>
-              <a
-                href={resolveUrl(
-                  `${prefix}/sessions/${session.id}/pages/${pageIndex}`,
-                )}
-                class="flex-button flex-button--outline"
-              >
-                Switch to Form View
-              </a>
-            </p>
-          )}
-          <ChatPanel
-            sessionId={sessionId}
-            messages={messages}
-            finished={finished}
-          />
+        <div class="conversational-form-layout">
+          <div class="conversational-form-layout__form">
+            <h1>{page.page.title}</h1>
+            {page.page.description && <p>{page.page.description}</p>}
+            {visibleGroups.map((group) => (
+              <fieldset key={group.id}>
+                <legend>{group.title}</legend>
+                {group.description && <p>{group.description}</p>}
+                {group.requirements.map((req) => (
+                  <FormField
+                    key={req.fieldName}
+                    requirement={req}
+                    entry={session.fields[req.fieldName]}
+                  />
+                ))}
+              </fieldset>
+            ))}
+            {finished && (
+              <div class="flex-form-nav">
+                <a
+                  href={resolveUrl(`${prefix}/sessions/${session.id}/review`)}
+                  class="flex-button"
+                >
+                  Continue to review
+                </a>
+              </div>
+            )}
+          </div>
+          <aside class="conversational-form-layout__assistant">
+            <flex-assistant data-session-id={sessionId} />
+          </aside>
         </div>
-        <script src={resolveUrl('/static/chat.js')} />
+        <script
+          type="application/json"
+          data-initial-messages
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(initialMessages).replace(/</g, '\\u003c'),
+          }}
+        />
+        <script src={resolveUrl('/static/conversational-form.js')} />
       </Layout>,
     )
   }

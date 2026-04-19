@@ -158,3 +158,38 @@
     padding-block-start: var(--flex-space-md);
   }
 }
+
+/* Conversational form layout — form on left, assistant on right */
+.conversational-form-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: var(--flex-space-lg);
+  align-items: start;
+  max-inline-size: var(--flex-content-max);
+  margin-inline: auto;
+  padding: var(--flex-space-md);
+}
+
+@media (max-width: 64rem) {
+  .conversational-form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .conversational-form-layout__assistant {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    max-block-size: 50vh;
+  }
+}
+
+.conversational-form-layout__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-md);
+}
+
+.conversational-form-layout__assistant {
+  position: sticky;
+  top: var(--flex-space-md);
+}
