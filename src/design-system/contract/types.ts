@@ -81,7 +81,7 @@ export interface VariantPromise {
 }
 
 interface BaseContract {
-  /** USWDS component name (e.g., 'usa-button') */
+  /** Flex component name (e.g., 'flex-button') — used as the test suite's describe label */
   component: string
   /** Behavioral expectations */
   behavior: BehaviorPromise[]
