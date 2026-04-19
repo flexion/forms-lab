@@ -6,28 +6,34 @@ export const spec: CustomContract = {
   variants: [
     {
       name: 'NoChanges',
-      description: 'Empty state: no changes between refs; renders the "No changes" empty message.',
+      description:
+        'Empty state: no changes between refs; renders the "No changes" empty message.',
     },
     {
       name: 'WithAdditions',
-      description: 'One group with multiple added-category changes, demonstrating the "ADDED" badge.',
+      description:
+        'One group with multiple added-category changes, demonstrating the "ADDED" badge.',
     },
     {
       name: 'WithRemovals',
-      description: 'One group with a single removed-category change, demonstrating the "REMOVED" badge.',
+      description:
+        'One group with a single removed-category change, demonstrating the "REMOVED" badge.',
     },
     {
       name: 'MixedChanges',
-      description: 'Multiple groups with all change categories (added, modified, removed, renamed) showing the full badge palette.',
+      description:
+        'Multiple groups with all change categories (added, modified, removed, renamed) showing the full badge palette.',
     },
   ],
   behavior: [
     {
-      description: 'Changes are grouped by groupKey; each group renders a heading followed by its list of changes',
+      description:
+        'Changes are grouped by groupKey; each group renders a heading followed by its list of changes',
       tested: false,
     },
     {
-      description: 'Each change item shows the correct category badge label (ADDED, REMOVED, MODIFIED, MOVED, RENAMED)',
+      description:
+        'Each change item shows the correct category badge label (ADDED, REMOVED, MODIFIED, MOVED, RENAMED)',
       tested: false,
     },
   ],

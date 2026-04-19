@@ -6,24 +6,29 @@ export const spec: CustomContract = {
   variants: [
     {
       name: 'Default',
-      description: 'Two-pane browser showing pages and groups from a minimal spec, all panels expanded, no confidence data.',
+      description:
+        'Two-pane browser showing pages and groups from a minimal spec, all panels expanded, no confidence data.',
     },
     {
       name: 'WithConfidence',
-      description: 'Browser with per-field confidence badges overlaid: high confidence shows nothing, medium shows "Review", low shows "Low confidence".',
+      description:
+        'Browser with per-field confidence badges overlaid: high confidence shows nothing, medium shows "Review", low shows "Low confidence".',
     },
   ],
   behavior: [
     {
-      description: 'Sidebar nav links scroll the content pane to the corresponding page or group section',
+      description:
+        'Sidebar nav links scroll the content pane to the corresponding page or group section',
       tested: false,
     },
     {
-      description: 'Details panels open/close on click; defaultExpanded prop controls initial state',
+      description:
+        'Details panels open/close on click; defaultExpanded prop controls initial state',
       tested: false,
     },
     {
-      description: 'blobBasePath turns section headings into external links to the source files',
+      description:
+        'blobBasePath turns section headings into external links to the source files',
       tested: false,
     },
   ],

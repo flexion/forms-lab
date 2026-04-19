@@ -1,15 +1,10 @@
 import type { FC } from 'hono/jsx'
 import { PreviewBanner } from './index'
 
-export const Default: FC = () => (
-  <PreviewBanner branch="story-1/intake-form" />
-)
+export const Default: FC = () => <PreviewBanner branch="story-1/intake-form" />
 
 export const WithSha: FC = () => (
-  <PreviewBanner
-    branch="story-1/intake-form"
-    sha="abc1234def5678"
-  />
+  <PreviewBanner branch="story-1/intake-form" sha="abc1234def5678" />
 )
 
 export const WithEditLink: FC = () => (

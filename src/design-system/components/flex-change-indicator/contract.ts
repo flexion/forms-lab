@@ -6,15 +6,18 @@ export const spec: CustomContract = {
   variants: [
     {
       name: 'Added',
-      description: 'Dot indicator for a newly-added item; renders with the "added" variant color.',
+      description:
+        'Dot indicator for a newly-added item; renders with the "added" variant color.',
     },
     {
       name: 'Removed',
-      description: 'Dot indicator for a removed item; renders with the "removed" variant color.',
+      description:
+        'Dot indicator for a removed item; renders with the "removed" variant color.',
     },
     {
       name: 'Modified',
-      description: 'Dot indicator for a modified item; renders with the "modified" variant color.',
+      description:
+        'Dot indicator for a modified item; renders with the "modified" variant color.',
     },
     {
       name: 'WithLabel',
@@ -23,7 +26,8 @@ export const spec: CustomContract = {
   ],
   behavior: [
     {
-      description: 'aria-label conveys the change type to screen readers when no visible label is present',
+      description:
+        'aria-label conveys the change type to screen readers when no visible label is present',
       tested: false,
     },
     {

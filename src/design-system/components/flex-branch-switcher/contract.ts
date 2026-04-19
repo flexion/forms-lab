@@ -6,24 +6,29 @@ export const spec: CustomContract = {
   variants: [
     {
       name: 'Default',
-      description: 'Switcher trigger showing the main branch with a "published" badge; dropdown panel is hidden.',
+      description:
+        'Switcher trigger showing the main branch with a "published" badge; dropdown panel is hidden.',
     },
     {
       name: 'OnFeatureBranch',
-      description: 'Switcher trigger showing a feature branch with an "ahead" count; multiple branches in the list.',
+      description:
+        'Switcher trigger showing a feature branch with an "ahead" count; multiple branches in the list.',
     },
   ],
   behavior: [
     {
-      description: 'Clicking the trigger button opens the dropdown panel by toggling aria-expanded and removing the hidden attribute',
+      description:
+        'Clicking the trigger button opens the dropdown panel by toggling aria-expanded and removing the hidden attribute',
       tested: false,
     },
     {
-      description: 'Filtering the search input narrows the branch list to matching entries',
+      description:
+        'Filtering the search input narrows the branch list to matching entries',
       tested: false,
     },
     {
-      description: 'Submitting the create-branch form with a valid name navigates to the new branch',
+      description:
+        'Submitting the create-branch form with a valid name navigates to the new branch',
       tested: false,
     },
   ],

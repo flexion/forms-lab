@@ -6,20 +6,24 @@ export const spec: CustomContract = {
   variants: [
     {
       name: 'Default',
-      description: 'Banner showing the branch name with no commit SHA or editor link.',
+      description:
+        'Banner showing the branch name with no commit SHA or editor link.',
     },
     {
       name: 'WithSha',
-      description: 'Banner including an abbreviated commit SHA, indicating the exact snapshot being previewed.',
+      description:
+        'Banner including an abbreviated commit SHA, indicating the exact snapshot being previewed.',
     },
     {
       name: 'WithEditLink',
-      description: 'Banner with both a SHA and an "Open in editor" link for quick access to editing.',
+      description:
+        'Banner with both a SHA and an "Open in editor" link for quick access to editing.',
     },
   ],
   behavior: [
     {
-      description: 'Banner is rendered at page level with role="status" so screen readers announce the preview context',
+      description:
+        'Banner is rendered at page level with role="status" so screen readers announce the preview context',
       tested: false,
     },
     {
