@@ -20,6 +20,10 @@ export class SqliteConversationGateway implements ConversationGateway {
         created_at TEXT NOT NULL
       )
     `)
+    this.db.run(`
+      CREATE INDEX IF NOT EXISTS idx_conversation_messages_session_id
+      ON conversation_messages(session_id)
+    `)
   }
 
   appendMessage(sessionId: string, message: ConversationMessage): void {
@@ -46,7 +50,7 @@ export class SqliteConversationGateway implements ConversationGateway {
       .query(
         `SELECT * FROM conversation_messages
          WHERE session_id = ?
-         ORDER BY created_at ASC`,
+         ORDER BY created_at ASC, id ASC`,
       )
       .all(sessionId) as Record<string, unknown>[]
 
