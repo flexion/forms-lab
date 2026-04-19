@@ -13,12 +13,12 @@ import { createExtractorRegistry } from '../../services/extraction/registry'
 import { createCachedPdfExtractor } from '../../services/form-documents/extraction'
 import { createMappingRegistry } from '../../services/form-documents/mapping-registry'
 import { createFormProjectRepo } from '../../services/form-project-repo'
+import { createFillingRegistry } from '../../services/forms/filling/registry'
 import {
   BedrockFillingAgent,
   ScriptedFillingAgent,
   SqliteConversationGateway,
 } from '../../services/forms/filling-agent'
-import { createFillingRegistry } from '../../services/forms/filling/registry'
 import { createReviewService } from '../../services/forms/review'
 import { createShapingRegistry } from '../../services/forms/shaping/registry'
 import { createSpecSnapshotStore } from '../../services/forms/spec-snapshot-store'
