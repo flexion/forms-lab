@@ -8,6 +8,7 @@ import { meta as buttonGroup } from './components/flex-button-group/meta'
 import { meta as card } from './components/flex-card/meta'
 import { meta as changeIndicator } from './components/flex-change-indicator/meta'
 import { meta as characterCount } from './components/flex-character-count/meta'
+import { meta as chatPanel } from './components/flex-chat-panel/meta'
 import { meta as checkbox } from './components/flex-checkbox/meta'
 import { meta as collection } from './components/flex-collection/meta'
 import { meta as comboBox } from './components/flex-combo-box/meta'
@@ -66,6 +67,7 @@ const components: ComponentMeta[] = [
   card,
   changeIndicator,
   characterCount,
+  chatPanel,
   checkbox,
   collection,
   comboBox,
