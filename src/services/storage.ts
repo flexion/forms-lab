@@ -87,37 +87,39 @@ export function createProjectStore(dbPath: string): ProjectStore {
   `)
 
   // Migration: handle schema evolution from old versions
-  const columns = (
-    db.query("SELECT name FROM pragma_table_info('projects')").all() as Array<{
-      name: string
-    }>
-  ).map((row) => row.name)
+  try {
+    const columns = (
+      db.query("SELECT name FROM pragma_table_info('projects')").all() as Array<{
+        name: string
+      }>
+    ).map((row) => row.name)
 
-  const currentSchema = [
-    'id',
-    'slug',
-    'name',
-    'forked_from',
-    'status',
-    'error',
-    'created_by',
-    'created_at',
-    'updated_at',
-  ]
+    const currentSchema = [
+      'id',
+      'slug',
+      'name',
+      'forked_from',
+      'status',
+      'error',
+      'created_by',
+      'created_at',
+      'updated_at',
+    ]
 
-  // Detect if this is an old schema (has description/source_pdf) or incomplete new schema
-  const hasOldColumns =
-    columns.includes('description') || columns.includes('source_pdf')
-  const missingNewColumns = currentSchema.filter((col) => !columns.includes(col))
-  const needsMigration = hasOldColumns || missingNewColumns.length > 0
+    // Detect if this is an old schema (has description/source_pdf) or incomplete new schema
+    const hasOldColumns =
+      columns.includes('description') || columns.includes('source_pdf')
+    const missingNewColumns = currentSchema.filter(
+      (col) => !columns.includes(col),
+    )
+    const needsMigration = hasOldColumns || missingNewColumns.length > 0
 
-  if (needsMigration) {
-    console.log('Starting database migration...')
-    console.log('Old columns:', columns)
-    console.log('Has old schema columns:', hasOldColumns)
-    console.log('Missing new columns:', missingNewColumns)
+    if (needsMigration) {
+      console.log('Starting database migration...')
+      console.log('Old columns:', columns)
+      console.log('Has old schema columns:', hasOldColumns)
+      console.log('Missing new columns:', missingNewColumns)
 
-    try {
       // For old schema, we need to migrate data; for incomplete new schema, we can just copy
       const projects = db
         .query('SELECT * FROM projects')
@@ -177,10 +179,14 @@ export function createProjectStore(dbPath: string): ProjectStore {
       db.run('DROP TABLE projects')
       db.run('ALTER TABLE projects_new RENAME TO projects')
       console.log('Migration completed successfully')
-    } catch (err) {
-      console.error('Migration failed:', err)
-      throw err
     }
+  } catch (err) {
+    console.error('Database migration failed:', err)
+    console.error(
+      'Database may be in inconsistent state. Consider deleting the database file and restarting.',
+    )
+    // Don't throw - allow service to start even if migration fails
+    // Worst case, operations will fail with clearer errors
   }
 
   function rowToProject(row: Record<string, unknown>): ProjectIndex {
