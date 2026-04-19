@@ -36,6 +36,11 @@ export interface FieldConfidence {
 
 export interface ExtractionOptions {
   model?: string // Bedrock model ID, defaults to Sonnet
+  /**
+   * Fixture slug, used as the retrieval query for RAG-enabled
+   * extractors. Optional because non-RAG variants ignore it.
+   */
+  slug?: string
 }
 
 /**

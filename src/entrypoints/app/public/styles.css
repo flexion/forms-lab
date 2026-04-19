@@ -82,7 +82,6 @@
 @import "../../../design-system/components/flex-editable-group/styles.css" layer(block);
 @import "../../../design-system/components/flex-editable-field/styles.css" layer(block);
 @import "../../../design-system/components/flex-staged-changes/styles.css" layer(block);
-@import "../../../design-system/components/flex-branch-indicator/styles.css" layer(block);
 @import "../../../design-system/components/flex-branch-switcher/styles.css" layer(block);
 @import "../../../design-system/components/flex-change-indicator/styles.css" layer(block);
 @import "../../../design-system/components/flex-semantic-diff/styles.css" layer(block);

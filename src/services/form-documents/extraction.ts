@@ -2,12 +2,14 @@ import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
 import type { ExtractionExemplar } from '../extraction'
+import type { PolicyChunk, PolicyRetriever } from '../rag'
 import type { CacheStore } from '../storage'
 import {
   generateFormSpec,
   mapAcroFormFields,
   parseJsonResponse,
 } from './extraction-steps'
+import { buildHybridExtractionPrompt } from './hybrid-extraction-prompt'
 import { extractionResponseSchema } from './schemas'
 import type { ExtractionOptions, ExtractionResult } from './types'
 
@@ -59,6 +61,76 @@ export interface BedrockExtractorOptions {
   model?: string
   exemplars?: ExtractionExemplar[]
   maxOutputTokens?: number
+  /**
+   * Sampling temperature for Step 1 (the extraction prompt). When
+   * undefined, the underlying provider default is used. Setting `0`
+   * produces deterministic output and is used by the
+   * `sonnet-temperature-zero` variant.
+   *
+   * Scoped to Step 1 only — Steps 2 (formSpec) and 3 (field mapping)
+   * keep provider defaults so the variant measures the extraction
+   * prompt specifically.
+   */
+  temperature?: number
+  /**
+   * Which Step-1 prompt shape to use.
+   *
+   * - `default` (implicit) — the baseline prompt with optional few-shot
+   *   appendix (controlled by `exemplars`).
+   * - `hybrid` — a concise rewrite that front-loads a single exemplar.
+   *   Requires `hybridExemplar`. Used by the `sonnet-hybrid-v1`
+   *   variant.
+   */
+  promptVariant?: 'default' | 'hybrid'
+  /**
+   * The single exemplar embedded in the hybrid prompt. Only consulted
+   * when `promptVariant === 'hybrid'`.
+   */
+  hybridExemplar?: ExtractionExemplar
+  /**
+   * Optional policy retriever. When present, top-k chunks are retrieved
+   * per extraction using the fixture slug (or a PDF-derived fallback)
+   * as the query and prepended to the Step-1 prompt under a
+   * `## Policy Context` section.
+   *
+   * The retriever may be a Promise so that variants with async
+   * embedders can register synchronously in the registry and defer
+   * corpus embedding until the first extraction.
+   */
+  retriever?: PolicyRetriever | Promise<PolicyRetriever>
+  /**
+   * Number of policy chunks to retrieve per extraction. Defaults to 2.
+   * Ignored when `retriever` is not set.
+   */
+  retrievalK?: number
+}
+
+/**
+ * Build the policy-context section for the Step-1 prompt.
+ *
+ * Mirrors the `buildExemplarSection` shape: empty string when the
+ * input is empty, otherwise a well-labelled block the model can use
+ * as grounding. Each chunk's `source` is rendered verbatim so the
+ * model can echo it in field descriptions if it chooses.
+ */
+export function buildPolicyContextSection(chunks: PolicyChunk[]): string {
+  if (chunks.length === 0) return ''
+
+  const sections = chunks.map(
+    (chunk) => `### ${chunk.source}
+
+${chunk.text}`,
+  )
+
+  return `## Policy Context
+
+The following regulatory excerpts govern this form. Use them to inform field types, sensitivity labels, and required-ness — e.g. an SSN mentioned in 8 CFR 274a.2 should be tagged sensitivity: "pii" — but do not copy regulatory text into field labels.
+
+${sections.join('\n\n')}
+
+---
+
+`
 }
 
 /** Build the few-shot examples section for the extraction prompt. */
@@ -109,26 +181,42 @@ export function createBedrockPdfExtractor(
       }
 
       const model = extractionOptions?.model ?? options?.model ?? DEFAULT_MODEL
-      const exemplarSection = buildExemplarSection(options?.exemplars)
 
-      // Step 1: Extract DataCollectionSpec + confidence from PDF
-      // Use generateText + manual JSON parsing because generateObject's
-      // tool-use mode returns empty objects on Bedrock.
-      const extraction = await generateText({
-        model: bedrock(model),
-        maxOutputTokens: options?.maxOutputTokens ?? 32768,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'file',
-                data: pdf,
-                mediaType: 'application/pdf',
-              },
-              {
-                type: 'text',
-                text: `Analyze this government PDF form and extract its structure. Return ONLY valid JSON (no markdown, no explanation) matching this exact schema:
+      // Resolve the policy retriever (if configured) and fetch top-k
+      // chunks. Retrieval is keyed on the fixture slug when the caller
+      // supplies one, and falls back to the first ~500 characters of
+      // the PDF buffer interpreted as UTF-8. The fallback is lossy for
+      // binary PDFs, but on real fixtures it surfaces enough tokens
+      // (author, title, form id) to be useful when a slug isn't
+      // available.
+      let policyChunks: PolicyChunk[] = []
+      if (options?.retriever) {
+        const retriever = await options.retriever
+        const k = options.retrievalK ?? 2
+        const query =
+          extractionOptions?.slug ?? pdf.subarray(0, 500).toString('utf-8')
+        policyChunks = await retriever.retrieve(query, k)
+      }
+
+      const policyContextSection = buildPolicyContextSection(policyChunks)
+
+      // Select the Step-1 prompt shape. The hybrid variant is a full
+      // rewrite; the default variant is the baseline template with an
+      // optional few-shot appendix.
+      let step1PromptText: string
+      if (options?.promptVariant === 'hybrid') {
+        if (!options.hybridExemplar) {
+          throw new Error(
+            'createBedrockPdfExtractor: promptVariant="hybrid" requires hybridExemplar',
+          )
+        }
+        step1PromptText = buildHybridExtractionPrompt(options.hybridExemplar)
+        if (policyContextSection) {
+          step1PromptText = `${policyContextSection}${step1PromptText}`
+        }
+      } else {
+        const exemplarSection = buildExemplarSection(options?.exemplars)
+        step1PromptText = `${policyContextSection}Analyze this government PDF form and extract its structure. Return ONLY valid JSON (no markdown, no explanation) matching this exact schema:
 
 {
   "spec": {
@@ -168,7 +256,30 @@ ${exemplarSection}Guidelines:
 - Use kebab-case for ids, camelCase for fieldName
 - Flag low-confidence fields (< 0.8) with descriptive flags
 - Only include validation rules and conditions if clearly specified in the form
-- Be thorough — extract every field visible in the form`,
+- Be thorough — extract every field visible in the form`
+      }
+
+      // Step 1: Extract DataCollectionSpec + confidence from PDF
+      // Use generateText + manual JSON parsing because generateObject's
+      // tool-use mode returns empty objects on Bedrock.
+      const extraction = await generateText({
+        model: bedrock(model),
+        maxOutputTokens: options?.maxOutputTokens ?? 32768,
+        ...(options?.temperature !== undefined
+          ? { temperature: options.temperature }
+          : {}),
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'file',
+                data: pdf,
+                mediaType: 'application/pdf',
+              },
+              {
+                type: 'text',
+                text: step1PromptText,
               },
             ],
           },

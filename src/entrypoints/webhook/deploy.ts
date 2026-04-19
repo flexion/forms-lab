@@ -8,6 +8,43 @@ export interface DeployResult {
   stderr?: string
 }
 
+/**
+ * Tear down a branch on the EC2 box: stop + disable the app unit,
+ * remove the Caddy route, delete the worktree, and free the port slot.
+ * Called when GitHub reports a branch deletion.
+ *
+ * Invokes /srv/forms-lab/teardown.sh, which is installed by the NixOS
+ * deploy module. Path is overridable for tests.
+ */
+export async function teardownBranch(branch: string): Promise<DeployResult> {
+  const script = process.env.TEARDOWN_SCRIPT || '/srv/forms-lab/teardown.sh'
+
+  try {
+    const proc = Bun.spawn([script, branch], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+    })
+
+    const [stdout, stderr] = await Promise.all([
+      new Response(proc.stdout).text(),
+      new Response(proc.stderr).text(),
+    ])
+    const exitCode = await proc.exited
+
+    if (exitCode !== 0) {
+      console.error(`Teardown failed for ${branch}:`, stderr)
+      return { success: false, error: stderr, stdout, stderr }
+    }
+
+    console.log(`Teardown succeeded for ${branch}`)
+    return { success: true, stdout, stderr }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error(`Teardown error for ${branch}:`, message)
+    return { success: false, error: message }
+  }
+}
+
 export async function triggerDeploy(
   branch: string,
   sha: string,

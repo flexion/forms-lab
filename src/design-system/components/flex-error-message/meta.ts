@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   slug: 'flex-error-message',
   category: 'form',
   description: 'An inline error message for form validation.',
-  uswds: 'https://designsystem.digital.gov/components/form-controls/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/form-controls/',
   interactive: false,
 }

@@ -1,3 +1,5 @@
+import type { ComponentKind } from './contract/types'
+
 export type ComponentCategory =
   | 'form'
   | 'action'
@@ -11,7 +13,8 @@ export interface ComponentMeta {
   name: string
   slug: string
   category: ComponentCategory
+  kind: ComponentKind
   description: string
-  uswds: string
+  reference?: string
   interactive: boolean
 }

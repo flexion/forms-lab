@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   slug: 'flex-textarea',
   category: 'form',
   description: 'A multi-line text input for longer form content.',
-  uswds: 'https://designsystem.digital.gov/components/form-controls/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/form-controls/',
   interactive: false,
 }

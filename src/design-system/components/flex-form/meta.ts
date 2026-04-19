@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'form',
   description:
     'Form container that provides proper spacing between form groups.',
-  uswds: 'https://designsystem.digital.gov/components/form/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/form/',
   interactive: false,
 }

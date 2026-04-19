@@ -83,8 +83,7 @@ Core domain services. Each service directory has a `types.ts` (P3) and one or mo
 - **`content/`** — Markdown parsing and rendering; catalog content types (`Persona`, `Decision`, `Story`, etc.).
 - **`data-collection/`** — The core domain model: what data a form collects. `DataCollectionSpec`, `DataRequirement`, field types, validation rules, conditions.
 - **`deployment/`** — GitHub API client and deployment metadata (branch state, commit info, PR status).
-- **`forms/`** — Form resolution, validation, navigation, sessions, and submission. `FormSpec`, `ResolvedForm`, `FormSession`.
-- **`forms/`** — Internally contains sub-modules (`comparison/`, `filling-agent/`, `filling/`, `review/`, `shaping/`) that are implementation details of the forms service; external callers see only the public interface at `services/forms/index.ts`. Shaping uses LLM-assisted commands with an atomic batch executor; each accepted batch produces one git commit plus a structured entry in the shaping log. See the [command-based shaping decision](../decisions/architecture/command-based-shaping.md).
+- **`forms/`** — Form resolution, validation, navigation, sessions, and submission. Internally contains sub-modules (`comparison/`, `filling-agent/`, `filling/`, `review/`, `shaping/`) that are implementation details; external callers see only the public interface at `services/forms/index.ts`. Shaping uses LLM-assisted commands with an atomic batch executor; each accepted batch produces one git commit plus a structured entry in the shaping log. See the [command-based shaping decision](../decisions/architecture/command-based-shaping.md).
 - **`form-documents/`** — PDF → structured spec extraction pipeline. Uses Bedrock (Claude) to parse PDFs into `DataCollectionSpec`s, plus AcroForm field mapping and filling.
 - **`evaluation/`** — Evaluation harness and LLM-as-judge kinds for scoring extraction and shaping output against fixtures.
 - **`extraction/`** — Pluggable PDF extractor registry, enabling variant selection for evaluation and deployment.
@@ -99,9 +98,9 @@ Core domain services. Each service directory has a `types.ts` (P3) and one or mo
 
 UI components. Peer to services — depends on `shared/` but not on services (P4). Components receive ready-to-render data as props.
 
-- **`components/flex-*/`** — 60+ USWDS-conformant components, each in its own directory with `index.tsx`, `styles.css`, `meta.ts`, and optional `examples.tsx` and `conformance-spec.tsx`.
-- **`conformance/`** — Type definitions for visual conformance specs shared across components.
-- **`test-helpers/`** — Shared test utilities for conformance and visual regression tests.
+- **`components/flex-*/`** — 60+ components, each in its own directory with `index.tsx`, `styles.css`, `meta.ts`, `examples.tsx`, and `contract.ts` / `contract.test.ts`. USWDS-derived components (`kind: 'uswds-derived'`) carry a visual-diff contract against the USWDS reference; custom components (`kind: 'custom'`) carry an accessibility/render contract.
+- **`contract/`** — Type definitions for visual contract specs shared across components.
+- **`test-helpers/`** — Shared test utilities for contract and visual regression tests.
 - **`visual-descriptor/`** — Style extraction and diffing used by conformance tests.
 - **`register.ts`** — Client-side hydration entry point.
 - **`registry.ts`**, **`types.ts`** — Component metadata registry used by the design system catalog page.

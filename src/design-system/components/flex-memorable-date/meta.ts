@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   category: 'form',
   description:
     'Three separate inputs for month, day, and year — easier to remember than a date picker.',
-  uswds: 'https://designsystem.digital.gov/components/memorable-date/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/memorable-date/',
   interactive: true,
 }

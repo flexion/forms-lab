@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   slug: 'flex-button',
   category: 'action',
   description: 'A clickable button for form submissions and actions.',
-  uswds: 'https://designsystem.digital.gov/components/button/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/button/',
   interactive: false,
 }

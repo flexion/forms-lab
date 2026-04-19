@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'navigation',
   description:
     'A styled anchor for navigation with optional external link icon.',
-  uswds: 'https://designsystem.digital.gov/components/link/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/link/',
   interactive: false,
 }

@@ -53,7 +53,7 @@ Single EC2 instance with Caddy reverse proxy. Branch-per-subpath deployment: eac
 - **Runtime:** Bun
 - **Framework:** Hono with server-rendered JSX
 - **Persistence:** Git (file-based)
-- **Styling:** Two-tier CSS tokens, cascade layers, USWDS visual conformance
+- **Styling:** Two-tier CSS tokens, cascade layers, USWDS visual contract testing
 - **CI:** GitHub Actions (tests, type check, lint)
 - **Deploy:** Pulumi (EC2), Caddy, Nix-built processes, GitHub webhook
 

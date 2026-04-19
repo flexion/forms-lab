@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   category: 'layout',
   description:
     'SVG icon from the USWDS icon sprite. Scales with text by default.',
-  uswds: 'https://designsystem.digital.gov/components/icon/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/icon/',
   interactive: false,
 }

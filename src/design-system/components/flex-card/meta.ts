@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'layout',
   description:
     'A card groups related content in a container with header, body, media, and footer sections.',
-  uswds: 'https://designsystem.digital.gov/components/card/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/card/',
   interactive: false,
 }

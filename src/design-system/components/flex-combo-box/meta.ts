@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'form',
   description:
     'A typeahead/autocomplete select with text input and filterable dropdown list.',
-  uswds: 'https://designsystem.digital.gov/components/combo-box/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/combo-box/',
   interactive: true,
 }

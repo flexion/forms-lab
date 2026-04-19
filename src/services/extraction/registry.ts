@@ -11,9 +11,11 @@ import {
   OPUS_MODEL_ID,
   SONNET_MODEL_ID,
 } from './models'
+import { getRagRetriever } from './rag-corpus'
 
 export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
   const registry = new StrategyRegistry<PdfExtractor>()
+  const [nestedGroupsExemplar] = exemplars
 
   registry.register({
     id: 'opus-baseline',
@@ -61,6 +63,50 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
   })
 
   registry.register({
+    id: 'sonnet-temperature-zero',
+    metadata: {
+      name: 'Claude Sonnet 4 (temperature=0)',
+      description:
+        'Baseline Sonnet prompt with temperature=0. Ablates the "free optimization" lever from Assignment 10: deterministic output at zero marginal cost.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'prompt-optimization', 'determinism'],
+      catalogPath:
+        '/catalog/experiments/pdf-field-extraction/sonnet-temperature-zero',
+      modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
+    },
+    create: () =>
+      createBedrockPdfExtractor({ model: SONNET_MODEL_ID, temperature: 0 }),
+  })
+
+  registry.register({
+    id: 'sonnet-hybrid-v1',
+    metadata: {
+      name: 'Claude Sonnet 4 (hybrid prompt)',
+      description:
+        'Concise instructions + 1 exemplar + temperature=0. Ports the Assignment 10 hybrid-v2 strategy to extraction: less is more, even for frontier models.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'prompt-optimization', 'few-shot'],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/sonnet-hybrid-v1',
+      modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
+    },
+    create: () => {
+      if (!nestedGroupsExemplar) {
+        throw new Error(
+          'sonnet-hybrid-v1: nested-groups exemplar missing from exemplars[]',
+        )
+      }
+      return createBedrockPdfExtractor({
+        model: SONNET_MODEL_ID,
+        temperature: 0,
+        promptVariant: 'hybrid',
+        hybridExemplar: nestedGroupsExemplar,
+      })
+    },
+  })
+
+  registry.register({
     id: 'few-shot-sonnet',
     metadata: {
       name: 'Claude Sonnet 4 (few-shot)',
@@ -74,6 +120,26 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
     },
     create: () =>
       createBedrockPdfExtractor({ model: SONNET_MODEL_ID, exemplars }),
+  })
+
+  registry.register({
+    id: 'sonnet-with-rag',
+    metadata: {
+      name: 'Claude Sonnet 4 (RAG)',
+      description:
+        'Retrieves policy excerpts (CFR/USC) from a curated corpus and prepends them to the extraction prompt as grounding context. Tests whether regulatory grounding improves sensitivity labelling and type accuracy on government forms.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'rag', 'retrieval'],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/sonnet-with-rag',
+      modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
+    },
+    create: () =>
+      createBedrockPdfExtractor({
+        model: SONNET_MODEL_ID,
+        retriever: getRagRetriever(),
+        retrievalK: 2,
+      }),
   })
 
   registry.register({

@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'feedback',
   description:
     'Dialog overlay with focus trapping, backdrop, and keyboard management.',
-  uswds: 'https://designsystem.digital.gov/components/modal/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/modal/',
   interactive: true,
 }

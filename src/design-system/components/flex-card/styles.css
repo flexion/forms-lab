@@ -300,3 +300,10 @@
   color: var(--flex-color-text-muted);
   margin-block-end: var(--flex-space-sm);
 }
+
+/* Active filter chip — the navigation link representing the current page filter. */
+nav[aria-label="Filter components by kind"] a[aria-current="page"] {
+  font-weight: 700;
+  color: var(--flex-color-accent);
+  text-decoration: underline;
+}

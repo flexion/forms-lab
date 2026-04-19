@@ -24,7 +24,9 @@ export async function runEvaluation(options: RunOptions): Promise<RunResult> {
 
   const cases = []
   for (const fixture of fixtures) {
-    const extractionResult = await extractor.extract(fixture.pdf)
+    const extractionResult = await extractor.extract(fixture.pdf, {
+      slug: fixture.slug,
+    })
     const output: ExtractionOutput = {
       spec: extractionResult.spec,
       confidence: extractionResult.confidence,

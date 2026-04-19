@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   slug: 'flex-tag',
   category: 'layout',
   description: 'A small label used to categorize or mark items.',
-  uswds: 'https://designsystem.digital.gov/components/tag/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/tag/',
   interactive: false,
 }

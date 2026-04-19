@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'navigation',
   description:
     'Navigation for moving between pages of a multi-page content set.',
-  uswds: 'https://designsystem.digital.gov/components/pagination/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/pagination/',
   interactive: false,
 }

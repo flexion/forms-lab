@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'identity',
   description:
     'Agency identification block with logos, required links, and disclaimers.',
-  uswds: 'https://designsystem.digital.gov/components/identifier/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/identifier/',
   interactive: false,
 }

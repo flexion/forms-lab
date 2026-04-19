@@ -1,8 +1,13 @@
 import { Hono } from 'hono'
 import { createGitHubClient } from '../../services/deployment'
-import { deployMainBranch, triggerDeployWithStatus } from './deploy'
+import {
+  deployMainBranch,
+  teardownBranch,
+  triggerDeployWithStatus,
+} from './deploy'
 import type { PushPayload } from './handler'
 import { parseDeleteEvent, parsePushEvent, verifySignature } from './handler'
+import { createSystemctlExec, startInactiveBranchUnits } from './recovery'
 
 const app = new Hono()
 
@@ -51,6 +56,22 @@ app.post('/', async (c) => {
   // Handle branch deletion
   const deletion = parseDeleteEvent(payload)
   if (deletion) {
+    // Refuse to tear down protected branches even if GitHub reports a
+    // deletion for them — defence in depth; the teardown script itself
+    // already guards against this.
+    if (deletion.branch === 'main') {
+      return c.json(
+        { ignored: true, reason: 'Refusing to tear down main' },
+        200,
+      )
+    }
+
+    // Tear down the filesystem + systemd state on the box. Fire-and-forget:
+    // webhook responds 202 immediately, the box settles asynchronously.
+    teardownBranch(deletion.branch).catch((err) => {
+      console.error(`Teardown failed for ${deletion.branch}:`, err)
+    })
+
     if (githubClient && deletion.owner && deletion.repo) {
       markDeploymentInactive(
         deletion.owner,
@@ -132,6 +153,26 @@ async function markDeploymentInactive(
 
 const port = process.env.PORT || 9000
 console.log(`Webhook listener running on port ${port}`)
+
+// Recover any branch apps that should be running but aren't. This catches
+// the reboot case — on boot systemd starts only the instances that were
+// `systemctl enable`-d; anything older than that NixOS change (or
+// transient failures) gets picked up here. Fire-and-forget; never block
+// startup on this.
+const caddyDir = process.env.CADDY_BRANCH_DIR || '/srv/forms-lab/caddy.d'
+startInactiveBranchUnits({ caddyDir, exec: createSystemctlExec() })
+  .then((started) => {
+    if (started.length > 0) {
+      console.log(
+        `Recovery: started ${started.length} inactive branch unit(s): ${started.join(', ')}`,
+      )
+    } else {
+      console.log('Recovery: all known branch units already active')
+    }
+  })
+  .catch((err) => {
+    console.error('Recovery: unexpected error during startup scan:', err)
+  })
 
 export default {
   port: Number(port),

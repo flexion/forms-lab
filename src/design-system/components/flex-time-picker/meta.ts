@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'form',
   description:
     'A combo box variant for time selection with configurable time range and step interval.',
-  uswds: 'https://designsystem.digital.gov/components/time-picker/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/time-picker/',
   interactive: true,
 }

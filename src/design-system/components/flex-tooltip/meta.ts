@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'feedback',
   description:
     'Hover/focus information popup with positioning and viewport edge detection.',
-  uswds: 'https://designsystem.digital.gov/components/tooltip/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/tooltip/',
   interactive: true,
 }
