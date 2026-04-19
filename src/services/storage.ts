@@ -86,6 +86,43 @@ export function createProjectStore(dbPath: string): ProjectStore {
     )
   `)
 
+  // Migration: add slug column if it doesn't exist (for databases created before slug was added)
+  const hasSlug = db
+    .query("SELECT COUNT(*) as count FROM pragma_table_info('projects') WHERE name='slug'")
+    .get() as { count: number }
+  if (hasSlug.count === 0) {
+    db.run('ALTER TABLE projects ADD COLUMN slug TEXT')
+    // Backfill slug from name for existing rows
+    const projects = db.query('SELECT id, name FROM projects').all() as Array<{
+      id: string
+      name: string
+    }>
+    for (const project of projects) {
+      const slug = project.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+      db.run('UPDATE projects SET slug = ? WHERE id = ?', [slug, project.id])
+    }
+    // Now make it NOT NULL and UNIQUE
+    db.run(`
+      CREATE TABLE projects_new (
+        id TEXT PRIMARY KEY,
+        slug TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
+        forked_from TEXT,
+        status TEXT NOT NULL DEFAULT 'extracting',
+        error TEXT,
+        created_by TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      )
+    `)
+    db.run('INSERT INTO projects_new SELECT * FROM projects')
+    db.run('DROP TABLE projects')
+    db.run('ALTER TABLE projects_new RENAME TO projects')
+  }
+
   function rowToProject(row: Record<string, unknown>): ProjectIndex {
     return {
       id: row.id as string,
