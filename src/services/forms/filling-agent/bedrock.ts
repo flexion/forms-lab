@@ -198,6 +198,16 @@ export class BedrockFillingAgent implements FillingAgent {
       })
     }
 
+    // Bedrock requires messages to start with a user turn.
+    // If conversation history starts with assistant (e.g. initial greeting),
+    // prepend a synthetic user message.
+    if (messages.length > 0 && messages[0].role === 'assistant') {
+      messages.unshift({
+        role: 'user',
+        content: 'Hello, I would like to start filling out the form.',
+      })
+    }
+
     return messages
   }
 
