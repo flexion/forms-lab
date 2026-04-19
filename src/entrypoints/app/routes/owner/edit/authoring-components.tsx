@@ -27,7 +27,12 @@ export const PipelineStageIndicator: FC<{
   const currentIndex = STAGE_ORDER.indexOf(currentStage)
   const steps = STAGE_ORDER.map((stage, i) => ({
     label: STAGE_LABELS[stage],
-    state: i < currentIndex ? ('complete' as const) : i === currentIndex ? ('current' as const) : undefined,
+    state:
+      i < currentIndex
+        ? ('complete' as const)
+        : i === currentIndex
+          ? ('current' as const)
+          : undefined,
   }))
 
   return (
@@ -58,10 +63,18 @@ export const CriteriaList: FC<{
             <span class="criteria-list__citation">{c.source}</span>
             {editable ? (
               <span class="criteria-list__actions">
-                <button type="button" data-action="approve" data-criterion-id={c.id}>
+                <button
+                  type="button"
+                  data-action="approve"
+                  data-criterion-id={c.id}
+                >
                   Approve
                 </button>
-                <button type="button" data-action="reject" data-criterion-id={c.id}>
+                <button
+                  type="button"
+                  data-action="reject"
+                  data-criterion-id={c.id}
+                >
                   Reject
                 </button>
               </span>
@@ -71,7 +84,12 @@ export const CriteriaList: FC<{
       </ol>
       {editable ? (
         <div class="criteria-list__controls">
-          <button type="button" data-action="add-criterion" class="flex-button" data-variant="outline">
+          <button
+            type="button"
+            data-action="add-criterion"
+            class="flex-button"
+            data-variant="outline"
+          >
             Add criterion
           </button>
           <button type="button" data-action="approve-all" class="flex-button">
@@ -97,8 +115,13 @@ export const EvalScorecard: FC<{
         {results.map((r) => {
           const criterion = criteriaMap.get(r.criterionId)
           return (
-            <li class="eval-scorecard__item" data-pass={r.pass ? 'true' : 'false'}>
-              <span class="eval-scorecard__icon">{r.pass ? '\u2713' : '\u2717'}</span>
+            <li
+              class="eval-scorecard__item"
+              data-pass={r.pass ? 'true' : 'false'}
+            >
+              <span class="eval-scorecard__icon">
+                {r.pass ? '\u2713' : '\u2717'}
+              </span>
               <span class="eval-scorecard__text">
                 {criterion?.text ?? r.criterionId}
               </span>

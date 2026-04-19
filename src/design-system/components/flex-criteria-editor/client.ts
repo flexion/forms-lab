@@ -34,24 +34,27 @@ export class FlexCriteriaEditor extends HTMLElement {
 
   private async updateCriteria(
     editBase: string,
-    edits: { approve: string[]; reject: string[]; add: Array<{ text: string; source: string }>; edit: never[] },
+    edits: {
+      approve: string[]
+      reject: string[]
+      add: Array<{ text: string; source: string }>
+      edit: never[]
+    },
   ) {
-    const res = await fetch(
-      `${editBase}/authoring/update-criteria`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(edits),
-      },
-    )
+    const res = await fetch(`${editBase}/authoring/update-criteria`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(edits),
+    })
     if (res.ok) window.location.reload()
   }
 
   private async approveCriteria(editBase: string) {
-    const res = await fetch(
-      `${editBase}/authoring/approve-criteria`,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
-    )
+    const res = await fetch(`${editBase}/authoring/approve-criteria`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+    })
     if (res.ok) window.location.reload()
   }
 

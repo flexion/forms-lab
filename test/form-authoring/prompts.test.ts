@@ -2,12 +2,12 @@
 import { describe, expect, test } from 'bun:test'
 import {
   buildCriteriaPrompt,
-  buildStructurePrompt,
-  buildSectionPrompt,
   buildEvalPrompt,
+  buildSectionPrompt,
+  buildStructurePrompt,
 } from '../../src/services/form-authoring/prompts'
-import type { PolicyChunk } from '../../src/services/rag'
 import type { Criterion } from '../../src/services/form-authoring/types'
+import type { PolicyChunk } from '../../src/services/rag'
 
 const sampleChunks: PolicyChunk[] = [
   {
@@ -86,7 +86,12 @@ describe('buildEvalPrompt', () => {
       formSpec: { id: 'f1', specId: 's1', title: 'Test', pages: [] },
       dataSpec: { id: 's1', title: 'Test', description: '', groups: [] },
     }
-    const prompt = buildEvalPrompt('income-group', state, sampleCriteria, sampleChunks)
+    const prompt = buildEvalPrompt(
+      'income-group',
+      state,
+      sampleCriteria,
+      sampleChunks,
+    )
     expect(prompt).toContain('income-group')
     expect(prompt).toContain('pass')
     expect(prompt).toContain('fail')

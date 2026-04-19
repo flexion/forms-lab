@@ -11,7 +11,7 @@
  * would require a deliberate extension here.
  */
 
-import { readFileSync, readdirSync, existsSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { PolicyChunk } from './retrieval'
 
