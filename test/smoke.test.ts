@@ -124,11 +124,15 @@ describe('Smoke tests', () => {
       const res = await authenticatedRequest(projectPath)
       expect(res.status).toBe(200)
       const html = await res.text()
-      // Should show either extracting, ready, or error state
+      // Should show one of the post-creation states. When the extractor
+      // cache is warm (e.g., after running evaluate), extraction completes
+      // instantly and the project lands on an `import` branch awaiting
+      // review, which surfaces as "Initial extraction ready for review".
       expect(
         html.includes('Extracting form structure') ||
           html.includes('Extracted Data Requirements') ||
-          html.includes('Extraction failed'),
+          html.includes('Extraction failed') ||
+          html.includes('Initial extraction ready for review'),
       ).toBe(true)
     })
   })
