@@ -1,7 +1,7 @@
 ---
 kind: pdf-field-extraction
 implementation: nova-pro
-status: working
+status: current
 course-topics: [evaluation, model-selection, cost-optimization]
 ---
 
@@ -11,47 +11,41 @@ course-topics: [evaluation, model-selection, cost-optimization]
 
 ## Approach
 
-Uses the same free-JSON extraction prompt as baseline Sonnet, but with Amazon's Nova Pro multimodal model via AWS Bedrock. Nova Pro supports native PDF input (unlike Mistral/Llama which require text pre-processing) and costs roughly 1/4 the price of Sonnet.
+Uses the same free-JSON extraction prompt as baseline Sonnet, but with Amazon's Nova Pro multimodal model via AWS Bedrock. Nova Pro supports native PDF input and costs roughly 1/4 the price of Sonnet.
 
-## Cost Comparison
+## Metrics (Deterministic scorer)
 
-| Model | Input $/1K | Output $/1K | Relative Cost | PDF Support |
-|---|---|---|---|---|
-| **Nova Pro** | $0.0008 | $0.0032 | **1x** | Native |
-| Haiku 4.5 | $0.0008 | $0.004 | ~1.2x | Native |
-| Sonnet 4 | $0.003 | $0.015 | ~4x | Native |
-| Opus 4.6 | $0.015 | $0.075 | ~20x | Native |
-| Mistral 8B | $0.0003 | $0.0003 | ~0.4x | No (text only) |
-
-Nova Pro is price-competitive with Haiku on input tokens and cheaper on output. The question is whether it can match Haiku's extraction quality on government forms.
-
-## Why Nova Pro (not Mistral)
-
-The homework tested Mistral 8B extensively and it performed well on text-based tool-calling tasks. However, our extraction pipeline sends PDFs directly to the model as multimodal input. Mistral doesn't support document input on Bedrock — only Claude and Amazon Nova models do. Nova Pro is the cheapest non-Claude model that can process our pipeline without architectural changes.
-
-## Course Connection
-
-Assignment 10 tested Amazon Nova Pro on the interview agent task:
-- **97% baseline** on the housing benefits spec (10 fields) with no prompt tuning
-- **100% with hybrid-v2** prompt — the same short-instruction strategy that worked across architectures
-- Cost: $0.010/interview — same as DeepSeek V3.2, cheaper than Haiku ($0.012)
-
-Nova Pro was one of only 3 non-Claude models to achieve 100% on tool-calling tasks (alongside Llama 4 Scout and DeepSeek V3.2), suggesting strong instruction-following capability.
-
-The 15-field ceiling documented in the homework applies to all non-Claude models: they plateau at 82-92% on specs with 15+ fields. Our pardon application fixture (140+ fields) will likely expose this limitation.
-
-## Expected Behavior
-
-| Fixture | Fields | Expected Performance |
-|---|---|---|
-| W-9 | ~8 | Strong (within simple-spec range) |
-| I-9 | ~30 | Moderate (above 15-field ceiling) |
-| Pardon Application | ~140 | Weak (well above ceiling) |
-
-## Metrics
-
-_Pending evaluation run._
+| Metric | Nova Pro | Baseline Sonnet | Delta |
+|---|---|---|---|
+| Field Recall | 0.6% | 62.1% | -61.5pp |
+| Field Precision | 4.0% | 78.9% | -74.9pp |
+| Type Accuracy | 100.0% | 97.0% | +3.0pp |
+| Group Accuracy | 50.0% | 31.4% | +18.6pp |
+| Sensitivity Accuracy | 100.0% | 27.3% | +72.7pp |
 
 ## Findings
 
-_To be populated after evaluation._
+**Nova Pro fails at field-level extraction.** Despite achieving 97-100% on the homework's tool-calling interview task, Nova Pro cannot perform PDF field extraction at a useful level. It produces section-level summaries (e.g., "contactInformation", "familyInformation") rather than individual fields (e.g., "firstName", "lastName", "emailAddress").
+
+**The task complexity gap is larger than expected.** The homework tested Nova Pro on a 10-field interview spec where it scored 97%. PDF extraction requires identifying 30-140 individual fields from visual document layout — a fundamentally different and harder task than following a pre-defined field list. This confirms the homework's 15-field ceiling applies even more strongly to open-ended extraction (vs. tool-calling with a known schema).
+
+**The 100% type/sensitivity/group scores are vacuously true.** With only 1 matched field across all fixtures, the accuracy metrics are meaningless — they represent 1/1 = 100% on a single data point.
+
+**Prompt optimization likely won't fix this.** The homework showed that prompt strategy helps small models follow instructions (hybrid prompt: 89% → 100% on Mistral 8B). But Nova Pro's failure mode isn't instruction-following — it's a capability gap in document understanding. The model can read the PDF but cannot decompose it into granular fields.
+
+## Cost Comparison
+
+| Model | Input $/1K | Output $/1K | Field Recall | Viable? |
+|---|---|---|---|---|
+| Nova Pro | $0.0008 | $0.0032 | 0.6% | No |
+| Haiku 4.5 | $0.0008 | $0.004 | ~45% | Marginal |
+| Sonnet 4 | $0.003 | $0.015 | 62.1% | Yes |
+| Opus 4.6 | $0.015 | $0.075 | ~72% | Yes (best) |
+
+**Conclusion:** For PDF field extraction, Claude models remain necessary. The cost floor is Haiku at $0.0008/1K input tokens. Non-Claude models that work well for simpler tasks (tool-calling, classification) do not transfer to complex document understanding.
+
+## Course Connection
+
+This result directly validates Assignment 10's key finding: **model selection dominates prompt engineering.** The homework's cost-performance frontier ($0.003/interview at 100% for Llama 4 Scout) applies specifically to tasks within the model's capability range. PDF extraction is outside that range for all tested non-Claude models.
+
+The implication for production: cost optimization for extraction should focus on Haiku (cheapest Claude) or prompt techniques that improve Sonnet's recall (few-shot, prompt-opt), rather than switching to non-Claude models.
