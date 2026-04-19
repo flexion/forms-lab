@@ -5,7 +5,7 @@ describe('createExtractorRegistry', () => {
   it('returns a registry with strategies registered', () => {
     const registry = createExtractorRegistry()
     const strategies = registry.list()
-    expect(strategies.length).toBeGreaterThanOrEqual(7)
+    expect(strategies.length).toBeGreaterThanOrEqual(8)
   })
 
   it('registers opus as baseline', () => {
@@ -88,6 +88,19 @@ describe('createExtractorRegistry', () => {
     expect(tempZero!.metadata.courseTopics).toContain('prompt-optimization')
     expect(tempZero!.metadata.catalogPath).toBe(
       '/catalog/experiments/pdf-field-extraction/sonnet-temperature-zero',
+    )
+  })
+
+  it('registers sonnet-hybrid-v1 as experimental', () => {
+    const registry = createExtractorRegistry()
+    const strategies = registry.list()
+    const hybrid = strategies.find((s) => s.id === 'sonnet-hybrid-v1')
+    expect(hybrid).toBeDefined()
+    expect(hybrid!.metadata.status).toBe('experimental')
+    expect(hybrid!.metadata.courseTopics).toContain('prompt-optimization')
+    expect(hybrid!.metadata.courseTopics).toContain('few-shot')
+    expect(hybrid!.metadata.catalogPath).toBe(
+      '/catalog/experiments/pdf-field-extraction/sonnet-hybrid-v1',
     )
   })
 })
