@@ -278,7 +278,7 @@ export function createProjectService(
             {
               path: 'forms/default/field-mapping.json',
               content: Buffer.from(
-                JSON.stringify(result.fieldMapping, null, 2),
+                JSON.stringify(result.fieldMapping ?? {}, null, 2),
               ),
             },
           ],
