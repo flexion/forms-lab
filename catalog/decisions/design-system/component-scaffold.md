@@ -6,11 +6,11 @@ decided: 2026-04-07
 
 # Component Scaffold Convention
 
-Every USWDS component follows a standardized directory structure with co-located source, styles, client behavior, metadata, examples, and conformance tests.
+Every component follows a standardized directory structure with co-located source, styles, client behavior, metadata, examples, and contract tests.
 
 ## Context
 
-With 48 USWDS components to implement, we needed a consistent structure that makes components self-contained and discoverable. Files that change together should live together.
+With 48+ components to implement (USWDS-derived and custom), we needed a consistent structure that makes components self-contained and discoverable. Files that change together should live together.
 
 ## Decision
 
@@ -18,9 +18,10 @@ Each component lives in `src/components/flex-*/` with:
 - `index.tsx` — server-rendered JSX component
 - `styles.css` — CSS using --flex-* tokens, cascade layer: block
 - `client.ts` — custom element for interactive behavior (optional)
-- `meta.ts` — catalog metadata (name, category, USWDS reference)
+- `meta.ts` — catalog metadata (name, category, kind: `'uswds-derived'` or `'custom'`)
 - `examples.tsx` — variant examples for catalog and tests
-- `conformance.test.ts` — visual + behavioral + accessibility tests
+- `contract.ts` / `contract.tsx` — contract spec (visual diff for USWDS-derived; render + a11y for custom)
+- `contract.test.ts` — Playwright test that executes the contract
 
 Variants use `data-variant` (mutually exclusive), sizing uses `data-size`, states use `data-state`, orthogonal modifiers use boolean `data-*` attributes. This aligns with peer web component libraries (Shoelace, Spectrum, shadcn). Internal child element scoping uses `__` in class names.
 
@@ -36,7 +37,7 @@ A hardcoded registry (`registry.ts`) provides type-safe component lookup. A sing
 
 - Adding a component requires: create directory with files, add to registry, add CSS import to styles.css, add client import to register.ts (if interactive)
 - All component details are in one directory — no hunting across the tree
-- Conformance tests run via Playwright comparing against @uswds/uswds reference CSS
+- Contract tests run via Playwright: USWDS-derived components diff against @uswds/uswds reference CSS; custom components verify render output and accessibility
 - The pattern scales to 48+ components without changing the architecture
 
 ## Sources

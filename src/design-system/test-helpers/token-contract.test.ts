@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test'
 import { renderFlexFixture, renderUswdsFixture } from './render'
 
 /**
- * Token Conformance Test
- * ======================
+ * Token Contract Test
+ * ====================
  *
  * PURPOSE: Guarantees our --flex-color-* semantic tokens produce identical
  * computed colors to USWDS 3.13 default theme tokens. This is the primary
@@ -203,7 +203,7 @@ const TOKEN_MAPPINGS: TokenMapping[] = [
   },
 ]
 
-test.describe('token conformance — flex semantic tokens vs USWDS theme tokens', () => {
+test.describe('token contract — flex semantic tokens vs USWDS theme tokens', () => {
   for (const mapping of TOKEN_MAPPINGS) {
     test(`${mapping.name}`, async ({ page }) => {
       // Render element styled with our semantic token
@@ -257,7 +257,7 @@ const HEX_MAPPINGS: { name: string; flexToken: string; expectedRgb: string }[] =
     },
   ]
 
-test.describe('token conformance — hex verification for tokens without USWDS utility classes', () => {
+test.describe('token contract — hex verification for tokens without USWDS utility classes', () => {
   for (const mapping of HEX_MAPPINGS) {
     test(`${mapping.name}`, async ({ page }) => {
       await renderFlexFixture(

@@ -101,7 +101,7 @@ export interface UswdsContract extends BaseContract {
   structuralIgnores: string[]
   /** Properties we intentionally differ on, with reasons */
   intentionalDifferences: IntentionalDifference[]
-  /** HTML fixture pairs for visual conformance testing */
+  /** HTML fixture pairs for visual contract testing — paired USWDS + flex markup that the runner diffs */
   fixtures: PairedFixture[]
   /** Additional attributes to ignore beyond the defaults (class, data-testid, data-variant, etc.) */
   extraIgnoreAttributes?: string[]
