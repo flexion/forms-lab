@@ -84,6 +84,22 @@ export function createEditRoutes(
       const log = await service.getShapingLog(owner, slug, branch)
       const branches = await service.listBranches(slug)
       const changed = await service.getChangedResources(slug, branch)
+
+      // Derive shaping badge from the most recent LLM entry with provenance.
+      const lastLlmEntry = [...log]
+        .reverse()
+        .find((e) => e.source === 'llm' && e.variantId)
+      let shapingBadge: { variantId: string; variantName: string } | null = null
+      if (lastLlmEntry?.variantId) {
+        const meta = shapingRegistry
+          .list()
+          .find((v) => v.id === lastLlmEntry.variantId)
+        shapingBadge = {
+          variantId: lastLlmEntry.variantId,
+          variantName: meta?.metadata.name ?? lastLlmEntry.variantId,
+        }
+      }
+
       return c.html(
         <Layout
           user={user}
@@ -99,6 +115,7 @@ export function createEditRoutes(
             branch={branch}
             branches={branches}
             changed={changed}
+            shapingBadge={shapingBadge}
           />
         </Layout>,
       )

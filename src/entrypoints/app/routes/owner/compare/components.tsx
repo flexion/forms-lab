@@ -4,6 +4,7 @@ import {
   type SemanticDiffChange,
 } from '../../../../../design-system/components/flex-semantic-diff'
 import { SpecDiffBrowser } from '../../../../../design-system/components/flex-spec-diff-browser'
+import { VariantBadge } from '../../../../../design-system/components/flex-variant-badge'
 import type {
   ChangeResource,
   SpecChange,
@@ -39,6 +40,7 @@ export interface ReviewPageProps {
   log: ShapingLogEntry[]
   baseView: ProjectView
   headView: ProjectView
+  shapingBadge?: { variantId: string; variantName: string } | null
 }
 
 export const ReviewPage: FC<ReviewPageProps> = (props) => {
@@ -76,6 +78,13 @@ export const ReviewPage: FC<ReviewPageProps> = (props) => {
             {props.comments.length === 1 ? 'comment' : 'comments'}
           </span>
         </div>
+        {props.shapingBadge ? (
+          <VariantBadge
+            task="shaping"
+            variantId={props.shapingBadge.variantId}
+            variantName={props.shapingBadge.variantName}
+          />
+        ) : null}
         <div class="compare__actions">
           <form
             method="post"
@@ -152,6 +161,11 @@ export const ReviewPage: FC<ReviewPageProps> = (props) => {
                 >
                   {entry.source}
                 </span>
+                {entry.variantId ? (
+                  <span class="compare__history-variant">
+                    {entry.modelId ?? entry.variantId}
+                  </span>
+                ) : null}
                 <p class="compare__history-explanation">{entry.explanation}</p>
               </li>
             ))}
