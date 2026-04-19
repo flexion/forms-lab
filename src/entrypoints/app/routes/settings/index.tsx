@@ -4,7 +4,7 @@ import type {
   TaskRegistries,
   VariantPreferencesService,
 } from '../../../../services/variant-preferences'
-import { isTask, TASKS } from '../../../../services/variant-preferences/types'
+import { isTask, TASKS } from '../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../shared/base-path'
 import { requireAuth } from '../../middleware/auth'
 import { VariantPickerPage } from './components'

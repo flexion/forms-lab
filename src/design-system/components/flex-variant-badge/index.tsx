@@ -1,5 +1,5 @@
 import type { FC } from 'hono/jsx'
-import type { Task } from '../../../services/variant-preferences/types'
+import type { Task } from '../../../services/variant-preferences'
 import { resolveUrl } from '../../../shared/base-path'
 
 interface VariantBadgeProps {

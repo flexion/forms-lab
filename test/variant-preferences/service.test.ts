@@ -1,10 +1,10 @@
 import { expect, test } from 'bun:test'
-import { createVariantPreferencesService } from '../../src/services/variant-preferences/service'
 import type {
   Task,
   VariantPreference,
   VariantPreferencesGateway,
-} from '../../src/services/variant-preferences/types'
+} from '../../src/services/variant-preferences'
+import { createVariantPreferencesService } from '../../src/services/variant-preferences'
 import { StrategyRegistry } from '../../src/shared/strategy-registry'
 
 function inMemoryGateway(): VariantPreferencesGateway {

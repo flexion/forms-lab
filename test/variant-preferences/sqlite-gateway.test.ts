@@ -2,7 +2,7 @@ import { expect, test } from 'bun:test'
 import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createVariantPreferencesGateway } from '../../src/services/variant-preferences/sqlite-gateway'
+import { createVariantPreferencesGateway } from '../../src/services/variant-preferences'
 
 function createGateway() {
   const dir = mkdtempSync(join(tmpdir(), 'variant-prefs-'))

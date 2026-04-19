@@ -3,7 +3,7 @@ import {
   appendProvenance,
   type ProvenanceFile,
   readProvenance,
-} from '../../src/services/variant-preferences/provenance'
+} from '../../src/services/variant-preferences'
 
 test('appendProvenance creates a new file when none exists', () => {
   const next = appendProvenance(null, 'extraction', {
