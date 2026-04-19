@@ -129,12 +129,17 @@ let
       echo "Assigned port $PORT to $BRANCH"
     fi
 
+    # Capture the commit SHA of the deployed worktree so getBuildInfo()
+    # can resolve the running commit without shelling out to git at runtime.
+    BUILD_GIT_SHA=$(${pkgs.git}/bin/git -C "$BRANCH_DIR" rev-parse HEAD)
+
     # Write per-branch env file
     # All branches serve at /<branch>/
     # OAuth secrets are read from sops-nix managed files in /run/secrets/
     cat > "$BRANCH_DIR/.env" <<ENVEOF
 PORT=$PORT
 BASE_PATH=/$UNIT_NAME/
+BUILD_GIT_SHA=$BUILD_GIT_SHA
 GITHUB_CLIENT_ID=$(cat /run/secrets/github-client-id 2>/dev/null || echo "")
 GITHUB_CLIENT_SECRET=$(cat /run/secrets/github-client-secret 2>/dev/null || echo "")
 SESSION_SECRET=$(cat /run/secrets/session-secret 2>/dev/null || echo "")

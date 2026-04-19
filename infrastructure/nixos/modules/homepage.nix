@@ -20,6 +20,10 @@
       Environment = [
         "PORT=3000"
       ];
+      # Main's .env provides BUILD_GIT_SHA (and future runtime config).
+      # The leading '-' tolerates the file being absent on first boot,
+      # before the first main deployment has run.
+      EnvironmentFile = "-/srv/forms-lab/main/.env";
       ExecStart = "${config.flexion.entrypointWrapper}/bin/forms-lab-entrypoint dashboard /srv/forms-lab/main";
     };
   };
