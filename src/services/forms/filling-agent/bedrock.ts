@@ -1,7 +1,8 @@
 // src/services/forms/filling-agent/bedrock.ts
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
-import { generateText } from 'ai'
+import { generateText, tool } from 'ai'
+import { z } from 'zod'
 import { evaluateCondition } from '../resolver'
 import { buildSystemPrompt } from './system-prompt-builder'
 import type {
@@ -56,69 +57,38 @@ export class BedrockFillingAgent implements FillingAgent {
     // Build messages array from conversation history
     const messages = this.buildMessages(context, userResponse)
 
-    // Call LLM with tools
+    // Call LLM with tools - use tool() helper for proper schema format
     const result = await generateText({
       model: this.bedrock(this.model),
       system: systemPrompt,
       messages,
       tools: {
-        collect_field: {
+        collect_field: tool({
           description: 'Record a field value when the user provides it',
-          parameters: {
-            json: {
-              type: 'object' as const,
-              properties: {
-                fieldName: {
-                  type: 'string' as const,
-                  description: 'The field name to collect (camelCase)',
-                },
-                value: {
-                  type: 'string' as const,
-                  description: 'The value provided by the user',
-                },
-              },
-              required: ['fieldName', 'value'] as const,
-            },
-          },
-          // biome-ignore lint/suspicious/noExplicitAny: Bedrock expects json wrapper around schema
-        } as any,
-        explain_field: {
+          inputSchema: z.object({
+            fieldName: z
+              .string()
+              .describe('The field name to collect (camelCase)'),
+            value: z.string().describe('The value provided by the user'),
+          }),
+          execute: async () => ({}), // No-op: we handle tool calls manually below
+        }),
+        explain_field: tool({
           description:
             'Provide additional context about a field when the user asks for clarification',
-          parameters: {
-            json: {
-              type: 'object' as const,
-              properties: {
-                fieldName: {
-                  type: 'string' as const,
-                  description: 'The field name to explain',
-                },
-              },
-              required: ['fieldName'] as const,
-            },
-          },
-          // biome-ignore lint/suspicious/noExplicitAny: Bedrock expects json wrapper around schema
-        } as any,
-        skip_field: {
+          inputSchema: z.object({
+            fieldName: z.string().describe('The field name to explain'),
+          }),
+          execute: async () => ({}), // No-op: we handle tool calls manually below
+        }),
+        skip_field: tool({
           description: 'Mark a field as intentionally skipped',
-          parameters: {
-            json: {
-              type: 'object' as const,
-              properties: {
-                fieldName: {
-                  type: 'string' as const,
-                  description: 'The field name to skip',
-                },
-                reason: {
-                  type: 'string' as const,
-                  description: 'Why the field is being skipped',
-                },
-              },
-              required: ['fieldName', 'reason'] as const,
-            },
-          },
-          // biome-ignore lint/suspicious/noExplicitAny: Bedrock expects json wrapper around schema
-        } as any,
+          inputSchema: z.object({
+            fieldName: z.string().describe('The field name to skip'),
+            reason: z.string().describe('Why the field is being skipped'),
+          }),
+          execute: async () => ({}), // No-op: we handle tool calls manually below
+        }),
       },
     })
 
