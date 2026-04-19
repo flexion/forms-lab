@@ -2,6 +2,7 @@
 
 export { SqliteConversationGateway } from '../conversation-gateway'
 export { ScriptedFillingAgent } from './scripted'
+export { buildSystemPrompt } from './system-prompt-builder'
 export type {
   ConversationGateway,
   ConversationMessage,
