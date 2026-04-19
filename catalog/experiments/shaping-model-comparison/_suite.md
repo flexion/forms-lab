@@ -41,3 +41,15 @@ Each variant is user-selectable at [/settings/variants?task=shaping](/settings/v
 - Evaluation and benchmarking (Chapter 3)
 - Model selection (Chapter 6)
 - Tool-use architectures for structured output
+
+## Evaluation Status
+
+The `shaping-commands` evaluation kind is implemented and tested with synthetic data (19 unit tests validate scoring logic). Live model evaluation requires a CLI runner that calls each model with the scripted intents — this is planned follow-up work. The scoring kind itself is validated: precision/recall/argument-accuracy metrics compute correctly and the summarizer averages correctly across cases.
+
+## Course Connection
+
+Assignment 10 showed that model selection is the largest lever for tool-calling tasks — Haiku 4.5 achieves 100% with a 4-line baseline prompt while no amount of optimization makes Llama 3.1 use tools correctly. The same principle applies to shaping: Sonnet likely handles most intents well, while complex multi-step requests (intent #6: "suggest delivery modes based on complexity") may require Opus-level reasoning.
+
+The homework's cost-performance frontier ($0.003/interview for Llama 4 Scout vs $0.112 for Sonnet) suggests that even Haiku may handle simple structural edits (swap, rename) at significantly lower cost. The scripted intent suite is designed to test exactly this boundary — simple edits that any model should handle vs. ambiguous requests that test reasoning depth.
+
+The shaping task differs from the homework's interview agent in one key way: shaping is single-turn (one intent → one command sequence), while the interview agent was multi-turn. This means the 15-field complexity ceiling found in the homework (where small models degrade on long conversations) may not apply — shaping outputs are short regardless of form complexity.
