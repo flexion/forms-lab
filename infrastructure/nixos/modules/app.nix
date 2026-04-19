@@ -8,6 +8,15 @@
     after = [ "network.target" ];
     onFailure = [ "forms-lab-notify-failure@%n.service" ];
 
+    # wantedBy on a template populates the [Install] section of the
+    # generated unit file. The bare template itself still cannot be
+    # enabled, but each instance — forms-lab-app@<branch>.service — now
+    # has a [Install] section that `systemctl enable` can act on, which
+    # symlinks it into multi-user.target.wants/ so it restarts on
+    # reboot. Without this, `enable` is a no-op ("static") and branch
+    # apps stay dead after a reboot.
+    wantedBy = [ "multi-user.target" ];
+
     path = [ pkgs.git ];
 
     serviceConfig = {
