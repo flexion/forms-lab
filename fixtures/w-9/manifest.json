@@ -1,0 +1,7 @@
+{
+  "name": "IRS Form W-9 — Request for Taxpayer Identification",
+  "specVersion": "2026-04-18",
+  "groundTruthModel": "opus-baseline",
+  "reviewed": false,
+  "notes": "Downloaded from irs.gov 2026-04-18. Ground truth pending generation via Opus."
+}

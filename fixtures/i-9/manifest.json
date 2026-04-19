@@ -1,0 +1,7 @@
+{
+  "name": "USCIS Form I-9 — Employment Eligibility Verification",
+  "specVersion": "2026-04-18",
+  "groundTruthModel": "opus-baseline",
+  "reviewed": false,
+  "notes": "Downloaded from uscis.gov 2026-04-18. Ground truth pending generation via Opus."
+}
