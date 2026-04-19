@@ -3,6 +3,7 @@ import { createGitHubClient } from '../../services/deployment/github'
 import { deployMainBranch, triggerDeployWithStatus } from './deploy'
 import type { PushPayload } from './handler'
 import { parseDeleteEvent, parsePushEvent, verifySignature } from './handler'
+import { createSystemctlExec, startInactiveBranchUnits } from './recovery'
 
 const app = new Hono()
 
@@ -132,6 +133,26 @@ async function markDeploymentInactive(
 
 const port = process.env.PORT || 9000
 console.log(`Webhook listener running on port ${port}`)
+
+// Recover any branch apps that should be running but aren't. This catches
+// the reboot case — on boot systemd starts only the instances that were
+// `systemctl enable`-d; anything older than that NixOS change (or
+// transient failures) gets picked up here. Fire-and-forget; never block
+// startup on this.
+const caddyDir = process.env.CADDY_BRANCH_DIR || '/srv/forms-lab/caddy.d'
+startInactiveBranchUnits({ caddyDir, exec: createSystemctlExec() })
+  .then((started) => {
+    if (started.length > 0) {
+      console.log(
+        `Recovery: started ${started.length} inactive branch unit(s): ${started.join(', ')}`,
+      )
+    } else {
+      console.log('Recovery: all known branch units already active')
+    }
+  })
+  .catch((err) => {
+    console.error('Recovery: unexpected error during startup scan:', err)
+  })
 
 export default {
   port: Number(port),
