@@ -1,5 +1,6 @@
 import type { FC } from 'hono/jsx'
-import type { VariantRegistry } from '../../../../services/strategy-registry'
+import { Alert } from '../../../../design-system/components/flex-alert'
+import type { TaskRegistries } from '../../../../services/variant-preferences'
 import {
   TASKS,
   type Task,
@@ -14,7 +15,7 @@ const TASK_LABELS: Record<Task, string> = {
 }
 
 interface VariantPickerPageProps {
-  registries: Record<Task, VariantRegistry<unknown>>
+  registries: TaskRegistries
   selections: Record<Task, string | null>
   highlightTask?: Task
   saved?: boolean
@@ -34,11 +35,7 @@ export const VariantPickerPage: FC<VariantPickerPageProps> = ({
         Choose which LLM variant runs each task. Each variant has its own
         evaluation in the catalog.
       </p>
-      {saved ? (
-        <div class="alert alert-success" role="status">
-          Preferences saved.
-        </div>
-      ) : null}
+      {saved ? <Alert variant="success">Preferences saved.</Alert> : null}
       <form method="post" action={action}>
         {TASKS.map((task) => {
           const variants = registries[task].list()

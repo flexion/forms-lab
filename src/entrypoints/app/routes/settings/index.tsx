@@ -1,19 +1,17 @@
 import { Hono } from 'hono'
 import { Layout } from '../../../../design-system/components/flex-layout'
-import type { VariantRegistry } from '../../../../services/strategy-registry'
-import type { VariantPreferencesService } from '../../../../services/variant-preferences'
-import {
-  isTask,
-  TASKS,
-  type Task,
-} from '../../../../services/variant-preferences/types'
+import type {
+  TaskRegistries,
+  VariantPreferencesService,
+} from '../../../../services/variant-preferences'
+import { isTask, TASKS } from '../../../../services/variant-preferences/types'
 import { resolveUrl } from '../../../../shared/base-path'
 import { requireAuth } from '../../middleware/auth'
 import { VariantPickerPage } from './components'
 
 export interface SettingsRoutesDeps {
   preferences: VariantPreferencesService
-  registries: Record<Task, VariantRegistry<unknown>>
+  registries: TaskRegistries
 }
 
 export function createSettingsRoutes(deps: SettingsRoutesDeps): Hono {
