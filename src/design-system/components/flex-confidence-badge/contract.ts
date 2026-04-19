@@ -37,16 +37,8 @@ export const spec: CustomContract = {
       tested: false,
     },
   ],
-  accessibilityFixtureHtml: `<main>
-    <h1>Confidence Badge Test</h1>
-    <table>
-      <caption>Field confidence examples</caption>
-      <thead><tr><th scope="col">Field</th><th scope="col">Status</th></tr></thead>
-      <tbody>
-        <tr><td>First name</td><td></td></tr>
-        <tr><td>Date of birth</td><td><span class="flex-confidence-badge" data-level="medium" title="Confidence: 65%">Review</span></td></tr>
-        <tr><td>Signature block</td><td><span class="flex-confidence-badge" data-level="low" title="Confidence: 30%">Low confidence</span></td></tr>
-      </tbody>
-    </table>
-  </main>`,
+  // No accessibilityFixtureHtml override: the per-variant axe audits assert
+  // against the real component output. If those audits surface a11y issues,
+  // fix them in index.tsx rather than papering over them with a hand-written
+  // fixture that diverges from what the component actually renders.
 }

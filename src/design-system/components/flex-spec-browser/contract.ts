@@ -32,40 +32,8 @@ export const spec: CustomContract = {
       tested: false,
     },
   ],
-  accessibilityFixtureHtml: `<main>
-    <h1>Spec Browser Test</h1>
-    <flex-spec-browser class="flex-spec-browser">
-      <aside class="flex-spec-browser__sidebar">
-        <nav class="flex-spec-browser__nav" aria-label="On this form">
-          <h2 class="flex-spec-browser__nav-heading">On this form</h2>
-          <ul class="flex-spec-browser__nav-list">
-            <li class="flex-spec-browser__nav-item">
-              <a class="flex-spec-browser__nav-link" href="#page-page-1">1. Your Information</a>
-              <ul class="flex-spec-browser__nav-sublist">
-                <li class="flex-spec-browser__nav-item">
-                  <a class="flex-spec-browser__nav-link flex-spec-browser__nav-link--sub" href="#group-group-personal">Personal Information</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </nav>
-      </aside>
-      <div class="flex-spec-browser__content">
-        <section class="flex-spec-browser__section" aria-labelledby="spec-pages">
-          <h2 id="spec-pages" class="flex-spec-browser__section-heading">Pages</h2>
-          <div class="flex-spec-browser__panels">
-            <details id="page-page-1" class="flex-spec-browser__panel" open>
-              <summary class="flex-spec-browser__panel-summary">
-                <span class="flex-spec-browser__panel-number">1.</span>
-                <span class="flex-spec-browser__panel-title">Your Information</span>
-              </summary>
-              <div class="flex-spec-browser__panel-body">
-                <p class="text-muted">No groups assigned to this page.</p>
-              </div>
-            </details>
-          </div>
-        </section>
-      </div>
-    </flex-spec-browser>
-  </main>`,
+  // No accessibilityFixtureHtml override: the per-variant axe audits assert
+  // against the real component output. If those audits surface a11y issues,
+  // fix them in index.tsx rather than papering over them with a hand-written
+  // fixture that diverges from what the component actually renders.
 }

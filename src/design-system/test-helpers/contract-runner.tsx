@@ -138,14 +138,6 @@ function runUswdsContract(spec: UswdsContract) {
 
 function runCustomContract(spec: CustomContract) {
   test.describe(`${spec.component} contract (custom)`, () => {
-    if (spec.accessibilityFixtureHtml) {
-      test('axe: custom fixture', async ({ page }) => {
-        const html = spec.accessibilityFixtureHtml as string
-        await runAxeAudit(page, html)
-      })
-      return
-    }
-
     for (const variant of spec.variants) {
       test(`axe: ${variant.name}`, async ({ page }) => {
         const examplesModule = await loadExamplesOrThrow(spec.component)
@@ -159,6 +151,13 @@ function runCustomContract(spec: CustomContract) {
         const Fn = fn as FC
         const rendered = (<Fn />).toString()
         const html = `<main><h1>${spec.component} Test</h1>${rendered}</main>`
+        await runAxeAudit(page, html)
+      })
+    }
+
+    if (spec.accessibilityFixtureHtml) {
+      test('axe: custom fixture', async ({ page }) => {
+        const html = spec.accessibilityFixtureHtml as string
         await runAxeAudit(page, html)
       })
     }

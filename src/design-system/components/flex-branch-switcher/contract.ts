@@ -32,29 +32,8 @@ export const spec: CustomContract = {
       tested: false,
     },
   ],
-  accessibilityFixtureHtml: `<main>
-    <h1>Branch Switcher Test</h1>
-    <nav aria-label="Branch navigation">
-      <flex-branch-switcher class="flex-branch-switcher">
-        <button type="button" class="flex-branch-switcher__trigger" aria-haspopup="listbox" aria-expanded="false">
-          <span class="flex-branch-switcher__current">main</span>
-          <span class="flex-branch-switcher__badge">published</span>
-          <span aria-hidden="true" class="flex-branch-switcher__caret">▾</span>
-        </button>
-        <div class="flex-branch-switcher__panel" role="listbox" hidden>
-          <input type="search" class="flex-branch-switcher__filter" placeholder="Find a branch..." aria-label="Filter branches" />
-          <ul class="flex-branch-switcher__list">
-            <li class="flex-branch-switcher__option" role="option" aria-selected="true">
-              <a class="flex-branch-switcher__link" href="/main/">main</a>
-            </li>
-          </ul>
-          <form method="post" action="/branches/create" class="flex-branch-switcher__create">
-            <label for="new-branch-name" class="usa-sr-only">New branch name</label>
-            <input id="new-branch-name" class="flex-text-input flex-branch-switcher__create-input" name="name" placeholder="new-branch-name" required />
-            <button type="submit" class="flex-button flex-branch-switcher__create-submit">Create branch</button>
-          </form>
-        </div>
-      </flex-branch-switcher>
-    </nav>
-  </main>`,
+  // No accessibilityFixtureHtml override: the per-variant axe audits assert
+  // against the real component output. If those audits surface a11y issues,
+  // fix them in index.tsx rather than papering over them with a hand-written
+  // fixture that diverges from what the component actually renders.
 }
