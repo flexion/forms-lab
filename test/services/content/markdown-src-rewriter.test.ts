@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { renderMarkdown } from '../../../src/services/content/markdown'
+import { renderMarkdown } from '../../../src/services/content'
 import type { BuildInfo } from '../../../src/shared/build-info'
 
 const build: BuildInfo = {

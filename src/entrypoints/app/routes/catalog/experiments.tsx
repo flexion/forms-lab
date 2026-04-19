@@ -10,7 +10,7 @@ import {
   parseMarkdown,
   readMarkdownDir,
   renderMarkdown,
-} from '../../../../services/content/markdown'
+} from '../../../../services/content'
 import { resolveUrl } from '../../../../shared/base-path'
 import { getBuildInfo } from '../../../../shared/build-info'
 import {

@@ -26,7 +26,7 @@ import {
   getComponentBySlug,
   getComponentsByCategory,
 } from '../../../../design-system/registry'
-import { renderMarkdown } from '../../../../services/content/markdown'
+import { renderMarkdown } from '../../../../services/content'
 import { getBuildInfo } from '../../../../shared/build-info'
 import { getDesignSystemSidebar } from './sidebar'
 

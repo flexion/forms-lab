@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { githubPermalink } from '../../../src/services/content/github-permalink'
+import { githubPermalink } from '../../../src/services/content'
 import type { BuildInfo } from '../../../src/shared/build-info'
 
 const clean: BuildInfo = {

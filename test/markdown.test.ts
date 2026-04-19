@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { parseMarkdown, renderMarkdown } from '../src/services/content/markdown'
+import { parseMarkdown, renderMarkdown } from '../src/services/content'
 import type { BuildInfo } from '../src/shared/build-info'
 
 const build: BuildInfo = {

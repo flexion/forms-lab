@@ -7,12 +7,12 @@ import { CatalogSidebar } from '../../../../design-system/components/flex-catalo
 import { Layout } from '../../../../design-system/components/flex-layout'
 import { Prose } from '../../../../design-system/components/flex-prose'
 import { TagList } from '../../../../design-system/components/flex-tag-list'
+import type { Story } from '../../../../services/content'
 import {
   parseMarkdown,
   readMarkdownDir,
   renderMarkdown,
-} from '../../../../services/content/markdown'
-import type { Story } from '../../../../services/content/types'
+} from '../../../../services/content'
 import { resolveUrl } from '../../../../shared/base-path'
 import { getBuildInfo } from '../../../../shared/build-info'
 import { getStoriesSidebar } from './sidebar'

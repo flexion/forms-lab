@@ -8,11 +8,8 @@ import { PresentLayout } from '../../../../design-system/components/flex-present
 import { Prose } from '../../../../design-system/components/flex-prose'
 import { TagList } from '../../../../design-system/components/flex-tag-list'
 import { WalkthroughNav } from '../../../../design-system/components/flex-walkthrough-nav'
-import {
-  readMarkdownDir,
-  renderMarkdown,
-} from '../../../../services/content/markdown'
-import type { WalkthroughPage } from '../../../../services/content/types'
+import type { WalkthroughPage } from '../../../../services/content'
+import { readMarkdownDir, renderMarkdown } from '../../../../services/content'
 import { resolveUrl } from '../../../../shared/base-path'
 import { getBuildInfo } from '../../../../shared/build-info'
 import { getWalkthroughSidebar } from './sidebar'
