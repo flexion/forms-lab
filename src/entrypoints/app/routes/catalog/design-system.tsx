@@ -21,7 +21,7 @@ import { CatalogSidebar } from '../../../../design-system/components/flex-catalo
 import { Layout } from '../../../../design-system/components/flex-layout'
 import { Prose } from '../../../../design-system/components/flex-prose'
 import { Table } from '../../../../design-system/components/flex-table'
-import type { ConformanceSpec } from '../../../../design-system/conformance/types'
+import type { Contract } from '../../../../design-system/contract/types'
 import {
   getComponentBySlug,
   getComponentsByCategory,
@@ -1188,15 +1188,18 @@ designSystem.get('/:slug', async (c) => {
     // No styles.css for this component
   }
 
-  // Load conformance spec
-  let conformanceSpec: ConformanceSpec | null = null
+  // Load contract
+  let contract: Contract | null = null
   try {
-    const specModule = await import(
-      `../../../../design-system/components/${meta.slug}/conformance-spec.ts`
+    const mod = await import(
+      `../../../../design-system/components/${meta.slug}/contract.tsx`
+    ).catch(
+      () =>
+        import(`../../../../design-system/components/${meta.slug}/contract.ts`),
     )
-    conformanceSpec = specModule.spec
+    contract = mod.spec
   } catch {
-    // No conformance spec for this component
+    // No contract for this component
   }
 
   return c.html(
@@ -1259,11 +1262,11 @@ designSystem.get('/:slug', async (c) => {
         </section>
       )}
 
-      {conformanceSpec && (
+      {contract && contract.kind === 'uswds-derived' && (
         <section class="l-stack">
           <h2>Conformance</h2>
 
-          {conformanceSpec.mapping.length > 0 && (
+          {contract.mapping.length > 0 && (
             <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
               <h3>Class Mapping</h3>
               <Table striped>
@@ -1275,7 +1278,7 @@ designSystem.get('/:slug', async (c) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {conformanceSpec.mapping.map((m) => (
+                  {contract.mapping.map((m) => (
                     <tr>
                       <td>
                         <code class="flex-mono">{m.uswds}</code>
@@ -1291,11 +1294,11 @@ designSystem.get('/:slug', async (c) => {
             </div>
           )}
 
-          {conformanceSpec.verified.length > 0 && (
+          {contract.verified.length > 0 && (
             <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
               <h3>Verified Properties</h3>
               <div class="l-cluster">
-                {conformanceSpec.verified.map((prop) => (
+                {contract.verified.map((prop) => (
                   <code
                     class="flex-mono"
                     style="padding: 2px var(--flex-space-xs); background: var(--flex-color-success-lighter); border-radius: var(--flex-radius-sm);"
@@ -1307,10 +1310,10 @@ designSystem.get('/:slug', async (c) => {
             </div>
           )}
 
-          {conformanceSpec.intentionalDifferences.length > 0 && (
+          {contract.intentionalDifferences.length > 0 && (
             <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
               <h3>Intentional Differences</h3>
-              {conformanceSpec.intentionalDifferences.map((d) => (
+              {contract.intentionalDifferences.map((d) => (
                 <div style="padding: var(--flex-space-sm); background: var(--flex-color-warning-lighter); border-radius: var(--flex-radius-md);">
                   <p>
                     <strong>
@@ -1325,11 +1328,11 @@ designSystem.get('/:slug', async (c) => {
             </div>
           )}
 
-          {conformanceSpec.behavior.length > 0 && (
+          {contract.behavior.length > 0 && (
             <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
               <h3>Behavior</h3>
               <ul>
-                {conformanceSpec.behavior.map((b) => (
+                {contract.behavior.map((b) => (
                   <li>
                     {b.tested ? '✓' : '○'} {b.description}
                   </li>
