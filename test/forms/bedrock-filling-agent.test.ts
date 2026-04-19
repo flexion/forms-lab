@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
-import type { FillingContext } from '../../src/services/forms'
 import { BedrockFillingAgent } from '../../src/services/forms'
+import type { FillingContext } from '../../src/services/forms/filling-agent/types'
 import { testDataSpec } from './fixtures'
 
 // Mock the AI SDK

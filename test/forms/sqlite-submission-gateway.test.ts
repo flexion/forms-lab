@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it } from 'bun:test'
 import { unlinkSync } from 'node:fs'
-import type { Submission } from '../../src/services/forms'
 import { SqliteSubmissionGateway } from '../../src/services/forms'
+import type { Submission } from '../../src/services/forms/types'
 
 const TEST_DB = 'data/test-form-submissions.sqlite'
 

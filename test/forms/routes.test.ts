@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
 import { createFormRouter } from '../../src/entrypoints/app/routes/forms/index'
-import {
-  InMemoryFormSessionGateway,
-  InMemorySubmissionGateway,
-} from '../../src/services/forms'
+import { InMemoryFormSessionGateway } from '../../src/services/forms/session'
+import { InMemorySubmissionGateway } from '../../src/services/forms/submission'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 const TEST_SHA = 'abc1234567890def1234567890abc1234567890'

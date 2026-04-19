@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import type { ConversationMessage } from '../../src/services/forms'
 import { SqliteConversationGateway } from '../../src/services/forms'
+import type { ConversationMessage } from '../../src/services/forms/filling-agent/types'
 
 describe('SqliteConversationGateway', () => {
   let dbPath: string

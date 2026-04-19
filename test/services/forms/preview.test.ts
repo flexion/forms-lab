@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import type { DataCollectionSpec } from '../../../src/services/data-collection'
 import type { FormSpec } from '../../../src/services/forms'
-import { buildFormPreview } from '../../../src/services/forms'
+import { buildFormPreview } from '../../../src/services/forms/preview'
 
 const dataSpec: DataCollectionSpec = {
   id: 'f1',
