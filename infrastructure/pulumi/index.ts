@@ -103,7 +103,10 @@ const instanceProfile = new aws.iam.InstanceProfile('forms-lab-profile', {
 // EC2 instance
 const instance = new aws.ec2.Instance('forms-lab', {
   ami: nixosAmi.then((ami) => ami.id),
-  instanceType: 't3.small',
+  // Upgraded 2026-04-19: t3.small's 2 GB RAM OOM'd under ~48 branch
+  // app processes during the tier-2 experiment push. t3.medium (4 GB)
+  // accommodates the peak load. See project memory for the incident.
+  instanceType: 't3.medium',
   keyName: keyPair.keyName,
   vpcSecurityGroupIds: [sg.id],
   iamInstanceProfile: instanceProfile.name,
