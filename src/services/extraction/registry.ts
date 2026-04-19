@@ -9,6 +9,7 @@ import {
   OPUS_MODEL_ID,
   SONNET_MODEL_ID,
 } from './models'
+import { getRagRetriever } from './rag-corpus'
 
 export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
   const registry = new StrategyRegistry<PdfExtractor>()
@@ -117,6 +118,26 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
     },
     create: () =>
       createBedrockPdfExtractor({ model: SONNET_MODEL_ID, exemplars }),
+  })
+
+  registry.register({
+    id: 'sonnet-with-rag',
+    metadata: {
+      name: 'Claude Sonnet 4 (RAG)',
+      description:
+        'Retrieves policy excerpts (CFR/USC) from a curated corpus and prepends them to the extraction prompt as grounding context. Tests whether regulatory grounding improves sensitivity labelling and type accuracy on government forms.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'rag', 'retrieval'],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/sonnet-with-rag',
+      modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
+    },
+    create: () =>
+      createBedrockPdfExtractor({
+        model: SONNET_MODEL_ID,
+        retriever: getRagRetriever(),
+        retrievalK: 2,
+      }),
   })
 
   registry.register({
