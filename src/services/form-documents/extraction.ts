@@ -29,15 +29,19 @@ export function createCachedPdfExtractor(
       pdf: Buffer,
       options?: ExtractionOptions,
     ): Promise<ExtractionResult> {
+      console.log('[EXTRACTION] Starting extraction, PDF type:', typeof pdf, 'isBuffer:', Buffer.isBuffer(pdf))
       // Validate PDF buffer before caching
       if (!pdf || !Buffer.isBuffer(pdf)) {
-        throw new Error(
-          `Invalid PDF buffer: expected Buffer, received ${typeof pdf}`,
-        )
+        const error = `Invalid PDF buffer: expected Buffer, received ${typeof pdf}`
+        console.error('[EXTRACTION]', error)
+        throw new Error(error)
       }
       if (pdf.length === 0) {
-        throw new Error('PDF buffer is empty')
+        const error = 'PDF buffer is empty'
+        console.error('[EXTRACTION]', error)
+        throw new Error(error)
       }
+      console.log('[EXTRACTION] PDF validation passed, size:', pdf.length)
 
       const model = options?.model ?? cacheModel ?? DEFAULT_MODEL
       const key = cacheKey(pdf, model)
