@@ -1,7 +1,7 @@
 // src/services/forms/filling-agent/bedrock.ts
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
-import { generateText, jsonSchema } from 'ai'
+import { generateText } from 'ai'
 import { evaluateCondition } from '../resolver'
 import { buildSystemPrompt } from './system-prompt-builder'
 import type {
@@ -64,7 +64,7 @@ export class BedrockFillingAgent implements FillingAgent {
       tools: {
         collect_field: {
           description: 'Record a field value when the user provides it',
-          parameters: jsonSchema({
+          parameters: {
             type: 'object',
             properties: {
               fieldName: {
@@ -77,13 +77,13 @@ export class BedrockFillingAgent implements FillingAgent {
               },
             },
             required: ['fieldName', 'value'],
-          }),
-          // biome-ignore lint/suspicious/noExplicitAny: AI SDK tool definition requires type assertion
+          } as const,
+          // biome-ignore lint/suspicious/noExplicitAny: Bedrock requires plain JSON Schema, not jsonSchema() wrapper
         } as any,
         explain_field: {
           description:
             'Provide additional context about a field when the user asks for clarification',
-          parameters: jsonSchema({
+          parameters: {
             type: 'object',
             properties: {
               fieldName: {
@@ -92,12 +92,12 @@ export class BedrockFillingAgent implements FillingAgent {
               },
             },
             required: ['fieldName'],
-          }),
-          // biome-ignore lint/suspicious/noExplicitAny: AI SDK tool definition requires type assertion
+          } as const,
+          // biome-ignore lint/suspicious/noExplicitAny: Bedrock requires plain JSON Schema, not jsonSchema() wrapper
         } as any,
         skip_field: {
           description: 'Mark a field as intentionally skipped',
-          parameters: jsonSchema({
+          parameters: {
             type: 'object',
             properties: {
               fieldName: {
@@ -110,8 +110,8 @@ export class BedrockFillingAgent implements FillingAgent {
               },
             },
             required: ['fieldName', 'reason'],
-          }),
-          // biome-ignore lint/suspicious/noExplicitAny: AI SDK tool definition requires type assertion
+          } as const,
+          // biome-ignore lint/suspicious/noExplicitAny: Bedrock requires plain JSON Schema, not jsonSchema() wrapper
         } as any,
       },
     })
