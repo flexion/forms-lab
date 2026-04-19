@@ -1,10 +1,15 @@
-import type { FC } from 'hono/jsx'
+import type { Child, FC } from 'hono/jsx'
 
 interface RadioProps {
   id: string
   name: string
   value: string
-  label: string
+  /**
+   * Label content. Accepts a plain string or arbitrary JSX so callers can
+   * render richer content (e.g. a variant name in bold plus a description
+   * and follow-up link) while keeping the same visible-label semantics.
+   */
+  label: Child
   checked?: boolean
   disabled?: boolean
   tile?: boolean

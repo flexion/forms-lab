@@ -1,0 +1,83 @@
+/* Settings page — variant picker
+   Intent: match the look-and-feel of the repository overview page. The
+   structural primitives (l-stack, l-cluster) and Card / Radio components
+   do most of the work; these rules handle page-specific typography,
+   header spacing, and the scroll-anchor highlight behavior when a caller
+   links to a specific task section. */
+
+.variant-settings__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-2xs);
+}
+
+.variant-settings__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--flex-space-2xs);
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+}
+
+.variant-settings__breadcrumb-sep {
+  color: var(--flex-color-text-muted);
+}
+
+.variant-settings__breadcrumb-current {
+  color: var(--flex-color-text-muted);
+}
+
+.variant-settings__title {
+  margin: 0;
+}
+
+.variant-settings__lede {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+  max-inline-size: 60ch;
+}
+
+/* Anchor target: leave room for sticky headers when jumping to a task. */
+.variant-settings__task {
+  scroll-margin-block-start: var(--flex-space-xl);
+}
+
+.variant-settings__task[data-highlighted="true"] .flex-card__container {
+  border-color: var(--flex-color-accent);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--flex-color-accent) 20%, transparent);
+}
+
+/* Tile radios already carry their own top margin; we just need a sensible
+   column layout inside the card body. */
+.variant-settings__options {
+  display: flex;
+  flex-direction: column;
+}
+
+.variant-settings__empty {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+}
+
+.variant-settings__option-label {
+  display: inline;
+}
+
+.variant-settings__option-name {
+  font-weight: 700;
+}
+
+.variant-settings__option-description {
+  color: var(--flex-color-text);
+}
+
+.variant-settings__option-link {
+  margin-inline-start: var(--flex-space-2xs);
+  white-space: nowrap;
+}
+
+.variant-settings__actions {
+  justify-content: flex-end;
+}

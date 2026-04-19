@@ -93,6 +93,7 @@
 @import "../routes/owner/edit/styles.css" layer(block);
 @import "../routes/owner/edit/editor-layout.css" layer(block);
 @import "../routes/owner/compare/styles.css" layer(block);
+@import "../routes/settings/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);

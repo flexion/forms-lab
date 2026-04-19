@@ -84,7 +84,7 @@ test('GET /settings/variants renders extraction section for authed user', async 
   expect(html).toContain('Claude Sonnet 4')
   expect(html).toContain('Claude Haiku 4.5')
   expect(html).toContain('/catalog/experiments/pdf-field-extraction/sonnet')
-  expect(html).toContain('No variants yet')
+  expect(html).toContain('No variants yet — available in a later release.')
 })
 
 test('POST /settings/variants persists valid selection', async () => {
