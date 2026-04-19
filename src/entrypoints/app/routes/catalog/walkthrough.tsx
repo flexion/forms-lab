@@ -14,6 +14,7 @@ import {
 } from '../../../../services/content/markdown'
 import type { WalkthroughPage } from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
+import { getBuildInfo } from '../../../../shared/build-info'
 import { getWalkthroughSidebar } from './sidebar'
 
 const walkthrough = new Hono()
@@ -218,7 +219,7 @@ walkthrough.get('/:slug', async (c) => {
           />
         }
       >
-        <Prose html={renderMarkdown(page.content)} />
+        <Prose html={renderMarkdown(page.content, { build: getBuildInfo() })} />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){
@@ -259,7 +260,7 @@ walkthrough.get('/:slug', async (c) => {
           { label: page.title },
         ]}
       />
-      <Prose html={renderMarkdown(page.content)} />
+      <Prose html={renderMarkdown(page.content, { build: getBuildInfo() })} />
       <WalkthroughNav
         currentPage={pageIndex + 1}
         totalPages={pages.length}

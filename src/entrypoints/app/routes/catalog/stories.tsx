@@ -14,6 +14,7 @@ import {
 } from '../../../../services/content/markdown'
 import type { Story } from '../../../../services/content/types'
 import { resolveUrl } from '../../../../shared/base-path'
+import { getBuildInfo } from '../../../../shared/build-info'
 import { getStoriesSidebar } from './sidebar'
 
 const stories = new Hono()
@@ -144,7 +145,9 @@ stories.get('/:slug', async (c) => {
             </a>
           )}
         </div>
-        <Prose html={renderMarkdown(story.content)} />
+        <Prose
+          html={renderMarkdown(story.content, { build: getBuildInfo() })}
+        />
       </Layout>,
     )
   } catch {

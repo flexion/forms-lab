@@ -11,6 +11,7 @@ import {
   renderMarkdown,
 } from '../../../../services/content/markdown'
 import { resolveUrl } from '../../../../shared/base-path'
+import { getBuildInfo } from '../../../../shared/build-info'
 import { getCatalogSidebar } from './sidebar'
 
 const personas = new Hono()
@@ -75,7 +76,7 @@ personas.get('/:id', async (c) => {
             { label: name },
           ]}
         />
-        <Prose html={renderMarkdown(file.content)} />
+        <Prose html={renderMarkdown(file.content, { build: getBuildInfo() })} />
       </Layout>,
     )
   } catch {

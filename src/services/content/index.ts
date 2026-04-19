@@ -4,7 +4,7 @@
 
 export type { PermalinkOptions } from './github-permalink'
 export { githubPermalink } from './github-permalink'
-
+export type { RenderOptions } from './markdown'
 export {
   parseMarkdown,
   readMarkdownDir,
