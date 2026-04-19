@@ -22,7 +22,7 @@ This document is the executable handoff for the eight follow-up experiment stori
 | #64 | Maya's extractions use a tuned prompt (prompt-opt) | planned | — | 2 | — |
 | #65 | Maya's extractions use our fine-tuned model (LoRA) | **scope-deferred** | — | 3 | See catalog/experiments/pdf-field-extraction/lora-scope-deferral.md |
 | #66 | Maya extracts via structured tool-use | **shipped** | merged (PR #68) | 1 | — |
-| #73 | Prompt optimization (hybrid/temperature) | planned | — | 2 | — |
+| #73 | Prompt optimization (hybrid/temperature) | **in-progress** | experiment/73-prompt-optimization | 2 | Tier-2 Bedrock eval checkpoint pending user approval |
 | #74 | RAG extraction variant | planned | — | 2 | — |
 | #75 | Live shaping model evaluation | planned | — | 2 | — |
 
