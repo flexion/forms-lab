@@ -125,6 +125,7 @@ export interface HeaderUserMenuProps {
   user: HeaderUser
   signoutAction: string
   menuId?: string
+  settingsHref?: string
 }
 
 const CaretIcon: FC = () => (
@@ -142,6 +143,7 @@ export const HeaderUserMenu: FC<HeaderUserMenuProps> = ({
   user,
   signoutAction,
   menuId = 'header-user-menu',
+  settingsHref,
 }) => {
   return (
     <div class="flex-header__user-menu" data-header-user-menu>
@@ -182,6 +184,20 @@ export const HeaderUserMenu: FC<HeaderUserMenuProps> = ({
             <div class="flex-header__user-login">@{user.login}</div>
           </div>
         </div>
+        {settingsHref && (
+          <>
+            <hr class="flex-header__user-divider" />
+            <div class="flex-header__user-settings">
+              <a
+                href={settingsHref}
+                role="menuitem"
+                class="flex-header__user-settings-link"
+              >
+                Settings
+              </a>
+            </div>
+          </>
+        )}
         <hr class="flex-header__user-divider" />
         <div class="flex-header__user-theme">
           <ThemeToggle />
@@ -212,6 +228,7 @@ interface HeaderProps {
   navLabel?: string
   user?: HeaderUser | null
   signoutAction?: string
+  settingsHref?: string
   children?: Child
 }
 
@@ -222,6 +239,7 @@ export const Header: FC<HeaderProps> = ({
   navLabel = 'Primary navigation',
   user,
   signoutAction,
+  settingsHref,
   children,
 }) => {
   return (
@@ -250,7 +268,11 @@ export const Header: FC<HeaderProps> = ({
           </button>
           <ul class="flex-header__nav-list">{children}</ul>
           {user && signoutAction ? (
-            <HeaderUserMenu user={user} signoutAction={signoutAction} />
+            <HeaderUserMenu
+              user={user}
+              signoutAction={signoutAction}
+              settingsHref={settingsHref}
+            />
           ) : (
             <ThemeToggle />
           )}

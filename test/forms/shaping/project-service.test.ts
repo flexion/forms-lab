@@ -37,6 +37,13 @@ function stubExtractor(result?: ExtractionResult): PdfExtractor {
   }
 }
 
+function stubExtraction(extractor: PdfExtractor = stubExtractor()) {
+  return {
+    resolveExtractor: () => extractor,
+    resolveVariant: () => ({ variantId: 'sonnet', modelId: 'test-model' }),
+  }
+}
+
 const alice: SessionUser = {
   login: 'alice',
   name: 'Alice',
@@ -58,7 +65,7 @@ describe('ProjectService — FormSpec mutation', () => {
     basePath = mkdtempSync(join(tmpdir(), 'project-service-shaping-'))
     store = createProjectStore(':memory:')
     repo = createFormProjectRepo(basePath)
-    service = createProjectService(store, repo, stubExtractor())
+    service = createProjectService(store, repo, stubExtraction())
   })
 
   afterEach(() => {
@@ -176,7 +183,7 @@ describe('ProjectService.getProject', () => {
     basePath = mkdtempSync(join(tmpdir(), 'project-service-getproject-'))
     store = createProjectStore(':memory:')
     repo = createFormProjectRepo(basePath)
-    service = createProjectService(store, repo, stubExtractor())
+    service = createProjectService(store, repo, stubExtraction())
     const project = await service.createProject(
       'Test Project',
       SAMPLE_PDF,

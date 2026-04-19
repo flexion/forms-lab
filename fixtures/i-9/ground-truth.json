@@ -1,0 +1,1022 @@
+{
+  "id": "form-i-9-employment-eligibility-verification",
+  "title": "Employment Eligibility Verification (Form I-9)",
+  "description": "USCIS Form I-9 used to verify the identity and employment authorization of individuals hired for employment in the United States. OMB No. 1615-0047, Expires 05/31/2027.",
+  "groups": [
+    {
+      "id": "section-1-employee-info",
+      "title": "Section 1. Employee Information and Attestation",
+      "description": "Employees must complete and sign Section 1 of Form I-9 no later than the first day of employment, but not before accepting a job offer.",
+      "requirements": [
+        {
+          "id": "employee-last-name",
+          "fieldName": "employeeLastName",
+          "label": "Last Name (Family Name)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-first-name",
+          "fieldName": "employeeFirstName",
+          "label": "First Name (Given Name)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-middle-initial",
+          "fieldName": "employeeMiddleInitial",
+          "label": "Middle Initial (if any)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-other-last-names",
+          "fieldName": "employeeOtherLastNames",
+          "label": "Other Last Names Used (if any)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-address",
+          "fieldName": "employeeAddress",
+          "label": "Address (Street Number and Name)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-apt-number",
+          "fieldName": "employeeAptNumber",
+          "label": "Apt. Number (if any)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-city",
+          "fieldName": "employeeCity",
+          "label": "City or Town",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-state",
+          "fieldName": "employeeState",
+          "label": "State",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-zip-code",
+          "fieldName": "employeeZipCode",
+          "label": "ZIP Code",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-date-of-birth",
+          "fieldName": "employeeDateOfBirth",
+          "label": "Date of Birth (mm/dd/yyyy)",
+          "fieldType": "date",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-ssn",
+          "fieldName": "employeeSsn",
+          "label": "U.S. Social Security Number",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "U.S. Social Security Number",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-email",
+          "fieldName": "employeeEmail",
+          "label": "Employee's Email Address",
+          "fieldType": "email",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-phone",
+          "fieldName": "employeePhone",
+          "label": "Employee's Telephone Number",
+          "fieldType": "phone",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "citizenship-status",
+          "fieldName": "citizenshipStatus",
+          "label": "Citizenship or Immigration Status",
+          "fieldType": "choice",
+          "required": true,
+          "helpText": "Check one of the following boxes: 1. A citizen of the United States, 2. A noncitizen national of the United States, 3. A lawful permanent resident, 4. An alien authorized to work until (expiration date, if any)."
+        },
+        {
+          "id": "lawful-permanent-resident-uscis-number",
+          "fieldName": "lawfulPermanentResidentUscisNumber",
+          "label": "USCIS or A-Number (for lawful permanent resident)",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "Enter USCIS or A-Number if you checked Item Number 3.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "alien-work-authorization-expiration",
+          "fieldName": "alienWorkAuthorizationExpiration",
+          "label": "Alien authorized to work until (expiration date, if any)",
+          "fieldType": "date",
+          "required": false,
+          "helpText": "Enter the expiration date if you checked Item Number 4.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "alien-uscis-a-number",
+          "fieldName": "alienUscisANumber",
+          "label": "USCIS A-Number (for alien authorized to work)",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "If you check Item Number 4, enter one of these: USCIS A-Number OR Form I-94 Admission Number OR Foreign Passport Number and Country of Issuance.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "alien-i94-admission-number",
+          "fieldName": "alienI94AdmissionNumber",
+          "label": "Form I-94 Admission Number",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "If you check Item Number 4, enter one of these: USCIS A-Number OR Form I-94 Admission Number OR Foreign Passport Number and Country of Issuance.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "alien-foreign-passport-number",
+          "fieldName": "alienForeignPassportNumber",
+          "label": "Foreign Passport Number",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "If you check Item Number 4 and provide a foreign passport number, also provide Country of Issuance.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "alien-foreign-passport-country",
+          "fieldName": "alienForeignPassportCountry",
+          "label": "Country of Issuance (Foreign Passport)",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "Country of Issuance associated with the Foreign Passport Number.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-signature",
+          "fieldName": "employeeSignature",
+          "label": "Signature of Employee",
+          "fieldType": "text",
+          "required": true,
+          "helpText": "Employee must sign attesting under penalty of perjury that the information is true and correct.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employee-signature-date",
+          "fieldName": "employeeSignatureDate",
+          "label": "Today's Date (mm/dd/yyyy)",
+          "fieldType": "date",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "section-2-employer-verification",
+      "title": "Section 2. Employer Review and Verification",
+      "description": "Employers or their authorized representative must complete and sign Section 2 within three business days after the employee's first day of employment, and must physically examine, or examine consistent with an alternative procedure authorized by the Secretary of DHS, documentation from List A OR a combination of documentation from List B and List C.",
+      "requirements": [
+        {
+          "id": "list-a-document-title-1",
+          "fieldName": "listADocumentTitle1",
+          "label": "List A - Document Title 1",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "Enter document from List A (documents that establish both identity and employment authorization) OR use List B and List C combination."
+        },
+        {
+          "id": "list-a-issuing-authority-1",
+          "fieldName": "listAIssuingAuthority1",
+          "label": "List A - Issuing Authority (Document 1)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "list-a-document-number-1",
+          "fieldName": "listADocumentNumber1",
+          "label": "List A - Document Number (if any) (Document 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "list-a-expiration-date-1",
+          "fieldName": "listAExpirationDate1",
+          "label": "List A - Expiration Date (if any) (Document 1)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "list-a-document-title-2",
+          "fieldName": "listADocumentTitle2",
+          "label": "List A - Document Title 2 (if any)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "list-a-issuing-authority-2",
+          "fieldName": "listAIssuingAuthority2",
+          "label": "List A - Issuing Authority (Document 2)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "list-a-document-number-2",
+          "fieldName": "listADocumentNumber2",
+          "label": "List A - Document Number (if any) (Document 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "list-a-expiration-date-2",
+          "fieldName": "listAExpirationDate2",
+          "label": "List A - Expiration Date (if any) (Document 2)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "list-a-document-title-3",
+          "fieldName": "listADocumentTitle3",
+          "label": "List A - Document Title 3 (if any)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "list-a-issuing-authority-3",
+          "fieldName": "listAIssuingAuthority3",
+          "label": "List A - Issuing Authority (Document 3)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "list-a-document-number-3",
+          "fieldName": "listADocumentNumber3",
+          "label": "List A - Document Number (if any) (Document 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "list-a-expiration-date-3",
+          "fieldName": "listAExpirationDate3",
+          "label": "List A - Expiration Date (if any) (Document 3)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "list-b-document-title",
+          "fieldName": "listBDocumentTitle",
+          "label": "List B - Document Title",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "Document that establishes identity."
+        },
+        {
+          "id": "list-b-issuing-authority",
+          "fieldName": "listBIssuingAuthority",
+          "label": "List B - Issuing Authority",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "list-b-document-number",
+          "fieldName": "listBDocumentNumber",
+          "label": "List B - Document Number (if any)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "list-b-expiration-date",
+          "fieldName": "listBExpirationDate",
+          "label": "List B - Expiration Date (if any)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "list-c-document-title",
+          "fieldName": "listCDocumentTitle",
+          "label": "List C - Document Title",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "Document that establishes employment authorization."
+        },
+        {
+          "id": "list-c-issuing-authority",
+          "fieldName": "listCIssuingAuthority",
+          "label": "List C - Issuing Authority",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "list-c-document-number",
+          "fieldName": "listCDocumentNumber",
+          "label": "List C - Document Number (if any)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "list-c-expiration-date",
+          "fieldName": "listCExpirationDate",
+          "label": "List C - Expiration Date (if any)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "additional-information",
+          "fieldName": "additionalInformation",
+          "label": "Additional Information",
+          "fieldType": "longText",
+          "required": false
+        },
+        {
+          "id": "alternative-procedure-checkbox",
+          "fieldName": "alternativeProcedureCheckbox",
+          "label": "Check here if you used an alternative procedure authorized by DHS to examine documents",
+          "fieldType": "boolean",
+          "required": false
+        },
+        {
+          "id": "first-day-of-employment",
+          "fieldName": "firstDayOfEmployment",
+          "label": "First Day of Employment (mm/dd/yyyy)",
+          "fieldType": "date",
+          "required": true
+        },
+        {
+          "id": "employer-last-name-first-name-title",
+          "fieldName": "employerLastNameFirstNameTitle",
+          "label": "Last Name, First Name and Title of Employer or Authorized Representative",
+          "fieldType": "text",
+          "required": true
+        },
+        {
+          "id": "employer-signature",
+          "fieldName": "employerSignature",
+          "label": "Signature of Employer or Authorized Representative",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employer-signature-date",
+          "fieldName": "employerSignatureDate",
+          "label": "Today's Date (mm/dd/yyyy)",
+          "fieldType": "date",
+          "required": true
+        },
+        {
+          "id": "employer-business-name",
+          "fieldName": "employerBusinessName",
+          "label": "Employer's Business or Organization Name",
+          "fieldType": "text",
+          "required": true
+        },
+        {
+          "id": "employer-business-address",
+          "fieldName": "employerBusinessAddress",
+          "label": "Employer's Business or Organization Address, City or Town, State, ZIP Code",
+          "fieldType": "text",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "supplement-a-preparer-translator",
+      "title": "Supplement A - Preparer and/or Translator Certification for Section 1",
+      "description": "This supplement must be completed by any preparer and/or translator who assists an employee in completing Section 1 of Form I-9. Each preparer or translator must complete, sign, and date a separate certification area.",
+      "requirements": [
+        {
+          "id": "supplement-a-employee-last-name",
+          "fieldName": "supplementAEmployeeLastName",
+          "label": "Last Name (Family Name) from Section 1",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supplement-a-employee-first-name",
+          "fieldName": "supplementAEmployeeFirstName",
+          "label": "First Name (Given Name) from Section 1",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supplement-a-employee-middle-initial",
+          "fieldName": "supplementAEmployeeMiddleInitial",
+          "label": "Middle initial (if any) from Section 1",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-1-signature",
+          "fieldName": "preparer1Signature",
+          "label": "Signature of Preparer or Translator (1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-1-date",
+          "fieldName": "preparer1Date",
+          "label": "Date (mm/dd/yyyy) (Preparer/Translator 1)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "preparer-1-last-name",
+          "fieldName": "preparer1LastName",
+          "label": "Last Name (Family Name) (Preparer/Translator 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-1-first-name",
+          "fieldName": "preparer1FirstName",
+          "label": "First Name (Given Name) (Preparer/Translator 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-1-middle-initial",
+          "fieldName": "preparer1MiddleInitial",
+          "label": "Middle Initial (if any) (Preparer/Translator 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-1-address",
+          "fieldName": "preparer1Address",
+          "label": "Address (Street Number and Name) (Preparer/Translator 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-1-city",
+          "fieldName": "preparer1City",
+          "label": "City or Town (Preparer/Translator 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-1-state",
+          "fieldName": "preparer1State",
+          "label": "State (Preparer/Translator 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-1-zip-code",
+          "fieldName": "preparer1ZipCode",
+          "label": "ZIP Code (Preparer/Translator 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-2-signature",
+          "fieldName": "preparer2Signature",
+          "label": "Signature of Preparer or Translator (2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-2-date",
+          "fieldName": "preparer2Date",
+          "label": "Date (mm/dd/yyyy) (Preparer/Translator 2)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "preparer-2-last-name",
+          "fieldName": "preparer2LastName",
+          "label": "Last Name (Family Name) (Preparer/Translator 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-2-first-name",
+          "fieldName": "preparer2FirstName",
+          "label": "First Name (Given Name) (Preparer/Translator 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-2-middle-initial",
+          "fieldName": "preparer2MiddleInitial",
+          "label": "Middle Initial (if any) (Preparer/Translator 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-2-address",
+          "fieldName": "preparer2Address",
+          "label": "Address (Street Number and Name) (Preparer/Translator 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-2-city",
+          "fieldName": "preparer2City",
+          "label": "City or Town (Preparer/Translator 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-2-state",
+          "fieldName": "preparer2State",
+          "label": "State (Preparer/Translator 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-2-zip-code",
+          "fieldName": "preparer2ZipCode",
+          "label": "ZIP Code (Preparer/Translator 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-3-signature",
+          "fieldName": "preparer3Signature",
+          "label": "Signature of Preparer or Translator (3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-3-date",
+          "fieldName": "preparer3Date",
+          "label": "Date (mm/dd/yyyy) (Preparer/Translator 3)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "preparer-3-last-name",
+          "fieldName": "preparer3LastName",
+          "label": "Last Name (Family Name) (Preparer/Translator 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-3-first-name",
+          "fieldName": "preparer3FirstName",
+          "label": "First Name (Given Name) (Preparer/Translator 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-3-middle-initial",
+          "fieldName": "preparer3MiddleInitial",
+          "label": "Middle Initial (if any) (Preparer/Translator 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-3-address",
+          "fieldName": "preparer3Address",
+          "label": "Address (Street Number and Name) (Preparer/Translator 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-3-city",
+          "fieldName": "preparer3City",
+          "label": "City or Town (Preparer/Translator 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-3-state",
+          "fieldName": "preparer3State",
+          "label": "State (Preparer/Translator 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-3-zip-code",
+          "fieldName": "preparer3ZipCode",
+          "label": "ZIP Code (Preparer/Translator 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-4-signature",
+          "fieldName": "preparer4Signature",
+          "label": "Signature of Preparer or Translator (4)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-4-date",
+          "fieldName": "preparer4Date",
+          "label": "Date (mm/dd/yyyy) (Preparer/Translator 4)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "preparer-4-last-name",
+          "fieldName": "preparer4LastName",
+          "label": "Last Name (Family Name) (Preparer/Translator 4)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-4-first-name",
+          "fieldName": "preparer4FirstName",
+          "label": "First Name (Given Name) (Preparer/Translator 4)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-4-middle-initial",
+          "fieldName": "preparer4MiddleInitial",
+          "label": "Middle Initial (if any) (Preparer/Translator 4)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-4-address",
+          "fieldName": "preparer4Address",
+          "label": "Address (Street Number and Name) (Preparer/Translator 4)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-4-city",
+          "fieldName": "preparer4City",
+          "label": "City or Town (Preparer/Translator 4)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-4-state",
+          "fieldName": "preparer4State",
+          "label": "State (Preparer/Translator 4)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "preparer-4-zip-code",
+          "fieldName": "preparer4ZipCode",
+          "label": "ZIP Code (Preparer/Translator 4)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "supplement-b-reverification-rehire-1",
+      "title": "Supplement B - Reverification and Rehire (Section 1)",
+      "description": "Only use this page if your employee requires reverification, is rehired within three years of the date the original Form I-9 was completed, or provides proof of a legal name change.",
+      "requirements": [
+        {
+          "id": "supp-b-employee-last-name",
+          "fieldName": "suppBEmployeeLastName",
+          "label": "Last Name (Family Name) from Section 1",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-employee-first-name",
+          "fieldName": "suppBEmployeeFirstName",
+          "label": "First Name (Given Name) from Section 1",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-employee-middle-initial",
+          "fieldName": "suppBEmployeeMiddleInitial",
+          "label": "Middle initial (if any) from Section 1",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-1-rehire-date",
+          "fieldName": "suppB1RehireDate",
+          "label": "Date of Rehire (if applicable) (Entry 1)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "supp-b-1-new-last-name",
+          "fieldName": "suppB1NewLastName",
+          "label": "New Name - Last Name (Family Name) (Entry 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-1-new-first-name",
+          "fieldName": "suppB1NewFirstName",
+          "label": "New Name - First Name (Given Name) (Entry 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-1-new-middle-initial",
+          "fieldName": "suppB1NewMiddleInitial",
+          "label": "New Name - Middle Initial (Entry 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-1-document-title",
+          "fieldName": "suppB1DocumentTitle",
+          "label": "Document Title (Reverification Entry 1)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "supp-b-1-document-number",
+          "fieldName": "suppB1DocumentNumber",
+          "label": "Document Number (if any) (Reverification Entry 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-1-expiration-date",
+          "fieldName": "suppB1ExpirationDate",
+          "label": "Expiration Date (if any) (mm/dd/yyyy) (Reverification Entry 1)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "supp-b-1-employer-name",
+          "fieldName": "suppB1EmployerName",
+          "label": "Name of Employer or Authorized Representative (Entry 1)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "supp-b-1-employer-signature",
+          "fieldName": "suppB1EmployerSignature",
+          "label": "Signature of Employer or Authorized Representative (Entry 1)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-1-today-date",
+          "fieldName": "suppB1TodayDate",
+          "label": "Today's Date (mm/dd/yyyy) (Entry 1)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "supp-b-1-additional-info",
+          "fieldName": "suppB1AdditionalInfo",
+          "label": "Additional Information (Initial and date each notation) (Entry 1)",
+          "fieldType": "longText",
+          "required": false
+        },
+        {
+          "id": "supp-b-1-alternative-procedure",
+          "fieldName": "suppB1AlternativeProcedure",
+          "label": "Check here if you used an alternative procedure authorized by DHS to examine documents (Entry 1)",
+          "fieldType": "boolean",
+          "required": false
+        },
+        {
+          "id": "supp-b-2-rehire-date",
+          "fieldName": "suppB2RehireDate",
+          "label": "Date of Rehire (if applicable) (Entry 2)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "supp-b-2-new-last-name",
+          "fieldName": "suppB2NewLastName",
+          "label": "New Name - Last Name (Family Name) (Entry 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-2-new-first-name",
+          "fieldName": "suppB2NewFirstName",
+          "label": "New Name - First Name (Given Name) (Entry 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-2-new-middle-initial",
+          "fieldName": "suppB2NewMiddleInitial",
+          "label": "New Name - Middle Initial (Entry 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-2-document-title",
+          "fieldName": "suppB2DocumentTitle",
+          "label": "Document Title (Reverification Entry 2)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "supp-b-2-document-number",
+          "fieldName": "suppB2DocumentNumber",
+          "label": "Document Number (if any) (Reverification Entry 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-2-expiration-date",
+          "fieldName": "suppB2ExpirationDate",
+          "label": "Expiration Date (if any) (mm/dd/yyyy) (Reverification Entry 2)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "supp-b-2-employer-name",
+          "fieldName": "suppB2EmployerName",
+          "label": "Name of Employer or Authorized Representative (Entry 2)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "supp-b-2-employer-signature",
+          "fieldName": "suppB2EmployerSignature",
+          "label": "Signature of Employer or Authorized Representative (Entry 2)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-2-today-date",
+          "fieldName": "suppB2TodayDate",
+          "label": "Today's Date (mm/dd/yyyy) (Entry 2)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "supp-b-2-additional-info",
+          "fieldName": "suppB2AdditionalInfo",
+          "label": "Additional Information (Initial and date each notation) (Entry 2)",
+          "fieldType": "longText",
+          "required": false
+        },
+        {
+          "id": "supp-b-2-alternative-procedure",
+          "fieldName": "suppB2AlternativeProcedure",
+          "label": "Check here if you used an alternative procedure authorized by DHS to examine documents (Entry 2)",
+          "fieldType": "boolean",
+          "required": false
+        },
+        {
+          "id": "supp-b-3-rehire-date",
+          "fieldName": "suppB3RehireDate",
+          "label": "Date of Rehire (if applicable) (Entry 3)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "supp-b-3-new-last-name",
+          "fieldName": "suppB3NewLastName",
+          "label": "New Name - Last Name (Family Name) (Entry 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-3-new-first-name",
+          "fieldName": "suppB3NewFirstName",
+          "label": "New Name - First Name (Given Name) (Entry 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-3-new-middle-initial",
+          "fieldName": "suppB3NewMiddleInitial",
+          "label": "New Name - Middle Initial (Entry 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-3-document-title",
+          "fieldName": "suppB3DocumentTitle",
+          "label": "Document Title (Reverification Entry 3)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "supp-b-3-document-number",
+          "fieldName": "suppB3DocumentNumber",
+          "label": "Document Number (if any) (Reverification Entry 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-3-expiration-date",
+          "fieldName": "suppB3ExpirationDate",
+          "label": "Expiration Date (if any) (mm/dd/yyyy) (Reverification Entry 3)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "supp-b-3-employer-name",
+          "fieldName": "suppB3EmployerName",
+          "label": "Name of Employer or Authorized Representative (Entry 3)",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "supp-b-3-employer-signature",
+          "fieldName": "suppB3EmployerSignature",
+          "label": "Signature of Employer or Authorized Representative (Entry 3)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "supp-b-3-today-date",
+          "fieldName": "suppB3TodayDate",
+          "label": "Today's Date (mm/dd/yyyy) (Entry 3)",
+          "fieldType": "date",
+          "required": false
+        },
+        {
+          "id": "supp-b-3-additional-info",
+          "fieldName": "suppB3AdditionalInfo",
+          "label": "Additional Information (Initial and date each notation) (Entry 3)",
+          "fieldType": "longText",
+          "required": false
+        },
+        {
+          "id": "supp-b-3-alternative-procedure",
+          "fieldName": "suppB3AlternativeProcedure",
+          "label": "Check here if you used an alternative procedure authorized by DHS to examine documents (Entry 3)",
+          "fieldType": "boolean",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

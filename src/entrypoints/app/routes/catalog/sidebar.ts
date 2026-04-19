@@ -272,6 +272,81 @@ export function getStoriesSidebar(stories: Story[], currentPath?: string) {
 }
 
 /**
+ * Title-case a slug like "pdf-field-extraction" → "PDF Field Extraction".
+ * Uppercase three-letter acronyms for common cases.
+ */
+export function titleCaseSlug(slug: string): string {
+  return slug.replace(/-/g, ' ').replace(/\b\w+/g, (word) => {
+    // Upper-case common short acronyms
+    if (/^(pdf|api|ui|llm|cli|css|html|json|yaml|xml|sql)$/i.test(word)) {
+      return word.toUpperCase()
+    }
+    return word.charAt(0).toUpperCase() + word.slice(1)
+  })
+}
+
+export interface ExperimentSuite {
+  slug: string
+  title: string
+  variants: Array<{ slug: string; title: string }>
+}
+
+/**
+ * Contextual sidebar for experiments pages.
+ * Shows a "← Back to Catalog" link, Overview, top-level pages (like Roadmap),
+ * then one section per suite with its variants listed.
+ */
+export function getExperimentsSidebar(
+  topLevelPages: Array<{ slug: string; title: string }>,
+  suites: ExperimentSuite[],
+  currentPath?: string,
+) {
+  const sections = [
+    {
+      title: 'Experiments',
+      items: [
+        {
+          label: '\u2190 Back to Catalog',
+          href: resolveUrl('/catalog'),
+          current: false,
+        },
+        {
+          label: 'Overview',
+          href: resolveUrl('/catalog/experiments'),
+          current: currentPath === '/catalog/experiments',
+        },
+        ...topLevelPages.map((page) => ({
+          label: page.title,
+          href: resolveUrl(`/catalog/experiments/${page.slug}`),
+          current: currentPath === `/catalog/experiments/${page.slug}`,
+        })),
+      ],
+    },
+    ...suites.map((suite) => ({
+      title: suite.title,
+      items: [
+        {
+          label: 'Overview',
+          href: resolveUrl(`/catalog/experiments/${suite.slug}`),
+          current: currentPath === `/catalog/experiments/${suite.slug}`,
+        },
+        ...suite.variants.map((variant) => ({
+          label: variant.title,
+          href: resolveUrl(
+            `/catalog/experiments/${suite.slug}/${variant.slug}`,
+          ),
+          current:
+            currentPath ===
+            `/catalog/experiments/${suite.slug}/${variant.slug}`,
+        })),
+      ],
+    })),
+  ]
+
+  return sections
+}
+
+/**
  * Contextual sidebar for walkthrough pages.
  */
 export function getWalkthroughSidebar(

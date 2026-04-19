@@ -27,6 +27,12 @@ const dummyExtractor = {
   },
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: dummy extraction context
+const dummyExtraction: any = {
+  resolveExtractor: () => dummyExtractor,
+  resolveVariant: () => ({ variantId: 'sonnet', modelId: 'test-model' }),
+}
+
 describe('ProjectService.executeCommands', () => {
   let service: ReturnType<typeof createProjectService>
   let slug: string
@@ -36,8 +42,7 @@ describe('ProjectService.executeCommands', () => {
     mkdirSync(REPOS_PATH, { recursive: true })
     const store = createProjectStore(DB_PATH)
     const repo = createFormProjectRepo(REPOS_PATH)
-    // biome-ignore lint/suspicious/noExplicitAny: test dummy extractor
-    service = createProjectService(store, repo, dummyExtractor as any)
+    service = createProjectService(store, repo, dummyExtraction)
     const project = await service.createProject(
       'test',
       Buffer.from('fake'),

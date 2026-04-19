@@ -268,6 +268,31 @@ flex-header {
   padding-inline-start: 0;
 }
 
+.flex-header__user-settings {
+  padding: 0 var(--flex-space-md);
+}
+
+.flex-header__user-settings-link {
+  display: block;
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  color: var(--flex-color-text);
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid transparent;
+  border-radius: var(--flex-radius-sm);
+
+  &:hover {
+    background: var(--flex-color-accent);
+    color: var(--flex-color-on-accent);
+    border-color: var(--flex-color-accent);
+  }
+
+  &:focus-visible {
+    outline: 0.25rem solid var(--flex-color-focus);
+    outline-offset: 2px;
+  }
+}
+
 .flex-header__user-signout {
   padding: 0 var(--flex-space-md) var(--flex-space-xs);
 }
@@ -398,6 +423,10 @@ flex-header {
   }
 
   .flex-header__user-theme {
+    padding-inline: 0;
+  }
+
+  .flex-header__user-settings {
     padding-inline: 0;
   }
 

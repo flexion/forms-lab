@@ -1,0 +1,122 @@
+/* Settings page — variant picker
+   Intent: one section per task. The tile radios themselves provide visual
+   grouping via their borders, so no surrounding Card is needed. These rules
+   handle page-specific typography, the two-column task header (title +
+   benchmarks link), and the scroll-anchor highlight when a caller links to
+   a specific task section. */
+
+.variant-settings__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-2xs);
+}
+
+.variant-settings__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--flex-space-2xs);
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+}
+
+.variant-settings__breadcrumb-sep {
+  color: var(--flex-color-text-muted);
+}
+
+.variant-settings__breadcrumb-current {
+  color: var(--flex-color-text-muted);
+}
+
+.variant-settings__title {
+  margin: 0;
+}
+
+.variant-settings__lede {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+  max-inline-size: 60ch;
+}
+
+/* Task section. Uses a plain <section> — the tile radios carry their own
+   borders, so wrapping in a Card creates redundant chrome. The transparent
+   left border reserves the gutter for the highlight accent; when a caller
+   anchors to a task, the border lights up with the accent color. */
+.variant-settings__task {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-sm);
+  scroll-margin-block-start: var(--flex-space-xl);
+  border-inline-start: 3px solid transparent;
+  padding-inline-start: var(--flex-space-sm);
+}
+
+.variant-settings__task[data-highlighted="true"] {
+  border-inline-start-color: var(--flex-color-accent);
+}
+
+.variant-settings__task-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--flex-space-sm);
+}
+
+.variant-settings__task-heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-2xs);
+  min-inline-size: 0;
+  flex: 1 1 20rem;
+}
+
+.variant-settings__task-label {
+  margin: 0;
+  font-size: 1.34rem;
+  line-height: 1.2;
+}
+
+.variant-settings__task-description {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+  max-inline-size: 60ch;
+}
+
+.variant-settings__task-benchmarks {
+  white-space: nowrap;
+  font-size: var(--flex-text-sm);
+}
+
+/* Tile radios stack vertically. Each tile carries its own margin-block-start
+   (0.5rem) so no explicit gap is needed here. */
+.variant-settings__options {
+  display: flex;
+  flex-direction: column;
+}
+
+.variant-settings__empty {
+  margin: 0;
+  color: var(--flex-color-text-muted);
+}
+
+.variant-settings__option-label {
+  display: inline;
+}
+
+.variant-settings__option-name {
+  font-weight: 700;
+}
+
+.variant-settings__option-description {
+  color: var(--flex-color-text);
+}
+
+.variant-settings__option-link {
+  margin-inline-start: var(--flex-space-2xs);
+  white-space: nowrap;
+}
+
+.variant-settings__actions {
+  justify-content: flex-end;
+}

@@ -75,6 +75,9 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
           logoHref={resolveUrl('/')}
           user={props.user ?? undefined}
           signoutAction={resolveUrl('/auth/signout')}
+          settingsHref={
+            props.user ? resolveUrl('/settings/variants') : undefined
+          }
         >
           <HeaderNavItem
             href={resolveUrl('/')}

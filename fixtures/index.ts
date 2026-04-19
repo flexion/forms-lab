@@ -27,6 +27,20 @@ export const demoFixtures: DemoFixture[] = [
       'U.S. Department of Justice petition for presidential pardon. 24 pages with personal information, criminal history, employment, and character references.',
     filename: 'pardon-application.pdf',
   },
+  {
+    slug: 'i-9',
+    name: 'USCIS Form I-9 — Employment Eligibility Verification',
+    description:
+      'Federal employment eligibility verification form. Single-page, simple demographics and document verification.',
+    filename: 'i-9.pdf',
+  },
+  {
+    slug: 'w-9',
+    name: 'IRS Form W-9 — Request for Taxpayer Identification',
+    description:
+      'Tax identification request form. Short, simple fields covering name, address, TIN, and certification.',
+    filename: 'w-9.pdf',
+  },
 ]
 
 export function getFixture(slug: string): DemoFixture | undefined {

@@ -68,6 +68,13 @@ function stubExtractor(result: ExtractionResult = SAMPLE_RESULT): PdfExtractor {
   }
 }
 
+function stubExtraction(extractor: PdfExtractor = stubExtractor()) {
+  return {
+    resolveExtractor: () => extractor,
+    resolveVariant: () => ({ variantId: 'sonnet', modelId: 'test-model' }),
+  }
+}
+
 const alice: SessionUser = {
   login: 'alice',
   name: 'Alice',
@@ -89,7 +96,7 @@ describe('ProjectService', () => {
     basePath = mkdtempSync(join(tmpdir(), 'project-service-'))
     store = createProjectStore(':memory:')
     repo = createFormProjectRepo(basePath)
-    service = createProjectService(store, repo, stubExtractor())
+    service = createProjectService(store, repo, stubExtraction())
   })
 
   afterEach(() => {
@@ -161,7 +168,7 @@ describe('ProjectService', () => {
       const failingService = createProjectService(
         store,
         failingRepo,
-        stubExtractor(),
+        stubExtraction(),
       )
 
       expect(
@@ -184,7 +191,7 @@ describe('ProjectService', () => {
       const failingService = createProjectService(
         store,
         failingRepo,
-        stubExtractor(),
+        stubExtraction(),
       )
 
       expect(
@@ -532,6 +539,28 @@ describe('ProjectService', () => {
         alice,
       )
       expect(view.project.name).toBe('Ref Test')
+    })
+  })
+
+  describe('getProvenance', () => {
+    it('returns extraction provenance recorded by the extraction commit', async () => {
+      const project = await service.createProject(
+        'Provenance',
+        SAMPLE_PDF,
+        alice,
+      )
+      await waitForStatus(store, project.id, 'ready')
+
+      const entry = await service.getProvenance(
+        'alice',
+        project.slug,
+        'extraction',
+        'import',
+      )
+      expect(entry).not.toBeNull()
+      expect(entry?.variantId).toBe('sonnet')
+      expect(entry?.modelId).toBe('test-model')
+      expect(typeof entry?.timestamp).toBe('string')
     })
   })
 })

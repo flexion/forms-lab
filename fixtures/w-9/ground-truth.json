@@ -1,0 +1,203 @@
+{
+  "id": "irs-form-w-9",
+  "title": "Form W-9 - Request for Taxpayer Identification Number and Certification",
+  "description": "Form used to provide a correct taxpayer identification number (TIN) to the person who is required to file an information return with the IRS to report income paid to you, or other amounts reportable on an information return.",
+  "groups": [
+    {
+      "id": "entity-identification",
+      "title": "Entity/Individual Identification",
+      "description": "Basic identifying information for the taxpayer entity or individual.",
+      "requirements": [
+        {
+          "id": "entity-individual-name",
+          "fieldName": "entityIndividualName",
+          "label": "Name of entity/individual",
+          "fieldType": "text",
+          "required": true,
+          "helpText": "An entry is required. For a sole proprietor or disregarded entity, enter the owner's name on line 1, and enter the business/disregarded entity's name on line 2.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "business-name",
+          "fieldName": "businessName",
+          "label": "Business name/disregarded entity name, if different from above",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "If you have a business name, trade name, DBA name, or disregarded entity name, enter it on line 2.",
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "federal-tax-classification",
+      "title": "Federal Tax Classification",
+      "description": "Federal tax classification of the entity/individual whose name is entered on line 1.",
+      "requirements": [
+        {
+          "id": "tax-classification",
+          "fieldName": "taxClassification",
+          "label": "Federal tax classification",
+          "fieldType": "choice",
+          "required": true,
+          "helpText": "Check only one of the following seven boxes: Individual/sole proprietor, C corporation, S corporation, Partnership, Trust/estate, LLC, or Other.",
+          "sensitivity": "low"
+        },
+        {
+          "id": "llc-tax-classification",
+          "fieldName": "llcTaxClassification",
+          "label": "LLC tax classification",
+          "fieldType": "choice",
+          "required": false,
+          "helpText": "Enter the tax classification: C = C corporation, S = S corporation, P = Partnership. Required if LLC is checked on line 3a.",
+          "sensitivity": "low"
+        },
+        {
+          "id": "other-classification",
+          "fieldName": "otherClassification",
+          "label": "Other federal tax classification",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "If 'Other' is checked on line 3a, specify the classification. See instructions.",
+          "sensitivity": "low"
+        },
+        {
+          "id": "foreign-partners-owners-beneficiaries",
+          "fieldName": "hasForeignPartnersOwnersBeneficiaries",
+          "label": "Has foreign partners, owners, or beneficiaries",
+          "fieldType": "boolean",
+          "required": false,
+          "helpText": "Check this box if you checked Partnership or Trust/estate, or checked LLC and entered P as its tax classification, and you are providing this form to a partnership, trust, or estate in which you have an ownership interest, and you have any foreign partners, owners, or beneficiaries.",
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "exemptions",
+      "title": "Exemptions",
+      "description": "Exemption codes that apply only to certain entities, not individuals.",
+      "requirements": [
+        {
+          "id": "exempt-payee-code",
+          "fieldName": "exemptPayeeCode",
+          "label": "Exempt payee code (if any)",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "Codes 1-13 identify payees that are exempt from backup withholding. Generally, individuals (including sole proprietors) are not exempt.",
+          "sensitivity": "low"
+        },
+        {
+          "id": "fatca-exemption-code",
+          "fieldName": "fatcaExemptionCode",
+          "label": "Exemption from FATCA reporting code (if any)",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "Codes A-M identify payees exempt from reporting under FATCA. Applies to accounts maintained outside the United States.",
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "address-information",
+      "title": "Address Information",
+      "description": "Mailing address where information returns will be sent.",
+      "requirements": [
+        {
+          "id": "address",
+          "fieldName": "address",
+          "label": "Address (number, street, and apt. or suite no.)",
+          "fieldType": "text",
+          "required": true,
+          "helpText": "This is where the requester of this Form W-9 will mail your information returns.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "city-state-zip",
+          "fieldName": "cityStateZip",
+          "label": "City, state, and ZIP code",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "requester-information",
+      "title": "Requester Information",
+      "description": "Optional information about the entity requesting the W-9.",
+      "requirements": [
+        {
+          "id": "requester-name-address",
+          "fieldName": "requesterNameAddress",
+          "label": "Requester's name and address (optional)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "low"
+        }
+      ]
+    },
+    {
+      "id": "account-numbers",
+      "title": "Account Numbers",
+      "description": "Optional account number listing.",
+      "requirements": [
+        {
+          "id": "account-numbers",
+          "fieldName": "accountNumbers",
+          "label": "List account number(s) here (optional)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "high"
+        }
+      ]
+    },
+    {
+      "id": "taxpayer-identification-number",
+      "title": "Part I - Taxpayer Identification Number (TIN)",
+      "description": "Enter your TIN in the appropriate box. The TIN provided must match the name given on line 1 to avoid backup withholding.",
+      "requirements": [
+        {
+          "id": "social-security-number",
+          "fieldName": "socialSecurityNumber",
+          "label": "Social security number",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "For individuals, this is generally your social security number (SSN). For a resident alien, sole proprietor, or disregarded entity, see the instructions for Part I.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employer-identification-number",
+          "fieldName": "employerIdentificationNumber",
+          "label": "Employer identification number",
+          "fieldType": "text",
+          "required": false,
+          "helpText": "For entities other than individuals, this is your employer identification number (EIN). If you do not have a number, see How to get a TIN.",
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "certification",
+      "title": "Part II - Certification",
+      "description": "Under penalties of perjury, certify that the TIN is correct, you are not subject to backup withholding, you are a U.S. person, and any FATCA codes are correct.",
+      "requirements": [
+        {
+          "id": "signature",
+          "fieldName": "signature",
+          "label": "Signature of U.S. person",
+          "fieldType": "text",
+          "required": true,
+          "helpText": "By signing, you certify that (1) the TIN is correct, (2) you are not subject to backup withholding, (3) you are a U.S. citizen or other U.S. person, and (4) any FATCA codes are correct. You must cross out item 2 if you have been notified by the IRS that you are currently subject to backup withholding.",
+          "sensitivity": "pii"
+        },
+        {
+          "id": "signature-date",
+          "fieldName": "signatureDate",
+          "label": "Date",
+          "fieldType": "date",
+          "required": true,
+          "sensitivity": "low"
+        }
+      ]
+    }
+  ]
+}
