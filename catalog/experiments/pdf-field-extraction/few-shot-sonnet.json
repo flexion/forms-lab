@@ -3,24 +3,24 @@
   "implementation": "few-shot-sonnet",
   "specVersion": "2026-04-11",
   "status": "current",
-  "timestamp": "2026-04-19T13:11:34.682Z",
+  "timestamp": "2026-04-19T13:28:06.539Z",
   "model": "Claude Sonnet 4 (few-shot)",
   "summary": {
-    "fieldRecall": 0.5659098756906077,
-    "fieldPrecision": 0.9307295504789979,
-    "typeAccuracy": 0.9321637426900585,
-    "groupAccuracy": 0.4140350877192982,
-    "sensitivityAccuracy": 0.14736842105263157
+    "fieldRecall": 0.5534645488029466,
+    "fieldPrecision": 0.8654970760233919,
+    "typeAccuracy": 0.9632850241545894,
+    "groupAccuracy": 0.3671497584541063,
+    "sensitivityAccuracy": 0.21304347826086958
   },
   "cases": [
     {
       "fixture": "pardon-application",
       "metrics": {
-        "fieldRecall": 0.3149171270718232,
-        "fieldPrecision": 0.8260869565217391,
-        "typeAccuracy": 0.9298245614035088,
-        "groupAccuracy": 0.5087719298245614,
-        "sensitivityAccuracy": 0.03508771929824561
+        "fieldRecall": 0.2541436464088398,
+        "fieldPrecision": 0.8070175438596491,
+        "typeAccuracy": 0.9565217391304348,
+        "groupAccuracy": 0.43478260869565216,
+        "sensitivityAccuracy": 0.2391304347826087
       },
       "details": {
         "missed": [
@@ -31,6 +31,8 @@
           "convictionMiddleName",
           "convictionLastName",
           "otherNationality",
+          "previousApplicationDate",
+          "previousDecisionDate",
           "childFullName",
           "childDateOfBirth",
           "childOtherParentNames",
@@ -64,10 +66,8 @@
           "previousZipCode",
           "previousDatesLiving",
           "homelessnessDates",
-          "militaryNotApplicable",
           "militaryServiceDetails",
           "militaryAdditionalPages",
-          "currentEmployer",
           "currentEmployerType",
           "currentPosition",
           "currentJobStartDate",
@@ -107,14 +107,25 @@
           "financialAdditionalInfo",
           "financialAdditionalPages",
           "attachingCaseDocuments",
+          "prisonSentence",
+          "prisonReleaseDate",
+          "probationSupervisedReleaseSentence",
+          "probationCompletionDate",
+          "assessmentAmount",
+          "fineAmount",
+          "restitutionAmount",
           "offenseConductAdditionalPages",
           "otherCriminalHistoryAdditionalPages",
           "oathDay",
           "oathMonth",
           "oathYear",
+          "releaseOtherNames",
+          "releaseStreetAddress",
           "releaseCity",
           "releaseState",
           "releaseZipCode",
+          "releasePhoneNumber",
+          "releaseSsn",
           "support1PrimaryReference",
           "support1PetitionerName",
           "support1YearsKnown",
@@ -153,19 +164,18 @@
           "fullName",
           "legalNameAtConviction",
           "communityInvolvement",
-          "educationalOpportunities",
+          "educationPrograms",
           "recentAddresses",
-          "militaryService",
           "employmentHistory",
           "substanceHistory",
-          "debtsDefaults",
-          "certificationDate",
-          "authorizationCityStateZip",
-          "supportLetters"
+          "financialDebts",
+          "sentenceReceived",
+          "submissionDate",
+          "referenceLetters"
         ],
         "totalGroundTruth": 181,
-        "totalExtracted": 69,
-        "totalMatched": 57,
+        "totalExtracted": 57,
+        "totalMatched": 46,
         "judgeMatches": [
           {
             "groundTruthFieldName": "otherNames",
@@ -207,13 +217,13 @@
             "groundTruthFieldName": "parent1FullName",
             "extractedFieldName": "parent1Name",
             "confidence": 1,
-            "reasoning": "Same concept - parent #1 full name"
+            "reasoning": "Same concept - Parent #1's full name"
           },
           {
             "groundTruthFieldName": "parent2FullName",
             "extractedFieldName": "parent2Name",
             "confidence": 1,
-            "reasoning": "Same concept - parent #2 full name"
+            "reasoning": "Same concept - Parent #2's full name"
           },
           {
             "groundTruthFieldName": "streetAddress",
@@ -270,22 +280,10 @@
             "reasoning": "Same concept - whether applied for commutation/pardon before"
           },
           {
-            "groundTruthFieldName": "previousApplicationDate",
-            "extractedFieldName": "previousApplicationDate",
-            "confidence": 1,
-            "reasoning": "Exact same field name and label"
-          },
-          {
-            "groundTruthFieldName": "previousDecisionDate",
-            "extractedFieldName": "previousDecisionDate",
-            "confidence": 1,
-            "reasoning": "Exact same field name and label"
-          },
-          {
             "groundTruthFieldName": "isHispanicLatino",
             "extractedFieldName": "hispanicLatino",
             "confidence": 1,
-            "reasoning": "Same concept - Hispanic/Latino identification"
+            "reasoning": "Same concept - Hispanic or Latino question"
           },
           {
             "groundTruthFieldName": "race",
@@ -333,13 +331,13 @@
             "groundTruthFieldName": "militaryDatesOfService",
             "extractedFieldName": "serviceDates",
             "confidence": 1,
-            "reasoning": "Same concept - military dates of service"
+            "reasoning": "Same concept - dates of military service"
           },
           {
             "groundTruthFieldName": "militaryBranches",
-            "extractedFieldName": "serviceBranch",
+            "extractedFieldName": "serviceBranches",
             "confidence": 1,
-            "reasoning": "Same concept - military branch(es)"
+            "reasoning": "Same concept - military branches"
           },
           {
             "groundTruthFieldName": "militarySerialNumber",
@@ -351,11 +349,11 @@
             "groundTruthFieldName": "militaryDischargeType",
             "extractedFieldName": "dischargeType",
             "confidence": 1,
-            "reasoning": "Same concept - type of military discharge"
+            "reasoning": "Same concept - type of discharge"
           },
           {
-            "groundTruthFieldName": "sobrietyLength",
-            "extractedFieldName": "sobrietyLength",
+            "groundTruthFieldName": "currentEmployer",
+            "extractedFieldName": "currentEmployer",
             "confidence": 1,
             "reasoning": "Exact same field name and label"
           },
@@ -363,13 +361,19 @@
             "groundTruthFieldName": "substanceUseNotApplicable",
             "extractedFieldName": "substanceStruggle",
             "confidence": 0.7,
-            "reasoning": "Both capture whether substance use is applicable, though inverted (not applicable vs have struggled)"
+            "reasoning": "Both capture whether substance use is applicable, though inverted (not applicable vs have you struggled)"
+          },
+          {
+            "groundTruthFieldName": "sobrietyLength",
+            "extractedFieldName": "sobrietyLength",
+            "confidence": 1,
+            "reasoning": "Exact same field name, same concept"
           },
           {
             "groundTruthFieldName": "pleadedGuilty",
-            "extractedFieldName": "pleaGuilty",
+            "extractedFieldName": "pleadedGuilty",
             "confidence": 1,
-            "reasoning": "Same concept - whether pleaded guilty"
+            "reasoning": "Exact same field name and label"
           },
           {
             "groundTruthFieldName": "offenseDates",
@@ -381,7 +385,7 @@
             "groundTruthFieldName": "sentencingDate",
             "extractedFieldName": "sentenceDate",
             "confidence": 1,
-            "reasoning": "Same concept - date sentenced"
+            "reasoning": "Same concept - date of sentencing"
           },
           {
             "groundTruthFieldName": "courtOfProsecution",
@@ -397,57 +401,15 @@
           },
           {
             "groundTruthFieldName": "convictionCharge",
-            "extractedFieldName": "convictionCharges",
-            "confidence": 1,
-            "reasoning": "Same concept - what convicted of (singular vs plural)"
-          },
-          {
-            "groundTruthFieldName": "prisonSentence",
-            "extractedFieldName": "prisonSentence",
-            "confidence": 1,
-            "reasoning": "Exact same field name and label"
-          },
-          {
-            "groundTruthFieldName": "prisonReleaseDate",
-            "extractedFieldName": "releaseDate",
-            "confidence": 1,
-            "reasoning": "Same concept - date released from prison"
-          },
-          {
-            "groundTruthFieldName": "probationSupervisedReleaseSentence",
-            "extractedFieldName": "probationSentence",
-            "confidence": 1,
-            "reasoning": "Same concept - probation/supervised release sentence"
-          },
-          {
-            "groundTruthFieldName": "probationCompletionDate",
-            "extractedFieldName": "probationCompletion",
-            "confidence": 1,
-            "reasoning": "Same concept - date completed probation/supervised release"
-          },
-          {
-            "groundTruthFieldName": "assessmentAmount",
-            "extractedFieldName": "assessmentAmount",
-            "confidence": 1,
-            "reasoning": "Exact same field name and label"
-          },
-          {
-            "groundTruthFieldName": "fineAmount",
-            "extractedFieldName": "fineAmount",
-            "confidence": 1,
-            "reasoning": "Exact same field name and label"
-          },
-          {
-            "groundTruthFieldName": "restitutionAmount",
-            "extractedFieldName": "restitutionAmount",
-            "confidence": 1,
-            "reasoning": "Exact same field name and label"
+            "extractedFieldName": "convictionDetails",
+            "confidence": 0.7,
+            "reasoning": "Both ask 'Of what were you convicted?' though extracted is longText vs text"
           },
           {
             "groundTruthFieldName": "offenseConductNarrative",
             "extractedFieldName": "conductExplanation",
             "confidence": 1,
-            "reasoning": "Same concept - narrative about conduct for conviction"
+            "reasoning": "Same concept - tell us about your conduct for which you were convicted"
           },
           {
             "groundTruthFieldName": "acceptResponsibility",
@@ -477,37 +439,19 @@
             "groundTruthFieldName": "releaseFullName",
             "extractedFieldName": "authorizationFullName",
             "confidence": 1,
-            "reasoning": "Same concept - full name on authorization/release form"
+            "reasoning": "Same concept - full name on authorization for release"
           },
           {
             "groundTruthFieldName": "releaseDateSigned",
             "extractedFieldName": "authorizationDate",
             "confidence": 1,
-            "reasoning": "Same concept - date signed on authorization/release form"
+            "reasoning": "Same concept - date signed on authorization for release"
           },
           {
-            "groundTruthFieldName": "releaseOtherNames",
-            "extractedFieldName": "authorizationOtherNames",
-            "confidence": 1,
-            "reasoning": "Same concept - other names on authorization/release form"
-          },
-          {
-            "groundTruthFieldName": "releaseStreetAddress",
-            "extractedFieldName": "authorizationAddress",
-            "confidence": 1,
-            "reasoning": "Same concept - street address on authorization/release form"
-          },
-          {
-            "groundTruthFieldName": "releasePhoneNumber",
-            "extractedFieldName": "authorizationPhone",
-            "confidence": 1,
-            "reasoning": "Same concept - phone number on authorization/release form"
-          },
-          {
-            "groundTruthFieldName": "releaseSsn",
-            "extractedFieldName": "authorizationSsn",
-            "confidence": 1,
-            "reasoning": "Same concept - SSN on authorization/release form"
+            "groundTruthFieldName": "militaryNotApplicable",
+            "extractedFieldName": "militaryService",
+            "confidence": 0.7,
+            "reasoning": "Both capture whether military service applies, though inverted (not applicable vs have you served)"
           }
         ],
         "scorer": "llm-judge"
@@ -516,17 +460,15 @@
     {
       "fixture": "i-9",
       "metrics": {
-        "fieldRecall": 0.4453125,
-        "fieldPrecision": 0.9661016949152542,
+        "fieldRecall": 0.46875,
+        "fieldPrecision": 1,
         "typeAccuracy": 1,
         "groupAccuracy": 0,
-        "sensitivityAccuracy": 0.14035087719298245
+        "sensitivityAccuracy": 0.2
       },
       "details": {
         "missed": [
-          "lawfulPermanentResidentUscisNumber",
           "alienUscisANumber",
-          "alienForeignPassportCountry",
           "listBDocumentTitle",
           "listBIssuingAuthority",
           "listBDocumentNumber",
@@ -568,9 +510,8 @@
           "suppBEmployeeLastName",
           "suppBEmployeeFirstName",
           "suppBEmployeeMiddleInitial",
-          "suppB1NewLastName",
-          "suppB1NewFirstName",
-          "suppB1NewMiddleInitial",
+          "suppB1AdditionalInfo",
+          "suppB1AlternativeProcedure",
           "suppB2RehireDate",
           "suppB2NewLastName",
           "suppB2NewFirstName",
@@ -596,355 +537,370 @@
           "suppB3AdditionalInfo",
           "suppB3AlternativeProcedure"
         ],
-        "extra": [
-          "uscisANumber",
-          "newName"
-        ],
+        "extra": [],
         "totalGroundTruth": 128,
-        "totalExtracted": 59,
-        "totalMatched": 57,
+        "totalExtracted": 60,
+        "totalMatched": 60,
         "judgeMatches": [
           {
             "groundTruthFieldName": "employeeLastName",
             "extractedFieldName": "lastName",
             "confidence": 1,
-            "reasoning": "Both represent the employee's last/family name in Section 1"
+            "reasoning": "Both represent employee's last name (family name) in Section 1"
           },
           {
             "groundTruthFieldName": "employeeFirstName",
             "extractedFieldName": "firstName",
             "confidence": 1,
-            "reasoning": "Both represent the employee's first/given name in Section 1"
+            "reasoning": "Both represent employee's first name (given name) in Section 1"
           },
           {
             "groundTruthFieldName": "employeeMiddleInitial",
             "extractedFieldName": "middleInitial",
             "confidence": 1,
-            "reasoning": "Both represent the employee's middle initial in Section 1"
+            "reasoning": "Both represent employee's middle initial in Section 1"
           },
           {
             "groundTruthFieldName": "employeeOtherLastNames",
             "extractedFieldName": "otherLastNames",
             "confidence": 1,
-            "reasoning": "Both represent other last names used by the employee"
+            "reasoning": "Both represent other last names used"
           },
           {
             "groundTruthFieldName": "employeeAddress",
             "extractedFieldName": "address",
             "confidence": 1,
-            "reasoning": "Both represent the employee's street address"
+            "reasoning": "Both represent employee's street address"
           },
           {
             "groundTruthFieldName": "employeeAptNumber",
             "extractedFieldName": "aptNumber",
             "confidence": 1,
-            "reasoning": "Both represent the employee's apartment number"
+            "reasoning": "Both represent apartment number"
           },
           {
             "groundTruthFieldName": "employeeCity",
             "extractedFieldName": "city",
             "confidence": 1,
-            "reasoning": "Both represent the employee's city or town"
+            "reasoning": "Both represent employee's city or town"
           },
           {
             "groundTruthFieldName": "employeeState",
             "extractedFieldName": "state",
             "confidence": 1,
-            "reasoning": "Both represent the employee's state"
+            "reasoning": "Both represent employee's state"
           },
           {
             "groundTruthFieldName": "employeeZipCode",
             "extractedFieldName": "zipCode",
             "confidence": 1,
-            "reasoning": "Both represent the employee's ZIP code"
+            "reasoning": "Both represent employee's ZIP code"
           },
           {
             "groundTruthFieldName": "employeeDateOfBirth",
             "extractedFieldName": "dateOfBirth",
             "confidence": 1,
-            "reasoning": "Both represent the employee's date of birth"
+            "reasoning": "Both represent date of birth"
           },
           {
             "groundTruthFieldName": "employeeSsn",
             "extractedFieldName": "socialSecurityNumber",
             "confidence": 1,
-            "reasoning": "Both represent the employee's U.S. Social Security Number"
+            "reasoning": "Both represent U.S. Social Security Number"
           },
           {
             "groundTruthFieldName": "employeeEmail",
             "extractedFieldName": "emailAddress",
             "confidence": 1,
-            "reasoning": "Both represent the employee's email address"
+            "reasoning": "Both represent employee's email address"
           },
           {
             "groundTruthFieldName": "employeePhone",
             "extractedFieldName": "telephoneNumber",
             "confidence": 1,
-            "reasoning": "Both represent the employee's telephone number"
+            "reasoning": "Both represent employee's telephone number"
           },
           {
             "groundTruthFieldName": "citizenshipStatus",
             "extractedFieldName": "citizenshipStatus",
             "confidence": 1,
-            "reasoning": "Identical field name and concept"
+            "reasoning": "Exact same field name and concept"
           },
           {
-            "groundTruthFieldName": "alienI94AdmissionNumber",
-            "extractedFieldName": "formI94AdmissionNumber",
-            "confidence": 1,
-            "reasoning": "Both represent the Form I-94 Admission Number"
+            "groundTruthFieldName": "lawfulPermanentResidentUscisNumber",
+            "extractedFieldName": "uscisANumber",
+            "confidence": 0.7,
+            "reasoning": "Both represent USCIS/A-Number; extracted field doesn't distinguish between LPR and alien authorized to work"
           },
           {
             "groundTruthFieldName": "alienWorkAuthorizationExpiration",
             "extractedFieldName": "workAuthorizationExpiration",
             "confidence": 1,
-            "reasoning": "Both represent the work authorization expiration date"
+            "reasoning": "Both represent work authorization expiration date"
+          },
+          {
+            "groundTruthFieldName": "alienI94AdmissionNumber",
+            "extractedFieldName": "formI94AdmissionNumber",
+            "confidence": 1,
+            "reasoning": "Both represent Form I-94 Admission Number"
           },
           {
             "groundTruthFieldName": "alienForeignPassportNumber",
             "extractedFieldName": "foreignPassportNumber",
-            "confidence": 0.7,
-            "reasoning": "Extracted field combines passport number and country of issuance, but primarily represents the passport number"
+            "confidence": 1,
+            "reasoning": "Both represent foreign passport number"
+          },
+          {
+            "groundTruthFieldName": "alienForeignPassportCountry",
+            "extractedFieldName": "countryOfIssuance",
+            "confidence": 1,
+            "reasoning": "Both represent country of issuance for foreign passport"
           },
           {
             "groundTruthFieldName": "employeeSignature",
             "extractedFieldName": "employeeSignature",
             "confidence": 1,
-            "reasoning": "Identical field name representing the employee's signature"
+            "reasoning": "Exact same field name and concept"
           },
           {
             "groundTruthFieldName": "employeeSignatureDate",
             "extractedFieldName": "employeeSignatureDate",
             "confidence": 1,
-            "reasoning": "Identical field name representing the date of employee's signature"
+            "reasoning": "Exact same field name and concept"
           },
           {
             "groundTruthFieldName": "listADocumentTitle1",
             "extractedFieldName": "documentTitle1",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Document Title 1' which likely maps to List A Document Title 1, though it could also be List B or C"
+            "reasoning": "Extracted field likely maps to List A Document Title 1, though it doesn't specify List A"
           },
           {
             "groundTruthFieldName": "listAIssuingAuthority1",
             "extractedFieldName": "issuingAuthority1",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Issuing Authority 1' which likely maps to List A Issuing Authority 1"
+            "reasoning": "Extracted field likely maps to List A Issuing Authority 1"
           },
           {
             "groundTruthFieldName": "listADocumentNumber1",
             "extractedFieldName": "documentNumber1",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Document Number 1' which likely maps to List A Document Number 1"
+            "reasoning": "Extracted field likely maps to List A Document Number 1"
           },
           {
             "groundTruthFieldName": "listAExpirationDate1",
             "extractedFieldName": "expirationDate1",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Expiration Date 1' which likely maps to List A Expiration Date 1"
+            "reasoning": "Extracted field likely maps to List A Expiration Date 1"
           },
           {
             "groundTruthFieldName": "listADocumentTitle2",
             "extractedFieldName": "documentTitle2",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Document Title 2' which likely maps to List A Document Title 2"
+            "reasoning": "Extracted field likely maps to List A Document Title 2"
           },
           {
             "groundTruthFieldName": "listAIssuingAuthority2",
             "extractedFieldName": "issuingAuthority2",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Issuing Authority 2' which likely maps to List A Issuing Authority 2"
+            "reasoning": "Extracted field likely maps to List A Issuing Authority 2"
           },
           {
             "groundTruthFieldName": "listADocumentNumber2",
             "extractedFieldName": "documentNumber2",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Document Number 2' which likely maps to List A Document Number 2"
+            "reasoning": "Extracted field likely maps to List A Document Number 2"
           },
           {
             "groundTruthFieldName": "listAExpirationDate2",
             "extractedFieldName": "expirationDate2",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Expiration Date 2' which likely maps to List A Expiration Date 2"
+            "reasoning": "Extracted field likely maps to List A Expiration Date 2"
           },
           {
             "groundTruthFieldName": "listADocumentTitle3",
             "extractedFieldName": "documentTitle3",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Document Title 3' which likely maps to List A Document Title 3"
+            "reasoning": "Extracted field likely maps to List A Document Title 3"
           },
           {
             "groundTruthFieldName": "listAIssuingAuthority3",
             "extractedFieldName": "issuingAuthority3",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Issuing Authority 3' which likely maps to List A Issuing Authority 3"
+            "reasoning": "Extracted field likely maps to List A Issuing Authority 3"
           },
           {
             "groundTruthFieldName": "listADocumentNumber3",
             "extractedFieldName": "documentNumber3",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Document Number 3' which likely maps to List A Document Number 3"
+            "reasoning": "Extracted field likely maps to List A Document Number 3"
           },
           {
             "groundTruthFieldName": "listAExpirationDate3",
             "extractedFieldName": "expirationDate3",
             "confidence": 0.7,
-            "reasoning": "Extracted field is generic 'Expiration Date 3' which likely maps to List A Expiration Date 3"
+            "reasoning": "Extracted field likely maps to List A Expiration Date 3"
           },
           {
             "groundTruthFieldName": "additionalInformation",
             "extractedFieldName": "additionalInformation",
             "confidence": 1,
-            "reasoning": "Identical field name in employer verification section"
+            "reasoning": "Exact same field name and concept"
           },
           {
             "groundTruthFieldName": "alternativeProcedureCheckbox",
             "extractedFieldName": "alternativeProcedureUsed",
             "confidence": 1,
-            "reasoning": "Both represent the alternative procedure checkbox in Section 2"
+            "reasoning": "Both represent the DHS alternative procedure checkbox"
           },
           {
             "groundTruthFieldName": "firstDayOfEmployment",
-            "extractedFieldName": "firstDayOfEmployment",
+            "extractedFieldName": "firstDayEmployment",
             "confidence": 1,
-            "reasoning": "Identical field name representing first day of employment"
+            "reasoning": "Both represent first day of employment"
           },
           {
             "groundTruthFieldName": "employerLastNameFirstNameTitle",
-            "extractedFieldName": "employerNameTitle",
+            "extractedFieldName": "employerRepresentativeName",
             "confidence": 1,
-            "reasoning": "Both represent the employer's last name, first name, and title"
+            "reasoning": "Both represent the employer/authorized representative name and title"
           },
           {
             "groundTruthFieldName": "employerSignature",
             "extractedFieldName": "employerSignature",
             "confidence": 1,
-            "reasoning": "Identical field name representing employer's signature"
+            "reasoning": "Exact same field name and concept"
           },
           {
             "groundTruthFieldName": "employerSignatureDate",
             "extractedFieldName": "employerSignatureDate",
             "confidence": 1,
-            "reasoning": "Identical field name representing employer's signature date"
+            "reasoning": "Exact same field name and concept"
           },
           {
             "groundTruthFieldName": "employerBusinessName",
             "extractedFieldName": "employerBusinessName",
             "confidence": 1,
-            "reasoning": "Identical field name representing employer's business name"
+            "reasoning": "Exact same field name and concept"
           },
           {
             "groundTruthFieldName": "employerBusinessAddress",
             "extractedFieldName": "employerBusinessAddress",
             "confidence": 1,
-            "reasoning": "Identical field name representing employer's business address"
+            "reasoning": "Exact same field name and concept"
           },
           {
             "groundTruthFieldName": "preparer1Signature",
             "extractedFieldName": "preparerSignature",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single preparer signature which maps to the first preparer's signature"
+            "reasoning": "Extracted field is a single preparer signature, likely maps to preparer 1"
           },
           {
             "groundTruthFieldName": "preparer1Date",
             "extractedFieldName": "preparerDate",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single preparer date which maps to the first preparer's date"
+            "reasoning": "Extracted field is a single preparer date, likely maps to preparer 1"
           },
           {
             "groundTruthFieldName": "preparer1LastName",
             "extractedFieldName": "preparerLastName",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single preparer last name which maps to the first preparer's last name"
+            "reasoning": "Extracted field is a single preparer last name, likely maps to preparer 1"
           },
           {
             "groundTruthFieldName": "preparer1FirstName",
             "extractedFieldName": "preparerFirstName",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single preparer first name which maps to the first preparer's first name"
+            "reasoning": "Extracted field is a single preparer first name, likely maps to preparer 1"
           },
           {
             "groundTruthFieldName": "preparer1MiddleInitial",
             "extractedFieldName": "preparerMiddleInitial",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single preparer middle initial which maps to the first preparer's middle initial"
+            "reasoning": "Extracted field is a single preparer middle initial, likely maps to preparer 1"
           },
           {
             "groundTruthFieldName": "preparer1Address",
             "extractedFieldName": "preparerAddress",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single preparer address which maps to the first preparer's address"
+            "reasoning": "Extracted field is a single preparer address, likely maps to preparer 1"
           },
           {
             "groundTruthFieldName": "preparer1City",
             "extractedFieldName": "preparerCity",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single preparer city which maps to the first preparer's city"
+            "reasoning": "Extracted field is a single preparer city, likely maps to preparer 1"
           },
           {
             "groundTruthFieldName": "preparer1State",
             "extractedFieldName": "preparerState",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single preparer state which maps to the first preparer's state"
+            "reasoning": "Extracted field is a single preparer state, likely maps to preparer 1"
           },
           {
             "groundTruthFieldName": "preparer1ZipCode",
-            "extractedFieldName": "preparerZipCode",
+            "extractedFieldName": "preparerZip",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single preparer ZIP code which maps to the first preparer's ZIP code"
+            "reasoning": "Extracted field is a single preparer ZIP, likely maps to preparer 1"
           },
           {
             "groundTruthFieldName": "suppB1RehireDate",
             "extractedFieldName": "rehireDate",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single rehire date which maps to the first supplement B entry's rehire date"
+            "reasoning": "Extracted field is a single rehire date, likely maps to entry 1"
+          },
+          {
+            "groundTruthFieldName": "suppB1NewLastName",
+            "extractedFieldName": "newNameLast",
+            "confidence": 0.7,
+            "reasoning": "Extracted field is a single new last name, likely maps to entry 1"
+          },
+          {
+            "groundTruthFieldName": "suppB1NewFirstName",
+            "extractedFieldName": "newNameFirst",
+            "confidence": 0.7,
+            "reasoning": "Extracted field is a single new first name, likely maps to entry 1"
+          },
+          {
+            "groundTruthFieldName": "suppB1NewMiddleInitial",
+            "extractedFieldName": "newNameMiddle",
+            "confidence": 0.7,
+            "reasoning": "Extracted field is a single new middle initial, likely maps to entry 1"
           },
           {
             "groundTruthFieldName": "suppB1DocumentTitle",
             "extractedFieldName": "reverificationDocumentTitle",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single reverification document title which maps to the first supplement B entry"
+            "reasoning": "Extracted field is a single reverification document title, likely maps to entry 1"
           },
           {
             "groundTruthFieldName": "suppB1DocumentNumber",
             "extractedFieldName": "reverificationDocumentNumber",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single reverification document number which maps to the first supplement B entry"
+            "reasoning": "Extracted field is a single reverification document number, likely maps to entry 1"
           },
           {
             "groundTruthFieldName": "suppB1ExpirationDate",
             "extractedFieldName": "reverificationExpirationDate",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single reverification expiration date which maps to the first supplement B entry"
+            "reasoning": "Extracted field is a single reverification expiration date, likely maps to entry 1"
           },
           {
             "groundTruthFieldName": "suppB1EmployerName",
             "extractedFieldName": "reverificationEmployerName",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single reverification employer name which maps to the first supplement B entry"
+            "reasoning": "Extracted field is a single reverification employer name, likely maps to entry 1"
           },
           {
             "groundTruthFieldName": "suppB1EmployerSignature",
             "extractedFieldName": "reverificationEmployerSignature",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single reverification employer signature which maps to the first supplement B entry"
+            "reasoning": "Extracted field is a single reverification employer signature, likely maps to entry 1"
           },
           {
             "groundTruthFieldName": "suppB1TodayDate",
             "extractedFieldName": "reverificationDate",
             "confidence": 0.7,
-            "reasoning": "Extracted has a single reverification date which maps to the first supplement B entry's today's date"
-          },
-          {
-            "groundTruthFieldName": "suppB1AdditionalInfo",
-            "extractedFieldName": "reverificationAdditionalInfo",
-            "confidence": 0.7,
-            "reasoning": "Extracted has a single reverification additional info which maps to the first supplement B entry"
-          },
-          {
-            "groundTruthFieldName": "suppB1AlternativeProcedure",
-            "extractedFieldName": "reverificationAlternativeProcedure",
-            "confidence": 0.7,
-            "reasoning": "Extracted has a single reverification alternative procedure which maps to the first supplement B entry"
+            "reasoning": "Extracted field is a single reverification today's date, likely maps to entry 1"
           }
         ],
         "scorer": "llm-judge"
@@ -954,109 +910,114 @@
       "fixture": "w-9",
       "metrics": {
         "fieldRecall": 0.9375,
-        "fieldPrecision": 1,
-        "typeAccuracy": 0.8666666666666667,
-        "groupAccuracy": 0.7333333333333333,
-        "sensitivityAccuracy": 0.26666666666666666
+        "fieldPrecision": 0.7894736842105263,
+        "typeAccuracy": 0.9333333333333333,
+        "groupAccuracy": 0.6666666666666666,
+        "sensitivityAccuracy": 0.2
       },
       "details": {
         "missed": [
           "otherClassification"
         ],
-        "extra": [],
+        "extra": [
+          "tinCertification",
+          "backupWithholdingCertification",
+          "usPersonCertification",
+          "fatcaCodeCertification"
+        ],
         "totalGroundTruth": 16,
-        "totalExtracted": 15,
+        "totalExtracted": 19,
         "totalMatched": 15,
         "judgeMatches": [
           {
             "groundTruthFieldName": "entityIndividualName",
             "extractedFieldName": "entityName",
             "confidence": 0.95,
-            "reasoning": "Both represent the name of entity/individual, same label"
+            "reasoning": "Both represent the name of entity/individual field with matching labels"
           },
           {
             "groundTruthFieldName": "businessName",
             "extractedFieldName": "businessName",
             "confidence": 1,
-            "reasoning": "Identical field name and label"
+            "reasoning": "Identical field names and matching labels"
           },
           {
             "groundTruthFieldName": "taxClassification",
-            "extractedFieldName": "taxClassificationType",
-            "confidence": 0.95,
-            "reasoning": "Both represent federal tax classification, same label"
+            "extractedFieldName": "taxClassification",
+            "confidence": 1,
+            "reasoning": "Identical field names and matching labels for federal tax classification"
           },
           {
             "groundTruthFieldName": "llcTaxClassification",
-            "extractedFieldName": "llcTaxClassification",
-            "confidence": 1,
-            "reasoning": "Identical field name, both represent LLC tax classification"
+            "extractedFieldName": "llcClassification",
+            "confidence": 0.9,
+            "reasoning": "Both represent LLC tax classification, slight name difference"
           },
           {
             "groundTruthFieldName": "hasForeignPartnersOwnersBeneficiaries",
-            "extractedFieldName": "hasForeignPartnersOwnersOrBeneficiaries",
-            "confidence": 1,
-            "reasoning": "Same concept, minor wording difference (with/without 'Or')"
+            "extractedFieldName": "foreignPartnersIndicator",
+            "confidence": 0.9,
+            "reasoning": "Both represent the boolean indicator for foreign partners/owners/beneficiaries"
           },
           {
             "groundTruthFieldName": "exemptPayeeCode",
             "extractedFieldName": "exemptPayeeCode",
             "confidence": 1,
-            "reasoning": "Identical field name and label"
+            "reasoning": "Identical field names"
           },
           {
             "groundTruthFieldName": "fatcaExemptionCode",
             "extractedFieldName": "fatcaExemptionCode",
             "confidence": 1,
-            "reasoning": "Identical field name and label"
+            "reasoning": "Identical field names"
           },
           {
             "groundTruthFieldName": "address",
-            "extractedFieldName": "streetAddress",
-            "confidence": 0.95,
-            "reasoning": "Both represent the street address field, same label"
+            "extractedFieldName": "address",
+            "confidence": 1,
+            "reasoning": "Identical field names and labels"
           },
           {
             "groundTruthFieldName": "cityStateZip",
             "extractedFieldName": "cityStateZip",
             "confidence": 1,
-            "reasoning": "Identical field name and label"
+            "reasoning": "Identical field names and labels"
           },
           {
             "groundTruthFieldName": "requesterNameAddress",
-            "extractedFieldName": "requesterNameAndAddress",
+            "extractedFieldName": "requesterNameAddress",
             "confidence": 1,
-            "reasoning": "Same concept, minor naming difference"
+            "reasoning": "Identical field names and matching labels"
           },
           {
             "groundTruthFieldName": "accountNumbers",
             "extractedFieldName": "accountNumbers",
             "confidence": 1,
-            "reasoning": "Identical field name and label"
+            "reasoning": "Identical field names"
           },
           {
             "groundTruthFieldName": "socialSecurityNumber",
             "extractedFieldName": "socialSecurityNumber",
             "confidence": 1,
-            "reasoning": "Identical field name and label"
+            "reasoning": "Identical field names"
           },
           {
             "groundTruthFieldName": "employerIdentificationNumber",
             "extractedFieldName": "employerIdentificationNumber",
             "confidence": 1,
-            "reasoning": "Identical field name and label"
+            "reasoning": "Identical field names"
           },
           {
             "groundTruthFieldName": "signature",
-            "extractedFieldName": "certificationSignature",
-            "confidence": 0.95,
-            "reasoning": "Both represent signature of U.S. person, extracted has section prefix"
+            "extractedFieldName": "signature",
+            "confidence": 1,
+            "reasoning": "Identical field names and labels"
           },
           {
             "groundTruthFieldName": "signatureDate",
-            "extractedFieldName": "certificationDate",
-            "confidence": 0.95,
-            "reasoning": "Both represent the date in the certification section"
+            "extractedFieldName": "signatureDate",
+            "confidence": 1,
+            "reasoning": "Identical field names and labels"
           }
         ],
         "scorer": "llm-judge"
