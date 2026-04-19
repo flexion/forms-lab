@@ -194,13 +194,12 @@ ENVEOF
     /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl restart "forms-lab-app@$UNIT_NAME.service" || \
       /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl start "forms-lab-app@$UNIT_NAME.service"
 
-    # Enable the instance so it survives reboots. Template units are not
-    # wantedBy multi-user.target on their own — each instance must be
-    # individually symlinked into multi-user.target.wants/. Without this,
-    # a reboot leaves branch apps dead until something explicitly starts
-    # them (which the webhook's startup recovery also handles as a
-    # belt-and-braces fallback).
-    /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl enable "forms-lab-app@$UNIT_NAME.service" || true
+    # Reboot-safety: the forms-lab-branch-apps systemd generator reads
+    # $DEPLOY_ROOT/caddy.d/ at boot time and wires every branch with a
+    # Caddy route into multi-user.target. We write the Caddy file below,
+    # so this branch is automatically "enabled" for the next reboot —
+    # no systemctl enable needed (which wouldn't work for template
+    # instances on NixOS anyway).
 
     # Write Caddy route snippet to persistent config directory
     CADDY_DIR="$DEPLOY_ROOT/caddy.d"
@@ -242,13 +241,68 @@ CADDYEOF
       echo "Homepage service restarted"
     fi
   '';
+
+  # Branch teardown: stop + disable the app, remove the Caddy route and
+  # worktree, free the port. Called by the webhook on a GitHub `delete`
+  # event, and by the CLI for manual cleanup. Refuses to tear down
+  # protected branches (main) as a safety rail.
+  teardownScript = pkgs.writeShellScriptBin "forms-lab-teardown" ''
+    set -euo pipefail
+
+    BRANCH="$1"
+    DEPLOY_ROOT="/srv/forms-lab"
+    SAFE_BRANCH=$(echo "$BRANCH" | ${pkgs.coreutils}/bin/tr '/' '-')
+
+    if [ "$SAFE_BRANCH" = "main" ] || [ -z "$SAFE_BRANCH" ]; then
+      echo "ERROR: refusing to tear down protected/empty branch '$BRANCH'"
+      exit 1
+    fi
+
+    BRANCH_DIR="$DEPLOY_ROOT/$SAFE_BRANCH"
+    REPO_DIR="$DEPLOY_ROOT/repo.git"
+    PORT_FILE="$DEPLOY_ROOT/ports.json"
+    CADDY_FILE="$DEPLOY_ROOT/caddy.d/branch-$SAFE_BRANCH.caddy"
+    UNIT="forms-lab-app@$SAFE_BRANCH.service"
+
+    echo "Tearing down $BRANCH..."
+
+    # 1. Stop the app (ignore-not-running)
+    /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl stop "$UNIT" || true
+
+    # 2. Remove the Caddy route (this also "disables" the branch for
+    #    reboot-safety because the forms-lab-branch-apps generator
+    #    only wires branches that have a Caddy file).
+    if [ -f "$CADDY_FILE" ]; then
+      ${pkgs.coreutils}/bin/rm -f "$CADDY_FILE"
+      /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl reload caddy.service || true
+    fi
+
+    # 3. Remove the worktree (git-aware so the bare repo stays consistent)
+    if [ -d "$BRANCH_DIR" ]; then
+      if [ -d "$REPO_DIR" ]; then
+        ${pkgs.git}/bin/git -C "$REPO_DIR" worktree remove --force "$BRANCH_DIR" 2>/dev/null || \
+          ${pkgs.coreutils}/bin/rm -rf "$BRANCH_DIR"
+      else
+        ${pkgs.coreutils}/bin/rm -rf "$BRANCH_DIR"
+      fi
+    fi
+
+    # 4. Free the port so the next deploy of this branch gets a fresh one
+    if [ -f "$PORT_FILE" ]; then
+      ${pkgs.jq}/bin/jq "del(.[\"$BRANCH\"])" "$PORT_FILE" > "$PORT_FILE.tmp"
+      mv "$PORT_FILE.tmp" "$PORT_FILE"
+    fi
+
+    echo "Teardown complete for $BRANCH"
+  '';
 in
 {
-  environment.systemPackages = [ deployScript deployMainScript ];
+  environment.systemPackages = [ deployScript deployMainScript teardownScript ];
 
   # Make the deploy scripts available at expected paths
   system.activationScripts.deployLink = ''
     ln -sf ${deployScript}/bin/forms-lab-deploy /srv/forms-lab/deploy.sh
     ln -sf ${deployMainScript}/bin/forms-lab-deploy-main /srv/forms-lab/deploy-main.sh
+    ln -sf ${teardownScript}/bin/forms-lab-teardown /srv/forms-lab/teardown.sh
   '';
 }

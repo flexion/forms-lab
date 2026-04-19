@@ -86,15 +86,6 @@
       command = "${pkgs.systemd}/bin/systemctl stop forms-lab-app@*";
       options = [ "NOPASSWD" ];
     } {
-      # Enable/disable per-instance template units so they survive reboots.
-      # Template units cannot be wantedBy multi-user.target as a whole —
-      # each instance must be individually symlinked.
-      command = "${pkgs.systemd}/bin/systemctl enable forms-lab-app@*";
-      options = [ "NOPASSWD" ];
-    } {
-      command = "${pkgs.systemd}/bin/systemctl disable forms-lab-app@*";
-      options = [ "NOPASSWD" ];
-    } {
       command = "${pkgs.systemd}/bin/systemctl restart forms-lab-homepage.service";
       options = [ "NOPASSWD" ];
     } {
