@@ -57,6 +57,13 @@ export class BedrockFillingAgent implements FillingAgent {
     // Build messages array from conversation history
     const messages = this.buildMessages(context, userResponse)
 
+    console.log(
+      '[BedrockFillingAgent] Sending messages:',
+      JSON.stringify(
+        messages.map((m) => ({ role: m.role, len: m.content.length })),
+      ),
+    )
+
     // Call LLM with tools - use tool() helper for proper schema format
     const result = await generateText({
       model: this.bedrock(this.model),
@@ -91,6 +98,15 @@ export class BedrockFillingAgent implements FillingAgent {
         }),
       },
     })
+
+    console.log(
+      '[BedrockFillingAgent] Result:',
+      JSON.stringify({
+        text: result.text?.slice(0, 100),
+        toolCallCount: result.toolCalls?.length ?? 0,
+        finishReason: result.finishReason,
+      }),
+    )
 
     // Parse tool calls and collect fields
     const toolCalls: ToolCallRecord[] = []
