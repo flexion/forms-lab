@@ -2,9 +2,9 @@ import { type Context, Hono } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { Layout } from '../../../../design-system/components/flex-layout'
 import type { UserStore } from '../../../../services/auth'
-import { AppError, UnauthenticatedError } from '../../../../services/errors'
 import type { ProjectService } from '../../../../services/projects'
 import { resolveUrl } from '../../../../shared/base-path'
+import { AppError, UnauthenticatedError } from '../../../../shared/errors'
 import type { VariantRegistry } from '../../../../shared/strategy-registry'
 import {
   BlobPage,
