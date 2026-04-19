@@ -13,6 +13,8 @@ export interface ShapingLogEntryClient {
   source: 'llm' | 'manual'
   commands: Command[]
   explanation: string
+  variantId?: string
+  modelId?: string
 }
 
 export type SelectionTarget = {

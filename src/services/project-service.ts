@@ -50,6 +50,8 @@ export interface ShapingLogEntry {
   source: 'llm' | 'manual'
   commands: Command[]
   explanation: string
+  variantId?: string
+  modelId?: string
 }
 
 export interface ProjectView {
@@ -131,7 +133,7 @@ export interface ProjectService {
     explanation: string,
     source: 'llm' | 'manual',
     user: SessionUser,
-    options?: { branch?: string },
+    options?: { branch?: string; variantId?: string; modelId?: string },
   ): Promise<
     | {
         ok: true
@@ -692,6 +694,8 @@ export function createProjectService(
         source,
         commands,
         explanation,
+        ...(options?.variantId ? { variantId: options.variantId } : {}),
+        ...(options?.modelId ? { modelId: options.modelId } : {}),
       }
       const nextLog = [...log, newEntry]
 
