@@ -3,7 +3,7 @@ import {
   HAIKU_MODEL_ID,
   OPUS_MODEL_ID,
   SONNET_MODEL_ID,
-} from '../../extraction/models'
+} from '../../extraction'
 import { createBedrockFormShaper } from './bedrock-shaper'
 import type { FormShaper } from './types'
 

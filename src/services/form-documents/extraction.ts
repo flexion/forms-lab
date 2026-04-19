@@ -1,7 +1,7 @@
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
-import type { ExtractionExemplar } from '../extraction/exemplars'
+import type { ExtractionExemplar } from '../extraction'
 import type { CacheStore } from '../storage'
 import {
   generateFormSpec,

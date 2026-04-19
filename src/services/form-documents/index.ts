@@ -10,6 +10,7 @@ export {
 export { enumerateFields } from './field-mapping'
 export { fillPdf } from './filling'
 export { createMappingRegistry } from './mapping-registry'
+export { createToolUsePdfExtractor } from './tool-use-extraction'
 export type {
   ExtractionOptions,
   ExtractionResult,

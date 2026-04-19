@@ -1,6 +1,6 @@
 import { tool } from 'ai'
 import { z } from 'zod'
-import type { DataCollectionSpec } from '../data-collection/types'
+import type { DataCollectionSpec } from '../data-collection'
 import type { FieldConfidence } from './types'
 
 const sensitivity = z.enum(['low', 'medium', 'high', 'pii'])

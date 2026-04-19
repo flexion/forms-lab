@@ -7,8 +7,8 @@
 
 import type { LanguageModel } from 'ai'
 import { generateText } from 'ai'
-import type { DataCollectionSpec } from '../data-collection/types'
-import type { FormSpec } from '../forms/types'
+import type { DataCollectionSpec } from '../data-collection'
+import type { FormSpec } from '../forms'
 import { enumerateFields } from './field-mapping'
 import { formSpecSchema } from './schemas'
 import type { FieldMapping } from './types'

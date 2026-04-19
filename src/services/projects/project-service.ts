@@ -5,24 +5,23 @@ import type {
   FormSpec,
   ProjectIndex,
 } from '../../types/models'
-import type { SessionUser } from '../auth/session'
+import type { SessionUser } from '../auth'
 import {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
   UnauthenticatedError,
 } from '../errors'
-import type { PdfExtractor } from '../form-documents/extraction'
-import type { Command } from '../forms/shaping/commands'
-import { executeBatch } from '../forms/shaping/executor'
+import type { PdfExtractor } from '../form-documents'
+import { type Command, executeBatch } from '../forms'
 import type { ProjectStore } from '../storage'
 import {
   appendProvenance,
   type ProvenanceEntry,
   type ProvenanceFile,
   readProvenance,
-} from '../variant-preferences/provenance'
-import type { Task } from '../variant-preferences/types'
+  type Task,
+} from '../variant-preferences'
 import type {
   BranchEntry,
   CommitEntry,
@@ -669,10 +668,8 @@ export function createProjectService(
 
       const batchResult = executeBatch(
         {
-          formSpec:
-            currentFormSpec as unknown as import('../forms/types').FormSpec,
-          dataSpec:
-            currentDataSpec as unknown as import('../data-collection/types').DataCollectionSpec,
+          formSpec: currentFormSpec as unknown as FormSpec,
+          dataSpec: currentDataSpec as unknown as DataCollectionSpec,
         },
         commands,
       )

@@ -1,4 +1,4 @@
-import type { Command } from '../../forms/shaping/commands'
+import type { Command } from '../../forms'
 import type { CaseMetrics, EvaluationKind, SummaryMetrics } from '../types'
 
 export interface ShapingOutput {

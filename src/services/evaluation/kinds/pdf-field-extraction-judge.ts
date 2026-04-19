@@ -1,4 +1,4 @@
-import type { DataCollectionSpec } from '../../data-collection/types'
+import type { DataCollectionSpec } from '../../data-collection'
 import type { FieldJudge } from '../judge'
 import type { CaseMetrics, EvaluationKind, SummaryMetrics } from '../types'
 import {

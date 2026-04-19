@@ -1,7 +1,9 @@
 import { StrategyRegistry } from '../../shared/strategy-registry'
-import type { PdfExtractor } from '../form-documents/extraction'
-import { createBedrockPdfExtractor } from '../form-documents/extraction'
-import { createToolUsePdfExtractor } from '../form-documents/tool-use-extraction'
+import {
+  createBedrockPdfExtractor,
+  createToolUsePdfExtractor,
+  type PdfExtractor,
+} from '../form-documents'
 import { exemplars } from './exemplars'
 import {
   HAIKU_MODEL_ID,
