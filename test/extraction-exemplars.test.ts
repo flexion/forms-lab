@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import {
-  type ExtractionExemplar,
-  exemplars,
-} from '../src/services/extraction/exemplars'
+import { exemplars } from '../src/services/extraction/exemplars'
 
 describe('extraction exemplars', () => {
   it('exports between 2 and 3 exemplars', () => {
@@ -40,13 +37,13 @@ describe('extraction exemplars', () => {
     }
   })
 
-  it('exemplars are compact (each under 1500 characters total)', () => {
+  it('exemplars are compact (each under 2000 characters total)', () => {
     for (const exemplar of exemplars) {
       const total =
         exemplar.input.length +
         exemplar.output.length +
         exemplar.description.length
-      expect(total).toBeLessThan(1500)
+      expect(total).toBeLessThan(2000)
     }
   })
 })

@@ -1,6 +1,7 @@
 import type { PdfExtractor } from '../form-documents/extraction'
 import { createBedrockPdfExtractor } from '../form-documents/extraction'
 import { StrategyRegistry } from '../strategy-registry'
+import { exemplars } from './exemplars'
 import { HAIKU_MODEL_ID, OPUS_MODEL_ID, SONNET_MODEL_ID } from './models'
 
 export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
@@ -44,6 +45,21 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       modelId: HAIKU_MODEL_ID,
     },
     create: () => createBedrockPdfExtractor({ model: HAIKU_MODEL_ID }),
+  })
+
+  registry.register({
+    id: 'few-shot-sonnet',
+    metadata: {
+      name: 'Claude Sonnet 4 (few-shot)',
+      description:
+        'Sonnet with curated extraction examples prepended to the prompt.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'few-shot', 'prompt-conditioning'],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/few-shot-sonnet',
+      modelId: SONNET_MODEL_ID,
+    },
+    create: () =>
+      createBedrockPdfExtractor({ model: SONNET_MODEL_ID, exemplars }),
   })
 
   registry.setDefault('sonnet')

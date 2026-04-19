@@ -13,7 +13,7 @@ describe('createExtractorRegistry', () => {
     const strategies = registry.list()
     const opus = strategies.find((s) => s.id === 'opus-baseline')
     expect(opus).toBeDefined()
-    expect(opus!.metadata.status).toBe('baseline')
+    expect(opus?.metadata.status).toBe('baseline')
   })
 
   it('registers sonnet as production default', () => {
@@ -34,7 +34,7 @@ describe('createExtractorRegistry', () => {
     const strategies = registry.list()
     const fewShot = strategies.find((s) => s.id === 'few-shot-sonnet')
     expect(fewShot).toBeDefined()
-    expect(fewShot!.metadata.status).toBe('experimental')
+    expect(fewShot?.metadata.status).toBe('experimental')
   })
 
   it('few-shot-sonnet has few-shot in courseTopics', () => {
@@ -42,6 +42,6 @@ describe('createExtractorRegistry', () => {
     const strategies = registry.list()
     const fewShot = strategies.find((s) => s.id === 'few-shot-sonnet')
     expect(fewShot).toBeDefined()
-    expect(fewShot!.metadata.courseTopics).toContain('few-shot')
+    expect(fewShot?.metadata.courseTopics).toContain('few-shot')
   })
 })
