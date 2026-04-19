@@ -1,9 +1,9 @@
 {
-  "kind": "pdf-field-extraction-llm-judge",
+  "kind": "pdf-field-extraction",
   "implementation": "tool-use-sonnet",
   "specVersion": "2026-04-11",
   "status": "current",
-  "timestamp": "2026-04-19T13:13:05.864Z",
+  "timestamp": "2026-04-19T13:16:03.927Z",
   "model": "Claude Sonnet 4 (tool-use)",
   "summary": {
     "fieldRecall": 0,
@@ -209,9 +209,7 @@
         "extra": [],
         "totalGroundTruth": 181,
         "totalExtracted": 0,
-        "totalMatched": 0,
-        "judgeMatches": [],
-        "scorer": "llm-judge"
+        "totalMatched": 0
       }
     },
     {
@@ -357,9 +355,7 @@
         "extra": [],
         "totalGroundTruth": 128,
         "totalExtracted": 0,
-        "totalMatched": 0,
-        "judgeMatches": [],
-        "scorer": "llm-judge"
+        "totalMatched": 0
       }
     },
     {
@@ -393,9 +389,7 @@
         "extra": [],
         "totalGroundTruth": 16,
         "totalExtracted": 0,
-        "totalMatched": 0,
-        "judgeMatches": [],
-        "scorer": "llm-judge"
+        "totalMatched": 0
       }
     }
   ]
