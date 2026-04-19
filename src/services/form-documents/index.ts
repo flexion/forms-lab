@@ -4,12 +4,19 @@
 
 export type { BedrockExtractorOptions, PdfExtractor } from './extraction'
 export {
+  buildExemplarSection,
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
 } from './extraction'
+export {
+  extractionTools,
+  type ReconstructedExtraction,
+  reconstructSpec,
+} from './extraction-tools'
 export { enumerateFields } from './field-mapping'
 export { fillPdf } from './filling'
 export { createMappingRegistry } from './mapping-registry'
+export { dataCollectionSpecSchema } from './schemas'
 export type {
   ExtractionOptions,
   ExtractionResult,

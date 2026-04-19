@@ -11,8 +11,10 @@ import { Layout } from '../../design-system/components/flex-layout'
 import { createUserStore } from '../../services/auth'
 import type { DataCollectionSpec } from '../../services/data-collection'
 import { createExtractorRegistry } from '../../services/extraction'
-import { createCachedPdfExtractor } from '../../services/form-documents/extraction'
-import { createMappingRegistry } from '../../services/form-documents/mapping-registry'
+import {
+  createCachedPdfExtractor,
+  createMappingRegistry,
+} from '../../services/form-documents'
 import { createFillingRegistry } from '../../services/forms/filling/registry'
 import {
   BedrockFillingAgent,

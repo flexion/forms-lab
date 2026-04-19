@@ -6,7 +6,7 @@ import {
   runEvaluation,
 } from '../../../services/evaluation'
 import { createExtractorRegistry } from '../../../services/extraction'
-import { createCachedPdfExtractor } from '../../../services/form-documents/extraction'
+import { createCachedPdfExtractor } from '../../../services/form-documents'
 import { createCacheStore } from '../../../services/storage'
 
 function printUsage(): void {

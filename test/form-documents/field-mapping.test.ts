@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { PDFDocument } from 'pdf-lib'
-import { enumerateFields } from '../../src/services/form-documents/field-mapping'
+import { enumerateFields } from '../../src/services/form-documents'
 
 async function createTestPdf(): Promise<Buffer> {
   const doc = await PDFDocument.create()

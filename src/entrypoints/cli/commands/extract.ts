@@ -2,7 +2,7 @@ import { resolve } from 'node:path'
 import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
-} from '../../../services/form-documents/extraction'
+} from '../../../services/form-documents'
 import { createCacheStore } from '../../../services/storage'
 
 const pulumiDir = resolve(import.meta.dir, '../../../../infrastructure/pulumi')

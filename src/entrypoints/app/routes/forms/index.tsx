@@ -11,8 +11,8 @@ import type {
   DataCollectionSpec,
   RequirementGroup,
 } from '../../../../services/data-collection'
-import { fillPdf } from '../../../../services/form-documents/filling'
-import type { FieldMapping } from '../../../../services/form-documents/types'
+import type { FieldMapping } from '../../../../services/form-documents'
+import { fillPdf } from '../../../../services/form-documents'
 import type {
   ConversationGateway,
   FillingAgent,

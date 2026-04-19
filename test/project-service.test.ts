@@ -9,7 +9,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../src/services/errors'
-import type { PdfExtractor } from '../src/services/form-documents/extraction'
+import type { PdfExtractor } from '../src/services/form-documents'
 import {
   createFormProjectRepo,
   createProjectService,

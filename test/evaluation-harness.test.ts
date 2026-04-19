@@ -5,7 +5,7 @@ import {
   pdfFieldExtractionKind,
   runEvaluation,
 } from '../src/services/evaluation'
-import type { PdfExtractor } from '../src/services/form-documents/extraction'
+import type { PdfExtractor } from '../src/services/form-documents'
 
 const groundTruth: DataCollectionSpec = {
   id: 'test-spec',
