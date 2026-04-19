@@ -11,6 +11,12 @@ import {
   executeBatch,
   humanize,
 } from '../../../../../services/forms'
+import {
+  detectAuthoringStage,
+  emptyCriteriaSet,
+  parseCriteriaSet,
+  type AuthoringStage,
+} from '../../../../../services/form-authoring'
 import type { ProjectService } from '../../../../../services/projects'
 import type { VariantPreferencesService } from '../../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../../shared/base-path'
@@ -107,6 +113,32 @@ export function createEditRoutes(
         }
       }
 
+      // Detect authoring stage for RAG authoring pipeline projects
+      let authoringStage: AuthoringStage | null = null
+      try {
+        const critBuf = await service.getFileContent(
+          '',
+          slug,
+          branch,
+          'forms/default/criteria.json',
+        )
+        const criteria = critBuf
+          ? parseCriteriaSet(critBuf.toString())
+          : emptyCriteriaSet()
+        const hasPages = (view.formSpec?.pages?.length ?? 0) > 0
+        const uncoveredGroupCount = view.spec
+          ? view.spec.groups.filter((g) => g.requirements.length === 0).length
+          : 0
+        authoringStage = detectAuthoringStage({
+          hasCriteria: criteria.criteria.length > 0,
+          criteriaApproved: criteria.approvedAt !== null,
+          hasPages,
+          uncoveredGroupCount,
+        })
+      } catch {
+        // Not an authoring project — no stage indicator shown
+      }
+
       return c.html(
         <Layout
           user={user}
@@ -123,6 +155,7 @@ export function createEditRoutes(
             branches={branches}
             changed={changed}
             shapingBadge={shapingBadge}
+            authoringStage={authoringStage}
           />
         </Layout>,
       )

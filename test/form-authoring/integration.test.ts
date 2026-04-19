@@ -121,8 +121,9 @@ describe('full pipeline round-trip', () => {
             requirements: [
               {
                 id: 'f1',
+                fieldName: 'monthlyIncomeBelowThreshold',
                 label: 'Monthly income below $150?',
-                fieldType: 'boolean',
+                fieldType: 'boolean' as const,
                 required: true,
               },
             ],
