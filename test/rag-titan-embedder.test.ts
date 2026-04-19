@@ -14,7 +14,17 @@ mock.module('ai', () => ({
 
 const mockEmbeddingModel = 'embedding-model-instance'
 const mockEmbeddingModelFactory = mock(() => mockEmbeddingModel)
-const mockBedrock = { embeddingModel: mockEmbeddingModelFactory }
+// Return a callable object: function-shaped so the extraction path's
+// `bedrock(model)` call still works, with `embeddingModel` attached for
+// the Titan path. Bun's `mock.module` is process-global, so this mock
+// must stay compatible with every other test file that imports
+// `createAmazonBedrock`.
+const mockBedrock = Object.assign(
+  mock(() => 'bedrock-model-instance'),
+  {
+    embeddingModel: mockEmbeddingModelFactory,
+  },
+)
 const mockCreateAmazonBedrock = mock(() => mockBedrock)
 mock.module('@ai-sdk/amazon-bedrock', () => ({
   ...bedrockModule,
@@ -63,7 +73,9 @@ describe('createTitanEmbedder', () => {
   })
 
   it('accepts a custom model id', async () => {
-    const embedder = createTitanEmbedder({ model: 'amazon.titan-embed-text-v1' })
+    const embedder = createTitanEmbedder({
+      model: 'amazon.titan-embed-text-v1',
+    })
     mockEmbed.mockResolvedValueOnce({ embedding: [0] })
 
     await embedder.embed('x')
