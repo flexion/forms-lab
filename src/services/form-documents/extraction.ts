@@ -54,7 +54,14 @@ export function createCachedPdfExtractor(
 
       const cached = cacheStore.get(key)
       if (cached) {
-        return JSON.parse(cached.result) as ExtractionResult
+        const result = JSON.parse(cached.result) as ExtractionResult
+        // Invalidate cache entries that don't have fieldMapping (from before story 7)
+        if (!result.fieldMapping) {
+          console.log('[CACHE] Invalidating old cache entry without fieldMapping')
+          // Don't return cached result, fall through to re-extract
+        } else {
+          return result
+        }
       }
 
       const result = await inner.extract(pdf, options)
