@@ -7,13 +7,11 @@ import { VariantBadge } from '../../../../design-system/components/flex-variant-
 import { VariantCallout } from '../../../../design-system/components/flex-variant-callout'
 import type { SessionUser } from '../../../../services/auth/session'
 import type {
-  CommitEntry,
-  TreeEntry,
-} from '../../../../services/form-project-repo'
-import type {
   BranchEntry,
+  CommitEntry,
   ProjectView,
-} from '../../../../services/project-service'
+  TreeEntry,
+} from '../../../../services/projects'
 import { resolveUrl } from '../../../../shared/base-path'
 import type { ProjectIndex, UserProfile } from '../../../../types/models'
 

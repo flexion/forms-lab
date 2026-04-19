@@ -12,7 +12,6 @@ import type { DataCollectionSpec } from '../../services/data-collection/types'
 import { createExtractorRegistry } from '../../services/extraction/registry'
 import { createCachedPdfExtractor } from '../../services/form-documents/extraction'
 import { createMappingRegistry } from '../../services/form-documents/mapping-registry'
-import { createFormProjectRepo } from '../../services/form-project-repo'
 import { createFillingRegistry } from '../../services/forms/filling/registry'
 import {
   BedrockFillingAgent,
@@ -25,7 +24,10 @@ import { createSpecSnapshotStore } from '../../services/forms/spec-snapshot-stor
 import { SqliteFormSessionGateway } from '../../services/forms/sqlite-session-gateway'
 import { SqliteSubmissionGateway } from '../../services/forms/sqlite-submission-gateway'
 import type { FormSpec } from '../../services/forms/types'
-import { createProjectService } from '../../services/project-service'
+import {
+  createFormProjectRepo,
+  createProjectService,
+} from '../../services/projects'
 import { createCacheStore, createProjectStore } from '../../services/storage'
 import { createUserStore } from '../../services/user-store'
 import {

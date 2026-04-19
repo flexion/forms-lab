@@ -5,10 +5,12 @@ import { join } from 'node:path'
 import { Hono } from 'hono'
 import { createOwnerRoutes } from '../src/entrypoints/app/routes/owner/index'
 import type { SessionUser } from '../src/services/auth/session'
-import type { FormProjectRepo } from '../src/services/form-project-repo'
-import { createFormProjectRepo } from '../src/services/form-project-repo'
-import type { ProjectService } from '../src/services/project-service'
-import { createProjectService } from '../src/services/project-service'
+import {
+  createFormProjectRepo,
+  createProjectService,
+  type FormProjectRepo,
+  type ProjectService,
+} from '../src/services/projects'
 import { createProjectStore } from '../src/services/storage'
 import { createUserStore } from '../src/services/user-store'
 import { StrategyRegistry } from '../src/shared/strategy-registry'

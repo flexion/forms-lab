@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it } from 'bun:test'
 import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createFormProjectRepo } from '../../../../src/services/form-project-repo'
 import { createCommentsStore } from '../../../../src/services/forms/review/comments'
+import { createFormProjectRepo } from '../../../../src/services/projects'
 
 describe('comments store', () => {
   const slug = 'proj'

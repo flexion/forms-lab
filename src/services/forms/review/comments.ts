@@ -1,4 +1,4 @@
-import type { FormProjectRepo } from '../../form-project-repo'
+import type { FormProjectRepo } from '../../projects'
 import type { Comment, CommentsFile, ReviewRef } from './types'
 
 function commentsPath(ref: ReviewRef): string {

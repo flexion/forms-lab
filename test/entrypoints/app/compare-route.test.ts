@@ -6,12 +6,14 @@ import { Hono } from 'hono'
 import { createCompareRoutes } from '../../../src/entrypoints/app/routes/owner/compare/index'
 import { createEditRoutes } from '../../../src/entrypoints/app/routes/owner/edit/index'
 import type { SessionUser } from '../../../src/services/auth/session'
-import type { FormProjectRepo } from '../../../src/services/form-project-repo'
-import { createFormProjectRepo } from '../../../src/services/form-project-repo'
 import { createReviewService } from '../../../src/services/forms/review'
 import type { FormShaper } from '../../../src/services/forms/shaping/types'
-import type { ProjectService } from '../../../src/services/project-service'
-import { createProjectService } from '../../../src/services/project-service'
+import {
+  createFormProjectRepo,
+  createProjectService,
+  type FormProjectRepo,
+  type ProjectService,
+} from '../../../src/services/projects'
 import { createProjectStore } from '../../../src/services/storage'
 import { StrategyRegistry } from '../../../src/shared/strategy-registry'
 import type { ExtractionResult, ProjectIndex } from '../../../src/types/models'

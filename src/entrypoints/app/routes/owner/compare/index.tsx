@@ -8,7 +8,7 @@ import {
 } from '../../../../../services/errors'
 import { compareSpecs } from '../../../../../services/forms/comparison'
 import type { ReviewService } from '../../../../../services/forms/review'
-import type { ProjectService } from '../../../../../services/project-service'
+import type { ProjectService } from '../../../../../services/projects'
 import { resolveUrl } from '../../../../../shared/base-path'
 import type { StrategyListItem } from '../../../../../shared/strategy-registry'
 import { ErrorPage } from '../components'

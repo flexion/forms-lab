@@ -3,8 +3,10 @@ import { mkdirSync, rmSync } from 'node:fs'
 import { Hono } from 'hono'
 import { createEditRoutes } from '../../src/entrypoints/app/routes/owner/edit'
 import type { SessionUser } from '../../src/services/auth/session'
-import { createFormProjectRepo } from '../../src/services/form-project-repo'
-import { createProjectService } from '../../src/services/project-service'
+import {
+  createFormProjectRepo,
+  createProjectService,
+} from '../../src/services/projects'
 import { createProjectStore } from '../../src/services/storage'
 import { StrategyRegistry } from '../../src/shared/strategy-registry'
 import { testDataSpec, testFormSpec } from './fixtures'

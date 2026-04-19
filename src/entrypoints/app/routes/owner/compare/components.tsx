@@ -13,7 +13,7 @@ import type { Comment } from '../../../../../services/forms/review'
 import type {
   ProjectView,
   ShapingLogEntry,
-} from '../../../../../services/project-service'
+} from '../../../../../services/projects'
 import { resolveUrl } from '../../../../../shared/base-path'
 
 const RESOURCE_LABELS: Record<ChangeResource, string> = {

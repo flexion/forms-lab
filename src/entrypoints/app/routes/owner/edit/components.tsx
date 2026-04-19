@@ -10,7 +10,7 @@ import type {
   BranchEntry,
   ProjectView,
   ShapingLogEntry,
-} from '../../../../../services/project-service'
+} from '../../../../../services/projects'
 import { resolveUrl } from '../../../../../shared/base-path'
 
 function safeJsonForScript(value: unknown): string {

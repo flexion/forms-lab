@@ -9,12 +9,12 @@ import {
   UnauthenticatedError,
 } from '../../../src/services/errors'
 import type { PdfExtractor } from '../../../src/services/form-documents/extraction'
-import type { FormProjectRepo } from '../../../src/services/form-project-repo'
-import { createFormProjectRepo } from '../../../src/services/form-project-repo'
 import {
+  createFormProjectRepo,
   createProjectService,
+  type FormProjectRepo,
   type ProjectService,
-} from '../../../src/services/project-service'
+} from '../../../src/services/projects'
 import type { ProjectStore } from '../../../src/services/storage'
 import { createProjectStore } from '../../../src/services/storage'
 import type { ExtractionResult } from '../../../src/types/models'
