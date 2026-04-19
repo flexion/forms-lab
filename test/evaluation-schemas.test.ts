@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import {
   evaluationRunSchema,
   fixtureManifestSchema,
-} from '../src/services/evaluation/schemas'
+} from '../src/services/evaluation'
 
 describe('fixtureManifestSchema', () => {
   it('validates a correct manifest', () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { judgeResponseSchema } from '../src/services/evaluation/judge-schemas'
+import { judgeResponseSchema } from '../src/services/evaluation'
 
 describe('judgeResponseSchema', () => {
   it('parses a valid judge response', () => {

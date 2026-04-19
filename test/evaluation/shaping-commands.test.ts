@@ -3,7 +3,7 @@ import {
   type ShapingGroundTruth,
   type ShapingOutput,
   shapingCommandsKind,
-} from '../../src/services/evaluation/kinds/shaping-commands'
+} from '../../src/services/evaluation'
 import type { Command } from '../../src/services/forms/shaping/commands'
 
 describe('shaping-commands evaluation kind', () => {

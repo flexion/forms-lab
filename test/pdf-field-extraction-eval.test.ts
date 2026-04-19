@@ -4,7 +4,7 @@ import type {
   FieldType,
   SensitivityLevel,
 } from '../src/services/data-collection'
-import { pdfFieldExtractionKind } from '../src/services/evaluation/kinds/pdf-field-extraction'
+import { pdfFieldExtractionKind } from '../src/services/evaluation'
 import type { FieldConfidence } from '../src/services/form-documents/types'
 
 function makeSpec(

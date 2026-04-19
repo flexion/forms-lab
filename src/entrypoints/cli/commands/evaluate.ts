@@ -1,8 +1,10 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { runEvaluation } from '../../../services/evaluation/harness'
-import { pdfFieldExtractionKind } from '../../../services/evaluation/kinds/pdf-field-extraction'
-import { evaluationRunSchema } from '../../../services/evaluation/schemas'
+import {
+  evaluationRunSchema,
+  pdfFieldExtractionKind,
+  runEvaluation,
+} from '../../../services/evaluation'
 import { createExtractorRegistry } from '../../../services/extraction'
 import { createCachedPdfExtractor } from '../../../services/form-documents/extraction'
 import { createCacheStore } from '../../../services/storage'
@@ -174,10 +176,10 @@ export async function evaluate(args: string[]): Promise<number> {
       let kind = pdfFieldExtractionKind
       if (scorerType === 'llm-judge') {
         const { createBedrockFieldJudge } = await import(
-          '../../../services/evaluation/judge'
+          '../../../services/evaluation'
         )
         const { createLlmJudgeKind } = await import(
-          '../../../services/evaluation/kinds/pdf-field-extraction-judge'
+          '../../../services/evaluation'
         )
         const { OPUS_MODEL_ID } = await import('../../../services/extraction')
         const judge = createBedrockFieldJudge(OPUS_MODEL_ID)

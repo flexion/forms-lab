@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { buildJudgePrompt } from '../src/services/evaluation/judge-prompt'
-import type { FlatField } from '../src/services/evaluation/kinds/shared'
+import type { FlatField } from '../src/services/evaluation'
+import { buildJudgePrompt } from '../src/services/evaluation'
 
 const gtFields: FlatField[] = [
   {
