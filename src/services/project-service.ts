@@ -411,13 +411,15 @@ export function createProjectService(
 
       const pdfBuffer = await repo.readFile(slug, 'main', `source/${slug}.pdf`)
       if (!pdfBuffer) {
+        console.error(`PDF not found for retry: ${slug} at source/${slug}.pdf`)
         store.update(project.id, {
           status: 'error',
-          error: 'Source PDF not found in repository',
+          error: 'Source PDF not found in repository. The project may need to be recreated.',
         })
         return
       }
 
+      console.log(`Retrying extraction for ${slug}, PDF size: ${pdfBuffer.length} bytes`)
       store.update(project.id, { status: 'extracting', error: null })
       fireAndForgetExtraction(project.id, slug, pdfBuffer, user.login)
     },
