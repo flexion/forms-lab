@@ -13,6 +13,11 @@ import {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
 } from '../../services/form-documents/extraction'
+import {
+  BedrockFillingAgent,
+  ScriptedFillingAgent,
+  SqliteConversationGateway,
+} from '../../services/forms/filling-agent'
 import { createFormProjectRepo } from '../../services/form-project-repo'
 import { createReviewService } from '../../services/forms/review'
 import { createShapingRegistry } from '../../services/forms/shaping/registry'
@@ -67,6 +72,11 @@ mkdirSync(dirname(formsDbPath), { recursive: true })
 const sessionGateway = new SqliteFormSessionGateway(formsDbPath)
 const submissionGateway = new SqliteSubmissionGateway(formsDbPath)
 const specSnapshotStore = createSpecSnapshotStore(formsDbPath)
+const conversationGateway = new SqliteConversationGateway(formsDbPath)
+const fillingAgent =
+  process.env.USE_SCRIPTED_AGENT === 'true'
+    ? new ScriptedFillingAgent()
+    : new BedrockFillingAgent()
 
 /**
  * Adapter: resolve a DataCollectionSpec id to (owner, slug, spec, formSpec)
@@ -336,6 +346,8 @@ app.route(
   createFormRouter({
     sessionGateway,
     submissionGateway,
+    conversationGateway,
+    fillingAgent,
     specSnapshotStore,
     async getSpecs(specId, ref) {
       const project = await findProjectBySpecId(specId)
