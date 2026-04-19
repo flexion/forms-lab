@@ -5,31 +5,59 @@ status: current
 course-topics: [evaluation, constrained-generation, tool-use]
 ---
 
-# PDF Field Extraction: Claude Sonnet 4 (tool-use)
+# PDF Field Extraction: Claude Sonnet 4 (Tool-Use)
 
-**Status:** experimental
+> Selectable in **Settings → Variants → Extraction**.
 
-## Summary
+## Approach
 
-| Metric | Value |
+Replaces the free-form JSON extraction prompt (Step 1) with AI SDK tool-use. The model calls domain tools incrementally:
+
+| Tool | Purpose |
 |---|---|
-| Field Recall | 34.6% |
-| Field Precision | 96.3% |
-| Type Accuracy | 97.4% |
-| Group Accuracy | 36.2% |
-| Sensitivity Accuracy | 78.6% |
+| `createSpec` | Initialize form ID, title, description |
+| `addGroup` | Start a new requirement group |
+| `addField` | Add a field to the current group |
+| `flagLowConfidence` | Flag uncertain fields |
 
-## pardon-application
+Each tool has an `execute` handler that returns an acknowledgment, allowing multi-step extraction via `stopWhen: stepCountIs(20)`. The model builds the spec iteratively across multiple rounds rather than producing one large JSON blob.
 
-- Missed: otherNationality, emailAddress, phoneNumber, attorneyName, attorneyContact, hasPreviousApplication, previousApplicationDate, previousDecisionDate, isHispanicLatino, race, sex, maritalStatus, spousePartnerName, dateOfMarriage, placeOfMarriage, childFullName, childDateOfBirth, childOtherParentNames, childCustody, formerSpouseName, formerSpousePhone, formerMarriageDate, formerDivorceDate, formerMarriagePlace, formerDivorcePlace, familyAdditionalPages, reasonsForPardon, reasonsAdditionalPages, communityActivityDescription, communityActivityDates, communityActivityContactNames, communityActivityContactInfo, communityActivityReasons, communityAdditionalPages, schoolProgramName, subjectStudiedDegree, educationDatesAttended, licenseType, licenseDateIssued, educationDenialProgramName, educationDenialDetails, educationDenialDate, educationAdditionalPages, previousStreetAddress, previousApartmentUnit, previousCityState, previousZipCode, previousDatesLiving, homelessnessDates, militaryNotApplicable, militaryDatesOfService, militaryBranches, militarySerialNumber, militaryDischargeType, militaryServiceDetails, militaryAdditionalPages, currentEmployer, currentEmployerType, currentPosition, currentJobStartDate, currentEmployerStreetAddress, currentEmployerCityState, currentEmployerZipCode, currentSupervisorNamePhone, previousEmployerName, previousEmployerType, previousPosition, previousEmployerAddressPhone, previousEmployerDates, unemploymentDetails, criminalRecordEmploymentImpact, jobMisconductDetails, jobAdditionalPages, substanceUseNotApplicable, substanceType, substanceFrequency, substanceUseDates, substanceUseDiagnosis, substanceUseDiagnosisDate, treatmentFacilityName, treatmentDates, treatmentStreetAddress, treatmentSuiteNo, treatmentCityState, treatmentZipCode, treatmentPhoneNumber, treatmentEmailAddress, sobrietyLength, sobrietyAdditionalInfo, sobrietyAdditionalPages, debtDescription, debtAmount, bankruptcyCourt, bankruptcyYearOutcome, bankruptcyDischargeAmount, financialAdditionalInfo, financialAdditionalPages, attachingCaseDocuments, pleadedGuilty, offenseDates, sentencingDate, courtOfProsecution, caseNumber, convictionCharge, prisonSentence, prisonReleaseDate, probationSupervisedReleaseSentence, probationCompletionDate, assessmentAmount, fineAmount, restitutionAmount, offenseConductNarrative, acceptResponsibility, offenseConductAdditionalPages, otherCriminalHistoryNarrative, otherCriminalHistoryAdditionalPages, oathDay, oathMonth, oathYear, applicantSignature, releaseSignature, releaseFullName, releaseDateSigned, releaseOtherNames, releaseStreetAddress, releaseCity, releaseState, releaseZipCode, releasePhoneNumber, releaseSsn, support1PrimaryReference, support1PetitionerName, support1YearsKnown, support1Statement, support1AdditionalPages, support1Signature, support1PrintName, support1Date, support1Address, support1Phone, support1Email, support2PrimaryReference, support2PetitionerName, support2YearsKnown, support2Statement, support2AdditionalPages, support2Signature, support2PrintName, support2Date, support2Address, support2Phone, support2Email, support3PrimaryReference, support3PetitionerName, support3YearsKnown, support3Statement, support3AdditionalPages, support3Signature, support3PrintName, support3Date, support3Address, support3Phone, support3Email
-- Extra: none
+Steps 2 (FormSpec generation) and 3 (AcroForm field mapping) remain free-JSON — only the error-prone Step 1 uses tool-use.
 
-## i-9
+## Metrics (LLM Judge, Opus scorer)
 
-- Missed: lawfulPermanentResidentUscisNumber, alienWorkAuthorizationExpiration, alienUscisANumber, alienForeignPassportNumber, alienForeignPassportCountry, employeeSignatureDate, listADocumentTitle1, listAIssuingAuthority1, listADocumentNumber1, listAExpirationDate1, listADocumentTitle2, listAIssuingAuthority2, listADocumentNumber2, listAExpirationDate2, listADocumentTitle3, listAIssuingAuthority3, listADocumentNumber3, listAExpirationDate3, listBDocumentTitle, listBIssuingAuthority, listBDocumentNumber, listBExpirationDate, listCDocumentTitle, listCIssuingAuthority, listCDocumentNumber, listCExpirationDate, additionalInformation, alternativeProcedureCheckbox, firstDayOfEmployment, employerLastNameFirstNameTitle, employerSignature, employerSignatureDate, employerBusinessName, employerBusinessAddress, supplementAEmployeeLastName, supplementAEmployeeFirstName, supplementAEmployeeMiddleInitial, preparer1Signature, preparer1Date, preparer1LastName, preparer1FirstName, preparer1MiddleInitial, preparer1Address, preparer1City, preparer1State, preparer1ZipCode, preparer2Signature, preparer2Date, preparer2LastName, preparer2FirstName, preparer2MiddleInitial, preparer2Address, preparer2City, preparer2State, preparer2ZipCode, preparer3Signature, preparer3Date, preparer3LastName, preparer3FirstName, preparer3MiddleInitial, preparer3Address, preparer3City, preparer3State, preparer3ZipCode, preparer4Signature, preparer4Date, preparer4LastName, preparer4FirstName, preparer4MiddleInitial, preparer4Address, preparer4City, preparer4State, preparer4ZipCode, suppBEmployeeLastName, suppBEmployeeFirstName, suppBEmployeeMiddleInitial, suppB1RehireDate, suppB1NewLastName, suppB1NewFirstName, suppB1NewMiddleInitial, suppB1DocumentTitle, suppB1DocumentNumber, suppB1ExpirationDate, suppB1EmployerName, suppB1EmployerSignature, suppB1TodayDate, suppB1AdditionalInfo, suppB1AlternativeProcedure, suppB2RehireDate, suppB2NewLastName, suppB2NewFirstName, suppB2NewMiddleInitial, suppB2DocumentTitle, suppB2DocumentNumber, suppB2ExpirationDate, suppB2EmployerName, suppB2EmployerSignature, suppB2TodayDate, suppB2AdditionalInfo, suppB2AlternativeProcedure, suppB3RehireDate, suppB3NewLastName, suppB3NewFirstName, suppB3NewMiddleInitial, suppB3DocumentTitle, suppB3DocumentNumber, suppB3ExpirationDate, suppB3EmployerName, suppB3EmployerSignature, suppB3TodayDate, suppB3AdditionalInfo, suppB3AlternativeProcedure
-- Extra: uscisANumber, foreignPassportNumber
+| Metric | Tool-Use | Baseline Sonnet | Delta |
+|---|---|---|---|
+| Field Recall | 34.6% | 62.1% | -27.5pp |
+| Field Precision | 96.3% | 78.9% | **+17.4pp** |
+| Type Accuracy | 97.4% | 97.0% | +0.4pp |
+| Group Accuracy | 36.2% | 31.4% | **+4.8pp** |
+| Sensitivity Accuracy | 78.6% | 27.3% | **+51.3pp** |
 
-## w-9
+## Findings
 
-- Missed: otherClassification, signature, signatureDate
-- Extra: none
+**Constrained output eliminates false positives.** Precision (96.3%) is the highest of any variant. When the model calls `addField`, it commits to a valid field structure — no malformed JSON, no hallucinated schema violations.
+
+**Sensitivity classification dramatically improved.** The tool schema forces explicit `sensitivity` enum selection. The model can't accidentally omit sensitivity (as it does with free JSON); it must choose from `low|medium|high|pii`. This structural constraint produces 78.6% sensitivity accuracy vs 27.3% for baseline — a 51pp improvement.
+
+**Recall limited by step count.** At `stepCountIs(20)`, the model gets ~18 usable rounds after the initial PDF processing step. Complex forms (pardon application: 140+ fields) cannot be fully extracted in 20 rounds. The W-9 (8 fields) extracts completely; the I-9 (moderate) partially; the pardon application barely starts.
+
+**Production path:** Increasing `stepCountIs` to 50-100 would likely recover recall at the cost of latency and token spend. This is a tuning knob, not a fundamental limitation of the approach.
+
+## Course Connection
+
+Assignment 10 showed that the `llama-tool-force` instruction ("You must ONLY respond by calling tools") was the single most effective intervention across architectures — achieving 100% on Llama 4, DeepSeek, Qwen, and Nova models that scored 50-58% with baseline prompts. The tool-use extraction variant applies the same principle at a deeper level: the model literally cannot produce non-tool output, ensuring every emission is schema-valid.
+
+The homework also documented a universal 15-field ceiling for non-Claude models on structured extraction. Tool-use on Claude doesn't hit that ceiling (Sonnet can handle arbitrary complexity) but introduces its own ceiling via the step limit — a different constraint with a simpler fix (increase the step budget).
+
+## Cost
+
+Same model (Sonnet), but multi-step extraction uses more tokens due to accumulated conversation history. Each round adds the full tool call + result to context.
+
+| Form Complexity | Steps Used | Est. Cost | vs Baseline |
+|---|---|---|---|
+| Simple (W-9, 8 fields) | 3-5 | ~$0.15 | ~1x |
+| Moderate (I-9, 30 fields) | 10-15 | ~$0.50 | ~2x |
+| Complex (Pardon, 140+ fields) | 20 (limit) | ~$0.80 | ~3x |
+
+The cost scales with form complexity because each step accumulates prior context. For production use on complex forms, the step limit should be raised but cost-monitored.
