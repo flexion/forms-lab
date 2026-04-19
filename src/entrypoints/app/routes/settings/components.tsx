@@ -1,12 +1,6 @@
 import type { FC } from 'hono/jsx'
 import { Alert } from '../../../../design-system/components/flex-alert'
 import { Button } from '../../../../design-system/components/flex-button'
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardHeading,
-} from '../../../../design-system/components/flex-card'
 import { Radio } from '../../../../design-system/components/flex-radio'
 import type { TaskRegistries } from '../../../../services/variant-preferences'
 import {
@@ -15,11 +9,37 @@ import {
 } from '../../../../services/variant-preferences/types'
 import { resolveUrl } from '../../../../shared/base-path'
 
-const TASK_LABELS: Record<Task, string> = {
-  extraction: 'Extraction',
-  shaping: 'Shaping',
-  filling: 'Conversational filling',
-  'field-mapping': 'Field mapping',
+interface TaskMeta {
+  label: string
+  description: string
+  benchmarksPath: string
+}
+
+const TASK_META: Record<Task, TaskMeta> = {
+  extraction: {
+    label: 'Extraction',
+    description:
+      'Parse a PDF into a structured DataCollectionSpec. Runs when you upload a new form.',
+    benchmarksPath: '/catalog/experiments/pdf-field-extraction',
+  },
+  shaping: {
+    label: 'Shaping',
+    description:
+      'Apply natural-language edit instructions to a form spec as a sequence of structured commands. Runs when you describe a change on the edit page.',
+    benchmarksPath: '/catalog/experiments/shaping-architecture',
+  },
+  filling: {
+    label: 'Conversational filling',
+    description:
+      'Guide Carlos through complex form sections as an adaptive interview. Runs when a section is configured for conversational delivery.',
+    benchmarksPath: '/catalog/experiments/roadmap',
+  },
+  'field-mapping': {
+    label: 'Field mapping',
+    description:
+      "Match extracted spec fields to the source PDF's AcroForm fields. Runs automatically after extraction.",
+    benchmarksPath: '/catalog/experiments/roadmap',
+  },
 }
 
 interface VariantLabelProps {
@@ -64,6 +84,7 @@ export const VariantPickerPage: FC<VariantPickerPageProps> = ({
   saved,
 }) => {
   const action = resolveUrl('/settings/variants')
+  const roadmapHref = resolveUrl('/catalog/experiments/roadmap')
   return (
     <div class="l-stack variant-settings" data-space="lg">
       <header class="variant-settings__header">
@@ -79,8 +100,9 @@ export const VariantPickerPage: FC<VariantPickerPageProps> = ({
         </nav>
         <h1 class="variant-settings__title">Variants</h1>
         <p class="variant-settings__lede">
-          Choose which LLM variant runs each task. Each variant has its own
-          evaluation in the catalog.
+          Choose which LLM variant runs each task. Your choice takes effect on
+          the next run of that task. Every variant is evaluated in the catalog —
+          follow the benchmarks link on each task for per-variant results.
         </p>
       </header>
 
@@ -92,46 +114,60 @@ export const VariantPickerPage: FC<VariantPickerPageProps> = ({
             const variants = registries[task].list()
             const current = selections[task]
             const highlighted = highlightTask === task
+            const meta = TASK_META[task]
+            const benchmarksHref = resolveUrl(meta.benchmarksPath)
             return (
-              <div
+              <section
                 key={task}
                 id={`task-${task}`}
                 class="variant-settings__task"
                 data-highlighted={highlighted ? 'true' : undefined}
               >
-                <Card>
-                  <CardHeader>
-                    <CardHeading>{TASK_LABELS[task]}</CardHeading>
-                  </CardHeader>
-                  <CardBody>
-                    {variants.length === 0 ? (
-                      <p class="variant-settings__empty">
-                        No variants yet — available in a later release.
-                      </p>
-                    ) : (
-                      <div class="variant-settings__options">
-                        {variants.map((variant) => (
-                          <Radio
-                            key={variant.id}
-                            tile
-                            id={`variant__${task}__${variant.id}`}
-                            name={`variant__${task}`}
-                            value={variant.id}
-                            checked={current === variant.id}
-                            label={
-                              <VariantLabel
-                                name={variant.metadata.name}
-                                description={variant.metadata.description}
-                                catalogPath={variant.metadata.catalogPath}
-                              />
-                            }
+                <div class="variant-settings__task-header">
+                  <div class="variant-settings__task-heading">
+                    <h2 class="variant-settings__task-label">{meta.label}</h2>
+                    <p class="variant-settings__task-description">
+                      {meta.description}
+                    </p>
+                  </div>
+                  <a
+                    class="variant-settings__task-benchmarks"
+                    href={benchmarksHref}
+                  >
+                    View benchmarks →
+                  </a>
+                </div>
+
+                {variants.length === 0 ? (
+                  <p class="variant-settings__empty">
+                    No variants yet — available in a later release. See the{' '}
+                    <a class="variant-settings__option-link" href={roadmapHref}>
+                      experiment roadmap
+                    </a>{' '}
+                    for what's planned.
+                  </p>
+                ) : (
+                  <div class="variant-settings__options">
+                    {variants.map((variant) => (
+                      <Radio
+                        key={variant.id}
+                        tile
+                        id={`variant__${task}__${variant.id}`}
+                        name={`variant__${task}`}
+                        value={variant.id}
+                        checked={current === variant.id}
+                        label={
+                          <VariantLabel
+                            name={variant.metadata.name}
+                            description={variant.metadata.description}
+                            catalogPath={variant.metadata.catalogPath}
                           />
-                        ))}
-                      </div>
-                    )}
-                  </CardBody>
-                </Card>
-              </div>
+                        }
+                      />
+                    ))}
+                  </div>
+                )}
+              </section>
             )
           })}
         </div>
