@@ -26,7 +26,7 @@ const TASK_META: Record<Task, TaskMeta> = {
     label: 'Shaping',
     description:
       'Apply natural-language edit instructions to a form spec as a sequence of structured commands. Runs when you describe a change on the edit page.',
-    benchmarksPath: '/catalog/experiments/shaping-architecture',
+    benchmarksPath: '/catalog/experiments/shaping-model-comparison',
   },
   filling: {
     label: 'Conversational filling',
