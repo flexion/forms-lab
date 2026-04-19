@@ -86,7 +86,16 @@ const EditingShell: FC<{
   changed: { dataSpec: boolean; formSpec: boolean }
   shapingBadge?: { variantId: string; variantName: string } | null
   authoringStage?: AuthoringStage | null
-}> = ({ view, owner, log, branch, branches, changed, shapingBadge, authoringStage }) => {
+}> = ({
+  view,
+  owner,
+  log,
+  branch,
+  branches,
+  changed,
+  shapingBadge,
+  authoringStage,
+}) => {
   const { project, formSpec, spec } = view
   const editBase = `/${owner}/${project.slug}/edit/${branch}`
   const previewBase = `/${owner}/${project.slug}/preview/${branch}`
