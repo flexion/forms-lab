@@ -7,6 +7,8 @@ course-topics: [evaluation]
 
 # PDF Field Extraction: Claude Opus 4.6
 
+> Selectable in **Settings → Variants → Extraction**.
+
 **Status:** baseline
 
 ## Summary

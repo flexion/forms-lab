@@ -7,6 +7,8 @@ course-topics: [evaluation, model-selection]
 
 # PDF Field Extraction: Claude Haiku 4.5
 
+> Selectable in **Settings → Variants → Extraction**.
+
 **Status:** experimental
 
 ## Summary

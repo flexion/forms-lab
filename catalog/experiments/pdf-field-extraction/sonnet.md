@@ -7,6 +7,8 @@ course-topics: [evaluation, model-selection]
 
 # PDF Field Extraction: Claude Sonnet 4
 
+> Selectable in **Settings → Variants → Extraction**.
+
 **Status:** production
 
 ## Summary
