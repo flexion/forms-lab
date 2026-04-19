@@ -136,7 +136,7 @@ export const testDataSpec: DataCollectionSpec = {
 
 /**
  * A FormSpec referencing testDataSpec (models.ts version with timestamps).
- * 3 pages: personal info, employment + income, additional details.
+ * 3 pages: personal info, employment + income (conversational), additional details.
  * Use for project-service and storage layer tests.
  */
 export const testFormSpec: FormSpecModels = {
@@ -155,7 +155,7 @@ export const testFormSpec: FormSpecModels = {
       id: 'page-2',
       title: 'Employment',
       groups: ['employment', 'income'],
-      deliveryMode: 'static',
+      deliveryMode: 'conversational',
     },
     {
       id: 'page-3',
