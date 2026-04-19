@@ -5,7 +5,7 @@ describe('createExtractorRegistry', () => {
   it('returns a registry with strategies registered', () => {
     const registry = createExtractorRegistry()
     const strategies = registry.list()
-    expect(strategies.length).toBeGreaterThanOrEqual(4)
+    expect(strategies.length).toBeGreaterThanOrEqual(5)
   })
 
   it('registers opus as baseline', () => {
@@ -43,5 +43,26 @@ describe('createExtractorRegistry', () => {
     const fewShot = strategies.find((s) => s.id === 'few-shot-sonnet')
     expect(fewShot).toBeDefined()
     expect(fewShot?.metadata.courseTopics).toContain('few-shot')
+  })
+
+  it('registers nova-pro with pricing metadata', () => {
+    const registry = createExtractorRegistry()
+    const strategies = registry.list()
+    const nova = strategies.find((s) => s.id === 'nova-pro')
+    expect(nova).toBeDefined()
+    expect(nova?.metadata.status).toBe('experimental')
+    expect(nova?.metadata.pricing).toEqual({
+      inputPer1k: 0.0008,
+      outputPer1k: 0.0032,
+    })
+    expect(nova?.metadata.courseTopics).toContain('cost-optimization')
+  })
+
+  it('all variants have pricing metadata', () => {
+    const registry = createExtractorRegistry()
+    for (const strategy of registry.list()) {
+      expect(strategy.metadata.pricing).toBeDefined()
+      expect(strategy.metadata.pricing!.inputPer1k).toBeGreaterThan(0)
+    }
   })
 })

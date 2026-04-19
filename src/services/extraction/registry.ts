@@ -2,7 +2,12 @@ import type { PdfExtractor } from '../form-documents/extraction'
 import { createBedrockPdfExtractor } from '../form-documents/extraction'
 import { StrategyRegistry } from '../strategy-registry'
 import { exemplars } from './exemplars'
-import { HAIKU_MODEL_ID, OPUS_MODEL_ID, SONNET_MODEL_ID } from './models'
+import {
+  HAIKU_MODEL_ID,
+  NOVA_PRO_MODEL_ID,
+  OPUS_MODEL_ID,
+  SONNET_MODEL_ID,
+} from './models'
 
 export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
   const registry = new StrategyRegistry<PdfExtractor>()
@@ -66,6 +71,25 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
     },
     create: () =>
       createBedrockPdfExtractor({ model: SONNET_MODEL_ID, exemplars }),
+  })
+
+  registry.register({
+    id: 'nova-pro',
+    metadata: {
+      name: 'Amazon Nova Pro',
+      description:
+        'Amazon multimodal model at 1/4 the cost of Sonnet. Supports PDF input natively. Coursework showed 97-100% on simple tool-calling tasks. Tests whether a non-Claude model can handle government form extraction.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'model-selection', 'cost-optimization'],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/nova-pro',
+      modelId: NOVA_PRO_MODEL_ID,
+      pricing: { inputPer1k: 0.0008, outputPer1k: 0.0032 },
+    },
+    create: () =>
+      createBedrockPdfExtractor({
+        model: NOVA_PRO_MODEL_ID,
+        maxOutputTokens: 10000,
+      }),
   })
 
   registry.setDefault('sonnet')

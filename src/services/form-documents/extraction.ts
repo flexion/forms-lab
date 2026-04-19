@@ -68,6 +68,7 @@ function parseJsonResponse<T>(
 export interface BedrockExtractorOptions {
   model?: string
   exemplars?: ExtractionExemplar[]
+  maxOutputTokens?: number
 }
 
 /** Build the few-shot examples section for the extraction prompt. */
@@ -125,7 +126,7 @@ export function createBedrockPdfExtractor(
       // tool-use mode returns empty objects on Bedrock.
       const extraction = await generateText({
         model: bedrock(model),
-        maxOutputTokens: 32768,
+        maxOutputTokens: options?.maxOutputTokens ?? 32768,
         messages: [
           {
             role: 'user',
