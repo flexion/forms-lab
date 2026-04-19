@@ -50,8 +50,4 @@ export interface AuthoringStageConfig {
   evaluation: { modelId: string }
 }
 
-export type AuthoringStage =
-  | 'criteria'
-  | 'structure'
-  | 'sections'
-  | 'complete'
+export type AuthoringStage = 'criteria' | 'structure' | 'sections' | 'complete'
