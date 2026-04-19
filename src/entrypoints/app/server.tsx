@@ -235,6 +235,17 @@ app.get('/health', (c) => {
   })
 })
 
+// Debug logs endpoint
+app.get('/debug/extraction-log', async (c) => {
+  try {
+    const { readFile } = await import('node:fs/promises')
+    const log = await readFile('/tmp/extraction-debug.log', 'utf-8')
+    return c.text(log)
+  } catch (err) {
+    return c.text(`No log file found: ${err}`)
+  }
+})
+
 // New project routes (requires auth)
 app.use('/new', requireAuth())
 app.get('/new', (c) => {

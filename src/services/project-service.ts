@@ -236,6 +236,13 @@ export function createProjectService(
     pdf: Buffer,
     author: string,
   ): void {
+    const logMsg = `[FIRE_AND_FORGET] slug=${slug} pdf_type=${typeof pdf} isBuffer=${Buffer.isBuffer(pdf)} length=${pdf?.length}`
+    console.log(logMsg)
+    // Also write to file for debugging
+    try {
+      const fs = require('fs')
+      fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} ${logMsg}\n`)
+    } catch {}
     extractor
       .extract(pdf)
       .then(async (result) => {
@@ -292,6 +299,8 @@ export function createProjectService(
       user: SessionUser,
     ): Promise<ProjectIndex> {
       requireAuth(user)
+      console.log('[CREATE_PROJECT] Creating project:', name)
+      console.log('[CREATE_PROJECT] PDF type:', typeof pdf, 'isBuffer:', Buffer.isBuffer(pdf), 'length:', pdf?.length)
 
       const slug = generateUniqueSlug(name)
       const project = store.create({
