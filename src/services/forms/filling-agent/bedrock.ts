@@ -137,8 +137,20 @@ export class BedrockFillingAgent implements FillingAgent {
     // Check if we're finished (no more required fields to collect)
     const finished = this.isFormComplete(context.groups, updatedCollectedFields)
 
+    // If result.text is empty (tool-only response), generate a message
+    let message = result.text
+    if (!message || message.trim().length === 0) {
+      // Generate a default response based on what was collected
+      if (Object.keys(fieldsCollected).length > 0) {
+        const fieldNames = Object.keys(fieldsCollected).join(', ')
+        message = `Got it, I've recorded: ${fieldNames}.`
+      } else {
+        message = 'Processing...'
+      }
+    }
+
     return {
-      message: result.text,
+      message,
       fieldsCollected,
       finished,
       toolCalls,

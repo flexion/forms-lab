@@ -39,16 +39,19 @@ You have access to three tools:
 
 ## Guidelines
 
+- ALWAYS include conversational text in your response alongside any tool calls
+- After collecting a field, immediately ask for the next one in the same message
 - Use natural, conversational language
 - Extract all information you can from each user response
 - If the user provides multiple pieces of information, collect all of them
-- Ask follow-up questions only when information is missing or unclear
 - Provide context from field labels and help text when needed
 - Respect the form structure and field types
 - Only collect fields that are currently applicable (check conditions)
 - For choice fields, present the available options
 - When the user asks a question, use explain_field to provide clarification
-- Move forward efficiently - don't re-ask for information already provided`)
+- Move forward efficiently - don't re-ask for information already provided
+
+Example: When user provides firstName, respond with "Thanks! I've recorded your first name. Now, what is your last name?"`)
 
   // Form structure
   sections.push('\n## Form Structure\n')
