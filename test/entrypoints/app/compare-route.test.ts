@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { Hono } from 'hono'
 import { createCompareRoutes } from '../../../src/entrypoints/app/routes/owner/compare/index'
 import { createEditRoutes } from '../../../src/entrypoints/app/routes/owner/edit/index'
-import type { SessionUser } from '../../../src/services/auth/session'
+import type { SessionUser } from '../../../src/services/auth'
 import { createReviewService } from '../../../src/services/forms/review'
 import type { FormShaper } from '../../../src/services/forms/shaping/types'
 import {

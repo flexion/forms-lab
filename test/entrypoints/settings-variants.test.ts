@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { Hono } from 'hono'
 import { sessionReader } from '../../src/entrypoints/app/middleware/auth'
 import { createSettingsRoutes } from '../../src/entrypoints/app/routes/settings/index'
-import { COOKIE_NAME, encryptSession } from '../../src/services/auth/session'
+import { COOKIE_NAME, encryptSession } from '../../src/services/auth'
 import type { Task } from '../../src/services/variant-preferences'
 import {
   createVariantPreferencesGateway,

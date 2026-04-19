@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'bun:test'
 import { mkdirSync, rmSync } from 'node:fs'
 import { Hono } from 'hono'
 import { createEditRoutes } from '../../src/entrypoints/app/routes/owner/edit'
-import type { SessionUser } from '../../src/services/auth/session'
+import type { SessionUser } from '../../src/services/auth'
 import {
   createFormProjectRepo,
   createProjectService,

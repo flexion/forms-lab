@@ -5,7 +5,7 @@ import { ChangeIndicator } from '../../../../../design-system/components/flex-ch
 import type { FormFieldRequirement } from '../../../../../design-system/components/flex-form-field'
 import { FormPageView } from '../../../../../design-system/components/flex-form-page'
 import { VariantBadge } from '../../../../../design-system/components/flex-variant-badge'
-import type { SessionUser } from '../../../../../services/auth/session'
+import type { SessionUser } from '../../../../../services/auth'
 import type {
   BranchEntry,
   ProjectView,

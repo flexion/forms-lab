@@ -5,7 +5,7 @@ import { BranchSwitcher } from '../../../../design-system/components/flex-branch
 import { SpecBrowser } from '../../../../design-system/components/flex-spec-browser'
 import { VariantBadge } from '../../../../design-system/components/flex-variant-badge'
 import { VariantCallout } from '../../../../design-system/components/flex-variant-callout'
-import type { SessionUser } from '../../../../services/auth/session'
+import type { SessionUser } from '../../../../services/auth'
 import type {
   BranchEntry,
   CommitEntry,

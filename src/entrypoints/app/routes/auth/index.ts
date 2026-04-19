@@ -2,14 +2,12 @@ import { Hono } from 'hono'
 import { deleteCookie, setCookie } from 'hono/cookie'
 import type { UserStore } from '../../../../services/auth'
 import {
-  exchangeCodeForToken,
-  fetchUserProfile,
-} from '../../../../services/auth/github-oauth'
-import {
   COOKIE_MAX_AGE,
   COOKIE_NAME,
   encryptSession,
-} from '../../../../services/auth/session'
+  exchangeCodeForToken,
+  fetchUserProfile,
+} from '../../../../services/auth'
 import { resolveUrl } from '../../../../shared/base-path'
 
 export function createAuthRoutes(userStore: UserStore): Hono {

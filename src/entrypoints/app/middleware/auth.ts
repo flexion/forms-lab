@@ -4,7 +4,7 @@ import {
   COOKIE_NAME,
   decryptSession,
   type SessionUser,
-} from '../../../services/auth/session'
+} from '../../../services/auth'
 import { resolveUrl } from '../../../shared/base-path'
 
 declare module 'hono' {

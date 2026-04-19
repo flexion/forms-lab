@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'bun:test'
 import { demoFixtures, getFixture, loadFixturePdf } from '../fixtures/index'
 import app from '../src/entrypoints/app/server'
-import { COOKIE_NAME, encryptSession } from '../src/services/auth/session'
+import { COOKIE_NAME, encryptSession } from '../src/services/auth'
 
 const SESSION_SECRET = 'test-secret-key-32-bytes-long!'
 
