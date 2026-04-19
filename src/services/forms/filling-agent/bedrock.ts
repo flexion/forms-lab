@@ -65,53 +65,59 @@ export class BedrockFillingAgent implements FillingAgent {
         collect_field: {
           description: 'Record a field value when the user provides it',
           parameters: {
-            type: 'object',
-            properties: {
-              fieldName: {
-                type: 'string',
-                description: 'The field name to collect (camelCase)',
+            json: {
+              type: 'object',
+              properties: {
+                fieldName: {
+                  type: 'string',
+                  description: 'The field name to collect (camelCase)',
+                },
+                value: {
+                  type: 'string',
+                  description: 'The value provided by the user',
+                },
               },
-              value: {
-                type: 'string',
-                description: 'The value provided by the user',
-              },
+              required: ['fieldName', 'value'],
             },
-            required: ['fieldName', 'value'],
           } as const,
-          // biome-ignore lint/suspicious/noExplicitAny: Bedrock requires plain JSON Schema, not jsonSchema() wrapper
+          // biome-ignore lint/suspicious/noExplicitAny: Bedrock expects json wrapper around schema
         } as any,
         explain_field: {
           description:
             'Provide additional context about a field when the user asks for clarification',
           parameters: {
-            type: 'object',
-            properties: {
-              fieldName: {
-                type: 'string',
-                description: 'The field name to explain',
+            json: {
+              type: 'object',
+              properties: {
+                fieldName: {
+                  type: 'string',
+                  description: 'The field name to explain',
+                },
               },
+              required: ['fieldName'],
             },
-            required: ['fieldName'],
           } as const,
-          // biome-ignore lint/suspicious/noExplicitAny: Bedrock requires plain JSON Schema, not jsonSchema() wrapper
+          // biome-ignore lint/suspicious/noExplicitAny: Bedrock expects json wrapper around schema
         } as any,
         skip_field: {
           description: 'Mark a field as intentionally skipped',
           parameters: {
-            type: 'object',
-            properties: {
-              fieldName: {
-                type: 'string',
-                description: 'The field name to skip',
+            json: {
+              type: 'object',
+              properties: {
+                fieldName: {
+                  type: 'string',
+                  description: 'The field name to skip',
+                },
+                reason: {
+                  type: 'string',
+                  description: 'Why the field is being skipped',
+                },
               },
-              reason: {
-                type: 'string',
-                description: 'Why the field is being skipped',
-              },
+              required: ['fieldName', 'reason'],
             },
-            required: ['fieldName', 'reason'],
           } as const,
-          // biome-ignore lint/suspicious/noExplicitAny: Bedrock requires plain JSON Schema, not jsonSchema() wrapper
+          // biome-ignore lint/suspicious/noExplicitAny: Bedrock expects json wrapper around schema
         } as any,
       },
     })
