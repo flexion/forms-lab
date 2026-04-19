@@ -12,7 +12,9 @@ describe('loadPolicyCorpus', () => {
 
   it('parses multiple sections per file as distinct chunks', () => {
     const chunks = loadPolicyCorpus()
-    const pardonChunks = chunks.filter((c) => c.formSlug === 'pardon-application')
+    const pardonChunks = chunks.filter(
+      (c) => c.formSlug === 'pardon-application',
+    )
     expect(pardonChunks.length).toBeGreaterThanOrEqual(3)
   })
 

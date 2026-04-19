@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import {
+  cosineSimilarity,
   createHashEmbedder,
   createInMemoryRetriever,
-  cosineSimilarity,
   type Embedder,
   type PolicyChunk,
 } from '../src/services/rag/retrieval'
@@ -17,14 +17,20 @@ function stubEmbedder(map: Record<string, number[]>): Embedder {
     async embed(text: string): Promise<number[]> {
       const v = map[text]
       if (!v) {
-        throw new Error(`stubEmbedder: unexpected input ${JSON.stringify(text)}`)
+        throw new Error(
+          `stubEmbedder: unexpected input ${JSON.stringify(text)}`,
+        )
       }
       return v
     },
   }
 }
 
-const chunk = (id: string, text: string, extra: Partial<PolicyChunk> = {}): PolicyChunk => ({
+const chunk = (
+  id: string,
+  text: string,
+  extra: Partial<PolicyChunk> = {},
+): PolicyChunk => ({
   id,
   source: `src:${id}`,
   title: `title:${id}`,

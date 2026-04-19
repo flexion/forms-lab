@@ -1,3 +1,4 @@
+export { type LoadPolicyCorpusOptions, loadPolicyCorpus } from './corpus'
 export {
   cosineSimilarity,
   createHashEmbedder,
@@ -7,4 +8,3 @@ export {
   type PolicyRetriever,
 } from './retrieval'
 export { createTitanEmbedder } from './titan-embedder'
-export { loadPolicyCorpus, type LoadPolicyCorpusOptions } from './corpus'

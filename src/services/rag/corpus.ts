@@ -33,7 +33,10 @@ const CORPUS_FILES: Array<{ path: string }> = [
  * nested objects are not supported because the corpus does not use
  * them.
  */
-function parseFrontmatter(text: string): { data: Record<string, string>; body: string } {
+function parseFrontmatter(text: string): {
+  data: Record<string, string>
+  body: string
+} {
   const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
   if (!match) {
     throw new Error('Corpus file missing YAML frontmatter')
@@ -64,7 +67,10 @@ function parseSections(body: string): Array<{ source: string; text: string }> {
     const heading = line.match(/^## Section — (.+?)\s*$/)
     if (heading) {
       if (current) {
-        sections.push({ source: current.source, text: current.lines.join('\n').trim() })
+        sections.push({
+          source: current.source,
+          text: current.lines.join('\n').trim(),
+        })
       }
       current = { source: heading[1].trim(), lines: [] }
       continue
@@ -74,7 +80,10 @@ function parseSections(body: string): Array<{ source: string; text: string }> {
     }
   }
   if (current) {
-    sections.push({ source: current.source, text: current.lines.join('\n').trim() })
+    sections.push({
+      source: current.source,
+      text: current.lines.join('\n').trim(),
+    })
   }
   return sections
 }

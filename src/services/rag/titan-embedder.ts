@@ -25,11 +25,15 @@ export interface TitanEmbedderOptions {
 
 const DEFAULT_MODEL = 'amazon.titan-embed-text-v2:0'
 
-export function createTitanEmbedder(options: TitanEmbedderOptions = {}): Embedder {
+export function createTitanEmbedder(
+  options: TitanEmbedderOptions = {},
+): Embedder {
   const bedrock = createAmazonBedrock({
     credentialProvider: fromNodeProviderChain(),
     region:
-      options.region ?? process.env.AWS_BEDROCK_REGION ?? process.env.AWS_REGION,
+      options.region ??
+      process.env.AWS_BEDROCK_REGION ??
+      process.env.AWS_REGION,
   })
 
   const embeddingModel = bedrock.embeddingModel(options.model ?? DEFAULT_MODEL)
