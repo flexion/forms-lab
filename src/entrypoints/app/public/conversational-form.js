@@ -2,6 +2,7 @@
  * Conversational form client-side enhancement
  *
  * Wires up flex-assistant component for conversational form filling:
+ * - Waits for custom element to be defined
  * - Loads initial message history into assistant
  * - Handles message submission events
  * - POSTs messages to server with X-Live-Chat header
@@ -9,8 +10,10 @@
  * - Reloads page when conversation is finished
  */
 
-;(() => {
-  // Load initial messages into flex-assistant
+async function init() {
+  // Wait for the flex-assistant custom element to be defined
+  await customElements.whenDefined('flex-assistant')
+
   const messagesScript = document.querySelector('[data-initial-messages]')
   const assistant = document.querySelector('flex-assistant')
 
@@ -37,14 +40,6 @@
 
     // Add user message to UI
     assistant.addMessage('user', text)
-
-    // Get session ID
-    const sessionId = assistant.getAttribute('data-session-id')
-    if (!sessionId) {
-      console.error('No session ID found')
-      assistant.addMessage('system', 'Error: No session ID')
-      return
-    }
 
     // Send message to server
     try {
@@ -75,11 +70,13 @@
       if (data.finished) {
         setTimeout(() => {
           window.location.reload()
-        }, 1000)
+        }, 1500)
       }
     } catch (error) {
       console.error('Error sending message:', error)
       assistant.addMessage('system', `Error: ${error.message}`)
     }
   })
-})()
+}
+
+init()

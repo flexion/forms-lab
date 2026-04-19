@@ -807,8 +807,10 @@ export function createFormRouter(deps: FormRouterDeps) {
             __html: JSON.stringify(initialMessages).replace(/</g, '\\u003c'),
           }}
         />
-        <script src={resolveUrl('/static/components.js')} />
-        <script src={resolveUrl('/static/conversational-form.js')} />
+        <script
+          type="module"
+          src={resolveUrl('/static/conversational-form.js')}
+        />
       </Layout>,
     )
   }
