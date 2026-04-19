@@ -86,14 +86,14 @@ export function createProjectStore(dbPath: string): ProjectStore {
     )
   `)
 
-  // Migration: ensure all columns exist (for databases created with old schemas)
+  // Migration: handle schema evolution from old versions
   const columns = (
     db.query("SELECT name FROM pragma_table_info('projects')").all() as Array<{
       name: string
     }>
   ).map((row) => row.name)
 
-  const requiredColumns = [
+  const currentSchema = [
     'id',
     'slug',
     'name',
@@ -104,36 +104,20 @@ export function createProjectStore(dbPath: string): ProjectStore {
     'created_at',
     'updated_at',
   ]
-  const missingColumns = requiredColumns.filter((col) => !columns.includes(col))
 
-  if (missingColumns.length > 0) {
-    // Add missing columns one by one
-    for (const col of missingColumns) {
-      if (col === 'slug') {
-        db.run('ALTER TABLE projects ADD COLUMN slug TEXT')
-      } else if (col === 'forked_from') {
-        db.run('ALTER TABLE projects ADD COLUMN forked_from TEXT')
-      } else if (col === 'error') {
-        db.run('ALTER TABLE projects ADD COLUMN error TEXT')
-      }
-    }
+  // Detect if this is an old schema (has description/source_pdf) or incomplete new schema
+  const hasOldColumns =
+    columns.includes('description') || columns.includes('source_pdf')
+  const missingNewColumns = currentSchema.filter((col) => !columns.includes(col))
+  const needsMigration = hasOldColumns || missingNewColumns.length > 0
 
-    // Backfill slug from name for existing rows if slug was missing
-    if (missingColumns.includes('slug')) {
-      const projects = db.query('SELECT id, name FROM projects').all() as Array<{
-        id: string
-        name: string
-      }>
-      for (const project of projects) {
-        const slug = project.name
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-|-$/g, '')
-        db.run('UPDATE projects SET slug = ? WHERE id = ?', [slug, project.id])
-      }
-    }
+  if (needsMigration) {
+    // For old schema, we need to migrate data; for incomplete new schema, we can just copy
+    const projects = db
+      .query('SELECT * FROM projects')
+      .all() as Array<Record<string, unknown>>
 
-    // Recreate table with proper constraints
+    // Create new table with current schema
     db.run(`
       CREATE TABLE projects_new (
         id TEXT PRIMARY KEY,
@@ -147,7 +131,34 @@ export function createProjectStore(dbPath: string): ProjectStore {
         updated_at INTEGER NOT NULL
       )
     `)
-    db.run('INSERT INTO projects_new SELECT * FROM projects')
+
+    // Migrate each project
+    for (const project of projects) {
+      const id = project.id as string
+      const name = project.name as string
+      const createdBy = project.created_by as string
+      const createdAt = project.created_at as number
+      const updatedAt = project.updated_at as number
+      const status = (project.status as string) ?? 'extracting'
+      const error = (project.error as string | null) ?? null
+      const forkedFrom = (project.forked_from as string | null) ?? null
+
+      // Generate slug if missing (from old schema)
+      let slug = (project.slug as string | null) ?? null
+      if (!slug) {
+        slug = name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '')
+      }
+
+      db.run(
+        `INSERT INTO projects_new (id, slug, name, forked_from, status, error, created_by, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id, slug, name, forkedFrom, status, error, createdBy, createdAt, updatedAt],
+      )
+    }
+
     db.run('DROP TABLE projects')
     db.run('ALTER TABLE projects_new RENAME TO projects')
   }
