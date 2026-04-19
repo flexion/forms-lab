@@ -44,7 +44,17 @@ Each variant is user-selectable at [/settings/variants?task=shaping](/settings/v
 
 ## Evaluation Status
 
-The `shaping-commands` evaluation kind is implemented and tested with synthetic data (19 unit tests validate scoring logic). Live model evaluation requires a CLI runner that calls each model with the scripted intents — this is planned follow-up work. The scoring kind itself is validated: precision/recall/argument-accuracy metrics compute correctly and the summarizer averages correctly across cases.
+Live evaluation shipped in story #75: `bun run cli evaluate shaping <variant-id>` runs all six scripted intents against a shaping variant and writes a `RunResult` JSON plus an updated catalog page with metrics. All three variants (haiku, sonnet, opus) have been evaluated; see the per-variant pages for headline numbers and interpretation.
+
+Headline results (deterministic scoring, single run each, 2026-04-19):
+
+| Variant | Kind Recall | Kind Precision | Arg Accuracy | Wall time |
+|---|---|---|---|---|
+| Haiku 4.5 | 66.7% | 83.3% | 61.7% | 10.8s |
+| Sonnet 4 | 66.7% | 75.0% | 61.7% | 15.9s |
+| Opus 4.6 | 73.3% | 83.3% | 66.7% | 19.8s |
+
+The spread between models is smaller than the spread between intents. Three intents (swap, merge, set-required) are at ceiling across all three models; two (move-group-by-quoted-name, rename-page-vs-group) fail across all three. Model size is not the lever for this suite — prompt clarity around tool-name disambiguation is.
 
 ## Course Connection
 

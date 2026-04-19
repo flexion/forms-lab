@@ -24,7 +24,7 @@ This document is the executable handoff for the eight follow-up experiment stori
 | #66 | Maya extracts via structured tool-use | **shipped** | merged (PR #68) | 1 | — |
 | #73 | Prompt optimization (hybrid/temperature) | **pr-open** | [PR #76](https://github.com/flexion/forms-lab/pull/76) | 2 | Hybrid-v1 wins suite (precision 99.2%, recall 72.6%); temp=0 ablation shows +15.1pp precision at -9.9pp recall |
 | #74 | RAG extraction variant | planned | — | 2 | — |
-| #75 | Live shaping model evaluation | planned | — | 2 | — |
+| #75 | Live shaping model evaluation | **pr-open** | experiment/75-shaping-eval (stacked on experiment/73-prompt-optimization) | 2 | Draft PR; awaits user review and merge. Opus 73/83/67%, Sonnet 67/75/62%, Haiku 67/83/62%. |
 
 **How to update this table** — edit it in a commit alongside any status change. This file is the source of truth; the catalog roadmap (`catalog/experiments/_roadmap.md`) mirrors it. Statuses: `planned` → `in-progress` → `pr-open` → `shipped`, or `scope-deferred` if cut.
 

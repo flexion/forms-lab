@@ -1,0 +1,113 @@
+{
+  "kind": "shaping-commands",
+  "implementation": "bedrock-sonnet",
+  "specVersion": "2026-04-19",
+  "status": "current",
+  "timestamp": "2026-04-19T15:36:59.686Z",
+  "model": "Claude Sonnet 4",
+  "summary": {
+    "kindRecall": 0.6666666666666666,
+    "kindPrecision": 0.75,
+    "argumentAccuracy": 0.6166666666666667
+  },
+  "cases": [
+    {
+      "fixture": "swap-pages",
+      "metrics": {
+        "kindRecall": 1,
+        "kindPrecision": 1,
+        "argumentAccuracy": 1
+      },
+      "details": {
+        "matchedKinds": [
+          "swapPages"
+        ],
+        "missingKinds": [],
+        "extraKinds": []
+      }
+    },
+    {
+      "fixture": "merge-employment",
+      "metrics": {
+        "kindRecall": 1,
+        "kindPrecision": 0.5,
+        "argumentAccuracy": 1
+      },
+      "details": {
+        "matchedKinds": [
+          "mergePages"
+        ],
+        "missingKinds": [],
+        "extraKinds": [
+          "renamePage"
+        ]
+      }
+    },
+    {
+      "fixture": "optional-middle-name",
+      "metrics": {
+        "kindRecall": 1,
+        "kindPrecision": 1,
+        "argumentAccuracy": 1
+      },
+      "details": {
+        "matchedKinds": [
+          "setRequired"
+        ],
+        "missingKinds": [],
+        "extraKinds": []
+      }
+    },
+    {
+      "fixture": "move-military",
+      "metrics": {
+        "kindRecall": 0,
+        "kindPrecision": 1,
+        "argumentAccuracy": 0
+      },
+      "details": {
+        "matchedKinds": [],
+        "missingKinds": [
+          "moveGroup"
+        ],
+        "extraKinds": []
+      }
+    },
+    {
+      "fixture": "rename-personal-info",
+      "metrics": {
+        "kindRecall": 0,
+        "kindPrecision": 0,
+        "argumentAccuracy": 0
+      },
+      "details": {
+        "matchedKinds": [],
+        "missingKinds": [
+          "renamePage"
+        ],
+        "extraKinds": [
+          "renameGroup"
+        ]
+      }
+    },
+    {
+      "fixture": "suggest-delivery-modes",
+      "metrics": {
+        "kindRecall": 1,
+        "kindPrecision": 1,
+        "argumentAccuracy": 0.7
+      },
+      "details": {
+        "matchedKinds": [
+          "setDeliveryMode",
+          "setDeliveryMode",
+          "setDeliveryMode",
+          "setDeliveryMode",
+          "setDeliveryMode"
+        ],
+        "missingKinds": [],
+        "extraKinds": []
+      }
+    }
+  ]
+}
