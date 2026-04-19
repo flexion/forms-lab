@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   slug: 'flex-label',
   category: 'form',
   description: 'A label for form controls.',
-  uswds: 'https://designsystem.digital.gov/components/form-controls/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/form-controls/',
   interactive: false,
 }

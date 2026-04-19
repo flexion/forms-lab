@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'layout',
   description:
     'A tabbed interface for switching between content panels. Progressively enhanced from stacked content.',
-  uswds: 'https://designsystem.digital.gov/components/tab/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/tab/',
   interactive: true,
 }

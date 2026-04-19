@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   slug: 'flex-checkbox',
   category: 'form',
   description: 'A custom-styled checkbox with tile variant support.',
-  uswds: 'https://designsystem.digital.gov/components/checkbox/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/checkbox/',
   interactive: false,
 }

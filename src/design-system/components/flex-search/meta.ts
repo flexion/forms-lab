@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'navigation',
   description:
     'A search form with input field and submit button for finding content.',
-  uswds: 'https://designsystem.digital.gov/components/search/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/search/',
   interactive: false,
 }

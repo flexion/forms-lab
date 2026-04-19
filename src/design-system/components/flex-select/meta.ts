@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   slug: 'flex-select',
   category: 'form',
   description: 'A styled native select with custom dropdown chevron.',
-  uswds: 'https://designsystem.digital.gov/components/select/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/select/',
   interactive: false,
 }

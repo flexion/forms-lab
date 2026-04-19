@@ -6,6 +6,6 @@ export const meta: ComponentMeta = {
   category: 'feedback',
   description:
     'Small colored dot (with optional label) marking an item as modified, added, or removed.',
-  uswds: '',
+  kind: 'custom',
   interactive: false,
 }

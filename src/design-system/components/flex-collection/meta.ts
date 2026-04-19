@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'layout',
   description:
     'A list of structured items with headings, descriptions, and optional metadata.',
-  uswds: 'https://designsystem.digital.gov/components/collection/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/collection/',
   interactive: false,
 }

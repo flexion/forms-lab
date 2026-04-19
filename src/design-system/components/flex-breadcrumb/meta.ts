@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'navigation',
   description:
     'A trail of links showing the current page location within a site hierarchy.',
-  uswds: 'https://designsystem.digital.gov/components/breadcrumb/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/breadcrumb/',
   interactive: false,
 }

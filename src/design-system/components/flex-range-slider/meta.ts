@@ -4,6 +4,7 @@ export const meta: ComponentMeta = {
   slug: 'flex-range-slider',
   category: 'form',
   description: 'A styled range input with live value display.',
-  uswds: 'https://designsystem.digital.gov/components/range-slider/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/range-slider/',
   interactive: true,
 }

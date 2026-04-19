@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'feedback',
   description:
     'A page-level alert for system-wide notices, appearing above content.',
-  uswds: 'https://designsystem.digital.gov/components/site-alert/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/site-alert/',
   interactive: false,
 }

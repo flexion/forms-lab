@@ -65,6 +65,18 @@
     color: var(--flex-color-text);
   }
 
+  /* Component kind badges — neutral, non-semantic colors */
+  &[data-kind="uswds-derived"] {
+    background-color: var(--flex-color-info-lighter);
+    color: var(--flex-color-text);
+  }
+
+  &[data-kind="custom"] {
+    background-color: var(--flex-color-surface);
+    color: var(--flex-color-text);
+    border: 1px solid var(--flex-color-border);
+  }
+
   /* Delivery mode badges */
   &[data-delivery="static"] {
     background: var(--flex-color-surface);

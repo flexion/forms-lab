@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   slug: 'flex-button-group',
   category: 'action',
   description: 'Groups buttons horizontally with proper spacing.',
-  uswds: 'https://designsystem.digital.gov/components/button-group/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/button-group/',
   interactive: false,
 }

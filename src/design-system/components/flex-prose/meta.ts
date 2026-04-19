@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'layout',
   description:
     'Typographic defaults for long-form content with USWDS measure (68ex reading width).',
-  uswds: 'https://designsystem.digital.gov/components/prose/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/prose/',
   interactive: false,
 }

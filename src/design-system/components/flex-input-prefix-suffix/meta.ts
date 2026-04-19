@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'form',
   description:
     'Add-ons that attach to the start or end of a text input to provide visual context.',
-  uswds: 'https://designsystem.digital.gov/components/input-prefix-suffix/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/input-prefix-suffix/',
   interactive: false,
 }

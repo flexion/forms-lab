@@ -99,9 +99,9 @@ Core domain services. Each service directory has a `types.ts` (P3) and one or mo
 
 UI components. Peer to services — depends on `shared/` but not on services (P4). Components receive ready-to-render data as props.
 
-- **`components/flex-*/`** — 60+ USWDS-conformant components, each in its own directory with `index.tsx`, `styles.css`, `meta.ts`, and optional `examples.tsx` and `conformance-spec.tsx`.
-- **`conformance/`** — Type definitions for visual conformance specs shared across components.
-- **`test-helpers/`** — Shared test utilities for conformance and visual regression tests.
+- **`components/flex-*/`** — 60+ components, each in its own directory with `index.tsx`, `styles.css`, `meta.ts`, `examples.tsx`, and `contract.ts` / `contract.test.ts`. USWDS-derived components (`kind: 'uswds-derived'`) carry a visual-diff contract against the USWDS reference; custom components (`kind: 'custom'`) carry an accessibility/render contract.
+- **`contract/`** — Type definitions for visual contract specs shared across components.
+- **`test-helpers/`** — Shared test utilities for contract and visual regression tests.
 - **`visual-descriptor/`** — Style extraction and diffing used by conformance tests.
 - **`register.ts`** — Client-side hydration entry point.
 - **`registry.ts`**, **`types.ts`** — Component metadata registry used by the design system catalog page.

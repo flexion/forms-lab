@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'navigation',
   description:
     'Page footer with navigation links, contact info, and agency branding.',
-  uswds: 'https://designsystem.digital.gov/components/footer/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/footer/',
   interactive: false,
 }

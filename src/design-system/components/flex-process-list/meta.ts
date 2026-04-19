@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'process',
   description:
     'A numbered vertical step list with headings and content per step, connected by a vertical line.',
-  uswds: 'https://designsystem.digital.gov/components/process-list/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/process-list/',
   interactive: false,
 }

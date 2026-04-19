@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
-  testMatch: '**/*conformance*.test.ts',
+  testMatch: '**/*{contract,conformance}*.test.ts',
   fullyParallel: true,
   use: {
     browserName: 'chromium',

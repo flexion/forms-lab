@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   category: 'layout',
   description:
     'An expandable/collapsible content section, borderless or bordered.',
-  uswds: 'https://designsystem.digital.gov/components/accordion/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/accordion/',
   interactive: true,
 }
