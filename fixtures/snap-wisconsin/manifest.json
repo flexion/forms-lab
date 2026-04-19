@@ -1,0 +1,7 @@
+{
+  "name": "Wisconsin SNAP Application (FoodShare Wisconsin)",
+  "specVersion": "2026-04-19",
+  "groundTruthModel": "manual",
+  "reviewed": true,
+  "notes": "Manual ground truth for RAG authoring pipeline evaluation. 6+ pages, 10+ groups, 50+ fields covering SNAP eligibility per 7 CFR 273."
+}

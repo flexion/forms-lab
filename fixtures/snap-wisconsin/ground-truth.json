@@ -1,0 +1,723 @@
+{
+  "id": "snap-wisconsin-foodshare-application",
+  "title": "Wisconsin SNAP Application (FoodShare Wisconsin)",
+  "description": "Application for Supplemental Nutrition Assistance Program (SNAP) benefits in Wisconsin. Determines eligibility for food assistance based on household composition, income, resources, and expenses. Complies with 7 CFR 273 federal regulations.",
+  "groups": [
+    {
+      "id": "page-1-applicant-information",
+      "title": "Page 1: Applicant Information",
+      "description": "Basic information about the person applying for FoodShare benefits.",
+      "requirements": [
+        {
+          "id": "applicant-first-name",
+          "fieldName": "applicantFirstName",
+          "label": "First Name",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "applicant-middle-initial",
+          "fieldName": "applicantMiddleInitial",
+          "label": "Middle Initial",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "applicant-last-name",
+          "fieldName": "applicantLastName",
+          "label": "Last Name",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "applicant-ssn",
+          "fieldName": "applicantSsn",
+          "label": "Social Security Number",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii",
+          "helpText": "Required for all household members applying for benefits"
+        },
+        {
+          "id": "applicant-date-of-birth",
+          "fieldName": "applicantDateOfBirth",
+          "label": "Date of Birth",
+          "fieldType": "date",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "applicant-phone",
+          "fieldName": "applicantPhone",
+          "label": "Phone Number",
+          "fieldType": "phone",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "applicant-email",
+          "fieldName": "applicantEmail",
+          "label": "Email Address",
+          "fieldType": "email",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "applicant-mailing-address",
+          "fieldName": "applicantMailingAddress",
+          "label": "Mailing Address (Street)",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "applicant-address-city",
+          "fieldName": "applicantAddressCity",
+          "label": "City",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "applicant-address-state",
+          "fieldName": "applicantAddressState",
+          "label": "State",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "applicant-address-zip",
+          "fieldName": "applicantAddressZip",
+          "label": "ZIP Code",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "page-2-household-composition",
+      "title": "Page 2: Household Composition",
+      "description": "Information about all people living in the household who purchase and prepare meals together.",
+      "requirements": [
+        {
+          "id": "household-size",
+          "fieldName": "householdSize",
+          "label": "Total number of people in household",
+          "fieldType": "number",
+          "required": true,
+          "helpText": "Include all household members who purchase and prepare meals together"
+        },
+        {
+          "id": "household-member-1-name",
+          "fieldName": "householdMember1Name",
+          "label": "Household Member 1 - Full Name",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "household-member-1-relationship",
+          "fieldName": "householdMember1Relationship",
+          "label": "Household Member 1 - Relationship to Applicant",
+          "fieldType": "choice",
+          "required": true,
+          "helpText": "Self, Spouse, Child, Parent, Other Relative, Non-Relative"
+        },
+        {
+          "id": "household-member-1-dob",
+          "fieldName": "householdMember1Dob",
+          "label": "Household Member 1 - Date of Birth",
+          "fieldType": "date",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "household-member-1-ssn",
+          "fieldName": "householdMember1Ssn",
+          "label": "Household Member 1 - Social Security Number",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii",
+          "helpText": "Required for household members applying for benefits"
+        },
+        {
+          "id": "household-member-2-name",
+          "fieldName": "householdMember2Name",
+          "label": "Household Member 2 - Full Name",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "household-member-2-relationship",
+          "fieldName": "householdMember2Relationship",
+          "label": "Household Member 2 - Relationship to Applicant",
+          "fieldType": "choice",
+          "required": false
+        },
+        {
+          "id": "household-member-2-dob",
+          "fieldName": "householdMember2Dob",
+          "label": "Household Member 2 - Date of Birth",
+          "fieldType": "date",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "household-member-2-ssn",
+          "fieldName": "householdMember2Ssn",
+          "label": "Household Member 2 - Social Security Number",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        }
+      ]
+    },
+    {
+      "id": "page-3-citizenship-status",
+      "title": "Page 3: Citizenship and Immigration Status",
+      "description": "U.S. citizenship or eligible non-citizen immigration status for all household members. Required per 7 CFR 273.4.",
+      "requirements": [
+        {
+          "id": "applicant-citizenship-status",
+          "fieldName": "applicantCitizenshipStatus",
+          "label": "Are you a U.S. citizen?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "applicant-eligible-noncitizen",
+          "fieldName": "applicantEligibleNoncitizen",
+          "label": "If not a U.S. citizen, are you an eligible non-citizen?",
+          "fieldType": "boolean",
+          "required": false,
+          "helpText": "Eligible non-citizens include lawful permanent residents, refugees, asylees, and certain other immigration statuses"
+        },
+        {
+          "id": "applicant-alien-number",
+          "fieldName": "applicantAlienNumber",
+          "label": "Alien Registration Number (A-Number)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii",
+          "helpText": "Required if you are an eligible non-citizen"
+        }
+      ]
+    },
+    {
+      "id": "page-4-income-earned",
+      "title": "Page 4: Earned Income",
+      "description": "Wages, salaries, and self-employment income for all household members. Per 7 CFR 273.9(b).",
+      "requirements": [
+        {
+          "id": "anyone-employed",
+          "fieldName": "anyoneEmployed",
+          "label": "Is anyone in your household currently employed?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "employment-1-member-name",
+          "fieldName": "employment1MemberName",
+          "label": "Employment 1 - Name of Household Member",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "employment-1-employer",
+          "fieldName": "employment1Employer",
+          "label": "Employment 1 - Employer Name",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "employment-1-gross-monthly-income",
+          "fieldName": "employment1GrossMonthlyIncome",
+          "label": "Employment 1 - Gross Monthly Income",
+          "fieldType": "currency",
+          "required": false,
+          "helpText": "Income before taxes and deductions"
+        },
+        {
+          "id": "anyone-self-employed",
+          "fieldName": "anyoneSelfEmployed",
+          "label": "Is anyone in your household self-employed?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "self-employment-1-member-name",
+          "fieldName": "selfEmployment1MemberName",
+          "label": "Self-Employment 1 - Name of Household Member",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "self-employment-1-business-type",
+          "fieldName": "selfEmployment1BusinessType",
+          "label": "Self-Employment 1 - Type of Business",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "self-employment-1-gross-monthly-income",
+          "fieldName": "selfEmployment1GrossMonthlyIncome",
+          "label": "Self-Employment 1 - Gross Monthly Income",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "self-employment-1-monthly-expenses",
+          "fieldName": "selfEmployment1MonthlyExpenses",
+          "label": "Self-Employment 1 - Monthly Business Expenses",
+          "fieldType": "currency",
+          "required": false,
+          "helpText": "Allowable business expenses per 7 CFR 273.11"
+        }
+      ]
+    },
+    {
+      "id": "page-5-income-unearned",
+      "title": "Page 5: Unearned Income",
+      "description": "Social Security, SSI, unemployment, child support, and other unearned income. Per 7 CFR 273.9(c).",
+      "requirements": [
+        {
+          "id": "anyone-receives-social-security",
+          "fieldName": "anyoneReceivesSocialSecurity",
+          "label": "Does anyone receive Social Security benefits?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "social-security-monthly-amount",
+          "fieldName": "socialSecurityMonthlyAmount",
+          "label": "Social Security - Total Monthly Amount",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "anyone-receives-ssi",
+          "fieldName": "anyoneReceivesSsi",
+          "label": "Does anyone receive Supplemental Security Income (SSI)?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "ssi-monthly-amount",
+          "fieldName": "ssiMonthlyAmount",
+          "label": "SSI - Total Monthly Amount",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "anyone-receives-unemployment",
+          "fieldName": "anyoneReceivesUnemployment",
+          "label": "Does anyone receive unemployment compensation?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "unemployment-monthly-amount",
+          "fieldName": "unemploymentMonthlyAmount",
+          "label": "Unemployment - Total Monthly Amount",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "anyone-receives-child-support",
+          "fieldName": "anyoneReceivesChildSupport",
+          "label": "Does anyone receive child support?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "child-support-monthly-amount",
+          "fieldName": "childSupportMonthlyAmount",
+          "label": "Child Support - Total Monthly Amount",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "any-other-income",
+          "fieldName": "anyOtherIncome",
+          "label": "Does anyone have any other income (pensions, alimony, rental income, etc.)?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "other-income-description",
+          "fieldName": "otherIncomeDescription",
+          "label": "Other Income - Description",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "other-income-monthly-amount",
+          "fieldName": "otherIncomeMonthlyAmount",
+          "label": "Other Income - Total Monthly Amount",
+          "fieldType": "currency",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "page-6-resources",
+      "title": "Page 6: Resources and Assets",
+      "description": "Bank accounts, vehicles, and property owned by household members. Per 7 CFR 273.8.",
+      "requirements": [
+        {
+          "id": "anyone-has-bank-account",
+          "fieldName": "anyoneHasBankAccount",
+          "label": "Does anyone in the household have a checking or savings account?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "bank-account-1-type",
+          "fieldName": "bankAccount1Type",
+          "label": "Bank Account 1 - Type (Checking or Savings)",
+          "fieldType": "choice",
+          "required": false
+        },
+        {
+          "id": "bank-account-1-balance",
+          "fieldName": "bankAccount1Balance",
+          "label": "Bank Account 1 - Current Balance",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "bank-account-2-type",
+          "fieldName": "bankAccount2Type",
+          "label": "Bank Account 2 - Type (Checking or Savings)",
+          "fieldType": "choice",
+          "required": false
+        },
+        {
+          "id": "bank-account-2-balance",
+          "fieldName": "bankAccount2Balance",
+          "label": "Bank Account 2 - Current Balance",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "anyone-owns-vehicle",
+          "fieldName": "anyoneOwnsVehicle",
+          "label": "Does anyone in the household own a vehicle?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "vehicle-1-year-make-model",
+          "fieldName": "vehicle1YearMakeModel",
+          "label": "Vehicle 1 - Year, Make, Model",
+          "fieldType": "text",
+          "required": false
+        },
+        {
+          "id": "vehicle-1-market-value",
+          "fieldName": "vehicle1MarketValue",
+          "label": "Vehicle 1 - Current Market Value",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "anyone-owns-property",
+          "fieldName": "anyoneOwnsProperty",
+          "label": "Does anyone in the household own real property (land, buildings) other than primary residence?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "property-value",
+          "fieldName": "propertyValue",
+          "label": "Other Property - Total Equity Value",
+          "fieldType": "currency",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "page-7-shelter-expenses",
+      "title": "Page 7: Shelter and Utility Expenses",
+      "description": "Rent/mortgage and utility costs. Shelter deduction per 7 CFR 273.9(d)(6).",
+      "requirements": [
+        {
+          "id": "housing-type",
+          "fieldName": "housingType",
+          "label": "Do you own or rent your home?",
+          "fieldType": "choice",
+          "required": true,
+          "helpText": "Own, Rent, Live with others and do not pay rent, Homeless"
+        },
+        {
+          "id": "monthly-rent",
+          "fieldName": "monthlyRent",
+          "label": "Monthly Rent or Mortgage Payment",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "property-taxes-monthly",
+          "fieldName": "propertyTaxesMonthly",
+          "label": "Monthly Property Tax Payment",
+          "fieldType": "currency",
+          "required": false,
+          "helpText": "Only if you own your home"
+        },
+        {
+          "id": "homeowners-insurance-monthly",
+          "fieldName": "homeownersInsuranceMonthly",
+          "label": "Monthly Homeowners/Renters Insurance",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "heating-cooling-expense",
+          "fieldName": "heatingCoolingExpense",
+          "label": "Do you pay for heating or cooling?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "monthly-heating-cooling-amount",
+          "fieldName": "monthlyHeatingCoolingAmount",
+          "label": "Average Monthly Heating/Cooling Cost",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "pay-electricity",
+          "fieldName": "payElectricity",
+          "label": "Do you pay for electricity?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "monthly-electricity-amount",
+          "fieldName": "monthlyElectricityAmount",
+          "label": "Average Monthly Electricity Cost",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "pay-water-sewer",
+          "fieldName": "payWaterSewer",
+          "label": "Do you pay for water/sewer?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "monthly-water-sewer-amount",
+          "fieldName": "monthlyWaterSewerAmount",
+          "label": "Average Monthly Water/Sewer Cost",
+          "fieldType": "currency",
+          "required": false
+        },
+        {
+          "id": "pay-phone",
+          "fieldName": "payPhone",
+          "label": "Do you pay for telephone service?",
+          "fieldType": "boolean",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "page-8-other-expenses",
+      "title": "Page 8: Medical and Dependent Care Expenses",
+      "description": "Medical expenses for elderly/disabled and dependent care costs. Deductions per 7 CFR 273.9(d)(3) and (4).",
+      "requirements": [
+        {
+          "id": "anyone-elderly-disabled",
+          "fieldName": "anyoneElderlyDisabled",
+          "label": "Is anyone in the household age 60+ or disabled?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "monthly-medical-expenses",
+          "fieldName": "monthlyMedicalExpenses",
+          "label": "Average Monthly Medical Expenses (for elderly or disabled members only)",
+          "fieldType": "currency",
+          "required": false,
+          "helpText": "Include prescriptions, doctor visits, insurance premiums, medical supplies"
+        },
+        {
+          "id": "anyone-pays-dependent-care",
+          "fieldName": "anyonePaysDependent Care",
+          "label": "Does anyone pay for dependent care (child care or adult care)?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "monthly-dependent-care-expenses",
+          "fieldName": "monthlyDependentCareExpenses",
+          "label": "Average Monthly Dependent Care Expenses",
+          "fieldType": "currency",
+          "required": false,
+          "helpText": "Care necessary for household member to work, attend school, or training"
+        },
+        {
+          "id": "anyone-pays-child-support",
+          "fieldName": "anyonePaysChildSupport",
+          "label": "Does anyone pay legally obligated child support to someone outside the household?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "monthly-child-support-paid",
+          "fieldName": "monthlyChildSupportPaid",
+          "label": "Average Monthly Child Support Paid",
+          "fieldType": "currency",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "page-9-expedited-screening",
+      "title": "Page 9: Expedited Service Screening",
+      "description": "Screening questions to determine eligibility for expedited SNAP benefits (within 7 days). Per 7 CFR 273.2(i).",
+      "requirements": [
+        {
+          "id": "total-monthly-gross-income",
+          "fieldName": "totalMonthlyGrossIncome",
+          "label": "Total Monthly Gross Income (all sources)",
+          "fieldType": "currency",
+          "required": true,
+          "helpText": "Total income from all household members before taxes"
+        },
+        {
+          "id": "total-liquid-resources",
+          "fieldName": "totalLiquidResources",
+          "label": "Total Liquid Resources (cash, bank accounts)",
+          "fieldType": "currency",
+          "required": true,
+          "helpText": "Current balance of all checking and savings accounts, plus cash on hand"
+        },
+        {
+          "id": "total-monthly-shelter-costs",
+          "fieldName": "totalMonthlyShelterCosts",
+          "label": "Total Monthly Shelter Costs (rent/mortgage + utilities)",
+          "fieldType": "currency",
+          "required": true
+        },
+        {
+          "id": "migrant-seasonal-worker",
+          "fieldName": "migrantSeasonalWorker",
+          "label": "Is anyone in the household a migrant or seasonal farm worker?",
+          "fieldType": "boolean",
+          "required": true,
+          "helpText": "Special expedited processing may be available"
+        }
+      ]
+    },
+    {
+      "id": "page-10-work-registration",
+      "title": "Page 10: Work Registration Requirements",
+      "description": "Work registration and work requirements for able-bodied adults. Per 7 CFR 273.7.",
+      "requirements": [
+        {
+          "id": "abawd-exemption-check",
+          "fieldName": "abawdExemptionCheck",
+          "label": "Does anyone age 18-50 without dependents work less than 20 hours per week?",
+          "fieldType": "boolean",
+          "required": true,
+          "helpText": "Able-Bodied Adults Without Dependents (ABAWD) may have work requirements"
+        },
+        {
+          "id": "anyone-student",
+          "fieldName": "anyoneStudent",
+          "label": "Is anyone in the household a student enrolled at least half-time?",
+          "fieldType": "boolean",
+          "required": true
+        },
+        {
+          "id": "student-name",
+          "fieldName": "studentName",
+          "label": "Student - Name",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "student-school-name",
+          "fieldName": "studentSchoolName",
+          "label": "Student - Name of School",
+          "fieldType": "text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "page-11-rights-signature",
+      "title": "Page 11: Rights, Responsibilities, and Signature",
+      "description": "Applicant certification, rights and responsibilities, and signature. Per 7 CFR 273.2(b)(7).",
+      "requirements": [
+        {
+          "id": "acknowledge-rights",
+          "fieldName": "acknowledgeRights",
+          "label": "I understand my rights and responsibilities",
+          "fieldType": "boolean",
+          "required": true,
+          "helpText": "Rights include notice of action, fair hearing, and privacy. Responsibilities include reporting changes and using benefits properly."
+        },
+        {
+          "id": "authorize-verification",
+          "fieldName": "authorizeVerification",
+          "label": "I authorize the state to verify information provided in this application",
+          "fieldType": "boolean",
+          "required": true,
+          "helpText": "State may verify with employers, banks, other agencies"
+        },
+        {
+          "id": "certify-truthfulness",
+          "fieldName": "certifyTruthfulness",
+          "label": "I certify under penalty of perjury that all information provided is true and complete",
+          "fieldType": "boolean",
+          "required": true,
+          "helpText": "Providing false information may result in disqualification and criminal prosecution"
+        },
+        {
+          "id": "applicant-signature",
+          "fieldName": "applicantSignature",
+          "label": "Applicant Signature",
+          "fieldType": "text",
+          "required": true,
+          "sensitivity": "pii"
+        },
+        {
+          "id": "signature-date",
+          "fieldName": "signatureDate",
+          "label": "Date Signed",
+          "fieldType": "date",
+          "required": true
+        },
+        {
+          "id": "authorized-representative-name",
+          "fieldName": "authorizedRepresentativeName",
+          "label": "Authorized Representative Name (if applicable)",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii",
+          "helpText": "If someone other than the applicant is completing this application on behalf of the household"
+        },
+        {
+          "id": "authorized-representative-signature",
+          "fieldName": "authorizedRepresentativeSignature",
+          "label": "Authorized Representative Signature",
+          "fieldType": "text",
+          "required": false,
+          "sensitivity": "pii"
+        }
+      ]
+    }
+  ]
+}
