@@ -783,17 +783,8 @@ export function createFormRouter(deps: FormRouterDeps) {
       return c.text('Missing message', 400)
     }
 
-    // Append user message to conversation
-    const userMessageId = crypto.randomUUID()
-    conversationGateway.appendMessage(sessionId, {
-      id: userMessageId,
-      sessionId,
-      role: 'user',
-      content: userMessage,
-      createdAt: new Date().toISOString(),
-    })
-
-    // Build context for filling agent
+    // Build context for filling agent BEFORE appending current message
+    // The agent expects userMessage to NOT be in the history yet
     // Note: Pass ALL groups (not filtered) because the agent needs to evaluate
     // conditions dynamically as it collects fields
     const messages = conversationGateway.getMessages(sessionId)
@@ -817,7 +808,16 @@ export function createFormRouter(deps: FormRouterDeps) {
       )
     }
 
-    // Append assistant message to conversation
+    // Append user and assistant messages to conversation
+    const userMessageId = crypto.randomUUID()
+    conversationGateway.appendMessage(sessionId, {
+      id: userMessageId,
+      sessionId,
+      role: 'user',
+      content: userMessage,
+      createdAt: new Date().toISOString(),
+    })
+
     const assistantMessageId = crypto.randomUUID()
     conversationGateway.appendMessage(sessionId, {
       id: assistantMessageId,
