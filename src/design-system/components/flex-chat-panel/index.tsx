@@ -27,17 +27,15 @@ export const ChatPanel: FC<ChatPanelProps> = ({
             class="flex-chat-panel__message"
             data-role={message.role}
           >
-            <div class="flex-chat-panel__message-content">{message.content}</div>
+            <div class="flex-chat-panel__message-content">
+              {message.content}
+            </div>
           </div>
         ))}
       </div>
 
       {!finished && (
-        <form
-          class="flex-chat-panel__form"
-          data-role="chat-form"
-          method="post"
-        >
+        <form class="flex-chat-panel__form" data-role="chat-form" method="post">
           <div class="flex-chat-panel__input-group">
             <textarea
               class="flex-textarea"

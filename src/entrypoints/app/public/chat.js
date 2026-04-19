@@ -10,22 +10,20 @@
  * - Handles finished state
  */
 
-(function () {
-  'use strict';
-
+;(() => {
   // Find the chat panel on the page
-  const panel = document.querySelector('[data-session-id]');
+  const panel = document.querySelector('[data-session-id]')
   if (!panel) {
-    return; // No chat panel on this page
+    return // No chat panel on this page
   }
 
-  const form = panel.querySelector('[data-role="chat-form"]');
-  const input = panel.querySelector('[data-role="chat-input"]');
-  const messagesContainer = panel.querySelector('.flex-chat-panel__messages');
+  const form = panel.querySelector('[data-role="chat-form"]')
+  const input = panel.querySelector('[data-role="chat-input"]')
+  const messagesContainer = panel.querySelector('.flex-chat-panel__messages')
 
   if (!form || !input || !messagesContainer) {
-    console.error('Chat panel: missing required elements');
-    return;
+    console.error('Chat panel: missing required elements')
+    return
   }
 
   /**
@@ -35,23 +33,23 @@
    * @returns {HTMLElement}
    */
   function createMessageBubble(role, content) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'flex-chat-panel__message';
-    messageDiv.setAttribute('data-role', role);
+    const messageDiv = document.createElement('div')
+    messageDiv.className = 'flex-chat-panel__message'
+    messageDiv.setAttribute('data-role', role)
 
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'flex-chat-panel__message-content';
-    contentDiv.textContent = content;
+    const contentDiv = document.createElement('div')
+    contentDiv.className = 'flex-chat-panel__message-content'
+    contentDiv.textContent = content
 
-    messageDiv.appendChild(contentDiv);
-    return messageDiv;
+    messageDiv.appendChild(contentDiv)
+    return messageDiv
   }
 
   /**
    * Scroll messages container to bottom
    */
   function scrollToBottom() {
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    messagesContainer.scrollTop = messagesContainer.scrollHeight
   }
 
   /**
@@ -59,15 +57,15 @@
    */
   function showFinished() {
     // Remove the form
-    form.remove();
+    form.remove()
 
     // Add finished message
-    const finishedDiv = document.createElement('div');
-    finishedDiv.className = 'flex-chat-panel__finished';
-    const p = document.createElement('p');
-    p.textContent = 'Conversation complete';
-    finishedDiv.appendChild(p);
-    panel.appendChild(finishedDiv);
+    const finishedDiv = document.createElement('div')
+    finishedDiv.className = 'flex-chat-panel__finished'
+    const p = document.createElement('p')
+    p.textContent = 'Conversation complete'
+    finishedDiv.appendChild(p)
+    panel.appendChild(finishedDiv)
   }
 
   /**
@@ -75,32 +73,32 @@
    * @param {Event} event
    */
   async function handleSubmit(event) {
-    event.preventDefault();
+    event.preventDefault()
 
-    const message = input.value.trim();
+    const message = input.value.trim()
     if (!message) {
-      return;
+      return
     }
 
     // Disable form during submission
-    const submitButton = form.querySelector('button[type="submit"]');
-    input.disabled = true;
+    const submitButton = form.querySelector('button[type="submit"]')
+    input.disabled = true
     if (submitButton) {
-      submitButton.disabled = true;
+      submitButton.disabled = true
     }
 
     try {
       // Optimistically append user message
-      const userBubble = createMessageBubble('user', message);
-      messagesContainer.appendChild(userBubble);
-      scrollToBottom();
+      const userBubble = createMessageBubble('user', message)
+      messagesContainer.appendChild(userBubble)
+      scrollToBottom()
 
       // Clear input
-      input.value = '';
+      input.value = ''
 
       // POST to server with X-Live-Chat header
-      const formData = new FormData();
-      formData.append('message', message);
+      const formData = new FormData()
+      formData.append('message', message)
 
       const response = await fetch(form.action || window.location.pathname, {
         method: 'POST',
@@ -108,50 +106,50 @@
           'X-Live-Chat': 'true',
         },
         body: formData,
-      });
+      })
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(`HTTP ${response.status}`)
       }
 
-      const data = await response.json();
+      const data = await response.json()
 
       // Append assistant response
       if (data.response) {
-        const assistantBubble = createMessageBubble('assistant', data.response);
-        messagesContainer.appendChild(assistantBubble);
-        scrollToBottom();
+        const assistantBubble = createMessageBubble('assistant', data.response)
+        messagesContainer.appendChild(assistantBubble)
+        scrollToBottom()
       }
 
       // Handle finished state
       if (data.finished) {
-        showFinished();
-        return;
+        showFinished()
+        return
       }
 
       // Re-enable form
-      input.disabled = false;
+      input.disabled = false
       if (submitButton) {
-        submitButton.disabled = false;
+        submitButton.disabled = false
       }
-      input.focus();
+      input.focus()
     } catch (error) {
-      console.error('Chat error:', error);
+      console.error('Chat error:', error)
       // Re-enable form on error
-      input.disabled = false;
+      input.disabled = false
       if (submitButton) {
-        submitButton.disabled = false;
+        submitButton.disabled = false
       }
       // TODO: Show error message to user
     }
   }
 
   // Attach submit handler
-  form.addEventListener('submit', handleSubmit);
+  form.addEventListener('submit', handleSubmit)
 
   // Initial scroll to bottom (for server-rendered messages)
-  scrollToBottom();
+  scrollToBottom()
 
   // Focus input on load
-  input.focus();
-})();
+  input.focus()
+})()

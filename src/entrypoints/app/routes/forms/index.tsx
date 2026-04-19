@@ -381,11 +381,7 @@ export function createFormRouter(deps: FormRouterDeps) {
       conversationGateway &&
       fillingAgent
     return c.html(
-      <Layout
-        user={user}
-        title={page.page.title}
-        currentPath="/forms"
-      >
+      <Layout user={user} title={page.page.title} currentPath="/forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         {showChatToggle && (
           <div class="flex-form" data-size="large">
@@ -405,10 +401,7 @@ export function createFormRouter(deps: FormRouterDeps) {
           page={{
             title: page.page.title,
             description: page.page.description,
-            groups: filterVisibleGroups(
-              page.groups,
-              session.fields,
-            ),
+            groups: filterVisibleGroups(page.groups, session.fields),
           }}
           actionUrl={resolveUrl(
             `${prefix}/sessions/${session.id}/pages/${pageIndex}`,
@@ -726,11 +719,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const showFormToggle = deliveryMode === 'hybrid'
 
     return c.html(
-      <Layout
-        user={user}
-        title={page.page.title}
-        currentPath="/forms"
-      >
+      <Layout user={user} title={page.page.title} currentPath="/forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         <div class="flex-form" data-size="large">
           <h1>{page.page.title}</h1>
@@ -903,7 +892,10 @@ export function createFormRouter(deps: FormRouterDeps) {
   )
 
   // Chat view (conversational mode)
-  forms.get('/:specId/sessions/:sessionId/pages/:pageIndex/chat', handleChatView)
+  forms.get(
+    '/:specId/sessions/:sessionId/pages/:pageIndex/chat',
+    handleChatView,
+  )
   forms.get(
     '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
     handleChatView,
