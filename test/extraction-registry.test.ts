@@ -5,7 +5,7 @@ describe('createExtractorRegistry', () => {
   it('returns a registry with strategies registered', () => {
     const registry = createExtractorRegistry()
     const strategies = registry.list()
-    expect(strategies.length).toBeGreaterThanOrEqual(2)
+    expect(strategies.length).toBeGreaterThanOrEqual(4)
   })
 
   it('registers opus as baseline', () => {
@@ -27,5 +27,21 @@ describe('createExtractorRegistry', () => {
       expect(strategy.metadata.courseTopics.length).toBeGreaterThan(0)
       expect(strategy.metadata.catalogPath).toBeDefined()
     }
+  })
+
+  it('registers few-shot-sonnet as experimental', () => {
+    const registry = createExtractorRegistry()
+    const strategies = registry.list()
+    const fewShot = strategies.find((s) => s.id === 'few-shot-sonnet')
+    expect(fewShot).toBeDefined()
+    expect(fewShot!.metadata.status).toBe('experimental')
+  })
+
+  it('few-shot-sonnet has few-shot in courseTopics', () => {
+    const registry = createExtractorRegistry()
+    const strategies = registry.list()
+    const fewShot = strategies.find((s) => s.id === 'few-shot-sonnet')
+    expect(fewShot).toBeDefined()
+    expect(fewShot!.metadata.courseTopics).toContain('few-shot')
   })
 })
