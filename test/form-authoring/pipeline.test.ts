@@ -21,7 +21,7 @@ mock.module('@aws-sdk/credential-providers', () => ({
   fromNodeProviderChain: mock(() => ({})),
 }))
 
-const { createAuthoringPipeline } = await import(
+const { createAuthoringPipeline, detectAuthoringStage } = await import(
   '../../src/services/form-authoring/pipeline'
 )
 
@@ -125,5 +125,57 @@ describe('generateSection', () => {
     )
     expect(result.commands).toHaveLength(1)
     expect(result.commands[0].kind).toBe('addField')
+  })
+})
+
+describe('detectAuthoringStage', () => {
+  test('returns "criteria" when no artifacts exist', () => {
+    const stage = detectAuthoringStage({
+      hasCriteria: false,
+      criteriaApproved: false,
+      hasPages: false,
+      uncoveredGroupCount: 0,
+    })
+    expect(stage).toBe('criteria')
+  })
+
+  test('returns "criteria" when criteria exist but are unapproved', () => {
+    const stage = detectAuthoringStage({
+      hasCriteria: true,
+      criteriaApproved: false,
+      hasPages: false,
+      uncoveredGroupCount: 0,
+    })
+    expect(stage).toBe('criteria')
+  })
+
+  test('returns "structure" when criteria approved but no pages', () => {
+    const stage = detectAuthoringStage({
+      hasCriteria: true,
+      criteriaApproved: true,
+      hasPages: false,
+      uncoveredGroupCount: 0,
+    })
+    expect(stage).toBe('structure')
+  })
+
+  test('returns "sections" when pages exist with uncovered groups', () => {
+    const stage = detectAuthoringStage({
+      hasCriteria: true,
+      criteriaApproved: true,
+      hasPages: true,
+      uncoveredGroupCount: 3,
+    })
+    expect(stage).toBe('sections')
+  })
+
+  test('returns "complete" when all groups are covered', () => {
+    const stage = detectAuthoringStage({
+      hasCriteria: true,
+      criteriaApproved: true,
+      hasPages: true,
+      uncoveredGroupCount: 0,
+    })
+    expect(stage).toBe('complete')
   })
 })
