@@ -116,6 +116,19 @@ Runnable processes — the composition root. Routes and commands import services
 - **`notify/`** — Notification delivery server that receives events from the webhook and deploy pipeline and posts to Slack.
 - **`cli/`** — Operational command-line tool (`bun run cli <command>`) for infra management, story sync, deployment, and OAuth setup.
 
+### Service public interface
+
+Each service under `src/services/<name>/` exposes its public API through
+a single `index.ts` file. External code — other services, entrypoints,
+and design-system — imports only from `'services/<name>'`. Deep imports
+into a service's internals are forbidden for production code and fail
+`test/architecture/dependency-rule.test.ts`. This reinforces P1
+(intent over mechanism): the re-export list in `index.ts` is itself the
+service's documented intent. See [navigation](navigation.md) for how to
+read and extend the service layer, and [llm-integrations](llm-integrations.md)
+for the worked example of "find every X in the system" — a catalog page
+that links to every LLM call site via the service public interfaces.
+
 ## Dependencies and externalities
 
 The dependency rule (P2) constrains internal imports between layers. It does not constrain third-party imports within a file. When adopting an external dependency, you explicitly choose:

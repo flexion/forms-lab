@@ -7,6 +7,8 @@ tags: [architecture, overview]
 
 Forms Lab is a PDF-in, form-experience, PDF-out platform for government forms. Upload a government PDF form, the system extracts structured specs, delivers a form-filling experience (web form or conversational agent), and produces a completed PDF.
 
+For a tour of how the code is organized, see [navigation](navigation.md).
+
 ## Components
 
 ### Catalog
