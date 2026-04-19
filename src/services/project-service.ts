@@ -22,8 +22,27 @@ import type {
 import type { Command } from './forms/shaping/commands'
 import { executeBatch } from './forms/shaping/executor'
 import type { ProjectStore } from './storage'
+import {
+  appendProvenance,
+  type ProvenanceEntry,
+  type ProvenanceFile,
+  readProvenance,
+} from './variant-preferences/provenance'
+import type { Task } from './variant-preferences/types'
 
 export type { BranchEntry } from './form-project-repo'
+
+/**
+ * Dependency passed to `createProjectService` so it can resolve the
+ * per-user extraction variant at call time (rather than being bound to a
+ * single extractor instance for the process lifetime). Keeps the service
+ * agnostic about how variant preferences are stored and how extractors
+ * are instantiated.
+ */
+export interface ExtractionContext {
+  resolveExtractor(variantId: string): PdfExtractor
+  resolveVariant(userLogin: string): { variantId: string; modelId?: string }
+}
 
 export interface ShapingLogEntry {
   timestamp: string
@@ -143,12 +162,18 @@ export interface ProjectService {
     slug: string,
     branch: string,
   ): Promise<{ dataSpec: boolean; formSpec: boolean }>
+  getProvenance(
+    owner: string,
+    slug: string,
+    task: Task,
+    branch?: string,
+  ): Promise<ProvenanceEntry | null>
 }
 
 export function createProjectService(
   store: ProjectStore,
   repo: FormProjectRepo,
-  extractor: PdfExtractor,
+  extraction: ExtractionContext,
 ): ProjectService {
   function requireAuth(
     user: SessionUser | null | undefined,
@@ -236,6 +261,8 @@ export function createProjectService(
     pdf: Buffer,
     author: string,
   ): void {
+    const { variantId, modelId } = extraction.resolveVariant(author)
+    const extractor = extraction.resolveExtractor(variantId)
     extractor
       .extract(pdf)
       .then(async (result) => {
@@ -245,6 +272,25 @@ export function createProjectService(
         if (!branches.some((b) => b.name === 'import')) {
           await repo.createBranch(slug, 'import', 'main')
         }
+
+        // Append the extraction provenance into the same commit as the
+        // specs. We don't include specVersion because the entry is pinned
+        // to this commit by virtue of being in it — readers can recover
+        // the sha via `git log forms/default/provenance.json`.
+        const existingProvBuf = await repo.readFile(
+          slug,
+          'import',
+          'forms/default/provenance.json',
+        )
+        const existingProv = existingProvBuf
+          ? (JSON.parse(existingProvBuf.toString()) as ProvenanceFile)
+          : null
+        const nextProv = appendProvenance(existingProv, 'extraction', {
+          variantId,
+          modelId,
+          timestamp: new Date().toISOString(),
+        })
+
         await repo.commit(
           slug,
           [
@@ -265,6 +311,10 @@ export function createProjectService(
               content: Buffer.from(
                 JSON.stringify(result.fieldMapping ?? {}, null, 2),
               ),
+            },
+            {
+              path: 'forms/default/provenance.json',
+              content: Buffer.from(JSON.stringify(nextProv, null, 2)),
             },
           ],
           'Extract form specifications',
@@ -746,6 +796,23 @@ export function createProjectService(
         dataSpec: files.includes('forms/default/spec.json'),
         formSpec: files.includes('forms/default/form.json'),
       }
+    },
+
+    async getProvenance(
+      owner: string,
+      slug: string,
+      task: Task,
+      branch = 'main',
+    ): Promise<ProvenanceEntry | null> {
+      resolveProject(owner, slug)
+      const buf = await repo.readFile(
+        slug,
+        branch,
+        'forms/default/provenance.json',
+      )
+      if (!buf) return null
+      const file = JSON.parse(buf.toString()) as ProvenanceFile
+      return readProvenance(file, task)
     },
   }
 }

@@ -54,6 +54,7 @@ import { meta as textarea } from './components/flex-textarea/meta'
 import { meta as timePicker } from './components/flex-time-picker/meta'
 import { meta as tooltip } from './components/flex-tooltip/meta'
 import { meta as validation } from './components/flex-validation/meta'
+import { meta as variantCallout } from './components/flex-variant-callout/meta'
 import type { ComponentMeta } from './types'
 
 const components: ComponentMeta[] = [
@@ -113,6 +114,7 @@ const components: ComponentMeta[] = [
   textarea,
   tooltip,
   validation,
+  variantCallout,
 ]
 
 export function getComponents(): ComponentMeta[] {

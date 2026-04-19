@@ -58,3 +58,10 @@ export class StrategyRegistry<T> {
     }))
   }
 }
+
+// Cross-task-facing aliases. `VariantRegistry` is the name used by the
+// variant-preferences service and the settings picker; `StrategyRegistry`
+// remains for extraction-specific callers that predate the generalization.
+export type VariantMetadata = StrategyMetadata
+export type VariantRegistry<T> = StrategyRegistry<T>
+export const VariantRegistry = StrategyRegistry

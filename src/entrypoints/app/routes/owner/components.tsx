@@ -3,6 +3,8 @@ import type { DemoFixture } from '../../../../../fixtures/index'
 import { Alert } from '../../../../design-system/components/flex-alert'
 import { BranchSwitcher } from '../../../../design-system/components/flex-branch-switcher'
 import { SpecBrowser } from '../../../../design-system/components/flex-spec-browser'
+import { VariantBadge } from '../../../../design-system/components/flex-variant-badge'
+import { VariantCallout } from '../../../../design-system/components/flex-variant-callout'
 import type { SessionUser } from '../../../../services/auth/session'
 import type {
   CommitEntry,
@@ -138,7 +140,17 @@ export const ProjectOverview: FC<{
   origin?: string
   branches?: BranchEntry[]
   branch?: string
-}> = ({ view, owner, user, viewingSha, origin, branches, branch = 'main' }) => {
+  extractionBadge?: { variantId: string; variantName: string } | null
+}> = ({
+  view,
+  owner,
+  user,
+  viewingSha,
+  origin,
+  branches,
+  branch = 'main',
+  extractionBadge,
+}) => {
   const {
     project,
     spec,
@@ -167,6 +179,7 @@ export const ProjectOverview: FC<{
         owner={owner}
         isOwner={isOwner}
         branch={pendingBranch}
+        extractionBadge={extractionBadge}
       />
     )
   }
@@ -285,6 +298,14 @@ export const ProjectOverview: FC<{
           </p>
         </div>
       )}
+
+      {extractionBadge ? (
+        <VariantBadge
+          task="extraction"
+          variantId={extractionBadge.variantId}
+          variantName={extractionBadge.variantName}
+        />
+      ) : null}
 
       <div class="project-summary">
         <span>
@@ -520,7 +541,8 @@ const PendingReviewBanner: FC<{
   owner: string
   isOwner: boolean
   branch: string
-}> = ({ project, owner, isOwner, branch }) => {
+  extractionBadge?: { variantId: string; variantName: string } | null
+}> = ({ project, owner, isOwner, branch, extractionBadge }) => {
   const repoBase = `/${owner}/${project.slug}`
   return (
     <div class="l-stack">
@@ -536,6 +558,13 @@ const PendingReviewBanner: FC<{
           <h1 class="repo-header__title">{project.name}</h1>
         </div>
       </header>
+      {extractionBadge ? (
+        <VariantBadge
+          task="extraction"
+          variantId={extractionBadge.variantId}
+          variantName={extractionBadge.variantName}
+        />
+      ) : null}
       <Alert variant="info" heading="Initial extraction ready for review">
         The imported form lives on branch <code>{branch}</code>. Nothing has
         been published to <code>main</code> yet. Review the extracted structure
@@ -895,11 +924,26 @@ export const ErrorPage: FC<{
 // 8. NewProjectPage (updated for /:owner URL structure)
 // ---------------------------------------------------------------------------
 
-export const NewProjectPage: FC<{ fixtures: DemoFixture[] }> = ({
-  fixtures,
-}) => (
+export const NewProjectPage: FC<{
+  fixtures: DemoFixture[]
+  extractionVariant: {
+    name: string
+    description: string
+    evaluationSummary: string
+    catalogHref: string
+  }
+}> = ({ fixtures, extractionVariant }) => (
   <div class="l-stack">
     <h1>New Project</h1>
+
+    <VariantCallout
+      taskLabel="Extraction model"
+      variantName={extractionVariant.name}
+      variantDescription={extractionVariant.description}
+      evaluationSummary={extractionVariant.evaluationSummary}
+      changeHref={resolveUrl('/settings/variants?task=extraction')}
+      catalogHref={extractionVariant.catalogHref}
+    />
 
     <section class="l-stack">
       <h2>Start from a demo form</h2>

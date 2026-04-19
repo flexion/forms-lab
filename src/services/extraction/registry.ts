@@ -14,7 +14,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
         'Frontier model, highest quality. Used as ground truth reference.',
       status: 'baseline',
       courseTopics: ['evaluation'],
-      catalogPath: '/catalog/experiments/pdf-field-extraction/baseline-opus',
+      catalogPath: '/catalog/experiments/pdf-field-extraction/opus-baseline',
       modelId: OPUS_MODEL_ID,
     },
     create: () => createBedrockPdfExtractor({ model: OPUS_MODEL_ID }),

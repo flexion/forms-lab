@@ -12,7 +12,121 @@ import {
   renderMarkdown,
 } from '../../../../services/content/markdown'
 import { resolveUrl } from '../../../../shared/base-path'
-import { getCatalogSidebar } from './sidebar'
+import {
+  type ExperimentSuite,
+  getExperimentsSidebar,
+  titleCaseSlug,
+} from './sidebar'
+
+/**
+ * Derive a page title from markdown content — prefer the first H1,
+ * fall back to a title-cased slug.
+ */
+function deriveTitle(content: string, fallbackSlug: string): string {
+  const firstLine = content.split('\n')[0]
+  const heading = firstLine?.match(/^#\s+(.+)$/)
+  if (heading?.[1]) return heading[1].trim()
+  return titleCaseSlug(fallbackSlug)
+}
+
+interface ExperimentsNav {
+  topLevelPages: Array<{ slug: string; title: string }>
+  suites: ExperimentSuite[]
+}
+
+/**
+ * Load the experiments navigation tree from catalog/experiments.
+ * Top-level `_name.md` files are surfaced as top-level pages with
+ * slug "name" (without the underscore). Subdirectories are suites.
+ */
+async function loadExperimentsNav(): Promise<ExperimentsNav> {
+  const expDir = join(process.cwd(), 'catalog', 'experiments')
+  const topLevelPages: Array<{ slug: string; title: string }> = []
+  const suites: ExperimentSuite[] = []
+
+  try {
+    const entries = await readdir(expDir, { withFileTypes: true })
+
+    // Top-level _*.md files (roadmap, etc)
+    for (const entry of entries) {
+      if (
+        !entry.isFile() ||
+        !entry.name.endsWith('.md') ||
+        !entry.name.startsWith('_')
+      ) {
+        continue
+      }
+      const slug = entry.name.replace(/^_/, '').replace(/\.md$/, '')
+      try {
+        const file = await parseMarkdown(join(expDir, entry.name))
+        topLevelPages.push({
+          slug,
+          title: deriveTitle(file.content, slug),
+        })
+      } catch {
+        topLevelPages.push({ slug, title: titleCaseSlug(slug) })
+      }
+    }
+
+    // Suite directories
+    for (const entry of entries) {
+      if (
+        !entry.isDirectory() ||
+        entry.name.startsWith('.') ||
+        entry.name.startsWith('_')
+      ) {
+        continue
+      }
+      const suiteSlug = entry.name
+      const suiteDir = join(expDir, suiteSlug)
+
+      // Derive suite title from _suite.md if present
+      let suiteTitle = titleCaseSlug(suiteSlug)
+      try {
+        const suiteFile = await parseMarkdown(join(suiteDir, '_suite.md'))
+        suiteTitle = deriveTitle(suiteFile.content, suiteSlug)
+      } catch {
+        // no _suite.md, keep title-cased fallback
+      }
+
+      // Variants: *.md files not starting with _
+      const variants: Array<{ slug: string; title: string }> = []
+      try {
+        const suiteEntries = await readdir(suiteDir, { withFileTypes: true })
+        for (const vEntry of suiteEntries) {
+          if (
+            !vEntry.isFile() ||
+            !vEntry.name.endsWith('.md') ||
+            vEntry.name.startsWith('_')
+          ) {
+            continue
+          }
+          const variantSlug = vEntry.name.replace(/\.md$/, '')
+          try {
+            const file = await parseMarkdown(join(suiteDir, vEntry.name))
+            variants.push({
+              slug: variantSlug,
+              title: deriveTitle(file.content, variantSlug),
+            })
+          } catch {
+            variants.push({
+              slug: variantSlug,
+              title: titleCaseSlug(variantSlug),
+            })
+          }
+        }
+      } catch {
+        // suite directory unreadable
+      }
+
+      suites.push({ slug: suiteSlug, title: suiteTitle, variants })
+    }
+  } catch {
+    // directory may not exist
+  }
+
+  return { topLevelPages, suites }
+}
 
 const experiments = new Hono()
 
@@ -32,7 +146,12 @@ experiments.get('/', async (c) => {
     // directory may not exist
   }
 
-  const sidebarData = getCatalogSidebar('/catalog/experiments')
+  const { topLevelPages, suites } = await loadExperimentsNav()
+  const sidebarData = getExperimentsSidebar(
+    topLevelPages,
+    suites,
+    '/catalog/experiments',
+  )
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   return c.html(
@@ -52,9 +171,7 @@ experiments.get('/', async (c) => {
           return (
             <ContentCard
               key={kind}
-              title={kind
-                .replace(/-/g, ' ')
-                .replace(/\b\w/g, (l) => l.toUpperCase())}
+              title={titleCaseSlug(kind)}
               href={resolveUrl(`/catalog/experiments/${kind}`)}
             >
               <StatusBadge status="working" />
@@ -65,11 +182,14 @@ experiments.get('/', async (c) => {
           const title =
             file.content.split('\n')[0]?.replace(/^#\s+/, '') || file.filename
           const status = file.frontmatter.status || 'draft'
+          // Top-level files starting with `_` are reachable via slug without
+          // the underscore prefix.
+          const urlSlug = file.filename.replace(/^_/, '')
           return (
             <ContentCard
               key={file.filename}
               title={title}
-              href={resolveUrl(`/catalog/experiments/${file.filename}`)}
+              href={resolveUrl(`/catalog/experiments/${urlSlug}`)}
             >
               <StatusBadge status={status} />
             </ContentCard>
@@ -91,8 +211,7 @@ experiments.get('/:kind', async (c) => {
   const kindDir = join(process.cwd(), 'catalog', 'experiments', kind)
   const suiteFilePath = join(kindDir, '_suite.md')
 
-  const sidebarData = getCatalogSidebar('/catalog/experiments')
-  const sidebar = <CatalogSidebar sections={sidebarData} />
+  const { topLevelPages, suites } = await loadExperimentsNav()
 
   try {
     // Check if this is a directory with a suite description
@@ -109,6 +228,13 @@ experiments.get('/:kind', async (c) => {
       )
       const file = await parseMarkdown(filePath)
       const title = file.content.split('\n')[0]?.replace(/^#\s+/, '') || kind
+
+      const sidebarData = getExperimentsSidebar(
+        topLevelPages,
+        suites,
+        `/catalog/experiments/${kind}`,
+      )
+      const sidebar = <CatalogSidebar sections={sidebarData} />
 
       return c.html(
         <Layout
@@ -130,6 +256,13 @@ experiments.get('/:kind', async (c) => {
     // Read suite description
     const suite = await parseMarkdown(suiteFilePath)
     const title = suite.content.split('\n')[0]?.replace(/^#\s+/, '') || kind
+
+    const sidebarData = getExperimentsSidebar(
+      topLevelPages,
+      suites,
+      `/catalog/experiments/${kind}`,
+    )
+    const sidebar = <CatalogSidebar sections={sidebarData} />
 
     // Read runs (markdown files, excluding _suite.md)
     const runs = entries
@@ -231,50 +364,67 @@ experiments.get('/:kind', async (c) => {
       </Layout>,
     )
   } catch {
-    // Try treating as a top-level markdown file
-    try {
-      const filePath = join(
-        process.cwd(),
-        'catalog',
-        'experiments',
-        `${kind}.md`,
-      )
-      const file = await parseMarkdown(filePath)
-      const title = file.content.split('\n')[0]?.replace(/^#\s+/, '') || kind
+    // Try treating as a top-level markdown file. Supports both `${kind}.md`
+    // and `_${kind}.md` so that top-level pages (e.g. `_roadmap.md`) are
+    // reachable at `/catalog/experiments/roadmap`.
+    const candidates = [
+      join(process.cwd(), 'catalog', 'experiments', `${kind}.md`),
+      join(process.cwd(), 'catalog', 'experiments', `_${kind}.md`),
+    ]
 
-      return c.html(
-        <Layout
-          title={title}
-          sidebar={sidebar}
-          currentPath="/catalog"
-          user={c.get('user')}
-        >
-          <Prose html={renderMarkdown(file.content)} />
-          <p style="margin-top: var(--flex-space-lg);">
-            <a href={resolveUrl('/catalog/experiments')}>
-              ← Back to Experiments
-            </a>
-          </p>
-        </Layout>,
-      )
-    } catch {
-      return c.html(
-        <Layout
-          title="Not Found"
-          sidebar={sidebar}
-          currentPath="/catalog"
-          user={c.get('user')}
-        >
-          <h1>Experiment Not Found</h1>
-          <p>
-            <a href={resolveUrl('/catalog/experiments')}>
-              ← Back to Experiments
-            </a>
-          </p>
-        </Layout>,
-        404,
-      )
+    for (const filePath of candidates) {
+      try {
+        const file = await parseMarkdown(filePath)
+        const title = file.content.split('\n')[0]?.replace(/^#\s+/, '') || kind
+
+        const sidebarData = getExperimentsSidebar(
+          topLevelPages,
+          suites,
+          `/catalog/experiments/${kind}`,
+        )
+        const sidebar = <CatalogSidebar sections={sidebarData} />
+
+        return c.html(
+          <Layout
+            title={title}
+            sidebar={sidebar}
+            currentPath="/catalog"
+            user={c.get('user')}
+          >
+            <Prose html={renderMarkdown(file.content)} />
+            <p style="margin-top: var(--flex-space-lg);">
+              <a href={resolveUrl('/catalog/experiments')}>
+                ← Back to Experiments
+              </a>
+            </p>
+          </Layout>,
+        )
+      } catch {
+        // try next candidate
+      }
     }
+
+    const sidebarData = getExperimentsSidebar(
+      topLevelPages,
+      suites,
+      `/catalog/experiments/${kind}`,
+    )
+    const sidebar = <CatalogSidebar sections={sidebarData} />
+
+    return c.html(
+      <Layout
+        title="Not Found"
+        sidebar={sidebar}
+        currentPath="/catalog"
+        user={c.get('user')}
+      >
+        <h1>Experiment Not Found</h1>
+        <p>
+          <a href={resolveUrl('/catalog/experiments')}>← Back to Experiments</a>
+        </p>
+      </Layout>,
+      404,
+    )
   }
 })
 
@@ -290,7 +440,12 @@ experiments.get('/:kind/:slug', async (c) => {
     `${slug}.md`,
   )
 
-  const sidebarData = getCatalogSidebar('/catalog/experiments')
+  const { topLevelPages, suites } = await loadExperimentsNav()
+  const sidebarData = getExperimentsSidebar(
+    topLevelPages,
+    suites,
+    `/catalog/experiments/${kind}/${slug}`,
+  )
   const sidebar = <CatalogSidebar sections={sidebarData} />
 
   try {

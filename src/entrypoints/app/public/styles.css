@@ -87,12 +87,14 @@
 @import "../../../design-system/components/flex-change-indicator/styles.css" layer(block);
 @import "../../../design-system/components/flex-semantic-diff/styles.css" layer(block);
 @import "../../../design-system/components/flex-confidence-badge/styles.css" layer(block);
+@import "../../../design-system/components/flex-variant-callout/styles.css" layer(block);
 @import "../../../design-system/components/flex-spec-browser/styles.css" layer(block);
 @import "../../../design-system/components/flex-spec-diff-browser/styles.css" layer(block);
 @import "../routes/projects/styles.css" layer(block);
 @import "../routes/owner/edit/styles.css" layer(block);
 @import "../routes/owner/edit/editor-layout.css" layer(block);
 @import "../routes/owner/compare/styles.css" layer(block);
+@import "../routes/settings/styles.css" layer(block);
 
 /* Utility */
 @import "./utilities.css" layer(utility);
