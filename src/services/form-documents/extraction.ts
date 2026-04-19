@@ -2,6 +2,7 @@ import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
 import type { ExtractionExemplar } from '../extraction/exemplars'
+import type { PolicyChunk, PolicyRetriever } from '../rag'
 import type { CacheStore } from '../storage'
 import {
   generateFormSpec,
@@ -86,6 +87,50 @@ export interface BedrockExtractorOptions {
    * when `promptVariant === 'hybrid'`.
    */
   hybridExemplar?: ExtractionExemplar
+  /**
+   * Optional policy retriever. When present, top-k chunks are retrieved
+   * per extraction using the fixture slug (or a PDF-derived fallback)
+   * as the query and prepended to the Step-1 prompt under a
+   * `## Policy Context` section.
+   *
+   * The retriever may be a Promise so that variants with async
+   * embedders can register synchronously in the registry and defer
+   * corpus embedding until the first extraction.
+   */
+  retriever?: PolicyRetriever | Promise<PolicyRetriever>
+  /**
+   * Number of policy chunks to retrieve per extraction. Defaults to 2.
+   * Ignored when `retriever` is not set.
+   */
+  retrievalK?: number
+}
+
+/**
+ * Build the policy-context section for the Step-1 prompt.
+ *
+ * Mirrors the `buildExemplarSection` shape: empty string when the
+ * input is empty, otherwise a well-labelled block the model can use
+ * as grounding. Each chunk's `source` is rendered verbatim so the
+ * model can echo it in field descriptions if it chooses.
+ */
+export function buildPolicyContextSection(chunks: PolicyChunk[]): string {
+  if (chunks.length === 0) return ''
+
+  const sections = chunks.map(
+    (chunk) => `### ${chunk.source}
+
+${chunk.text}`,
+  )
+
+  return `## Policy Context
+
+The following regulatory excerpts govern this form. Use them to inform field types, sensitivity labels, and required-ness — e.g. an SSN mentioned in 8 CFR 274a.2 should be tagged sensitivity: "pii" — but do not copy regulatory text into field labels.
+
+${sections.join('\n\n')}
+
+---
+
+`
 }
 
 /** Build the few-shot examples section for the extraction prompt. */
@@ -137,6 +182,24 @@ export function createBedrockPdfExtractor(
 
       const model = extractionOptions?.model ?? options?.model ?? DEFAULT_MODEL
 
+      // Resolve the policy retriever (if configured) and fetch top-k
+      // chunks. Retrieval is keyed on the fixture slug when the caller
+      // supplies one, and falls back to the first ~500 characters of
+      // the PDF buffer interpreted as UTF-8. The fallback is lossy for
+      // binary PDFs, but on real fixtures it surfaces enough tokens
+      // (author, title, form id) to be useful when a slug isn't
+      // available.
+      let policyChunks: PolicyChunk[] = []
+      if (options?.retriever) {
+        const retriever = await options.retriever
+        const k = options.retrievalK ?? 2
+        const query =
+          extractionOptions?.slug ?? pdf.subarray(0, 500).toString('utf-8')
+        policyChunks = await retriever.retrieve(query, k)
+      }
+
+      const policyContextSection = buildPolicyContextSection(policyChunks)
+
       // Select the Step-1 prompt shape. The hybrid variant is a full
       // rewrite; the default variant is the baseline template with an
       // optional few-shot appendix.
@@ -148,9 +211,12 @@ export function createBedrockPdfExtractor(
           )
         }
         step1PromptText = buildHybridExtractionPrompt(options.hybridExemplar)
+        if (policyContextSection) {
+          step1PromptText = `${policyContextSection}${step1PromptText}`
+        }
       } else {
         const exemplarSection = buildExemplarSection(options?.exemplars)
-        step1PromptText = `Analyze this government PDF form and extract its structure. Return ONLY valid JSON (no markdown, no explanation) matching this exact schema:
+        step1PromptText = `${policyContextSection}Analyze this government PDF form and extract its structure. Return ONLY valid JSON (no markdown, no explanation) matching this exact schema:
 
 {
   "spec": {

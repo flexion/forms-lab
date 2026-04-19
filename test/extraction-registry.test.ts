@@ -91,6 +91,19 @@ describe('createExtractorRegistry', () => {
     )
   })
 
+  it('registers sonnet-with-rag as experimental', () => {
+    const registry = createExtractorRegistry()
+    const strategies = registry.list()
+    const rag = strategies.find((s) => s.id === 'sonnet-with-rag')
+    expect(rag).toBeDefined()
+    expect(rag!.metadata.status).toBe('experimental')
+    expect(rag!.metadata.courseTopics).toContain('rag')
+    expect(rag!.metadata.courseTopics).toContain('retrieval')
+    expect(rag!.metadata.catalogPath).toBe(
+      '/catalog/experiments/pdf-field-extraction/sonnet-with-rag',
+    )
+  })
+
   it('registers sonnet-hybrid-v1 as experimental', () => {
     const registry = createExtractorRegistry()
     const strategies = registry.list()
