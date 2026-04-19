@@ -73,10 +73,12 @@ const sessionGateway = new SqliteFormSessionGateway(formsDbPath)
 const submissionGateway = new SqliteSubmissionGateway(formsDbPath)
 const specSnapshotStore = createSpecSnapshotStore(formsDbPath)
 const conversationGateway = new SqliteConversationGateway(formsDbPath)
+// Use ScriptedFillingAgent by default until Bedrock tool schema issue is resolved
+// See: https://github.com/flexion/forms-lab/issues/9 (Story 9)
 const fillingAgent =
-  process.env.USE_SCRIPTED_AGENT === 'true'
-    ? new ScriptedFillingAgent()
-    : new BedrockFillingAgent()
+  process.env.USE_BEDROCK_AGENT === 'true'
+    ? new BedrockFillingAgent()
+    : new ScriptedFillingAgent()
 
 /**
  * Adapter: resolve a DataCollectionSpec id to (owner, slug, spec, formSpec)
