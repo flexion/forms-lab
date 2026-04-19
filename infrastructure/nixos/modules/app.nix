@@ -44,15 +44,17 @@ let
   '';
 in
 {
-  # Install the generator at /etc/systemd/system-generators/, which
-  # systemd reads on every boot before unit resolution. NixOS has no
-  # dedicated option for generators, but environment.etc works — systemd
-  # consults /etc/systemd/system-generators/ in addition to the
-  # package-provided /lib/systemd/system-generators/ directory.
-  environment.etc."systemd/system-generators/forms-lab-branch-apps" = {
-    source = branchAppGenerator;
-    mode = "0755";
-  };
+  # Install the generator by bundling it in a systemd.packages entry.
+  # systemd.packages adds a derivation's lib/systemd/ tree to the unit
+  # search path, including its system-generators/ subdir. We can't use
+  # environment.etc because /etc/systemd/system-generators/ collides
+  # with NixOS's stock systemd setup (read-only path conflict).
+  systemd.packages = [
+    (pkgs.runCommand "forms-lab-branch-apps-generator" { } ''
+      install -D -m 0755 ${branchAppGenerator} \
+        $out/lib/systemd/system-generators/forms-lab-branch-apps
+    '')
+  ];
 
   # Template unit for branch app services
   # Instantiated by the deploy script as forms-lab-app@<branch>.service
