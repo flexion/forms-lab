@@ -73,10 +73,11 @@ const sessionGateway = new SqliteFormSessionGateway(formsDbPath)
 const submissionGateway = new SqliteSubmissionGateway(formsDbPath)
 const specSnapshotStore = createSpecSnapshotStore(formsDbPath)
 const conversationGateway = new SqliteConversationGateway(formsDbPath)
+// Temporarily default to ScriptedFillingAgent until Bedrock tool schema is fixed
 const fillingAgent =
-  process.env.USE_SCRIPTED_AGENT === 'true'
-    ? new ScriptedFillingAgent()
-    : new BedrockFillingAgent()
+  process.env.USE_BEDROCK_AGENT === 'true'
+    ? new BedrockFillingAgent()
+    : new ScriptedFillingAgent()
 
 /**
  * Adapter: resolve a DataCollectionSpec id to (owner, slug, spec, formSpec)
