@@ -47,7 +47,25 @@ const hljsStyles = `
 designSystem.get('/', (c) => {
   const sidebarData = getDesignSystemSidebar('/catalog/design-system')
   const sidebar = <CatalogSidebar sections={sidebarData} />
+  const kindFilter = c.req.query('kind') as
+    | 'uswds-derived'
+    | 'custom'
+    | undefined
   const grouped = getComponentsByCategory()
+  const filtered: typeof grouped =
+    kindFilter === 'uswds-derived' || kindFilter === 'custom'
+      ? Object.fromEntries(
+          Object.entries(grouped)
+            .map(
+              ([cat, comps]) =>
+                [
+                  cat,
+                  comps.filter((comp) => comp.kind === kindFilter),
+                ] as const,
+            )
+            .filter(([, comps]) => comps.length > 0),
+        )
+      : grouped
 
   // Category display names
   const categoryLabels: Record<string, string> = {
@@ -126,7 +144,29 @@ designSystem.get('/', (c) => {
           </div>
         </section>
 
-        {Object.entries(grouped).map(([category, components]) => (
+        <div class="l-cluster" style="--cluster-space: var(--flex-space-sm);">
+          <span class="catalog-group-label">Filter:</span>
+          <a
+            href={resolveUrl('/catalog/design-system')}
+            data-active={!kindFilter}
+          >
+            All
+          </a>
+          <a
+            href={resolveUrl('/catalog/design-system?kind=uswds-derived')}
+            data-active={kindFilter === 'uswds-derived'}
+          >
+            USWDS-derived
+          </a>
+          <a
+            href={resolveUrl('/catalog/design-system?kind=custom')}
+            data-active={kindFilter === 'custom'}
+          >
+            Custom
+          </a>
+        </div>
+
+        {Object.entries(filtered).map(([category, components]) => (
           <section>
             <p class="catalog-group-label">
               {categoryLabels[category] || category}
@@ -141,6 +181,14 @@ designSystem.get('/', (c) => {
                   <StatusBadge
                     status={comp.category === 'action' ? 'stable' : 'working'}
                   />
+                  <span
+                    class="badge"
+                    data-state={
+                      comp.kind === 'uswds-derived' ? 'closed' : 'open'
+                    }
+                  >
+                    {comp.kind === 'uswds-derived' ? 'USWDS' : 'Custom'}
+                  </span>
                 </ContentCard>
               ))}
             </div>
@@ -1216,6 +1264,12 @@ designSystem.get('/:slug', async (c) => {
         <span class="badge" data-variant="milestone">
           {meta.category}
         </span>
+        <span
+          class="badge"
+          data-state={meta.kind === 'uswds-derived' ? 'closed' : 'open'}
+        >
+          {meta.kind === 'uswds-derived' ? 'USWDS-derived' : 'Custom'}
+        </span>
         {meta.interactive && (
           <span class="badge" data-state="open">
             interactive
@@ -1225,19 +1279,20 @@ designSystem.get('/:slug', async (c) => {
 
       <p>{meta.description}</p>
 
-      <p>
-        <a
-          href={meta.reference ?? ''}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          USWDS Documentation ↗
-        </a>
-      </p>
+      {meta.kind === 'uswds-derived' && meta.reference ? (
+        <p>
+          Reference:{' '}
+          <a href={meta.reference} target="_blank" rel="noopener noreferrer">
+            USWDS documentation ↗
+          </a>
+        </p>
+      ) : (
+        <p>Custom component — no upstream reference.</p>
+      )}
 
       {exampleEntries.length > 0 && (
         <section class="l-stack">
-          <h2>Examples</h2>
+          <h2>Variants</h2>
           {exampleEntries.map(([name, ExampleFn]) => {
             const title = name.replace(/([a-z])([A-Z])/g, '$1 $2')
             const rendered = (<ExampleFn />).toString()
@@ -1267,75 +1322,101 @@ designSystem.get('/:slug', async (c) => {
         </section>
       )}
 
-      {contract && contract.kind === 'uswds-derived' && (
+      {contract && (
         <section class="l-stack">
-          <h2>Conformance</h2>
+          <h2>Contract</h2>
 
-          {contract.mapping.length > 0 && (
-            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-              <h3>Class Mapping</h3>
-              <Table striped>
-                <thead>
-                  <tr>
-                    <th>USWDS</th>
-                    <th>Flex</th>
-                    <th>Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {contract.mapping.map((m) => (
-                    <tr>
-                      <td>
-                        <code class="flex-mono">{m.uswds}</code>
-                      </td>
-                      <td>
-                        <code class="flex-mono">{m.flex}</code>
-                      </td>
-                      <td>{m.notes}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          )}
-
-          {contract.verified.length > 0 && (
-            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-              <h3>Verified Properties</h3>
-              <div class="l-cluster">
-                {contract.verified.map((prop) => (
-                  <code
-                    class="flex-mono"
-                    style="padding: 2px var(--flex-space-xs); background: var(--flex-color-success-lighter); border-radius: var(--flex-radius-sm);"
-                  >
-                    {prop}
-                  </code>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {contract.intentionalDifferences.length > 0 && (
-            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-              <h3>Intentional Differences</h3>
-              {contract.intentionalDifferences.map((d) => (
-                <div style="padding: var(--flex-space-sm); background: var(--flex-color-warning-lighter); border-radius: var(--flex-radius-md);">
-                  <p>
-                    <strong>
-                      <code class="flex-mono">{d.property}</code>
-                    </strong>
-                    : ours = <code class="flex-mono">{d.ours}</code>, USWDS ={' '}
-                    <code class="flex-mono">{d.uswds}</code>
-                  </p>
-                  <p>{d.reason}</p>
+          {contract.kind === 'uswds-derived' && (
+            <>
+              {contract.mapping.length > 0 && (
+                <div
+                  class="l-stack"
+                  style="--stack-space: var(--flex-space-sm);"
+                >
+                  <h3>Class mapping</h3>
+                  <Table striped>
+                    <thead>
+                      <tr>
+                        <th>USWDS</th>
+                        <th>Flex</th>
+                        <th>Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {contract.mapping.map((m) => (
+                        <tr>
+                          <td>
+                            <code class="flex-mono">{m.uswds}</code>
+                          </td>
+                          <td>
+                            <code class="flex-mono">{m.flex}</code>
+                          </td>
+                          <td>{m.notes}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
                 </div>
-              ))}
+              )}
+
+              {contract.verified.length > 0 && (
+                <div
+                  class="l-stack"
+                  style="--stack-space: var(--flex-space-sm);"
+                >
+                  <h3>Verified properties</h3>
+                  <div class="l-cluster">
+                    {contract.verified.map((prop) => (
+                      <code
+                        class="flex-mono"
+                        style="padding: 2px var(--flex-space-xs); background: var(--flex-color-success-lighter); border-radius: var(--flex-radius-sm);"
+                      >
+                        {prop}
+                      </code>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {contract.intentionalDifferences.length > 0 && (
+                <div
+                  class="l-stack"
+                  style="--stack-space: var(--flex-space-sm);"
+                >
+                  <h3>Intentional differences</h3>
+                  {contract.intentionalDifferences.map((d) => (
+                    <div style="padding: var(--flex-space-sm); background: var(--flex-color-warning-lighter); border-radius: var(--flex-radius-md);">
+                      <p>
+                        <strong>
+                          <code class="flex-mono">{d.property}</code>
+                        </strong>
+                        : ours = <code class="flex-mono">{d.ours}</code>, USWDS
+                        = <code class="flex-mono">{d.uswds}</code>
+                      </p>
+                      <p>{d.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {contract.kind === 'custom' && (
+            <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
+              <h3>Documented variants</h3>
+              <ul>
+                {contract.variants.map((v) => (
+                  <li>
+                    <strong>{v.name}</strong> — {v.description}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 
           {contract.behavior.length > 0 && (
             <div class="l-stack" style="--stack-space: var(--flex-space-sm);">
-              <h3>Behavior</h3>
+              <h3>Behavior promises</h3>
               <ul>
                 {contract.behavior.map((b) => (
                   <li>
