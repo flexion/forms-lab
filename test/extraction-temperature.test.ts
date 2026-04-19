@@ -1,10 +1,13 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
+import * as bedrockModule from '@ai-sdk/amazon-bedrock'
+import * as credentialsModule from '@aws-sdk/credential-providers'
 import * as aiModule from 'ai'
 
 const mockGenerateText = mock()
-// Re-export the full `ai` module, only overriding `generateText`. Bun's
-// `mock.module` is process-global, so trimming exports would break any
-// later test whose transitive imports touch `tool`, `stepCountIs`, etc.
+// Bun's `mock.module` is process-global — re-export every real binding and
+// only override the names we care about. Trimming exports breaks any later
+// test whose transitive imports touch other symbols (e.g. `fromIni` from
+// `@aws-sdk/credential-providers`, imported by the shaping code).
 mock.module('ai', () => ({
   ...aiModule,
   generateText: mockGenerateText,
@@ -13,10 +16,12 @@ mock.module('ai', () => ({
 const mockBedrockModel = 'bedrock-model-instance'
 const mockBedrock = mock(() => mockBedrockModel)
 mock.module('@ai-sdk/amazon-bedrock', () => ({
+  ...bedrockModule,
   createAmazonBedrock: mock(() => mockBedrock),
 }))
 
 mock.module('@aws-sdk/credential-providers', () => ({
+  ...credentialsModule,
   fromNodeProviderChain: mock(() => () => Promise.resolve({})),
 }))
 

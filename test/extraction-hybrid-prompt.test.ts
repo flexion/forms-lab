@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
+import * as credentialsModule from '@aws-sdk/credential-providers'
 import * as aiModule from 'ai'
 import type { ExtractionExemplar } from '../src/services/extraction/exemplars'
 import { exemplars } from '../src/services/extraction/exemplars'
@@ -6,12 +7,16 @@ import { buildExemplarSection } from '../src/services/form-documents/extraction'
 import { buildHybridExtractionPrompt } from '../src/services/form-documents/hybrid-extraction-prompt'
 
 const mockGenerateText = mock()
+// Bun's `mock.module` is process-global — re-export every real binding so we
+// don't trim symbols that later tests import transitively (e.g. `fromIni`
+// from `@aws-sdk/credential-providers`, imported by the shaping code).
 mock.module('ai', () => ({
   ...aiModule,
   generateText: mockGenerateText,
 }))
 
 mock.module('@aws-sdk/credential-providers', () => ({
+  ...credentialsModule,
   fromNodeProviderChain: mock(() => () => Promise.resolve({})),
 }))
 
