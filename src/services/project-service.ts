@@ -241,60 +241,83 @@ export function createProjectService(
     // Also write to file for debugging
     try {
       const fs = require('fs')
-      fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} ${logMsg}\n`)
-      fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] About to call extractor.extract()\n`)
+      fs.appendFileSync(
+        '/tmp/extraction-debug.log',
+        `${new Date().toISOString()} ${logMsg}\n`,
+      )
+      fs.appendFileSync(
+        '/tmp/extraction-debug.log',
+        `${new Date().toISOString()} [FIRE_AND_FORGET] About to call extractor.extract()\n`,
+      )
     } catch {}
     extractor
       .extract(pdf)
       .then(async (result) => {
         const fs = require('fs')
         try {
-          fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] Extract succeeded for ${slug}\n`)
-          fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [RESULT] spec=${!!result.spec} formSpec=${!!result.formSpec} fieldMapping=${!!result.fieldMapping}\n`)
+          fs.appendFileSync(
+            '/tmp/extraction-debug.log',
+            `${new Date().toISOString()} [FIRE_AND_FORGET] Extract succeeded for ${slug}\n`,
+          )
+          fs.appendFileSync(
+            '/tmp/extraction-debug.log',
+            `${new Date().toISOString()} [RESULT] spec=${!!result.spec} formSpec=${!!result.formSpec} fieldMapping=${!!result.fieldMapping}\n`,
+          )
         } catch {}
 
         try {
           // Initial extraction lands on an "import" branch so the owner can
           // iterate before publishing to main via the review workflow.
           const branches = await repo.listBranches(slug)
-        if (!branches.some((b) => b.name === 'import')) {
-          await repo.createBranch(slug, 'import', 'main')
-        }
-        await repo.commit(
-          slug,
-          [
-            {
-              path: 'forms/default/spec.json',
-              content: Buffer.from(JSON.stringify(result.spec, null, 2)),
-            },
-            {
-              path: 'forms/default/form.json',
-              content: Buffer.from(JSON.stringify(result.formSpec, null, 2)),
-            },
-            {
-              path: 'forms/default/confidence.json',
-              content: Buffer.from(JSON.stringify(result.confidence, null, 2)),
-            },
-            {
-              path: 'forms/default/field-mapping.json',
-              content: Buffer.from(
-                JSON.stringify(result.fieldMapping ?? {}, null, 2),
-              ),
-            },
-          ],
-          'Extract form specifications',
-          author,
-          { branch: 'import' },
-        )
-        try {
-          fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] Commit succeeded, updating status to ready\n`)
-        } catch {}
-        store.update(projectId, { status: 'ready' })
+          if (!branches.some((b) => b.name === 'import')) {
+            await repo.createBranch(slug, 'import', 'main')
+          }
+          await repo.commit(
+            slug,
+            [
+              {
+                path: 'forms/default/spec.json',
+                content: Buffer.from(JSON.stringify(result.spec, null, 2)),
+              },
+              {
+                path: 'forms/default/form.json',
+                content: Buffer.from(JSON.stringify(result.formSpec, null, 2)),
+              },
+              {
+                path: 'forms/default/confidence.json',
+                content: Buffer.from(
+                  JSON.stringify(result.confidence, null, 2),
+                ),
+              },
+              {
+                path: 'forms/default/field-mapping.json',
+                content: Buffer.from(
+                  JSON.stringify(result.fieldMapping ?? {}, null, 2),
+                ),
+              },
+            ],
+            'Extract form specifications',
+            author,
+            { branch: 'import' },
+          )
+          try {
+            fs.appendFileSync(
+              '/tmp/extraction-debug.log',
+              `${new Date().toISOString()} [FIRE_AND_FORGET] Commit succeeded, updating status to ready\n`,
+            )
+          } catch {}
+          store.update(projectId, { status: 'ready' })
         } catch (err) {
           try {
-            fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] Error in then handler: ${err instanceof Error ? err.message : String(err)}\n`)
+            fs.appendFileSync(
+              '/tmp/extraction-debug.log',
+              `${new Date().toISOString()} [FIRE_AND_FORGET] Error in then handler: ${err instanceof Error ? err.message : String(err)}\n`,
+            )
             if (err instanceof Error && err.stack) {
-              fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [THEN_STACK] ${err.stack}\n`)
+              fs.appendFileSync(
+                '/tmp/extraction-debug.log',
+                `${new Date().toISOString()} [THEN_STACK] ${err.stack}\n`,
+              )
             }
           } catch {}
           throw err
@@ -307,9 +330,15 @@ export function createProjectService(
         }
         const fs = require('fs')
         try {
-          fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] Extract FAILED for ${slug}: ${err instanceof Error ? err.message : String(err)}\n`)
+          fs.appendFileSync(
+            '/tmp/extraction-debug.log',
+            `${new Date().toISOString()} [FIRE_AND_FORGET] Extract FAILED for ${slug}: ${err instanceof Error ? err.message : String(err)}\n`,
+          )
           if (err instanceof Error && err.stack) {
-            fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [STACK] ${err.stack}\n`)
+            fs.appendFileSync(
+              '/tmp/extraction-debug.log',
+              `${new Date().toISOString()} [STACK] ${err.stack}\n`,
+            )
           }
         } catch {}
         store.update(projectId, {
@@ -327,7 +356,14 @@ export function createProjectService(
     ): Promise<ProjectIndex> {
       requireAuth(user)
       console.log('[CREATE_PROJECT] Creating project:', name)
-      console.log('[CREATE_PROJECT] PDF type:', typeof pdf, 'isBuffer:', Buffer.isBuffer(pdf), 'length:', pdf?.length)
+      console.log(
+        '[CREATE_PROJECT] PDF type:',
+        typeof pdf,
+        'isBuffer:',
+        Buffer.isBuffer(pdf),
+        'length:',
+        pdf?.length,
+      )
 
       const slug = generateUniqueSlug(name)
       const project = store.create({
@@ -450,12 +486,15 @@ export function createProjectService(
         console.error(`PDF not found for retry: ${slug} at source/${slug}.pdf`)
         store.update(project.id, {
           status: 'error',
-          error: 'Source PDF not found in repository. The project may need to be recreated.',
+          error:
+            'Source PDF not found in repository. The project may need to be recreated.',
         })
         return
       }
 
-      console.log(`Retrying extraction for ${slug}, PDF size: ${pdfBuffer.length} bytes`)
+      console.log(
+        `Retrying extraction for ${slug}, PDF size: ${pdfBuffer.length} bytes`,
+      )
       store.update(project.id, { status: 'extracting', error: null })
       fireAndForgetExtraction(project.id, slug, pdfBuffer, user.login)
     },

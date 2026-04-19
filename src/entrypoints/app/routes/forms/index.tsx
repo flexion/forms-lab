@@ -630,7 +630,9 @@ export function createFormRouter(deps: FormRouterDeps) {
         submission.specVersion,
       )
       if (!sourcePdf) {
-        console.error(`Source PDF not found for ${submission.specId}@${submission.specVersion}`)
+        console.error(
+          `Source PDF not found for ${submission.specId}@${submission.specVersion}`,
+        )
         return c.text('Source PDF not found', 404)
       }
 
@@ -639,13 +641,19 @@ export function createFormRouter(deps: FormRouterDeps) {
         submission.specVersion,
       )
       if (!fieldMapping) {
-        console.error(`Field mapping not found for ${submission.specId}@${submission.specVersion}`)
+        console.error(
+          `Field mapping not found for ${submission.specId}@${submission.specVersion}`,
+        )
         return c.text('Field mapping not found', 404)
       }
 
-      console.log(`Filling PDF for ${submissionId}, ${Object.keys(fieldMapping).length} mapped fields`)
+      console.log(
+        `Filling PDF for ${submissionId}, ${Object.keys(fieldMapping).length} mapped fields`,
+      )
       const result = await fillPdf(sourcePdf, fieldMapping, submission.data)
-      console.log(`PDF filled successfully, ${result.unmappedFields.length} unmapped, ${result.emptyFields.length} empty`)
+      console.log(
+        `PDF filled successfully, ${result.unmappedFields.length} unmapped, ${result.emptyFields.length} empty`,
+      )
 
       return new Response(result.pdf.buffer as ArrayBuffer, {
         headers: {
@@ -655,7 +663,10 @@ export function createFormRouter(deps: FormRouterDeps) {
       })
     } catch (err) {
       console.error('PDF download error:', err)
-      return c.text(`Error generating PDF: ${err instanceof Error ? err.message : String(err)}`, 500)
+      return c.text(
+        `Error generating PDF: ${err instanceof Error ? err.message : String(err)}`,
+        500,
+      )
     }
   }
 

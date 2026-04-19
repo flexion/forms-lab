@@ -33,7 +33,10 @@ export function createCachedPdfExtractor(
       console.log(logMsg)
       try {
         const fs = require('fs')
-        fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} ${logMsg}\n`)
+        fs.appendFileSync(
+          '/tmp/extraction-debug.log',
+          `${new Date().toISOString()} ${logMsg}\n`,
+        )
       } catch {}
 
       // Validate PDF buffer before caching
@@ -57,7 +60,9 @@ export function createCachedPdfExtractor(
         const result = JSON.parse(cached.result) as ExtractionResult
         // Invalidate cache entries that don't have fieldMapping (from before story 7)
         if (!result.fieldMapping) {
-          console.log('[CACHE] Invalidating old cache entry without fieldMapping')
+          console.log(
+            '[CACHE] Invalidating old cache entry without fieldMapping',
+          )
           // Don't return cached result, fall through to re-extract
         } else {
           return result
