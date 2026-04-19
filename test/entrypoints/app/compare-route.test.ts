@@ -85,7 +85,10 @@ function createTestApp(authUser: SessionUser | null = danielUser) {
       return stubResult
     },
   }
-  const service = createProjectService(projectStore, repo, extractor)
+  const service = createProjectService(projectStore, repo, {
+    resolveExtractor: () => extractor,
+    resolveVariant: () => ({ variantId: 'sonnet', modelId: 'test-model' }),
+  })
   const reviewService = createReviewService(repo)
   // Empty shaping registry — integration test exercises manual commands,
   // not the LLM intent path.

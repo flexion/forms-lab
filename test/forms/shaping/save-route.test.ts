@@ -27,6 +27,12 @@ const dummyExtractor = {
   },
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: dummy extraction context
+const dummyExtraction: any = {
+  resolveExtractor: () => dummyExtractor,
+  resolveVariant: () => ({ variantId: 'sonnet', modelId: 'test-model' }),
+}
+
 describe('POST /:owner/:slug/edit/:branch/save', () => {
   let app: Hono
   let service: ReturnType<typeof createProjectService>
@@ -38,8 +44,7 @@ describe('POST /:owner/:slug/edit/:branch/save', () => {
     mkdirSync(REPOS_PATH, { recursive: true })
     const store = createProjectStore(DB_PATH)
     const repo = createFormProjectRepo(REPOS_PATH)
-    // biome-ignore lint/suspicious/noExplicitAny: dummy extractor
-    service = createProjectService(store, repo, dummyExtractor as any)
+    service = createProjectService(store, repo, dummyExtraction)
     const project = await service.createProject(
       'test',
       Buffer.from('fake'),
@@ -144,8 +149,7 @@ describe('POST /:owner/:slug/edit/:branch/save ownership', () => {
     mkdirSync(REPOS_PATH_2, { recursive: true })
     const store = createProjectStore(DB_PATH_2)
     const repo = createFormProjectRepo(REPOS_PATH_2)
-    // biome-ignore lint/suspicious/noExplicitAny: dummy extractor
-    service = createProjectService(store, repo, dummyExtractor as any)
+    service = createProjectService(store, repo, dummyExtraction)
     const project = await service.createProject(
       'test',
       Buffer.from('fake'),

@@ -68,6 +68,13 @@ function stubExtractor(result: ExtractionResult = SAMPLE_RESULT): PdfExtractor {
   }
 }
 
+function stubExtraction(extractor: PdfExtractor = stubExtractor()) {
+  return {
+    resolveExtractor: () => extractor,
+    resolveVariant: () => ({ variantId: 'sonnet', modelId: 'test-model' }),
+  }
+}
+
 const alice: SessionUser = {
   login: 'alice',
   name: 'Alice',
@@ -89,7 +96,7 @@ describe('ProjectService', () => {
     basePath = mkdtempSync(join(tmpdir(), 'project-service-'))
     store = createProjectStore(':memory:')
     repo = createFormProjectRepo(basePath)
-    service = createProjectService(store, repo, stubExtractor())
+    service = createProjectService(store, repo, stubExtraction())
   })
 
   afterEach(() => {
@@ -161,7 +168,7 @@ describe('ProjectService', () => {
       const failingService = createProjectService(
         store,
         failingRepo,
-        stubExtractor(),
+        stubExtraction(),
       )
 
       expect(
@@ -184,7 +191,7 @@ describe('ProjectService', () => {
       const failingService = createProjectService(
         store,
         failingRepo,
-        stubExtractor(),
+        stubExtraction(),
       )
 
       expect(

@@ -60,6 +60,13 @@ const danielUser: SessionUser = {
 }
 const mayaUser: SessionUser = { login: 'maya', name: 'Maya', avatarUrl: '' }
 
+function asExtraction(extractor: { extract: () => Promise<ExtractionResult> }) {
+  return {
+    resolveExtractor: () => extractor,
+    resolveVariant: () => ({ variantId: 'sonnet', modelId: 'test-model' }),
+  }
+}
+
 let repoBasePath: string
 let repo: FormProjectRepo
 
@@ -79,7 +86,11 @@ function createTestApp(authUser: SessionUser | null = danielUser) {
       return stubResult
     },
   }
-  const service = createProjectService(projectStore, repo, extractor)
+  const service = createProjectService(
+    projectStore,
+    repo,
+    asExtraction(extractor),
+  )
   const userStore = createUserStore(':memory:')
 
   // Seed the user store
@@ -251,7 +262,11 @@ describe('GET /:owner/:slug (project overview)', () => {
         return stubResult
       },
     }
-    const slowService = createProjectService(slowStore, slowRepo, slowExtractor)
+    const slowService = createProjectService(
+      slowStore,
+      slowRepo,
+      asExtraction(slowExtractor),
+    )
     const slowUserStore = createUserStore(':memory:')
     slowUserStore.upsert({
       login: 'danielnaab',
@@ -285,7 +300,11 @@ describe('GET /:owner/:slug (project overview)', () => {
         return stubResult
       },
     }
-    const slowService = createProjectService(slowStore, slowRepo, slowExtractor)
+    const slowService = createProjectService(
+      slowStore,
+      slowRepo,
+      asExtraction(slowExtractor),
+    )
     const slowUserStore = createUserStore(':memory:')
     slowUserStore.upsert({
       login: 'danielnaab',
@@ -321,7 +340,11 @@ describe('GET /:owner/:slug (project overview)', () => {
         return stubResult
       },
     }
-    const slowService = createProjectService(slowStore, slowRepo, slowExtractor)
+    const slowService = createProjectService(
+      slowStore,
+      slowRepo,
+      asExtraction(slowExtractor),
+    )
     const slowUserStore = createUserStore(':memory:')
     slowUserStore.upsert({
       login: 'danielnaab',

@@ -9,11 +9,11 @@ import {
 } from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
 import type { DataCollectionSpec } from '../../services/data-collection/types'
-import {
-  createBedrockPdfExtractor,
-  createCachedPdfExtractor,
-} from '../../services/form-documents/extraction'
+import { createExtractorRegistry } from '../../services/extraction/registry'
+import { createCachedPdfExtractor } from '../../services/form-documents/extraction'
+import { createMappingRegistry } from '../../services/form-documents/mapping-registry'
 import { createFormProjectRepo } from '../../services/form-project-repo'
+import { createFillingRegistry } from '../../services/forms/filling/registry'
 import { createReviewService } from '../../services/forms/review'
 import { createShapingRegistry } from '../../services/forms/shaping/registry'
 import { createSpecSnapshotStore } from '../../services/forms/spec-snapshot-store'
@@ -23,6 +23,11 @@ import type { FormSpec } from '../../services/forms/types'
 import { createProjectService } from '../../services/project-service'
 import { createCacheStore, createProjectStore } from '../../services/storage'
 import { createUserStore } from '../../services/user-store'
+import {
+  createVariantPreferencesGateway,
+  createVariantPreferencesService,
+  type TaskRegistries,
+} from '../../services/variant-preferences'
 import { getBasePath, resolveUrl } from '../../shared/base-path'
 import { requireAuth, sessionReader } from './middleware/auth'
 import { createAuthRoutes } from './routes/auth/index'
@@ -36,6 +41,7 @@ import {
 } from './routes/owner/components'
 import { createEditRoutes } from './routes/owner/edit/index'
 import { createOwnerRoutes } from './routes/owner/index'
+import { createSettingsRoutes } from './routes/settings/index'
 
 const basePath = getBasePath()
 const app = new Hono().basePath(basePath)
@@ -51,16 +57,40 @@ const projectStore = createProjectStore(projectDbPath)
 const cacheStore = createCacheStore(cacheDbPath)
 const userStore = createUserStore(projectDbPath)
 const formProjectRepo = createFormProjectRepo(reposPath)
-const extractor = createCachedPdfExtractor(
-  createBedrockPdfExtractor(),
-  cacheStore,
-)
-const projectService = createProjectService(
-  projectStore,
-  formProjectRepo,
-  extractor,
-)
+
+// Variant registries: one per task. Each user's preferred variant is
+// resolved against these at call time so a settings change takes effect
+// on the next extraction without restarting the process.
+const extractionRegistry = createExtractorRegistry()
 const shapingRegistry = createShapingRegistry()
+const fillingRegistry = createFillingRegistry()
+const mappingRegistry = createMappingRegistry()
+const registries: TaskRegistries = {
+  extraction: extractionRegistry,
+  shaping: shapingRegistry,
+  filling: fillingRegistry,
+  'field-mapping': mappingRegistry,
+}
+
+const variantPrefsGateway = createVariantPreferencesGateway(projectDbPath)
+const variantPreferences = createVariantPreferencesService(
+  variantPrefsGateway,
+  registries,
+)
+
+const projectService = createProjectService(projectStore, formProjectRepo, {
+  resolveExtractor(variantId) {
+    const inner = extractionRegistry.get(variantId)
+    return createCachedPdfExtractor(inner, cacheStore)
+  },
+  resolveVariant(userLogin) {
+    const variantId =
+      variantPreferences.get(userLogin, 'extraction') ??
+      extractionRegistry.getDefaultId()
+    const meta = extractionRegistry.list().find((v) => v.id === variantId)
+    return { variantId, modelId: meta?.metadata.modelId }
+  },
+})
 const reviewService = createReviewService(formProjectRepo)
 const formsDbPath = process.env.FORMS_DB_PATH ?? 'data/forms.sqlite'
 mkdirSync(dirname(formsDbPath), { recursive: true })
@@ -223,6 +253,12 @@ app.use(
 
 // Mount auth routes
 app.route('/auth', createAuthRoutes(userStore))
+
+// Mount settings routes (variant picker)
+app.route(
+  '/settings',
+  createSettingsRoutes({ preferences: variantPreferences, registries }),
+)
 
 // Mount catalog routes
 app.route('/catalog', catalog)
