@@ -1,6 +1,7 @@
 // src/services/forms/filling-agent/scripted.ts
 import type { DataRequirement } from '../../data-collection/types'
 import { evaluateCondition } from '../resolver'
+import type { FieldEntry } from '../types'
 import type {
   FillingAgent,
   FillingContext,
@@ -22,8 +23,8 @@ export class ScriptedFillingAgent implements FillingAgent {
     context: FillingContext,
     userResponse: string | null,
   ): Promise<FillingTurn> {
-    const toolCalls: ToolCallRecord[] = {}
-    const fieldsCollected: Record<string, any> = {}
+    const toolCalls: Record<string, ToolCallRecord> = {}
+    const fieldsCollected: Record<string, FieldEntry> = {}
 
     // If user provided a response, collect it for the current pending field
     if (userResponse !== null) {
@@ -72,9 +73,7 @@ export class ScriptedFillingAgent implements FillingAgent {
   /**
    * Find the next uncollected required field that passes condition checks
    */
-  private findPendingField(
-    context: FillingContext,
-  ): DataRequirement | null {
+  private findPendingField(context: FillingContext): DataRequirement | null {
     for (const group of context.groups) {
       // Skip group if its condition isn't met
       if (!evaluateCondition(group.condition, context.collectedFields)) {

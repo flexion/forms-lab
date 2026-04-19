@@ -30,7 +30,10 @@ export interface FillingTurn {
 }
 
 export interface FillingAgent {
-  advance(context: FillingContext, userResponse: string | null): Promise<FillingTurn>
+  advance(
+    context: FillingContext,
+    userResponse: string | null,
+  ): Promise<FillingTurn>
 }
 
 export interface ConversationGateway {

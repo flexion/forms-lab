@@ -1,4 +1,6 @@
 // src/services/forms/filling-agent/index.ts
+
+export { ScriptedFillingAgent } from './scripted'
 export type {
   ConversationGateway,
   ConversationMessage,
@@ -7,4 +9,3 @@ export type {
   FillingTurn,
   ToolCallRecord,
 } from './types'
-export { ScriptedFillingAgent } from './scripted'
