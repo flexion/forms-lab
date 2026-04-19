@@ -11,7 +11,7 @@
  * would require a deliberate extension here.
  */
 
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import type { PolicyChunk } from './retrieval'
 
@@ -94,11 +94,50 @@ export interface LoadPolicyCorpusOptions {
   slug?: string
   /** Override the base directory (tests, alternate layouts). */
   baseDir?: string
+  /** Load corpus from project directory instead of catalog. */
+  projectDir?: string
 }
 
 export function loadPolicyCorpus(
   options: LoadPolicyCorpusOptions = {},
 ): PolicyChunk[] {
+  // If projectDir is set, load from project-scoped references/
+  if (options.projectDir) {
+    const referencesDir = join(options.projectDir, 'references')
+    if (!existsSync(referencesDir)) {
+      return []
+    }
+
+    const chunks: PolicyChunk[] = []
+    const files = readdirSync(referencesDir).filter((f) => f.endsWith('.md'))
+
+    for (const file of files) {
+      const raw = readFileSync(join(referencesDir, file), 'utf-8')
+      const { data, body } = parseFrontmatter(raw)
+      const fm: Frontmatter = {
+        formSlug: data.formSlug,
+        title: data.title,
+        source: data.source,
+      }
+
+      if (options.slug && fm.formSlug !== options.slug) continue
+
+      const sections = parseSections(body)
+      sections.forEach((section, i) => {
+        chunks.push({
+          id: `${fm.formSlug}/${i + 1}`,
+          source: section.source,
+          title: fm.title,
+          text: section.text,
+          formSlug: fm.formSlug,
+        })
+      })
+    }
+
+    return chunks
+  }
+
+  // Otherwise, load from catalog (default behavior)
   const baseDir =
     options.baseDir ?? join(process.cwd(), 'catalog', 'references')
   const chunks: PolicyChunk[] = []
