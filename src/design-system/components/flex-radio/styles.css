@@ -42,11 +42,12 @@
   }
 }
 
-/* Visually hidden but accessible input */
+/* Visually hidden but accessible input. See flex-checkbox for why we use
+   physical `left`/`right` instead of logical `inset-inline-*`. */
 .flex-radio__input {
   position: absolute;
-  inset-inline-start: -999em;
-  inset-inline-end: auto;
+  left: -999em;
+  right: auto;
 }
 
 /* Label — component-specific overrides */

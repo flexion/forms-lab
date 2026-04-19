@@ -7,11 +7,17 @@
   background-color: var(--flex-color-surface);
 }
 
-/* Visually hidden but accessible input */
+/* Visually hidden but accessible input.
+   Uses physical `left`/`right` (matching USWDS .usa-sr-only) rather than
+   logical `inset-inline-*` because the CSS bundler emits the logical
+   properties as lang-conditional `:-webkit-any()` rules that modern
+   browsers reject, leaving the input painted at its static position on
+   top of the fake box. Off-screen via `left: -999em` works identically
+   in LTR and RTL for a visually-hidden element. */
 .flex-checkbox__input {
   position: absolute;
-  inset-inline-start: -999em;
-  inset-inline-end: auto;
+  left: -999em;
+  right: auto;
 
   &:checked + .flex-checkbox__label::before {
     background-color: var(--flex-color-accent);

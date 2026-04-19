@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import {
   renderFlexFixture,
@@ -5,16 +7,17 @@ import {
 } from '../../test-helpers/render'
 
 /**
- * Regression test — wrapper `position` must match USWDS so a focused
- * checkbox's outline is not clipped by the next sibling's background.
+ * Regression tests — two bugs that caused the native checkbox to render
+ * outside the USWDS-style fake box:
  *
- * When `.flex-checkbox` was `position: relative`, each wrapper painted in
- * the "positioned descendants" stacking step in document order. The
- * following sibling's background then painted on top of the previous
- * checkbox's focus outline where that outline extended past the fake box.
- * USWDS uses `position: static` on `.usa-checkbox`, which puts the
- * wrapper's background in an earlier paint step so positioned descendants
- * (including the label's ::before outline) always paint on top.
+ * 1. Wrapper `position: relative` caused the next sibling's background
+ *    to paint on top of the focused checkbox's outline.
+ *
+ * 2. `inset-inline-start: -999em` on the hidden input was emitted by the
+ *    CSS bundler as lang-conditional `:-webkit-any()` rules that modern
+ *    browsers reject, leaving the input visible at its static position
+ *    on top of the fake box. The source now uses physical `left`/`right`,
+ *    matching USWDS's sr-only pattern.
  */
 
 const FLEX_FIXTURE = `
@@ -45,8 +48,8 @@ const USWDS_FIXTURE = `
   </fieldset>
 `
 
-test.describe('flex-checkbox focus outline clipping', () => {
-  test('wrapper uses same `position` as USWDS so outline is not clipped', async ({
+test.describe('flex-checkbox native-input hiding and focus outline', () => {
+  test('wrapper `position` matches USWDS so outline is not clipped', async ({
     page,
   }) => {
     await renderUswdsFixture(page, USWDS_FIXTURE)
@@ -65,5 +68,25 @@ test.describe('flex-checkbox focus outline clipping', () => {
       flexPosition,
       '.flex-checkbox wrapper `position` must match USWDS so adjacent sibling backgrounds do not paint over the focused checkbox outline.',
     ).toBe(uswdsPosition)
+  })
+
+  test('built CSS emits unconditional `left: -999em` on hidden input', async () => {
+    // The bundler rewrites `inset-inline-start` into lang-conditional
+    // `:-webkit-any()` / `:-moz-any()` rules. In the deployed build the
+    // modern `:is()` fallback is dropped, leaving no rule that sets `left`
+    // at all — the input paints at its static position on top of the fake
+    // box. Source CSS must use physical `left`/`right` so no transform is
+    // needed and the rule lands in the main declaration block unchanged.
+    const css = readFileSync(resolve(process.cwd(), 'dist/styles.css'), 'utf-8')
+    const match = css.match(/\.flex-checkbox__input\s*\{([^{}]*)\}/)
+    expect(
+      match,
+      'dist/styles.css must contain a top-level `.flex-checkbox__input { ... }` rule. Build the CSS before running tests.',
+    ).not.toBeNull()
+    const body = match![1]
+    expect(
+      body,
+      `The main .flex-checkbox__input rule must include \`left: -999em\` so the native input is pushed off-screen. If it only has \`position: absolute\`, the source probably uses \`inset-inline-start\` which the bundler rewrites into lang-conditional rules that may not survive. Got body: ${body}`,
+    ).toMatch(/left\s*:\s*-999em/)
   })
 })

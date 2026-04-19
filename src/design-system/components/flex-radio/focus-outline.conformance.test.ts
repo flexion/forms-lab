@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import {
   renderFlexFixture,
@@ -5,9 +7,8 @@ import {
 } from '../../test-helpers/render'
 
 /**
- * Regression test — see the flex-checkbox focus-outline test for the full
- * explanation. Same bug pattern: wrapper `position: relative` caused the
- * next sibling's background to paint over the focused radio's outline.
+ * Regression tests — see the flex-checkbox focus-outline test for the full
+ * explanation. Same bug pattern for radios.
  */
 
 const FLEX_FIXTURE = `
@@ -38,8 +39,8 @@ const USWDS_FIXTURE = `
   </fieldset>
 `
 
-test.describe('flex-radio focus outline clipping', () => {
-  test('wrapper uses same `position` as USWDS so outline is not clipped', async ({
+test.describe('flex-radio native-input hiding and focus outline', () => {
+  test('wrapper `position` matches USWDS so outline is not clipped', async ({
     page,
   }) => {
     await renderUswdsFixture(page, USWDS_FIXTURE)
@@ -58,5 +59,19 @@ test.describe('flex-radio focus outline clipping', () => {
       flexPosition,
       '.flex-radio wrapper `position` must match USWDS so adjacent sibling backgrounds do not paint over the focused radio outline.',
     ).toBe(uswdsPosition)
+  })
+
+  test('built CSS emits unconditional `left: -999em` on hidden input', async () => {
+    const css = readFileSync(resolve(process.cwd(), 'dist/styles.css'), 'utf-8')
+    const match = css.match(/\.flex-radio__input\s*\{([^{}]*)\}/)
+    expect(
+      match,
+      'dist/styles.css must contain a top-level `.flex-radio__input { ... }` rule. Build the CSS before running tests.',
+    ).not.toBeNull()
+    const body = match![1]
+    expect(
+      body,
+      `The main .flex-radio__input rule must include \`left: -999em\` so the native input is pushed off-screen. Got body: ${body}`,
+    ).toMatch(/left\s*:\s*-999em/)
   })
 })
