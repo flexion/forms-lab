@@ -374,19 +374,39 @@ export function createFormRouter(deps: FormRouterDeps) {
       prev !== null
         ? resolveUrl(`${prefix}/sessions/${session.id}/pages/${prev}`)
         : null
+    const page = resolved.pages[pageIndex]
+    const deliveryMode = page.page.deliveryMode ?? 'static'
+    const showChatToggle =
+      (deliveryMode === 'conversational' || deliveryMode === 'hybrid') &&
+      conversationGateway &&
+      fillingAgent
     return c.html(
       <Layout
         user={user}
-        title={resolved.pages[pageIndex].page.title}
+        title={page.page.title}
         currentPath="/forms"
       >
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
+        {showChatToggle && (
+          <div class="flex-form" data-size="large">
+            <p>
+              <a
+                href={resolveUrl(
+                  `${prefix}/sessions/${session.id}/pages/${pageIndex}/chat`,
+                )}
+                class="flex-button flex-button--outline"
+              >
+                Switch to Chat View
+              </a>
+            </p>
+          </div>
+        )}
         <FormPageView
           page={{
-            title: resolved.pages[pageIndex].page.title,
-            description: resolved.pages[pageIndex].page.description,
+            title: page.page.title,
+            description: page.page.description,
             groups: filterVisibleGroups(
-              resolved.pages[pageIndex].groups,
+              page.groups,
               session.fields,
             ),
           }}
@@ -684,7 +704,8 @@ export function createFormRouter(deps: FormRouterDeps) {
     const page = resolved.pages[pageIndex]
 
     // Check if this page has conversational delivery mode
-    if (page.page.deliveryMode !== 'conversational') {
+    const deliveryMode = page.page.deliveryMode ?? 'static'
+    if (deliveryMode !== 'conversational' && deliveryMode !== 'hybrid') {
       return c.text('This page does not support conversational mode', 400)
     }
 
@@ -701,6 +722,9 @@ export function createFormRouter(deps: FormRouterDeps) {
     )
     const finished = collectedFields.length === allFields.length
 
+    const prefix = formPathPrefix(specs.dataSpec.id, branch)
+    const showFormToggle = deliveryMode === 'hybrid'
+
     return c.html(
       <Layout
         user={user}
@@ -711,6 +735,18 @@ export function createFormRouter(deps: FormRouterDeps) {
         <div class="flex-form" data-size="large">
           <h1>{page.page.title}</h1>
           {page.page.description && <p>{page.page.description}</p>}
+          {showFormToggle && (
+            <p>
+              <a
+                href={resolveUrl(
+                  `${prefix}/sessions/${session.id}/pages/${pageIndex}`,
+                )}
+                class="flex-button flex-button--outline"
+              >
+                Switch to Form View
+              </a>
+            </p>
+          )}
           <ChatPanel
             sessionId={sessionId}
             messages={messages}
