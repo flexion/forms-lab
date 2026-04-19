@@ -4,7 +4,6 @@
    States: checked, disabled, indeterminate, focus-visible */
 
 .flex-checkbox {
-  position: relative;
   background-color: var(--flex-color-surface);
 }
 
