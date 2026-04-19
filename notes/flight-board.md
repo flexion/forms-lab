@@ -7,6 +7,7 @@
 | #5 Maya reviews proposed changes | story-5/review-changes | merged (#43) | .worktrees/story-5-review-changes | 2026-04-18 |
 | #7 Maya receives a completed PDF | story-7/completed-pdf | merged (#22) | .worktrees/story-7-completed-pdf | 2026-04-19 |
 | #9 Carlos completes complex sections through conversation | story-9/conversational-sections | in-progress | .worktrees/story-9-conversational-sections | 2026-04-18 |
+| #71 Developer navigates LLM integrations via a screaming service layer | story-71/llm-integrations-catalog | in-progress | .worktrees/story-71-llm-integrations-catalog | 2026-04-19 |
 
 ## Landed
 
