@@ -161,6 +161,8 @@
 
 /* Conversational form layout — form on left, assistant on right */
 .conversational-form-layout {
+  --header-offset: 8rem; /* Banner + header approximate height */
+
   display: grid;
   grid-template-columns: 1fr 400px;
   gap: var(--flex-space-lg);
@@ -191,8 +193,8 @@
 
 .conversational-form-layout__assistant {
   position: sticky;
-  inset-block-start: 0;
-  block-size: 100dvh;
+  inset-block-start: var(--flex-space-md);
+  max-block-size: calc(100dvh - var(--header-offset));
   display: flex;
   flex-direction: column;
 }
