@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { runEvaluation } from '../../../services/evaluation/harness'
 import { pdfFieldExtractionKind } from '../../../services/evaluation/kinds/pdf-field-extraction'
 import { evaluationRunSchema } from '../../../services/evaluation/schemas'
-import { createExtractorRegistry } from '../../../services/extraction/registry'
+import { createExtractorRegistry } from '../../../services/extraction'
 import { createCachedPdfExtractor } from '../../../services/form-documents/extraction'
 import { createCacheStore } from '../../../services/storage'
 
@@ -179,9 +179,7 @@ export async function evaluate(args: string[]): Promise<number> {
         const { createLlmJudgeKind } = await import(
           '../../../services/evaluation/kinds/pdf-field-extraction-judge'
         )
-        const { OPUS_MODEL_ID } = await import(
-          '../../../services/extraction/models'
-        )
+        const { OPUS_MODEL_ID } = await import('../../../services/extraction')
         const judge = createBedrockFieldJudge(OPUS_MODEL_ID)
         kind = createLlmJudgeKind(judge)
         console.log('Using LLM judge (Opus) for semantic field matching')
