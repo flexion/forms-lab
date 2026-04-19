@@ -167,6 +167,14 @@ export interface ProjectService {
     task: Task,
     branch?: string,
   ): Promise<ProvenanceEntry | null>
+  commitFile(
+    slug: string,
+    branch: string,
+    path: string,
+    content: string,
+    message: string,
+    user: SessionUser,
+  ): Promise<string>
 }
 
 export function createProjectService(
@@ -812,6 +820,27 @@ export function createProjectService(
       if (!buf) return null
       const file = JSON.parse(buf.toString()) as ProvenanceFile
       return readProvenance(file, task)
+    },
+
+    async commitFile(
+      slug: string,
+      branch: string,
+      path: string,
+      content: string,
+      message: string,
+      user: SessionUser,
+    ): Promise<string> {
+      requireAuth(user)
+      const project = store.getBySlug(slug)
+      if (!project) throw new NotFoundError()
+      requireOwner(project, user)
+      return repo.commit(
+        slug,
+        [{ path, content: Buffer.from(content) }],
+        message,
+        user.login,
+        { branch },
+      )
     },
   }
 }

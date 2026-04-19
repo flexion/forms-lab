@@ -3,8 +3,7 @@ import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateObject, generateText } from 'ai'
 import { z } from 'zod'
 import { HAIKU_MODEL_ID, SONNET_MODEL_ID } from '../extraction'
-import type { Command, ProjectState } from '../forms'
-import { commandTools } from '../forms/shaping/tools'
+import { commandTools, type Command, type ProjectState } from '../forms'
 import type { PolicyChunk } from '../rag'
 import {
   buildCriteriaPrompt,
