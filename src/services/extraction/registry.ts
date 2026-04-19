@@ -12,7 +12,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
     metadata: {
       name: 'Claude Opus 4.6',
       description:
-        'Frontier model, highest quality. Used as ground truth reference.',
+        'Frontier model used as ground truth reference. Highest recall (72%) and strongest overall accuracy, but slowest and most expensive per extraction.',
       status: 'baseline',
       courseTopics: ['evaluation'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/opus-baseline',
@@ -25,7 +25,8 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
     id: 'sonnet',
     metadata: {
       name: 'Claude Sonnet 4',
-      description: 'Balanced quality and speed. Current default.',
+      description:
+        'Recommended default. Good balance of recall (55%), precision (87%), and speed. Handles most government forms well at moderate cost.',
       status: 'production',
       courseTopics: ['evaluation', 'model-selection'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/sonnet',
@@ -38,7 +39,8 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
     id: 'haiku',
     metadata: {
       name: 'Claude Haiku 4.5',
-      description: 'Fast and cheap. Lower accuracy for complex forms.',
+      description:
+        'Fastest and cheapest option. Adequate for simple forms but misses fields on complex multi-page documents. Best for quick iteration when accuracy is less critical.',
       status: 'experimental',
       courseTopics: ['evaluation', 'model-selection'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/haiku',
@@ -52,7 +54,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
     metadata: {
       name: 'Claude Sonnet 4 (few-shot)',
       description:
-        'Sonnet with curated extraction examples prepended to the prompt.',
+        'Sonnet with curated examples that teach edge cases (nested groups, PII sensitivity, conditional fields). Higher precision (87%) than baseline Sonnet with improved sensitivity classification. Best when extraction accuracy on complex sections matters more than total field count.',
       status: 'experimental',
       courseTopics: ['evaluation', 'few-shot', 'prompt-conditioning'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/few-shot-sonnet',
