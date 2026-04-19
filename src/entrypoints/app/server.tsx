@@ -249,42 +249,58 @@ app.post('/new', async (c) => {
   const user = c.get('user')
   if (!user) return c.redirect(resolveUrl('/auth/signin'))
 
-  // Parse form body - fixture or file upload
-  const contentType = c.req.header('content-type') ?? ''
-  let pdf: Buffer
-  let name: string
+  try {
+    // Parse form body - fixture or file upload
+    const contentType = c.req.header('content-type') ?? ''
+    let pdf: Buffer
+    let name: string
 
-  if (contentType.includes('multipart/form-data')) {
-    const body = await c.req.parseBody()
-    const file = body.pdf
-    if (!(file instanceof File) || file.size === 0) {
-      return c.html(
-        <Layout currentPath="/new" user={user}>
-          <NewProjectPage fixtures={demoFixtures} />
-        </Layout>,
-        400,
-      )
+    if (contentType.includes('multipart/form-data')) {
+      const body = await c.req.parseBody()
+      const file = body.pdf
+      if (!(file instanceof File) || file.size === 0) {
+        return c.html(
+          <Layout currentPath="/new" user={user}>
+            <NewProjectPage fixtures={demoFixtures} />
+          </Layout>,
+          400,
+        )
+      }
+      pdf = Buffer.from(await file.arrayBuffer())
+      name = file.name.replace(/\.pdf$/i, '')
+    } else {
+      const body = await c.req.parseBody()
+      const fixtureSlug = body.fixture as string
+      const fixture = getFixture(fixtureSlug)
+      if (!fixture) {
+        return c.html(
+          <Layout currentPath="/new" user={user}>
+            <NewProjectPage fixtures={demoFixtures} />
+          </Layout>,
+          400,
+        )
+      }
+      pdf = loadFixturePdf(fixture)
+      name = fixture.name
     }
-    pdf = Buffer.from(await file.arrayBuffer())
-    name = file.name.replace(/\.pdf$/i, '')
-  } else {
-    const body = await c.req.parseBody()
-    const fixtureSlug = body.fixture as string
-    const fixture = getFixture(fixtureSlug)
-    if (!fixture) {
-      return c.html(
-        <Layout currentPath="/new" user={user}>
-          <NewProjectPage fixtures={demoFixtures} />
-        </Layout>,
-        400,
-      )
-    }
-    pdf = loadFixturePdf(fixture)
-    name = fixture.name
+
+    const project = await projectService.createProject(name, pdf, user)
+    return c.redirect(resolveUrl(`/${user.login}/${project.slug}`))
+  } catch (err) {
+    console.error('Error creating project:', err)
+    return c.html(
+      <Layout currentPath="/new" user={user}>
+        <div class="flex-alert flex-alert--error" role="alert">
+          <h2>Error creating project</h2>
+          <p>{err instanceof Error ? err.message : 'Unknown error occurred'}</p>
+          <p>
+            <a href={resolveUrl('/new')}>Try again</a>
+          </p>
+        </div>
+      </Layout>,
+      500,
+    )
   }
-
-  const project = await projectService.createProject(name, pdf, user)
-  return c.redirect(resolveUrl(`/${user.login}/${project.slug}`))
 })
 
 // Root page - dashboard for authenticated users, landing for anonymous

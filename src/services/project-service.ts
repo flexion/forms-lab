@@ -274,6 +274,10 @@ export function createProjectService(
         store.update(projectId, { status: 'ready' })
       })
       .catch((err) => {
+        console.error(`Extraction failed for project ${slug}:`, err)
+        if (err instanceof Error && err.stack) {
+          console.error('Stack trace:', err.stack)
+        }
         store.update(projectId, {
           status: 'error',
           error: err instanceof Error ? err.message : String(err),
