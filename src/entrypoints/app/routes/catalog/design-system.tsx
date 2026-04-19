@@ -1188,7 +1188,8 @@ designSystem.get('/:slug', async (c) => {
     // No styles.css for this component
   }
 
-  // Load contract
+  // Load contract. USWDS-derived contracts are .tsx (paired fixtures use JSX);
+  // custom contracts are .ts (no JSX). Try .tsx first since that's the common case.
   let contract: Contract | null = null
   try {
     const mod = await import(
