@@ -4,9 +4,7 @@ import type { PolicyChunk } from '../rag'
 import type { Criterion } from './types'
 
 function formatCorpus(chunks: PolicyChunk[]): string {
-  return chunks
-    .map((c) => `### ${c.source}\n\n${c.text}`)
-    .join('\n\n')
+  return chunks.map((c) => `### ${c.source}\n\n${c.text}`).join('\n\n')
 }
 
 function formatCriteria(criteria: Criterion[]): string {

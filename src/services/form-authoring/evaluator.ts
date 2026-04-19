@@ -26,9 +26,7 @@ const evalResultSchema = z.array(
   }),
 )
 
-export function createAuthoringEvaluator(
-  modelId?: string,
-): AuthoringEvaluator {
+export function createAuthoringEvaluator(modelId?: string): AuthoringEvaluator {
   const model = modelId ?? HAIKU_MODEL_ID
   const bedrockProfile = process.env.AWS_BEDROCK_PROFILE
   const credentialProvider = bedrockProfile
@@ -48,7 +46,10 @@ export function createAuthoringEvaluator(
         schema: evalResultSchema,
         temperature: 0,
         messages: [
-          { role: 'user', content: buildEvalPrompt(groupId, state, criteria, corpus) },
+          {
+            role: 'user',
+            content: buildEvalPrompt(groupId, state, criteria, corpus),
+          },
         ],
       })
       return response.object

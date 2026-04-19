@@ -1,8 +1,8 @@
 // test/form-authoring/evaluator.test.ts
-import { describe, expect, mock, test, beforeEach } from 'bun:test'
-import * as aiModule from 'ai'
+import { beforeEach, describe, expect, mock, test } from 'bun:test'
 import * as bedrockModule from '@ai-sdk/amazon-bedrock'
 import * as credentialsModule from '@aws-sdk/credential-providers'
+import * as aiModule from 'ai'
 import type { Criterion } from '../../src/services/form-authoring/types'
 
 const mockGenerateObject = mock()

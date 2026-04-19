@@ -1,23 +1,23 @@
 export {
-  type CriteriaEdits,
   approveCriteriaSet,
+  type CriteriaEdits,
   emptyCriteriaSet,
   mergeCriteriaEdits,
   parseCriteriaSet,
   serializeCriteriaSet,
 } from './criteria'
-export { createAuthoringEvaluator, type AuthoringEvaluator } from './evaluator'
+export { type AuthoringEvaluator, createAuthoringEvaluator } from './evaluator'
 export {
+  type AuthoringPipeline,
   createAuthoringPipeline,
   detectAuthoringStage,
-  type AuthoringPipeline,
   type StageDetectionInput,
 } from './pipeline'
 export type {
   AuthoringStage,
   AuthoringStageConfig,
-  Criterion,
   CriteriaSet,
+  Criterion,
   CriterionStatus,
   EvalResults,
   SectionEvalResult,
