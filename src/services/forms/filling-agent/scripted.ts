@@ -109,14 +109,14 @@ export class ScriptedFillingAgent implements FillingAgent {
    * Build a prompt for a field
    */
   private buildPrompt(field: DataRequirement): string {
-    let prompt = field.label
+    let prompt = `What is your ${field.label.toLowerCase()}?`
 
     if (field.helpText) {
-      prompt += `\n${field.helpText}`
+      prompt += `\n\n${field.helpText}`
     }
 
     if (field.choices) {
-      prompt += `\nChoices: ${field.choices.join(', ')}`
+      prompt += `\n\nPlease choose one of: ${field.choices.join(', ')}`
     }
 
     return prompt

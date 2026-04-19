@@ -136,7 +136,7 @@ describe('Conversational form filling integration', () => {
     })
     expect(chat1.status).toBe(200)
     const chat1Json = await chat1.json()
-    expect(chat1Json.response).toContain('Employment Type')
+    expect(chat1Json.response.toLowerCase()).toContain('employment type')
     expect(chat1Json.finished).toBe(false)
 
     // Verify conversation has 2 messages (user 'Yes' + assistant asking for employment type)
@@ -145,7 +145,7 @@ describe('Conversational form filling integration', () => {
     expect(messages[0].role).toBe('user')
     expect(messages[0].content).toBe('Yes')
     expect(messages[1].role).toBe('assistant')
-    expect(messages[1].content).toContain('Employment Type')
+    expect(messages[1].content.toLowerCase()).toContain('employment type')
 
     // Verify 'employed' field was collected
     let session = sessionGateway.getSession(sessionId!)
@@ -162,7 +162,7 @@ describe('Conversational form filling integration', () => {
     })
     expect(chat2.status).toBe(200)
     const chat2Json = await chat2.json()
-    expect(chat2Json.response).toContain('Monthly Income')
+    expect(chat2Json.response.toLowerCase()).toContain('monthly income')
     expect(chat2Json.finished).toBe(false)
 
     // Verify 'employmentType' field was collected

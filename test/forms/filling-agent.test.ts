@@ -15,7 +15,7 @@ describe('ScriptedFillingAgent', () => {
     const turn = await agent.advance(context, null)
 
     expect(turn.finished).toBe(false)
-    expect(turn.message).toContain('Full Name')
+    expect(turn.message.toLowerCase()).toContain('full name')
     expect(turn.fieldsCollected).toEqual({})
   })
 
@@ -41,7 +41,7 @@ describe('ScriptedFillingAgent', () => {
     expect(turn.finished).toBe(false)
     expect(turn.fieldsCollected).toHaveProperty('fullName')
     expect(turn.fieldsCollected.fullName.value).toBe('Alice Johnson')
-    expect(turn.message).toContain('Email Address')
+    expect(turn.message.toLowerCase()).toContain('email')
     expect(turn.toolCalls).toHaveLength(1)
     expect(turn.toolCalls[0].tool).toBe('collect_field')
   })
@@ -90,7 +90,7 @@ describe('ScriptedFillingAgent', () => {
     // Should skip employmentType (requires employed='Yes')
     // Should skip income group (requires employed='Yes')
     // Should move to next applicable field (startDate)
-    expect(turn.message).toContain('Desired Start Date')
+    expect(turn.message.toLowerCase()).toContain('start date')
     expect(turn.finished).toBe(false)
   })
 })
