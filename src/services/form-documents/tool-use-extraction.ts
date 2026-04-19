@@ -10,7 +10,7 @@
 
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
-import { generateText } from 'ai'
+import { generateText, stepCountIs } from 'ai'
 import type { PdfExtractor } from './extraction'
 import { generateFormSpec, mapAcroFormFields } from './extraction-steps'
 import { extractionTools, reconstructSpec } from './extraction-tools'
@@ -48,9 +48,12 @@ export function createToolUsePdfExtractor(
       const model = extractionOptions?.model ?? options?.model ?? DEFAULT_MODEL
 
       // Step 1: Extract DataCollectionSpec via tool-use (constrained generation)
+      // maxSteps allows the model to make multiple rounds of tool calls —
+      // large forms need 50+ calls which exceed a single response.
       const response = await generateText({
         model: bedrock(model),
         maxOutputTokens: 32768,
+        stopWhen: stepCountIs(20),
         tools: extractionTools,
         messages: [
           {
@@ -82,15 +85,17 @@ Guidelines:
         ],
       })
 
-      // Reconstruct DataCollectionSpec from tool calls
-      const toolCalls = (response.toolCalls ?? []).map((call) => ({
-        toolName: call.toolName as
-          | 'createSpec'
-          | 'addGroup'
-          | 'addField'
-          | 'flagLowConfidence',
-        input: call.input as Record<string, unknown>,
-      }))
+      // Collect tool calls from all steps (model may take multiple rounds)
+      const toolCalls = response.steps
+        .flatMap((step) => step.toolCalls ?? [])
+        .map((call) => ({
+          toolName: call.toolName as
+            | 'createSpec'
+            | 'addGroup'
+            | 'addField'
+            | 'flagLowConfidence',
+          input: call.input as Record<string, unknown>,
+        }))
 
       const { spec, confidence } = reconstructSpec(toolCalls)
 

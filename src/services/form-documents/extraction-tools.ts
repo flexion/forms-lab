@@ -26,6 +26,7 @@ export const extractionTools = {
       title: z.string(),
       description: z.string(),
     }),
+    execute: async ({ id }) => `Spec "${id}" initialized.`,
   }),
   addGroup: tool({
     description: 'Add a requirement group to the spec.',
@@ -34,6 +35,7 @@ export const extractionTools = {
       title: z.string(),
       description: z.string().optional(),
     }),
+    execute: async ({ id }) => `Group "${id}" added.`,
   }),
   addField: tool({
     description: 'Add a field (requirement) to the most recently added group.',
@@ -46,6 +48,7 @@ export const extractionTools = {
       helpText: z.string().optional(),
       sensitivity: sensitivity.optional(),
     }),
+    execute: async ({ id }) => `Field "${id}" added.`,
   }),
   flagLowConfidence: tool({
     description: 'Flag a field as low confidence (< 0.8).',
@@ -54,6 +57,7 @@ export const extractionTools = {
       confidence: z.number().min(0).max(1),
       flags: z.array(z.string()).optional(),
     }),
+    execute: async ({ fieldId }) => `Flagged "${fieldId}".`,
   }),
 }
 
