@@ -1,7 +1,6 @@
-// src/design-system/test-helpers/contract-runner.ts
-
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
+import type { FC } from 'hono/jsx'
 import type {
   Contract,
   CustomContract,
@@ -29,6 +28,44 @@ async function triggerInteraction(
       await element.click()
       break
   }
+}
+
+async function runAxeAudit(page: Page, html: string): Promise<void> {
+  const AxeBuilder = (await import('@axe-core/playwright')).default
+  await renderFlexFixture(page, html)
+  await page.evaluate(() => {
+    document.title = 'Contract Test'
+  })
+  const results = await new AxeBuilder({ page })
+    .disableRules(['heading-order'])
+    .analyze()
+  expect(results.violations).toEqual([])
+}
+
+async function loadExamplesOrThrow(
+  component: string,
+): Promise<Record<string, unknown>> {
+  let examplesModule: Record<string, unknown>
+  try {
+    examplesModule = await import(`../components/${component}/examples.tsx`)
+  } catch (err) {
+    throw new Error(
+      `runContract: cannot load examples.tsx for "${component}". ` +
+        `Custom contracts require src/design-system/components/${component}/examples.tsx ` +
+        `with at least one named export.`,
+      { cause: err },
+    )
+  }
+  const namedExports = Object.keys(examplesModule).filter(
+    (k) => k !== 'default',
+  )
+  if (namedExports.length === 0) {
+    throw new Error(
+      `runContract: examples.tsx for "${component}" has no named exports. ` +
+        `Add one export per variant declared in contract.variants.`,
+    )
+  }
+  return examplesModule
 }
 
 function runUswdsContract(spec: UswdsContract) {
@@ -91,50 +128,40 @@ function runUswdsContract(spec: UswdsContract) {
     }
 
     test('passes axe audit', async ({ page }) => {
-      const AxeBuilder = (await import('@axe-core/playwright')).default
       const html =
         spec.accessibilityFixtureHtml ??
         `<main><h1>${spec.component} Test</h1>${spec.fixtures.map((f) => f.flex).join('\n')}</main>`
-      await renderFlexFixture(page, html)
-      await page.evaluate(() => {
-        document.title = 'Contract Test'
-      })
-      const results = await new AxeBuilder({ page })
-        .disableRules(['heading-order'])
-        .analyze()
-      expect(results.violations).toEqual([])
+      await runAxeAudit(page, html)
     })
   })
 }
 
 function runCustomContract(spec: CustomContract) {
   test.describe(`${spec.component} contract (custom)`, () => {
-    test('passes axe audit', async ({ page }) => {
-      const AxeBuilder = (await import('@axe-core/playwright')).default
-
-      // Dynamically import examples.tsx for this component and render every
-      // export as a single fixture for the audit.
-      const examplesModule = await import(
-        `../components/${spec.component}/examples.tsx`
-      )
-      const renderedExports = Object.entries(examplesModule)
-        .filter(([key]) => key !== 'default')
-        .map(([, fn]) => (fn as () => unknown)())
-        .map((node) => String(node))
-        .join('\n')
-
-      const html =
-        spec.accessibilityFixtureHtml ??
-        `<main><h1>${spec.component} Test</h1>${renderedExports}</main>`
-      await renderFlexFixture(page, html)
-      await page.evaluate(() => {
-        document.title = 'Contract Test'
+    if (spec.accessibilityFixtureHtml) {
+      test('axe: custom fixture', async ({ page }) => {
+        const html = spec.accessibilityFixtureHtml as string
+        await runAxeAudit(page, html)
       })
-      const results = await new AxeBuilder({ page })
-        .disableRules(['heading-order'])
-        .analyze()
-      expect(results.violations).toEqual([])
-    })
+      return
+    }
+
+    for (const variant of spec.variants) {
+      test(`axe: ${variant.name}`, async ({ page }) => {
+        const examplesModule = await loadExamplesOrThrow(spec.component)
+        const fn = examplesModule[variant.name]
+        if (typeof fn !== 'function') {
+          throw new Error(
+            `runContract: contract.variants declares "${variant.name}" but examples.tsx for "${spec.component}" has no matching export. ` +
+              `Either add an export named "${variant.name}" to examples.tsx, or remove "${variant.name}" from contract.variants.`,
+          )
+        }
+        const Fn = fn as FC
+        const rendered = (<Fn />).toString()
+        const html = `<main><h1>${spec.component} Test</h1>${rendered}</main>`
+        await runAxeAudit(page, html)
+      })
+    }
   })
 }
 
