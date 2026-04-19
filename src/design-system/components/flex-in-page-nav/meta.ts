@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'navigation',
   description:
     'A sticky sidebar table of contents auto-generated from page headings, with scroll spy highlighting.',
-  uswds: 'https://designsystem.digital.gov/components/in-page-navigation/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/in-page-navigation/',
   interactive: true,
 }

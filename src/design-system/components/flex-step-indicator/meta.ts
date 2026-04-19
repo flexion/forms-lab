@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'process',
   description:
     'A multi-step progress indicator showing completed, current, and remaining steps.',
-  uswds: 'https://designsystem.digital.gov/components/step-indicator/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/step-indicator/',
   interactive: false,
 }

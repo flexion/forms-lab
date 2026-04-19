@@ -6,6 +6,6 @@ export const meta: ComponentMeta = {
   category: 'feedback',
   description:
     'Grouped list of spec changes (added, removed, modified, moved, renamed) with a category badge and human-readable description per change.',
-  uswds: '',
+  kind: 'custom',
   interactive: false,
 }

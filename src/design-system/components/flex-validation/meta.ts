@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'form',
   description:
     'Validation message patterns for inline (per-field) and summary (top of form) error display.',
-  uswds: 'https://designsystem.digital.gov/components/validation/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/validation/',
   interactive: false,
 }

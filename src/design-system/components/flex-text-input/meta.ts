@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   slug: 'flex-text-input',
   category: 'form',
   description: 'A single-line text input for form data.',
-  uswds: 'https://designsystem.digital.gov/components/text-input/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/text-input/',
   interactive: false,
 }

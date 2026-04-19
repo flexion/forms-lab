@@ -6,6 +6,6 @@ export const meta: ComponentMeta = {
   category: 'navigation',
   description:
     'Two-pane structured browser for DataCollectionSpec + FormSpec content. Sticky sidebar lists pages and groups; the content pane shows collapsible panels with page summaries and field tables.',
-  uswds: '',
+  kind: 'custom',
   interactive: true,
 }

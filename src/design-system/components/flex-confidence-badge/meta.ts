@@ -6,6 +6,6 @@ export const meta: ComponentMeta = {
   category: 'feedback',
   description:
     'Compact badge flagging extracted fields that need review. Stays hidden for high-confidence values and surfaces "Review" or "Low confidence" otherwise.',
-  uswds: '',
+  kind: 'custom',
   interactive: false,
 }

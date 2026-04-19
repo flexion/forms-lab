@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'layout',
   description:
     'Ordered and unordered lists with USWDS spacing and an unstyled variant.',
-  uswds: 'https://designsystem.digital.gov/components/list/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/list/',
   interactive: false,
 }

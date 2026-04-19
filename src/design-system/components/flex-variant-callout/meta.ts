@@ -6,6 +6,6 @@ export const meta: ComponentMeta = {
   category: 'feedback',
   description:
     'Prominent callout announcing which LLM variant will run a task, with affordances to change the selection and see benchmarks.',
-  uswds: '',
+  kind: 'custom',
   interactive: false,
 }

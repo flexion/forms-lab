@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   category: 'form',
   description:
     'Attaches to a textarea or text input and shows remaining characters.',
-  uswds: 'https://designsystem.digital.gov/components/character-count/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/character-count/',
   interactive: true,
 }

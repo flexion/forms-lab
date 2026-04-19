@@ -5,6 +5,7 @@ export const meta: ComponentMeta = {
   category: 'form',
   description:
     'Formatted input overlay showing the expected pattern (phone, SSN, zip+4).',
-  uswds: 'https://designsystem.digital.gov/components/input-mask/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/input-mask/',
   interactive: true,
 }

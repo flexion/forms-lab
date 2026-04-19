@@ -6,6 +6,6 @@ export const meta: ComponentMeta = {
   category: 'navigation',
   description:
     'Dropdown for switching between branches with a filter and an inline create-branch form.',
-  uswds: '',
+  kind: 'custom',
   interactive: true,
 }

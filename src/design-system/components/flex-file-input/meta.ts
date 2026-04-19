@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'form',
   description:
     'File upload control with drag-and-drop, preview, and file type validation.',
-  uswds: 'https://designsystem.digital.gov/components/file-input/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/file-input/',
   interactive: true,
 }

@@ -6,6 +6,6 @@ export const meta: ComponentMeta = {
   category: 'navigation',
   description:
     'Pill-shaped indicator showing a branch name with optional published badge or ahead-count.',
-  uswds: '',
+  kind: 'custom',
   interactive: false,
 }

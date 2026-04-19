@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'identity',
   description:
     'Official .gov/.mil banner identifying the site as a government website.',
-  uswds: 'https://designsystem.digital.gov/components/banner/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/banner/',
   interactive: true,
 }

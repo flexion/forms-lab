@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'feedback',
   description:
     'A colored alert box for informational, warning, success, error, or emergency messages.',
-  uswds: 'https://designsystem.digital.gov/components/alert/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/alert/',
   interactive: false,
 }

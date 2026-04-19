@@ -6,6 +6,7 @@ export const meta: ComponentMeta = {
   category: 'feedback',
   description:
     'A bordered callout box for highlighting key information or takeaways.',
-  uswds: 'https://designsystem.digital.gov/components/summary-box/',
+  kind: 'uswds-derived',
+  reference: 'https://designsystem.digital.gov/components/summary-box/',
   interactive: false,
 }

@@ -1226,7 +1226,11 @@ designSystem.get('/:slug', async (c) => {
       <p>{meta.description}</p>
 
       <p>
-        <a href={meta.uswds} target="_blank" rel="noopener noreferrer">
+        <a
+          href={meta.reference ?? ''}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           USWDS Documentation ↗
         </a>
       </p>
