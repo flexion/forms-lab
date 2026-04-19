@@ -1,8 +1,69 @@
-import { describe, expect, it } from 'bun:test'
+import { beforeEach, describe, expect, it, mock } from 'bun:test'
+import * as aiModule from 'ai'
 import type { ExtractionExemplar } from '../src/services/extraction/exemplars'
 import { exemplars } from '../src/services/extraction/exemplars'
 import { buildExemplarSection } from '../src/services/form-documents/extraction'
 import { buildHybridExtractionPrompt } from '../src/services/form-documents/hybrid-extraction-prompt'
+
+const mockGenerateText = mock()
+mock.module('ai', () => ({
+  ...aiModule,
+  generateText: mockGenerateText,
+}))
+
+mock.module('@aws-sdk/credential-providers', () => ({
+  fromNodeProviderChain: mock(() => () => Promise.resolve({})),
+}))
+
+const { createBedrockPdfExtractor } = await import(
+  '../src/services/form-documents/extraction'
+)
+
+const stubExtraction = JSON.stringify({
+  spec: {
+    id: 'x',
+    title: 'X',
+    description: 'x',
+    groups: [
+      {
+        id: 'g',
+        title: 'G',
+        requirements: [
+          {
+            id: 'f',
+            fieldName: 'f',
+            label: 'F',
+            fieldType: 'text',
+            required: true,
+          },
+        ],
+      },
+    ],
+  },
+  confidence: [{ fieldId: 'f', confidence: 0.9 }],
+})
+
+const stubFormSpec = JSON.stringify({
+  id: 'form-x',
+  specId: 'x',
+  title: 'X',
+  pages: [{ id: 'p1', title: 'P', groups: ['g'], deliveryMode: 'static' }],
+  createdAt: '2026-04-19T00:00:00Z',
+  updatedAt: '2026-04-19T00:00:00Z',
+})
+
+function mockPipelineResponses(): void {
+  mockGenerateText.mockResolvedValueOnce({ text: stubExtraction })
+  mockGenerateText.mockResolvedValueOnce({ text: stubFormSpec })
+}
+
+function getStep1PromptText(): string {
+  const step1Call = mockGenerateText.mock.calls[0][0]
+  const textPart = step1Call.messages[0].content.find(
+    (p: { type: string }) => p.type === 'text',
+  )
+  return textPart?.text ?? ''
+}
 
 const sampleExemplar: ExtractionExemplar = {
   id: 'nested-groups-sample',
@@ -78,5 +139,45 @@ describe('buildHybridExtractionPrompt', () => {
     const hybrid = buildHybridExtractionPrompt(nestedGroupsExemplar)
     const fewShotAppendix = buildExemplarSection(exemplars)
     expect(hybrid.length).toBeLessThan(fewShotAppendix.length)
+  })
+})
+
+describe('createBedrockPdfExtractor — promptVariant wiring', () => {
+  beforeEach(() => {
+    mockGenerateText.mockClear()
+  })
+
+  it('uses the hybrid prompt on Step 1 when promptVariant="hybrid"', async () => {
+    const [nestedGroupsExemplar] = exemplars
+    if (!nestedGroupsExemplar) throw new Error('exemplar 0 missing')
+    const extractor = createBedrockPdfExtractor({
+      model: 'sonnet',
+      promptVariant: 'hybrid',
+      hybridExemplar: nestedGroupsExemplar,
+    })
+    mockPipelineResponses()
+
+    await extractor.extract(Buffer.from('fake-pdf'))
+
+    const text = getStep1PromptText()
+    expect(text).toContain('## Example')
+    expect(text).toContain('## Your extraction')
+    // The hybrid prompt is self-contained — it must not carry the
+    // baseline's appendix heading.
+    expect(text).not.toContain('## Examples')
+    // Should embed the nested-groups exemplar content.
+    expect(text).toContain('currentEmployerName')
+  })
+
+  it('uses the baseline prompt on Step 1 when promptVariant is omitted', async () => {
+    const extractor = createBedrockPdfExtractor({ model: 'sonnet' })
+    mockPipelineResponses()
+
+    await extractor.extract(Buffer.from('fake-pdf'))
+
+    const text = getStep1PromptText()
+    // Baseline prompt cues: numbered guidelines block.
+    expect(text).toContain('Guidelines:')
+    expect(text).not.toContain('## Example')
   })
 })
