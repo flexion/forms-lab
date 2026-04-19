@@ -7,7 +7,12 @@ export {
   serializeCriteriaSet,
 } from './criteria'
 export { createAuthoringEvaluator, type AuthoringEvaluator } from './evaluator'
-export { createAuthoringPipeline, type AuthoringPipeline } from './pipeline'
+export {
+  createAuthoringPipeline,
+  detectAuthoringStage,
+  type AuthoringPipeline,
+  type StageDetectionInput,
+} from './pipeline'
 export type {
   AuthoringStage,
   AuthoringStageConfig,

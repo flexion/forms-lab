@@ -11,7 +11,7 @@ import {
   buildSectionPrompt,
   buildStructurePrompt,
 } from './prompts'
-import type { AuthoringStageConfig, Criterion } from './types'
+import type { AuthoringStage, AuthoringStageConfig, Criterion } from './types'
 
 const DEFAULT_CONFIG: AuthoringStageConfig = {
   criteria: { modelId: SONNET_MODEL_ID },
@@ -132,4 +132,20 @@ export function createAuthoringPipeline(
       return { commands, explanation }
     },
   }
+}
+
+export interface StageDetectionInput {
+  hasCriteria: boolean
+  criteriaApproved: boolean
+  hasPages: boolean
+  uncoveredGroupCount: number
+}
+
+export function detectAuthoringStage(
+  input: StageDetectionInput,
+): AuthoringStage {
+  if (!input.hasCriteria || !input.criteriaApproved) return 'criteria'
+  if (!input.hasPages) return 'structure'
+  if (input.uncoveredGroupCount > 0) return 'sections'
+  return 'complete'
 }
