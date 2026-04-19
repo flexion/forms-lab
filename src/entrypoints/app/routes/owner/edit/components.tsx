@@ -6,12 +6,14 @@ import type { FormFieldRequirement } from '../../../../../design-system/componen
 import { FormPageView } from '../../../../../design-system/components/flex-form-page'
 import { VariantBadge } from '../../../../../design-system/components/flex-variant-badge'
 import type { SessionUser } from '../../../../../services/auth'
+import type { AuthoringStage } from '../../../../../services/form-authoring'
 import type {
   BranchEntry,
   ProjectView,
   ShapingLogEntry,
 } from '../../../../../services/projects'
 import { resolveUrl } from '../../../../../shared/base-path'
+import { PipelineStageIndicator } from './authoring-components'
 
 function safeJsonForScript(value: unknown): string {
   return JSON.stringify(value).replace(/</g, '\\u003c')
@@ -35,6 +37,7 @@ export type EditorPageProps =
       branches: BranchEntry[]
       changed: { dataSpec: boolean; formSpec: boolean }
       shapingBadge?: { variantId: string; variantName: string } | null
+      authoringStage?: AuthoringStage | null
     }
 
 export const EditorPage: FC<EditorPageProps> = (props) => {
@@ -82,7 +85,8 @@ const EditingShell: FC<{
   branches: BranchEntry[]
   changed: { dataSpec: boolean; formSpec: boolean }
   shapingBadge?: { variantId: string; variantName: string } | null
-}> = ({ view, owner, log, branch, branches, changed, shapingBadge }) => {
+  authoringStage?: AuthoringStage | null
+}> = ({ view, owner, log, branch, branches, changed, shapingBadge, authoringStage }) => {
   const { project, formSpec, spec } = view
   const editBase = `/${owner}/${project.slug}/edit/${branch}`
   const previewBase = `/${owner}/${project.slug}/preview/${branch}`
@@ -128,6 +132,11 @@ const EditingShell: FC<{
             {' / '}
             <strong>Edit</strong>
           </h1>
+          {authoringStage ? (
+            <div class="editor-breadcrumb__pipeline">
+              <PipelineStageIndicator currentStage={authoringStage} />
+            </div>
+          ) : null}
           <div class="editor-breadcrumb__branch-controls">
             <BranchSwitcher
               current={branch}
