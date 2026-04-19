@@ -158,3 +158,40 @@
     padding-block-start: var(--flex-space-md);
   }
 }
+
+/* Conversational form layout — form on left, assistant fixed on right */
+.conversational-form-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  align-items: start;
+}
+
+@media (max-width: 64rem) {
+  .conversational-form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .conversational-form-layout__assistant {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    max-block-size: 50vh;
+  }
+}
+
+.conversational-form-layout__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-md);
+  padding: var(--flex-space-lg);
+  max-inline-size: var(--flex-content-default);
+}
+
+.conversational-form-layout__assistant {
+  position: sticky;
+  inset-block-start: 0;
+  max-block-size: 100dvh;
+  border-inline-start: 1px solid var(--flex-color-border);
+  display: flex;
+  flex-direction: column;
+}
