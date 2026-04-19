@@ -20,6 +20,21 @@ class FlexAssistant extends HTMLElement {
     this.renderMessages()
   }
 
+  setLoading(loading: boolean) {
+    const container = this.querySelector('.assistant__messages')
+    if (!container) return
+    const existing = container.querySelector('.assistant__loading')
+    if (loading && !existing) {
+      const el = document.createElement('div')
+      el.className = 'assistant__loading'
+      el.innerHTML = '<span></span><span></span><span></span>'
+      container.appendChild(el)
+      this.scrollToBottom()
+    } else if (!loading && existing) {
+      existing.remove()
+    }
+  }
+
   toggle() {
     this.isOpen = !this.isOpen
     this.render()
@@ -54,7 +69,7 @@ class FlexAssistant extends HTMLElement {
           <textarea
             class="flex-textarea assistant__textarea"
             rows="2"
-            placeholder="Describe changes..."
+            placeholder="Type your response..."
             name="intent"
           ></textarea>
           <button type="submit" class="flex-button assistant__send">Send</button>

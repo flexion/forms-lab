@@ -20,6 +20,7 @@ import type {
 import {
   buildReviewPages,
   countVisiblePages,
+  evaluateCondition,
   filterVisibleGroups,
   findNextPage,
   findPrevPage,
@@ -690,22 +691,27 @@ export function createFormRouter(deps: FormRouterDeps) {
       messages = conversationGateway.getMessages(sessionId)
     }
 
-    // Check if conversation is finished by inspecting the last assistant message
-    // If the last message says the conversation is complete, we're done
-    const lastMessage = messages[messages.length - 1]
-    const finished =
-      lastMessage?.role === 'assistant' &&
-      (lastMessage.content.toLowerCase().includes('complete') ||
-        lastMessage.content.toLowerCase().includes('all set'))
+    // Check if all required fields have been collected
+    const finished = page.groups.every((group) => {
+      if (!evaluateCondition(group.condition, session.fields)) return true
+      return group.requirements.every((req) => {
+        if (!req.required) return true
+        if (!evaluateCondition(req.condition, session.fields)) return true
+        return req.fieldName in session.fields
+      })
+    })
 
     const visibleGroups = filterVisibleGroups(page.groups, session.fields)
 
     const prefix = formPathPrefix(specs.dataSpec.id, branch)
 
-    // Prepare initial messages for flex-assistant
+    // Prepare initial messages for flex-assistant (strip internal annotations)
     const initialMessages = messages.map((m) => ({
       role: m.role,
-      html: m.content,
+      html:
+        m.role === 'assistant'
+          ? m.content.replace(/\n\[Recorded: [^\]]+\]$/, '')
+          : m.content,
     }))
 
     return c.html(
@@ -857,29 +863,38 @@ export function createFormRouter(deps: FormRouterDeps) {
       createdAt: new Date().toISOString(),
     })
 
+    // Store assistant message with field collection context so LLM
+    // can see what it recorded when the history is replayed as text.
+    let storedContent = turn.message
+    const collectedEntries = Object.entries(turn.fieldsCollected)
+    if (collectedEntries.length > 0) {
+      const summary = collectedEntries
+        .map(([k, v]) => `${k}=${JSON.stringify(v.value)}`)
+        .join(', ')
+      storedContent += `\n[Recorded: ${summary}]`
+    }
+
     const assistantMessageId = crypto.randomUUID()
     conversationGateway.appendMessage(sessionId, {
       id: assistantMessageId,
       sessionId,
       role: 'assistant',
-      content: turn.message,
+      content: storedContent,
       toolCalls: turn.toolCalls,
       createdAt: new Date().toISOString(),
     })
 
-    // Update session with collected fields
     if (Object.keys(turn.fieldsCollected).length > 0) {
       sessionGateway.writeFields(sessionId, turn.fieldsCollected)
     }
 
-    // Check if X-Live-Chat header is present (client-side JS request)
     const isLiveChat = c.req.header('X-Live-Chat') === 'true'
 
     if (isLiveChat) {
-      // Return JSON response for live chat
       return c.json({
         response: turn.message,
         finished: turn.finished,
+        fieldsCollected: turn.fieldsCollected,
       })
     }
 
