@@ -1,4 +1,5 @@
 import { type Context, Hono } from 'hono'
+import { ChatPanel } from '../../../../design-system/components/flex-chat-panel'
 import { FormConfirmation } from '../../../../design-system/components/flex-form-confirmation'
 import type { FormError } from '../../../../design-system/components/flex-form-error-summary'
 import { FormLanding } from '../../../../design-system/components/flex-form-landing'
@@ -12,6 +13,10 @@ import type {
 } from '../../../../services/data-collection/types'
 import { fillPdf } from '../../../../services/form-documents/filling'
 import type { FieldMapping } from '../../../../services/form-documents/types'
+import type {
+  ConversationGateway,
+  FillingAgent,
+} from '../../../../services/forms/filling-agent/types'
 import {
   countVisiblePages,
   findNextPage,
@@ -50,6 +55,8 @@ interface ResolvedSpecs {
 interface FormRouterDeps {
   sessionGateway: FormSessionGateway
   submissionGateway: SubmissionGateway
+  conversationGateway?: ConversationGateway
+  fillingAgent?: FillingAgent
   specSnapshotStore?: {
     get(specVersion: string): {
       specVersion: string
@@ -154,6 +161,8 @@ export function createFormRouter(deps: FormRouterDeps) {
   const {
     sessionGateway,
     submissionGateway,
+    conversationGateway,
+    fillingAgent,
     specSnapshotStore,
     getSpecs,
     listSpecs,
@@ -650,6 +659,163 @@ export function createFormRouter(deps: FormRouterDeps) {
     }
   }
 
+  async function handleChatView(c: Context) {
+    const branch = readBranch(c)
+    const specId = c.req.param('specId')
+    const sessionId = c.req.param('sessionId')
+    const pageIndex = Number(c.req.param('pageIndex'))
+    if (!specId || !sessionId || Number.isNaN(pageIndex)) return c.notFound()
+
+    // Check if conversational mode is enabled
+    if (!conversationGateway || !fillingAgent) {
+      return c.text('Conversational mode not available', 503)
+    }
+
+    const specs = await getSpecs(specId, branch)
+    if (!specs) return c.notFound()
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
+    const session = sessionGateway.getSession(sessionId)
+    if (!session) return c.notFound()
+    if (session.ownerId !== user.login) return c.notFound()
+
+    const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
+    if (pageIndex < 0 || pageIndex >= resolved.pages.length) return c.notFound()
+    const page = resolved.pages[pageIndex]
+
+    // Check if this page has conversational delivery mode
+    if (page.page.deliveryMode !== 'conversational') {
+      return c.text('This page does not support conversational mode', 400)
+    }
+
+    // Get conversation messages
+    const messages = conversationGateway.getMessages(sessionId)
+
+    // Check if conversation is finished (all fields collected)
+    const visibleGroups = filterVisibleGroups(page.groups, session.fields)
+    const allFields = visibleGroups.flatMap((g) =>
+      g.requirements.map((r) => r.fieldName),
+    )
+    const collectedFields = Object.keys(session.fields).filter((f) =>
+      allFields.includes(f),
+    )
+    const finished = collectedFields.length === allFields.length
+
+    return c.html(
+      <Layout
+        user={user}
+        title={page.page.title}
+        currentPath="/forms"
+      >
+        {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
+        <div class="flex-form" data-size="large">
+          <h1>{page.page.title}</h1>
+          {page.page.description && <p>{page.page.description}</p>}
+          <ChatPanel
+            sessionId={sessionId}
+            messages={messages}
+            finished={finished}
+          />
+        </div>
+        <script src={resolveUrl('/static/chat.js')} />
+      </Layout>,
+    )
+  }
+
+  async function handleChatMessage(c: Context) {
+    const branch = readBranch(c)
+    const specId = c.req.param('specId')
+    const sessionId = c.req.param('sessionId')
+    const pageIndex = Number(c.req.param('pageIndex'))
+    if (!specId || !sessionId || Number.isNaN(pageIndex)) return c.notFound()
+
+    // Check if conversational mode is enabled
+    if (!conversationGateway || !fillingAgent) {
+      return c.text('Conversational mode not available', 503)
+    }
+
+    const specs = await getSpecs(specId, branch)
+    if (!specs) return c.notFound()
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
+    const session = sessionGateway.getSession(sessionId)
+    if (!session) return c.notFound()
+    if (session.ownerId !== user.login) return c.notFound()
+
+    const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
+    if (pageIndex < 0 || pageIndex >= resolved.pages.length) return c.notFound()
+    const page = resolved.pages[pageIndex]
+
+    // Check if this page has conversational delivery mode
+    if (page.page.deliveryMode !== 'conversational') {
+      return c.text('This page does not support conversational mode', 400)
+    }
+
+    // Parse user message
+    const body = await c.req.parseBody()
+    const userMessage = body.message as string
+    if (!userMessage || typeof userMessage !== 'string') {
+      return c.text('Missing message', 400)
+    }
+
+    // Append user message to conversation
+    const userMessageId = crypto.randomUUID()
+    conversationGateway.appendMessage(sessionId, {
+      id: userMessageId,
+      sessionId,
+      role: 'user',
+      content: userMessage,
+      createdAt: new Date().toISOString(),
+    })
+
+    // Build context for filling agent
+    const visibleGroups = filterVisibleGroups(page.groups, session.fields)
+    const messages = conversationGateway.getMessages(sessionId)
+
+    // Call filling agent to advance conversation
+    const turn = await fillingAgent.advance(
+      {
+        groups: visibleGroups,
+        collectedFields: session.fields,
+        messages,
+      },
+      userMessage,
+    )
+
+    // Append assistant message to conversation
+    const assistantMessageId = crypto.randomUUID()
+    conversationGateway.appendMessage(sessionId, {
+      id: assistantMessageId,
+      sessionId,
+      role: 'assistant',
+      content: turn.message,
+      toolCalls: turn.toolCalls,
+      createdAt: new Date().toISOString(),
+    })
+
+    // Update session with collected fields
+    if (Object.keys(turn.fieldsCollected).length > 0) {
+      sessionGateway.writeFields(sessionId, turn.fieldsCollected)
+    }
+
+    // Check if X-Live-Chat header is present (client-side JS request)
+    const isLiveChat = c.req.header('X-Live-Chat') === 'true'
+
+    if (isLiveChat) {
+      // Return JSON response for live chat
+      return c.json({
+        response: turn.message,
+        finished: turn.finished,
+      })
+    }
+
+    // Otherwise redirect back to chat view (for non-JS fallback)
+    const prefix = formPathPrefix(specs.dataSpec.id, branch)
+    return c.redirect(
+      resolveUrl(`${prefix}/sessions/${sessionId}/pages/${pageIndex}/chat`),
+    )
+  }
+
   // Submission detail (read-only review of completed form)
   forms.get('/sessions/:sessionId/submission', handleSubmissionDetail)
 
@@ -697,6 +863,23 @@ export function createFormRouter(deps: FormRouterDeps) {
   forms.get(
     '/:specId/branches/:branch/sessions/:sessionId/confirmation',
     handleConfirmation,
+  )
+
+  // Chat view (conversational mode)
+  forms.get('/:specId/sessions/:sessionId/pages/:pageIndex/chat', handleChatView)
+  forms.get(
+    '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
+    handleChatView,
+  )
+
+  // Chat message (conversational mode)
+  forms.post(
+    '/:specId/sessions/:sessionId/pages/:pageIndex/chat',
+    handleChatMessage,
+  )
+  forms.post(
+    '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
+    handleChatMessage,
   )
 
   return forms
