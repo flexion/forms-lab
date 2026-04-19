@@ -3,6 +3,7 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { Layout } from '../../../../design-system/components/flex-layout'
 import { AppError, UnauthenticatedError } from '../../../../services/errors'
 import type { ProjectService } from '../../../../services/project-service'
+import type { VariantRegistry } from '../../../../services/strategy-registry'
 import type { UserStore } from '../../../../services/user-store'
 import { resolveUrl } from '../../../../shared/base-path'
 import {
@@ -30,8 +31,17 @@ function getExternalOrigin(c: Context): string {
 export function createOwnerRoutes(
   service: ProjectService,
   userStore: UserStore,
+  extractionRegistry: VariantRegistry<unknown>,
 ): Hono {
   const app = new Hono()
+
+  function resolveExtractionBadge(variantId: string): {
+    variantId: string
+    variantName: string
+  } {
+    const meta = extractionRegistry.list().find((v) => v.id === variantId)
+    return { variantId, variantName: meta?.metadata.name ?? variantId }
+  }
 
   // -----------------------------------------------------------------------
   // 1. GET /:owner — Profile page
@@ -84,6 +94,20 @@ export function createOwnerRoutes(
         service.listBranches(slug),
       ])
       const origin = getExternalOrigin(c)
+      // Read extraction provenance from the branch being viewed so the
+      // badge reflects which variant produced the currently-displayed
+      // spec (including on pre-promotion `import` branches).
+      const provenanceBranch =
+        branch !== 'main' ? branch : (view.pendingBranch ?? 'main')
+      const extractionProvenance = await service.getProvenance(
+        owner,
+        slug,
+        'extraction',
+        provenanceBranch,
+      )
+      const extractionBadge = extractionProvenance
+        ? resolveExtractionBadge(extractionProvenance.variantId)
+        : null
       return c.html(
         <Layout user={user}>
           <ProjectOverview
@@ -93,6 +117,7 @@ export function createOwnerRoutes(
             origin={origin}
             branches={branches}
             branch={branch}
+            extractionBadge={extractionBadge}
           />
         </Layout>,
       )
@@ -154,6 +179,15 @@ export function createOwnerRoutes(
 
     try {
       const view = await service.getProjectAtRef(owner, slug, sha, user)
+      const extractionProvenance = await service.getProvenance(
+        owner,
+        slug,
+        'extraction',
+        sha,
+      )
+      const extractionBadge = extractionProvenance
+        ? resolveExtractionBadge(extractionProvenance.variantId)
+        : null
       return c.html(
         <Layout user={user}>
           <ProjectOverview
@@ -161,6 +195,7 @@ export function createOwnerRoutes(
             owner={owner}
             user={user}
             viewingSha={sha}
+            extractionBadge={extractionBadge}
           />
         </Layout>,
       )

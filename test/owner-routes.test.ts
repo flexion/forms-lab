@@ -10,8 +10,11 @@ import { createFormProjectRepo } from '../src/services/form-project-repo'
 import type { ProjectService } from '../src/services/project-service'
 import { createProjectService } from '../src/services/project-service'
 import { createProjectStore } from '../src/services/storage'
+import { StrategyRegistry } from '../src/services/strategy-registry'
 import { createUserStore } from '../src/services/user-store'
 import type { ExtractionResult, ProjectIndex } from '../src/types/models'
+
+const stubExtractionRegistry = new StrategyRegistry<unknown>()
 
 const stubResult: ExtractionResult = {
   spec: {
@@ -102,7 +105,7 @@ function createTestApp(authUser: SessionUser | null = danielUser) {
     c.set('user', authUser)
     await next()
   })
-  app.route('/', createOwnerRoutes(service, userStore))
+  app.route('/', createOwnerRoutes(service, userStore, stubExtractionRegistry))
 
   return { app, service, projectStore, repo, userStore }
 }
@@ -230,7 +233,10 @@ describe('GET /:owner/:slug (project overview)', () => {
       c.set('user', null)
       await next()
     })
-    anonApp.route('/', createOwnerRoutes(service, userStore))
+    anonApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     const res = await anonApp.request(`/danielnaab/${project.slug}`)
     expect(res.status).toBe(200)
@@ -278,7 +284,10 @@ describe('GET /:owner/:slug (project overview)', () => {
       c.set('user', danielUser)
       await next()
     })
-    slowApp.route('/', createOwnerRoutes(slowService, slowUserStore))
+    slowApp.route(
+      '/',
+      createOwnerRoutes(slowService, slowUserStore, stubExtractionRegistry),
+    )
     const project = await slowService.createProject(
       'Slow Form',
       Buffer.from('%PDF-1.4 sample'),
@@ -316,7 +325,10 @@ describe('GET /:owner/:slug (project overview)', () => {
       c.set('user', danielUser)
       await next()
     })
-    slowApp.route('/', createOwnerRoutes(slowService, slowUserStore))
+    slowApp.route(
+      '/',
+      createOwnerRoutes(slowService, slowUserStore, stubExtractionRegistry),
+    )
     const project = await slowService.createProject(
       'Slow Form',
       Buffer.from('%PDF-1.4 sample'),
@@ -356,7 +368,10 @@ describe('GET /:owner/:slug (project overview)', () => {
       c.set('user', mayaUser)
       await next()
     })
-    slowApp.route('/', createOwnerRoutes(slowService, slowUserStore))
+    slowApp.route(
+      '/',
+      createOwnerRoutes(slowService, slowUserStore, stubExtractionRegistry),
+    )
     const project = await slowService.createProject(
       'Slow Form',
       Buffer.from('%PDF-1.4 sample'),
@@ -439,7 +454,10 @@ describe('GET /:owner/:slug/settings', () => {
       c.set('user', mayaUser)
       await next()
     })
-    mayaApp.route('/', createOwnerRoutes(service, userStore))
+    mayaApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     const res = await mayaApp.request(`/danielnaab/${project.slug}/settings`)
     expect(res.status).toBe(403)
@@ -456,7 +474,10 @@ describe('GET /:owner/:slug/settings', () => {
       c.set('user', null)
       await next()
     })
-    anonApp.route('/', createOwnerRoutes(service, userStore))
+    anonApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     const res = await anonApp.request(`/danielnaab/${project.slug}/settings`, {
       redirect: 'manual',
@@ -495,7 +516,10 @@ describe('POST /:owner/:slug/settings', () => {
       c.set('user', mayaUser)
       await next()
     })
-    mayaApp.route('/', createOwnerRoutes(service, userStore))
+    mayaApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     const res = await mayaApp.request(`/danielnaab/${project.slug}/settings`, {
       method: 'POST',
@@ -542,7 +566,10 @@ describe('POST /:owner/:slug/settings', () => {
       c.set('user', mayaUser)
       await next()
     })
-    mayaApp.route('/', createOwnerRoutes(service, userStore))
+    mayaApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     const res = await mayaApp.request(`/danielnaab/${project.slug}/settings`, {
       method: 'POST',
@@ -575,7 +602,10 @@ describe('POST /:owner/:slug/settings', () => {
       c.set('user', null)
       await next()
     })
-    anonApp.route('/', createOwnerRoutes(service, userStore))
+    anonApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     const res = await anonApp.request(`/danielnaab/${project.slug}/settings`, {
       method: 'POST',
@@ -603,7 +633,10 @@ describe('POST /:owner/:slug/fork', () => {
       c.set('user', mayaUser)
       await next()
     })
-    mayaApp.route('/', createOwnerRoutes(service, userStore))
+    mayaApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     const res = await mayaApp.request(`/danielnaab/${project.slug}/fork`, {
       method: 'POST',
@@ -635,7 +668,10 @@ describe('POST /:owner/:slug/fork', () => {
       c.set('user', null)
       await next()
     })
-    anonApp.route('/', createOwnerRoutes(service, userStore))
+    anonApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     const res = await anonApp.request(`/danielnaab/${project.slug}/fork`, {
       method: 'POST',
@@ -655,7 +691,10 @@ describe('POST /:owner/:slug/fork', () => {
       c.set('user', mayaUser)
       await next()
     })
-    mayaApp.route('/', createOwnerRoutes(service, userStore))
+    mayaApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     await mayaApp.request(`/danielnaab/${project.slug}/fork`, {
       method: 'POST',
@@ -795,12 +834,15 @@ describe('UI permissions', () => {
       c.set('user', mayaUser)
       await next()
     })
-    mayaApp.route('/', createOwnerRoutes(service, userStore))
+    mayaApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     const res = await mayaApp.request(`/danielnaab/${project.slug}`)
     const html = await res.text()
     expect(html).toContain('Fork')
-    expect(html).not.toContain('/settings')
+    expect(html).not.toContain(`/danielnaab/${project.slug}/settings`)
   })
 
   it('anonymous sees sign-in-to-fork link', async () => {
@@ -812,11 +854,14 @@ describe('UI permissions', () => {
       c.set('user', null)
       await next()
     })
-    anonApp.route('/', createOwnerRoutes(service, userStore))
+    anonApp.route(
+      '/',
+      createOwnerRoutes(service, userStore, stubExtractionRegistry),
+    )
 
     const res = await anonApp.request(`/danielnaab/${project.slug}`)
     const html = await res.text()
     expect(html).toContain('Sign in to fork')
-    expect(html).not.toContain('/settings')
+    expect(html).not.toContain(`/danielnaab/${project.slug}/settings`)
   })
 })

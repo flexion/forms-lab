@@ -434,6 +434,6 @@ app.route(
 )
 
 // Mount owner routes LAST (catch-all pattern /:owner)
-app.route('/', createOwnerRoutes(projectService, userStore))
+app.route('/', createOwnerRoutes(projectService, userStore, extractionRegistry))
 
 export default app

@@ -3,6 +3,7 @@ import type { DemoFixture } from '../../../../../fixtures/index'
 import { Alert } from '../../../../design-system/components/flex-alert'
 import { BranchSwitcher } from '../../../../design-system/components/flex-branch-switcher'
 import { SpecBrowser } from '../../../../design-system/components/flex-spec-browser'
+import { VariantBadge } from '../../../../design-system/components/flex-variant-badge'
 import type { SessionUser } from '../../../../services/auth/session'
 import type {
   CommitEntry,
@@ -138,7 +139,17 @@ export const ProjectOverview: FC<{
   origin?: string
   branches?: BranchEntry[]
   branch?: string
-}> = ({ view, owner, user, viewingSha, origin, branches, branch = 'main' }) => {
+  extractionBadge?: { variantId: string; variantName: string } | null
+}> = ({
+  view,
+  owner,
+  user,
+  viewingSha,
+  origin,
+  branches,
+  branch = 'main',
+  extractionBadge,
+}) => {
   const {
     project,
     spec,
@@ -285,6 +296,14 @@ export const ProjectOverview: FC<{
           </p>
         </div>
       )}
+
+      {extractionBadge ? (
+        <VariantBadge
+          task="extraction"
+          variantId={extractionBadge.variantId}
+          variantName={extractionBadge.variantName}
+        />
+      ) : null}
 
       <div class="project-summary">
         <span>
