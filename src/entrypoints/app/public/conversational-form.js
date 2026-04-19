@@ -1,28 +1,11 @@
-/**
- * Conversational form client-side enhancement
- *
- * Wires up flex-assistant component for conversational form filling:
- * - Waits for custom element to be defined
- * - Loads initial message history into assistant
- * - Handles message submission events
- * - POSTs messages to server with X-Live-Chat header
- * - Displays responses in assistant panel
- * - Reloads page when conversation is finished
- */
-
 async function init() {
-  // Wait for the flex-assistant custom element to be defined
   await customElements.whenDefined('flex-assistant')
 
   const messagesScript = document.querySelector('[data-initial-messages]')
   const assistant = document.querySelector('flex-assistant')
 
-  if (!messagesScript || !assistant) {
-    console.error('Missing required elements for conversational form')
-    return
-  }
+  if (!messagesScript || !assistant) return
 
-  // Parse and load initial messages
   try {
     const initialMessages = JSON.parse(messagesScript.textContent || '[]')
     assistant.clearMessages()
@@ -33,15 +16,12 @@ async function init() {
     console.error('Error loading initial messages:', error)
   }
 
-  // Handle message submission
   document.addEventListener('assistant:message-submitted', async (e) => {
-    const detail = e.detail
-    const text = detail.text
+    const text = e.detail.text
 
-    // Add user message to UI
     assistant.addMessage('user', text)
+    assistant.setLoading(true)
 
-    // Send message to server
     try {
       const response = await fetch(window.location.pathname, {
         method: 'POST',
@@ -51,6 +31,8 @@ async function init() {
         },
         body: new URLSearchParams({ message: text }),
       })
+
+      assistant.setLoading(false)
 
       if (!response.ok) {
         const errorText = await response.text()
@@ -63,20 +45,41 @@ async function init() {
 
       const data = await response.json()
 
-      // Add assistant response
       assistant.addMessage('assistant', data.response)
 
-      // If finished, reload to show completion state
+      if (data.fieldsCollected) {
+        updateFormFields(data.fieldsCollected)
+      }
+
       if (data.finished) {
-        setTimeout(() => {
-          window.location.reload()
-        }, 1500)
+        setTimeout(() => window.location.reload(), 1500)
       }
     } catch (error) {
-      console.error('Error sending message:', error)
+      assistant.setLoading(false)
       assistant.addMessage('system', `Error: ${error.message}`)
     }
   })
+}
+
+function updateFormFields(fieldsCollected) {
+  for (const [fieldName, entry] of Object.entries(fieldsCollected)) {
+    const value = entry.value
+    const input = document.querySelector(`[name="${fieldName}"]`)
+    if (!input) continue
+
+    if (input.type === 'checkbox') {
+      input.checked = value === true || value === 'true'
+    } else if (input.type === 'radio') {
+      const radio = document.querySelector(
+        `[name="${fieldName}"][value="${value}"]`,
+      )
+      if (radio) radio.checked = true
+    } else {
+      input.value = value ?? ''
+    }
+
+    input.closest('.flex-form-group')?.classList.add('field-collected')
+  }
 }
 
 init()
