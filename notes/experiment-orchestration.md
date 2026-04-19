@@ -8,7 +8,9 @@ created: 2026-04-19
 
 ## 1. Purpose
 
-This document is the executable handoff for the eight follow-up experiment stories (#59–#66) filed after PR #58 (story 10 variant picker). Any future Claude Code session picks this file up, reads the status table, and dispatches the next story without needing prior conversation history. There is no separate coordinator service or automation — discipline enforced by a single doc is cheaper and more adaptable than code given the presentation deadline (~2026-04-20) and the small, bounded scope. The "orchestration" is: read this file, pick the next story, execute the playbook, update the table, commit. Humans read it too — the status table is the single source of truth the user checks between sessions.
+This document is the executable handoff for the eight follow-up experiment stories (#59–#66, plus the tier-2 follow-ups #73–#75) filed after PR #58 (story 10 variant picker). Any future Claude Code session picks this file up, reads the status table, and dispatches the next story without needing prior conversation history. There is no separate coordinator service or automation — discipline enforced by a single doc is cheaper and more adaptable than code given the presentation deadline (~2026-04-20) and the small, bounded scope. The "orchestration" is: read this file, pick the next story, execute the playbook, update the table, commit. Humans read it too — the status table is the single source of truth the user checks between sessions.
+
+**Current status (2026-04-19):** All prompted work shipped. Tier-1 (#59, #63, #66) and tier-2 (#73, #74, #75) are merged to main and deployed. #62 was merged as #74 (it was a duplicate). #64 scope-deferred (superseded by #73). #60 and #65 remain as planned/deferred tier-3 work — not required for the 2026-04-20 presentation. No in-flight experiment branches; the only active surface is pre-existing UX work on story-9 (PR #83).
 
 ## 2. Current state
 
@@ -17,14 +19,14 @@ This document is the executable handoff for the eight follow-up experiment stori
 | #59 | Maya chooses her shaping model | **shipped** | merged (PR #69) | 1 | — |
 | #60 | Carlos's conversation uses a chosen model | planned | — | 3 | #58 + #9 |
 | #61 | Maya verifies AcroForm mapping | planned | — | 2 | — |
-| #62 | Maya's extractions cite the law (RAG) | planned | — | 2 | — |
+| #62 | Maya's extractions cite the law (RAG) | **shipped** | merged as #74 / PR #78 | 2 | Duplicate of #74; see that row |
 | #63 | Maya's extractions learn from curated examples (few-shot) | **shipped** | merged (PR #67) | 1 | — |
-| #64 | Maya's extractions use a tuned prompt (prompt-opt) | planned | — | 2 | — |
+| #64 | Maya's extractions use a tuned prompt (prompt-opt) | **scope-deferred** | — | 2 | Superseded by #73 — hybrid-v1 and temperature=0 variants already deliver prompt-engineering evidence across the suite with stronger metrics than a dedicated prompt-opt harness would produce |
 | #65 | Maya's extractions use our fine-tuned model (LoRA) | **scope-deferred** | — | 3 | See catalog/experiments/pdf-field-extraction/lora-scope-deferral.md |
 | #66 | Maya extracts via structured tool-use | **shipped** | merged (PR #68) | 1 | — |
 | #73 | Prompt optimization (hybrid/temperature) | **shipped** | merged (PR #76) | 2 | Hybrid-v1 wins suite (precision 99.2%, recall 72.6%); temp=0 ablation shows +15.1pp precision at -9.9pp recall |
-| #74 | RAG extraction variant | **pr-open** | [PR #78](https://github.com/flexion/forms-lab/pull/78) | 2 | Sensitivity +25.3pp, precision +13.6pp, recall -5.7pp |
-| #75 | Live shaping model evaluation | **shipped** | merged (PR #77) | 2 | Opus 73/83/67%, Sonnet 67/75/62%, Haiku 67/83/62%. |
+| #74 | RAG extraction variant | **shipped** | merged (PR #78) | 2 | Sensitivity +25.3pp, precision +13.6pp, recall -5.7pp |
+| #75 | Live shaping model evaluation | **shipped** | merged (PR #77) | 2 | Opus 73/83/67%, Sonnet 67/75/62%, Haiku 67/83/62% (kind-recall / kind-precision / argument-accuracy). |
 
 **How to update this table** — edit it in a commit alongside any status change. This file is the source of truth; the catalog roadmap (`catalog/experiments/_roadmap.md`) mirrors it. Statuses: `planned` → `in-progress` → `pr-open` → `shipped`, or `scope-deferred` if cut.
 
