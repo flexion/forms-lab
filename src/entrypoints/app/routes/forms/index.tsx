@@ -805,13 +805,14 @@ export function createFormRouter(deps: FormRouterDeps) {
     })
 
     // Build context for filling agent
-    const visibleGroups = filterVisibleGroups(page.groups, session.fields)
+    // Note: Pass ALL groups (not filtered) because the agent needs to evaluate
+    // conditions dynamically as it collects fields
     const messages = conversationGateway.getMessages(sessionId)
 
     // Call filling agent to advance conversation
     const turn = await fillingAgent.advance(
       {
-        groups: visibleGroups,
+        groups: page.groups,
         collectedFields: session.fields,
         messages,
       },
