@@ -29,6 +29,16 @@ export function createCachedPdfExtractor(
       pdf: Buffer,
       options?: ExtractionOptions,
     ): Promise<ExtractionResult> {
+      // Validate PDF buffer before caching
+      if (!pdf || !Buffer.isBuffer(pdf)) {
+        throw new Error(
+          `Invalid PDF buffer: expected Buffer, received ${typeof pdf}`,
+        )
+      }
+      if (pdf.length === 0) {
+        throw new Error('PDF buffer is empty')
+      }
+
       const model = options?.model ?? cacheModel ?? DEFAULT_MODEL
       const key = cacheKey(pdf, model)
 
@@ -75,6 +85,16 @@ export function createBedrockPdfExtractor(
       pdf: Buffer,
       extractionOptions?: ExtractionOptions,
     ): Promise<ExtractionResult> {
+      // Validate PDF buffer
+      if (!pdf || !Buffer.isBuffer(pdf)) {
+        throw new Error(
+          `Invalid PDF buffer: expected Buffer, received ${typeof pdf}`,
+        )
+      }
+      if (pdf.length === 0) {
+        throw new Error('PDF buffer is empty')
+      }
+
       const model = extractionOptions?.model ?? options?.model ?? DEFAULT_MODEL
 
       // Step 1: Extract DataCollectionSpec + confidence from PDF
