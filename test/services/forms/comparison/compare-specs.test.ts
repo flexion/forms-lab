@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import type { DataCollectionSpec } from '../../../../src/services/data-collection/types'
+import type { DataCollectionSpec } from '../../../../src/services/data-collection'
 import { compareSpecs } from '../../../../src/services/forms/comparison'
 import type { FormSpec } from '../../../../src/services/forms/types'
 

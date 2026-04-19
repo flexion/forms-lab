@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import type { DataCollectionSpec } from '../src/services/data-collection/types'
+import type { DataCollectionSpec } from '../src/services/data-collection'
 import { runEvaluation } from '../src/services/evaluation/harness'
 import { pdfFieldExtractionKind } from '../src/services/evaluation/kinds/pdf-field-extraction'
 import { evaluationRunSchema } from '../src/services/evaluation/schemas'

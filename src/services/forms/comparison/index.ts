@@ -1,4 +1,4 @@
-import type { DataCollectionSpec } from '../../data-collection/types'
+import type { DataCollectionSpec } from '../../data-collection'
 import type { FormSpec } from '../types'
 import { diffDataCollectionSpecs } from './data-collection-spec-differ'
 import { diffFormSpecs } from './form-spec-differ'

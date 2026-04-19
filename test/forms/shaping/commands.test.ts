@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import type { DataCollectionSpec } from '../../../src/services/data-collection/types'
+import type { DataCollectionSpec } from '../../../src/services/data-collection'
 import {
   type Command,
   commandSchema,

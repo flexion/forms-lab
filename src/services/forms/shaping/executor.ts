@@ -1,7 +1,7 @@
 import type {
   DataCollectionSpec,
   RequirementGroup,
-} from '../../data-collection/types'
+} from '../../data-collection'
 import type { FormPage, FormSpec } from '../types'
 import type { Command, ProjectState } from './commands'
 

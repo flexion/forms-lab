@@ -12,7 +12,7 @@
 
 import type { FC } from 'hono/jsx'
 // biome-ignore format: keep on one line so the dep-rule parser (which is line-based) recognizes this as a type-only import
-import type { DataCollectionSpec, DataRequirement, RequirementGroup } from '../../../services/data-collection/types'
+import type { DataCollectionSpec, DataRequirement, RequirementGroup } from '../../../services/data-collection'
 // biome-ignore format: keep on one line so the dep-rule parser (which is line-based) recognizes this as a type-only import
 import type { ChangeCategory, SpecChange } from '../../../services/forms/comparison'
 // biome-ignore format: keep on one line so the dep-rule parser (which is line-based) recognizes this as a type-only import

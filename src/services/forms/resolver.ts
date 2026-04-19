@@ -1,7 +1,4 @@
-import type {
-  DataCollectionSpec,
-  FieldCondition,
-} from '../data-collection/types'
+import type { DataCollectionSpec, FieldCondition } from '../data-collection'
 import type { FieldEntry, FormSpec, ResolvedForm } from './types'
 
 export function evaluateCondition(

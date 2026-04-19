@@ -9,7 +9,7 @@ import {
 } from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
 import { createUserStore } from '../../services/auth'
-import type { DataCollectionSpec } from '../../services/data-collection/types'
+import type { DataCollectionSpec } from '../../services/data-collection'
 import { createExtractorRegistry } from '../../services/extraction/registry'
 import { createCachedPdfExtractor } from '../../services/form-documents/extraction'
 import { createMappingRegistry } from '../../services/form-documents/mapping-registry'

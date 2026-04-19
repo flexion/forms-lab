@@ -10,7 +10,7 @@ import { PreviewBanner } from '../../../../design-system/components/flex-preview
 import type {
   DataCollectionSpec,
   RequirementGroup,
-} from '../../../../services/data-collection/types'
+} from '../../../../services/data-collection'
 import { fillPdf } from '../../../../services/form-documents/filling'
 import type { FieldMapping } from '../../../../services/form-documents/types'
 import type {

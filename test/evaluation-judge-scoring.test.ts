@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import type { DataCollectionSpec } from '../src/services/data-collection/types'
+import type { DataCollectionSpec } from '../src/services/data-collection'
 import type { FieldJudge } from '../src/services/evaluation/judge'
 import type { JudgeResponse } from '../src/services/evaluation/judge-schemas'
 import { createLlmJudgeKind } from '../src/services/evaluation/kinds/pdf-field-extraction-judge'

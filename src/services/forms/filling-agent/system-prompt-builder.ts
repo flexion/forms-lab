@@ -1,5 +1,5 @@
 // src/services/forms/filling-agent/system-prompt-builder.ts
-import type { RequirementGroup } from '../../data-collection/types'
+import type { RequirementGroup } from '../../data-collection'
 import { evaluateCondition } from '../resolver'
 import type { FieldEntry } from '../types'
 

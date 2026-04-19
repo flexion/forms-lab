@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { SpecBrowser } from '../../../src/design-system/components/flex-spec-browser'
-import type { DataCollectionSpec } from '../../../src/services/data-collection/types'
+import type { DataCollectionSpec } from '../../../src/services/data-collection'
 import type { FormSpec } from '../../../src/services/forms/types'
 import type { FieldConfidence } from '../../../src/types/models'
 

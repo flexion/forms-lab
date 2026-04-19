@@ -1,7 +1,7 @@
 import type {
   DataRequirement,
   RequirementGroup,
-} from '../../../services/data-collection/types'
+} from '../../../services/data-collection'
 import type { Command } from '../../../services/forms/shaping/commands'
 import type {
   ProjectStateClient,

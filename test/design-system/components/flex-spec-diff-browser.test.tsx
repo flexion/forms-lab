@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { SpecDiffBrowser } from '../../../src/design-system/components/flex-spec-diff-browser'
-import type { DataCollectionSpec } from '../../../src/services/data-collection/types'
+import type { DataCollectionSpec } from '../../../src/services/data-collection'
 import type { SpecChange } from '../../../src/services/forms/comparison'
 import type { FormSpec } from '../../../src/services/forms/types'
 

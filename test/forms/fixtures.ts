@@ -1,4 +1,4 @@
-import type { DataCollectionSpec } from '../../src/services/data-collection/types'
+import type { DataCollectionSpec } from '../../src/services/data-collection'
 import type { FormSpec as FormSpecForms } from '../../src/services/forms/types'
 import type { FormSpec as FormSpecModels } from '../../src/types/models'
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import type { FieldCondition } from '../../src/services/data-collection/types'
+import type { FieldCondition } from '../../src/services/data-collection'
 import {
   evaluateCondition,
   resolveFormSpec,

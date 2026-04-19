@@ -1,4 +1,4 @@
-import type { DataCollectionSpec } from '../../../services/data-collection/types'
+import type { DataCollectionSpec } from '../../../services/data-collection'
 import type { Command } from '../../../services/forms/shaping/commands'
 import type { FormSpec } from '../../../services/forms/types'
 

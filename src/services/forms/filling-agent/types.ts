@@ -1,5 +1,5 @@
 // src/services/forms/filling-agent/types.ts
-import type { RequirementGroup } from '../../data-collection/types'
+import type { RequirementGroup } from '../../data-collection'
 import type { FieldEntry } from '../types'
 
 export interface ConversationMessage {

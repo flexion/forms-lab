@@ -3,7 +3,7 @@ import type {
   DataCollectionSpec,
   FieldType,
   SensitivityLevel,
-} from '../src/services/data-collection/types'
+} from '../src/services/data-collection'
 import { pdfFieldExtractionKind } from '../src/services/evaluation/kinds/pdf-field-extraction'
 import type { FieldConfidence } from '../src/services/form-documents/types'
 
