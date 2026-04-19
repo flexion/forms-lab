@@ -175,7 +175,13 @@ let
 
     # Capture the commit SHA of the deployed worktree so getBuildInfo()
     # can resolve the running commit without shelling out to git at runtime.
+    # Written to a dedicated .build-info file (not the branch-app .env)
+    # because the homepage service also needs BUILD_GIT_SHA but must NOT
+    # inherit the branch-app's PORT or BASE_PATH.
     BUILD_GIT_SHA=$(${pkgs.git}/bin/git -C "$BRANCH_DIR" rev-parse HEAD)
+    cat > "$BRANCH_DIR/.build-info" <<BUILDEOF
+BUILD_GIT_SHA=$BUILD_GIT_SHA
+BUILDEOF
 
     # Write per-branch env file
     # All branches serve at /<branch>/
@@ -183,7 +189,6 @@ let
     cat > "$BRANCH_DIR/.env" <<ENVEOF
 PORT=$PORT
 BASE_PATH=/$UNIT_NAME/
-BUILD_GIT_SHA=$BUILD_GIT_SHA
 GITHUB_CLIENT_ID=$(cat /run/secrets/github-client-id 2>/dev/null || echo "")
 GITHUB_CLIENT_SECRET=$(cat /run/secrets/github-client-secret 2>/dev/null || echo "")
 SESSION_SECRET=$(cat /run/secrets/session-secret 2>/dev/null || echo "")
