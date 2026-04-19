@@ -749,7 +749,12 @@ export function createFormRouter(deps: FormRouterDeps) {
     }))
 
     return c.html(
-      <Layout user={user} title={page.page.title} currentPath="/forms">
+      <Layout
+        user={user}
+        title={page.page.title}
+        currentPath="/forms"
+        contentWidth="full"
+      >
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         <div class="conversational-form-layout">
           <div class="conversational-form-layout__form">
@@ -840,7 +845,11 @@ export function createFormRouter(deps: FormRouterDeps) {
     const page = resolved.pages[pageIndex]
 
     // Check if this page has conversational delivery mode
-    if (page.page.deliveryMode !== 'conversational') {
+    const chatDeliveryMode = page.page.deliveryMode ?? 'static'
+    if (
+      chatDeliveryMode !== 'conversational' &&
+      chatDeliveryMode !== 'hybrid'
+    ) {
       return c.text('This page does not support conversational mode', 400)
     }
 
