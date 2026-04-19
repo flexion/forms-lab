@@ -18,3 +18,5 @@ export {
 } from './session'
 
 export type { SessionUser } from './types'
+export type { UserStore } from './user-store'
+export { createUserStore } from './user-store'

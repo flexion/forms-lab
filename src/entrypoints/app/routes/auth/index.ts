@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { deleteCookie, setCookie } from 'hono/cookie'
+import type { UserStore } from '../../../../services/auth'
 import {
   exchangeCodeForToken,
   fetchUserProfile,
@@ -9,7 +10,6 @@ import {
   COOKIE_NAME,
   encryptSession,
 } from '../../../../services/auth/session'
-import type { UserStore } from '../../../../services/user-store'
 import { resolveUrl } from '../../../../shared/base-path'
 
 export function createAuthRoutes(userStore: UserStore): Hono {

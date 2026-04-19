@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 import { unlinkSync } from 'node:fs'
-import { createUserStore } from '../src/services/user-store'
+import { createUserStore } from '../src/services/auth'
 
 const TEST_DB = '/tmp/test-user-store.sqlite'
 
