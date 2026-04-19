@@ -19,3 +19,27 @@ describe('component metadata: kind and reference invariants', () => {
     })
   }
 })
+
+describe('custom components: variant/example alignment', () => {
+  for (const meta of getComponents()) {
+    if (meta.kind !== 'custom') continue
+
+    it(`${meta.slug}: contract.variants matches examples.tsx exports`, async () => {
+      const contractMod = await import(
+        `../../src/design-system/components/${meta.slug}/contract.ts`
+      )
+      const examplesMod = await import(
+        `../../src/design-system/components/${meta.slug}/examples.tsx`
+      )
+
+      const declaredVariants = new Set(
+        contractMod.spec.variants.map((v: { name: string }) => v.name),
+      )
+      const exportedVariants = new Set(
+        Object.keys(examplesMod).filter((k) => k !== 'default'),
+      )
+
+      expect([...declaredVariants].sort()).toEqual([...exportedVariants].sort())
+    })
+  }
+})
