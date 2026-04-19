@@ -96,3 +96,31 @@ flex-assistant[data-closed] {
 .assistant__send {
   float: inline-end;
 }
+
+.assistant__loading {
+  display: flex;
+  gap: 4px;
+  align-self: flex-start;
+  padding: var(--flex-space-sm) var(--flex-space-md);
+}
+
+.assistant__loading span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--flex-color-text-muted);
+  animation: loading-dot 1.2s infinite;
+}
+
+.assistant__loading span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.assistant__loading span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes loading-dot {
+  0%, 80%, 100% { opacity: 0.3; }
+  40% { opacity: 1; }
+}
