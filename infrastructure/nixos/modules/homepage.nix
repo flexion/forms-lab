@@ -20,10 +20,11 @@
       Environment = [
         "PORT=3000"
       ];
-      # Main's .env provides BUILD_GIT_SHA (and future runtime config).
-      # The leading '-' tolerates the file being absent on first boot,
-      # before the first main deployment has run.
-      EnvironmentFile = "-/srv/forms-lab/main/.env";
+      # Load ONLY .build-info (BUILD_GIT_SHA), not .env — the branch-app's
+      # .env sets PORT=<branch-port>, which would override the homepage's
+      # PORT=3000 and cause EADDRINUSE when the dashboard tries to bind.
+      # The leading '-' tolerates the file being absent on first boot.
+      EnvironmentFile = "-/srv/forms-lab/main/.build-info";
       ExecStart = "${config.flexion.entrypointWrapper}/bin/forms-lab-entrypoint dashboard /srv/forms-lab/main";
     };
   };

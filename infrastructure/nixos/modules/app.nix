@@ -87,8 +87,14 @@ in
       # systemd interprets these at the [Unit]/[Service] level — NixOS
       # exposes them via startLimit* keys on the service attrset.
 
-      # Environment loaded from a per-branch env file written by deploy script
-      EnvironmentFile = "/srv/forms-lab/%i/.env";
+      # Environment loaded from per-branch files written by deploy script.
+      # .env holds branch-app config (PORT, BASE_PATH, secrets, AWS); the
+      # dedicated .build-info file holds BUILD_GIT_SHA only so the homepage
+      # service can inherit BUILD_GIT_SHA without picking up branch-app PORT.
+      EnvironmentFile = [
+        "/srv/forms-lab/%i/.env"
+        "-/srv/forms-lab/%i/.build-info"
+      ];
     };
 
     # Flap control — prevents a broken branch from retrying forever.
