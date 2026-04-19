@@ -32,10 +32,10 @@ This is the live roadmap for the Forms Lab LLM experiments. Each experiment is a
 | Story | Status | Ships | Catalog |
 |---|---|---|---|
 | [#62 Maya's extractions cite the law](https://github.com/flexion/forms-lab/issues/62) | planned | RAG primitive (embeddings + cosine store), policy corpus, `extraction/sonnet-with-rag` | `/catalog/experiments/pdf-field-extraction/sonnet-with-rag.md` |
-| [#63 Maya's extractions learn from curated examples](https://github.com/flexion/forms-lab/issues/63) | pr-open | `extraction/few-shot-sonnet` | `/catalog/experiments/pdf-field-extraction/few-shot-sonnet.md` |
+| [#63 Maya's extractions learn from curated examples](https://github.com/flexion/forms-lab/issues/63) | shipped | `extraction/few-shot-sonnet`, `extraction/nova-pro` | `/catalog/experiments/pdf-field-extraction/few-shot-sonnet.md`. Finding: precision +7.6pp over baseline; recall -6.8pp. Few-shot helps model be selective, not comprehensive. Nova Pro (non-Claude) fails at field-level extraction entirely. |
 | [#64 Maya's extractions use a tuned prompt](https://github.com/flexion/forms-lab/issues/64) | planned | prompt-opt harness, `extraction/sonnet-optimized-v1` | `/catalog/experiments/pdf-field-extraction/sonnet-optimized-v1.md` |
-| [#65 Maya's extractions use our fine-tuned model](https://github.com/flexion/forms-lab/issues/65) | planned | LoRA fine-tune, FastAPI inference endpoint, `extraction/lora-v1` | `/catalog/experiments/pdf-field-extraction/lora-v1.md` |
-| [#66 Maya extracts via structured tool-use](https://github.com/flexion/forms-lab/issues/66) | planned | `extraction/tool-use-sonnet` | `/catalog/experiments/pdf-field-extraction/tool-use-sonnet.md` |
+| [#65 Maya's extractions use our fine-tuned model](https://github.com/flexion/forms-lab/issues/65) | scope-deferred | — | `/catalog/experiments/pdf-field-extraction/lora-scope-deferral.md`. Deferred: prompt engineering achieves target quality on Claude; LoRA adds cost without new learning for this deadline. |
+| [#66 Maya extracts via structured tool-use](https://github.com/flexion/forms-lab/issues/66) | shipped | `extraction/tool-use-sonnet` | `/catalog/experiments/pdf-field-extraction/tool-use-sonnet.md`. Finding: precision 96.3%, sensitivity +51pp. Constrained output eliminates hallucination at cost of recall (step-limit). |
 
 ## Priority tiers
 
