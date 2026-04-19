@@ -799,14 +799,23 @@ export function createFormRouter(deps: FormRouterDeps) {
     const messages = conversationGateway.getMessages(sessionId)
 
     // Call filling agent to advance conversation
-    const turn = await fillingAgent.advance(
-      {
-        groups: page.groups,
-        collectedFields: session.fields,
-        messages,
-      },
-      userMessage,
-    )
+    let turn: Awaited<ReturnType<typeof fillingAgent.advance>>
+    try {
+      turn = await fillingAgent.advance(
+        {
+          groups: page.groups,
+          collectedFields: session.fields,
+          messages,
+        },
+        userMessage,
+      )
+    } catch (error) {
+      console.error('Filling agent error:', error)
+      return c.text(
+        `Error processing message: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        500,
+      )
+    }
 
     // Append assistant message to conversation
     const assistantMessageId = crypto.randomUUID()
