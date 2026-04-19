@@ -3,8 +3,8 @@ import {
   formatSlackMessage,
   postToSlack,
 } from '../src/entrypoints/notify/slack'
-import type { NotifyEvent } from '../src/services/notifications/types'
-import { validateEvent } from '../src/services/notifications/types'
+import type { NotifyEvent } from '../src/services/notifications'
+import { validateEvent } from '../src/services/notifications'
 
 describe('validateEvent', () => {
   it('accepts a valid event with all fields', () => {

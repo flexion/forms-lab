@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { validateEvent } from '../../services/notifications/types'
+import { validateEvent } from '../../services/notifications'
 import { postToSlack } from './slack'
 
 const app = new Hono()
