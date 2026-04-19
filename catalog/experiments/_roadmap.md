@@ -35,7 +35,7 @@ This is the live roadmap for the Forms Lab LLM experiments. Each experiment is a
 | [#63 Maya's extractions learn from curated examples](https://github.com/flexion/forms-lab/issues/63) | planned | `extraction/few-shot-sonnet` | `/catalog/experiments/pdf-field-extraction/few-shot-sonnet.md` |
 | [#64 Maya's extractions use a tuned prompt](https://github.com/flexion/forms-lab/issues/64) | planned | prompt-opt harness, `extraction/sonnet-optimized-v1` | `/catalog/experiments/pdf-field-extraction/sonnet-optimized-v1.md` |
 | [#65 Maya's extractions use our fine-tuned model](https://github.com/flexion/forms-lab/issues/65) | planned | LoRA fine-tune, FastAPI inference endpoint, `extraction/lora-v1` | `/catalog/experiments/pdf-field-extraction/lora-v1.md` |
-| [#66 Maya extracts via structured tool-use](https://github.com/flexion/forms-lab/issues/66) | planned | `extraction/tool-use-sonnet` | `/catalog/experiments/pdf-field-extraction/tool-use-sonnet.md` |
+| [#66 Maya extracts via structured tool-use](https://github.com/flexion/forms-lab/issues/66) | pr-open | `extraction/tool-use-sonnet` | `/catalog/experiments/pdf-field-extraction/tool-use-sonnet.md` |
 
 ## Priority tiers
 
