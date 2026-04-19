@@ -6,7 +6,10 @@
  * concrete expected Command[] outputs for deterministic scoring.
  */
 import type { DataCollectionSpec } from '../../../services/data-collection/types'
-import type { Command, ProjectState } from '../../../services/forms/shaping/commands'
+import type {
+  Command,
+  ProjectState,
+} from '../../../services/forms/shaping/commands'
 import type { FormSpec } from '../../../services/forms/types'
 import type { ShapingGroundTruth } from '../kinds/shaping-commands'
 
@@ -254,8 +257,7 @@ const intents: Array<Omit<ShapingIntentFixture, 'groundTruth'>> = [
   },
   {
     id: 'suggest-delivery-modes',
-    intent:
-      'Suggest delivery modes for each section based on complexity',
+    intent: 'Suggest delivery modes for each section based on complexity',
     expectedCommands: [
       { kind: 'setDeliveryMode', pageId: 'page-1', mode: 'static' },
       { kind: 'setDeliveryMode', pageId: 'page-2', mode: 'static' },

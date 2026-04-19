@@ -73,7 +73,9 @@ export const shapingCommandsKind: EvaluationKind<
     for (let oi = 0; oi < output.commands.length; oi++) {
       for (let ei = 0; ei < groundTruth.expectedCommands.length; ei++) {
         if (matchedExpected.has(ei)) continue
-        if (output.commands[oi].kind === groundTruth.expectedCommands[ei].kind) {
+        if (
+          output.commands[oi].kind === groundTruth.expectedCommands[ei].kind
+        ) {
           matchedExpected.add(ei)
           matchedOutput.add(oi)
           matchPairs.push({ outputIdx: oi, expectedIdx: ei })
@@ -84,9 +86,7 @@ export const shapingCommandsKind: EvaluationKind<
 
     // Kind recall: fraction of expected kinds found in output
     const kindRecall =
-      expectedKinds.length > 0
-        ? matchedExpected.size / expectedKinds.length
-        : 1
+      expectedKinds.length > 0 ? matchedExpected.size / expectedKinds.length : 1
 
     // Kind precision: fraction of output kinds that match expected
     const kindPrecision =
