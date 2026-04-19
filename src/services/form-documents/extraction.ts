@@ -59,6 +59,17 @@ export interface BedrockExtractorOptions {
   model?: string
   exemplars?: ExtractionExemplar[]
   maxOutputTokens?: number
+  /**
+   * Sampling temperature for Step 1 (the extraction prompt). When
+   * undefined, the underlying provider default is used. Setting `0`
+   * produces deterministic output and is used by the
+   * `sonnet-temperature-zero` variant.
+   *
+   * Scoped to Step 1 only — Steps 2 (formSpec) and 3 (field mapping)
+   * keep provider defaults so the variant measures the extraction
+   * prompt specifically.
+   */
+  temperature?: number
 }
 
 /** Build the few-shot examples section for the extraction prompt. */
@@ -117,6 +128,9 @@ export function createBedrockPdfExtractor(
       const extraction = await generateText({
         model: bedrock(model),
         maxOutputTokens: options?.maxOutputTokens ?? 32768,
+        ...(options?.temperature !== undefined
+          ? { temperature: options.temperature }
+          : {}),
         messages: [
           {
             role: 'user',

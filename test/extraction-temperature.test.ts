@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
+import * as aiModule from 'ai'
 
 const mockGenerateText = mock()
+// Re-export the full `ai` module, only overriding `generateText`. Bun's
+// `mock.module` is process-global, so trimming exports would break any
+// later test whose transitive imports touch `tool`, `stepCountIs`, etc.
 mock.module('ai', () => ({
+  ...aiModule,
   generateText: mockGenerateText,
 }))
 
@@ -15,9 +20,10 @@ mock.module('@aws-sdk/credential-providers', () => ({
   fromNodeProviderChain: mock(() => () => Promise.resolve({})),
 }))
 
-mock.module('../src/services/form-documents/field-mapping', () => ({
-  enumerateFields: mock(async () => []),
-}))
+// enumerateFields is left unmocked: a non-PDF Buffer causes pdf-lib to
+// throw, and field-mapping.ts catches that and returns []. This keeps
+// Step 3 a no-op without registering a mock that would leak into other
+// test files (Bun's mock.module is process-global).
 
 // Import after mocks are registered
 const { createBedrockPdfExtractor } = await import(
