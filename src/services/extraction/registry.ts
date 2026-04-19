@@ -59,6 +59,23 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
   })
 
   registry.register({
+    id: 'sonnet-temperature-zero',
+    metadata: {
+      name: 'Claude Sonnet 4 (temperature=0)',
+      description:
+        'Baseline Sonnet prompt with temperature=0. Ablates the "free optimization" lever from Assignment 10: deterministic output at zero marginal cost.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'prompt-optimization', 'determinism'],
+      catalogPath:
+        '/catalog/experiments/pdf-field-extraction/sonnet-temperature-zero',
+      modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
+    },
+    create: () =>
+      createBedrockPdfExtractor({ model: SONNET_MODEL_ID, temperature: 0 }),
+  })
+
+  registry.register({
     id: 'few-shot-sonnet',
     metadata: {
       name: 'Claude Sonnet 4 (few-shot)',

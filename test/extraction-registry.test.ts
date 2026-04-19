@@ -5,7 +5,7 @@ describe('createExtractorRegistry', () => {
   it('returns a registry with strategies registered', () => {
     const registry = createExtractorRegistry()
     const strategies = registry.list()
-    expect(strategies.length).toBeGreaterThanOrEqual(6)
+    expect(strategies.length).toBeGreaterThanOrEqual(7)
   })
 
   it('registers opus as baseline', () => {
@@ -77,5 +77,17 @@ describe('createExtractorRegistry', () => {
       expect(strategy.metadata.pricing).toBeDefined()
       expect(strategy.metadata.pricing!.inputPer1k).toBeGreaterThan(0)
     }
+  })
+
+  it('registers sonnet-temperature-zero as experimental', () => {
+    const registry = createExtractorRegistry()
+    const strategies = registry.list()
+    const tempZero = strategies.find((s) => s.id === 'sonnet-temperature-zero')
+    expect(tempZero).toBeDefined()
+    expect(tempZero!.metadata.status).toBe('experimental')
+    expect(tempZero!.metadata.courseTopics).toContain('prompt-optimization')
+    expect(tempZero!.metadata.catalogPath).toBe(
+      '/catalog/experiments/pdf-field-extraction/sonnet-temperature-zero',
+    )
   })
 })
