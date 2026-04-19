@@ -112,10 +112,17 @@ export function createProjectStore(dbPath: string): ProjectStore {
   const needsMigration = hasOldColumns || missingNewColumns.length > 0
 
   if (needsMigration) {
-    // For old schema, we need to migrate data; for incomplete new schema, we can just copy
-    const projects = db
-      .query('SELECT * FROM projects')
-      .all() as Array<Record<string, unknown>>
+    console.log('Starting database migration...')
+    console.log('Old columns:', columns)
+    console.log('Has old schema columns:', hasOldColumns)
+    console.log('Missing new columns:', missingNewColumns)
+
+    try {
+      // For old schema, we need to migrate data; for incomplete new schema, we can just copy
+      const projects = db
+        .query('SELECT * FROM projects')
+        .all() as Array<Record<string, unknown>>
+      console.log(`Migrating ${projects.length} projects...`)
 
     // Create new table with current schema
     db.run(`
@@ -133,6 +140,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
     `)
 
     // Migrate each project
+    const usedSlugs = new Set<string>()
     for (const project of projects) {
       const id = project.id as string
       const name = project.name as string
@@ -146,11 +154,18 @@ export function createProjectStore(dbPath: string): ProjectStore {
       // Generate slug if missing (from old schema)
       let slug = (project.slug as string | null) ?? null
       if (!slug) {
-        slug = name
+        const baseSlug = name
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-|-$/g, '')
+        slug = baseSlug
+        let counter = 2
+        while (usedSlugs.has(slug)) {
+          slug = `${baseSlug}-${counter}`
+          counter++
+        }
       }
+      usedSlugs.add(slug)
 
       db.run(
         `INSERT INTO projects_new (id, slug, name, forked_from, status, error, created_by, created_at, updated_at)
@@ -159,8 +174,13 @@ export function createProjectStore(dbPath: string): ProjectStore {
       )
     }
 
-    db.run('DROP TABLE projects')
-    db.run('ALTER TABLE projects_new RENAME TO projects')
+      db.run('DROP TABLE projects')
+      db.run('ALTER TABLE projects_new RENAME TO projects')
+      console.log('Migration completed successfully')
+    } catch (err) {
+      console.error('Migration failed:', err)
+      throw err
+    }
   }
 
   function rowToProject(row: Record<string, unknown>): ProjectIndex {
