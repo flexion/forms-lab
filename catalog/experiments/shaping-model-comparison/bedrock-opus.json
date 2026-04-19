@@ -1,0 +1,114 @@
+{
+  "kind": "shaping-commands",
+  "implementation": "bedrock-opus",
+  "specVersion": "2026-04-19",
+  "status": "current",
+  "timestamp": "2026-04-19T15:37:22.121Z",
+  "model": "Claude Opus 4.6",
+  "summary": {
+    "kindRecall": 0.7333333333333334,
+    "kindPrecision": 0.8333333333333334,
+    "argumentAccuracy": 0.6666666666666666
+  },
+  "cases": [
+    {
+      "fixture": "swap-pages",
+      "metrics": {
+        "kindRecall": 1,
+        "kindPrecision": 1,
+        "argumentAccuracy": 1
+      },
+      "details": {
+        "matchedKinds": [
+          "swapPages"
+        ],
+        "missingKinds": [],
+        "extraKinds": []
+      }
+    },
+    {
+      "fixture": "merge-employment",
+      "metrics": {
+        "kindRecall": 1,
+        "kindPrecision": 0.5,
+        "argumentAccuracy": 1
+      },
+      "details": {
+        "matchedKinds": [
+          "mergePages"
+        ],
+        "missingKinds": [],
+        "extraKinds": [
+          "renamePage"
+        ]
+      }
+    },
+    {
+      "fixture": "optional-middle-name",
+      "metrics": {
+        "kindRecall": 1,
+        "kindPrecision": 1,
+        "argumentAccuracy": 1
+      },
+      "details": {
+        "matchedKinds": [
+          "setRequired"
+        ],
+        "missingKinds": [],
+        "extraKinds": []
+      }
+    },
+    {
+      "fixture": "move-military",
+      "metrics": {
+        "kindRecall": 0,
+        "kindPrecision": 1,
+        "argumentAccuracy": 0
+      },
+      "details": {
+        "matchedKinds": [],
+        "missingKinds": [
+          "moveGroup"
+        ],
+        "extraKinds": []
+      }
+    },
+    {
+      "fixture": "rename-personal-info",
+      "metrics": {
+        "kindRecall": 1,
+        "kindPrecision": 0.5,
+        "argumentAccuracy": 1
+      },
+      "details": {
+        "matchedKinds": [
+          "renamePage"
+        ],
+        "missingKinds": [],
+        "extraKinds": [
+          "renameGroup"
+        ]
+      }
+    },
+    {
+      "fixture": "suggest-delivery-modes",
+      "metrics": {
+        "kindRecall": 0.4,
+        "kindPrecision": 1,
+        "argumentAccuracy": 0
+      },
+      "details": {
+        "matchedKinds": [
+          "setDeliveryMode",
+          "setDeliveryMode"
+        ],
+        "missingKinds": [
+          "setDeliveryMode",
+          "setDeliveryMode",
+          "setDeliveryMode"
+        ],
+        "extraKinds": []
+      }
+    }
+  ]
+}
