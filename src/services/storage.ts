@@ -86,25 +86,54 @@ export function createProjectStore(dbPath: string): ProjectStore {
     )
   `)
 
-  // Migration: add slug column if it doesn't exist (for databases created before slug was added)
-  const hasSlug = db
-    .query("SELECT COUNT(*) as count FROM pragma_table_info('projects') WHERE name='slug'")
-    .get() as { count: number }
-  if (hasSlug.count === 0) {
-    db.run('ALTER TABLE projects ADD COLUMN slug TEXT')
-    // Backfill slug from name for existing rows
-    const projects = db.query('SELECT id, name FROM projects').all() as Array<{
-      id: string
+  // Migration: ensure all columns exist (for databases created with old schemas)
+  const columns = (
+    db.query("SELECT name FROM pragma_table_info('projects')").all() as Array<{
       name: string
     }>
-    for (const project of projects) {
-      const slug = project.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
-      db.run('UPDATE projects SET slug = ? WHERE id = ?', [slug, project.id])
+  ).map((row) => row.name)
+
+  const requiredColumns = [
+    'id',
+    'slug',
+    'name',
+    'forked_from',
+    'status',
+    'error',
+    'created_by',
+    'created_at',
+    'updated_at',
+  ]
+  const missingColumns = requiredColumns.filter((col) => !columns.includes(col))
+
+  if (missingColumns.length > 0) {
+    // Add missing columns one by one
+    for (const col of missingColumns) {
+      if (col === 'slug') {
+        db.run('ALTER TABLE projects ADD COLUMN slug TEXT')
+      } else if (col === 'forked_from') {
+        db.run('ALTER TABLE projects ADD COLUMN forked_from TEXT')
+      } else if (col === 'error') {
+        db.run('ALTER TABLE projects ADD COLUMN error TEXT')
+      }
     }
-    // Now make it NOT NULL and UNIQUE
+
+    // Backfill slug from name for existing rows if slug was missing
+    if (missingColumns.includes('slug')) {
+      const projects = db.query('SELECT id, name FROM projects').all() as Array<{
+        id: string
+        name: string
+      }>
+      for (const project of projects) {
+        const slug = project.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '')
+        db.run('UPDATE projects SET slug = ? WHERE id = ?', [slug, project.id])
+      }
+    }
+
+    // Recreate table with proper constraints
     db.run(`
       CREATE TABLE projects_new (
         id TEXT PRIMARY KEY,
