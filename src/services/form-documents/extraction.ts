@@ -16,10 +16,10 @@ export interface PdfExtractor {
 
 const DEFAULT_MODEL = 'us.anthropic.claude-sonnet-4-20250514-v1:0'
 
-function cacheKey(pdf: Buffer, model: string): string {
+function cacheKey(pdf: Buffer, discriminator: string): string {
   const hasher = new Bun.CryptoHasher('sha256')
   hasher.update(pdf)
-  hasher.update(model)
+  hasher.update(discriminator)
   return hasher.digest('hex')
 }
 
@@ -27,6 +27,7 @@ export function createCachedPdfExtractor(
   inner: PdfExtractor,
   cacheStore: CacheStore,
   cacheModel?: string,
+  variantId?: string,
 ): PdfExtractor {
   return {
     async extract(
@@ -34,7 +35,8 @@ export function createCachedPdfExtractor(
       options?: ExtractionOptions,
     ): Promise<ExtractionResult> {
       const model = options?.model ?? cacheModel ?? DEFAULT_MODEL
-      const key = cacheKey(pdf, model)
+      const discriminator = variantId ? `${model}:${variantId}` : model
+      const key = cacheKey(pdf, discriminator)
 
       const cached = cacheStore.get(key)
       if (cached) {
