@@ -47,10 +47,9 @@ const hljsStyles = `
 designSystem.get('/', (c) => {
   const sidebarData = getDesignSystemSidebar('/catalog/design-system')
   const sidebar = <CatalogSidebar sections={sidebarData} />
-  const kindFilter = c.req.query('kind') as
-    | 'uswds-derived'
-    | 'custom'
-    | undefined
+  const rawKind = c.req.query('kind')
+  const kindFilter: 'uswds-derived' | 'custom' | undefined =
+    rawKind === 'uswds-derived' || rawKind === 'custom' ? rawKind : undefined
   const grouped = getComponentsByCategory()
   const filtered: typeof grouped =
     kindFilter === 'uswds-derived' || kindFilter === 'custom'
@@ -144,27 +143,31 @@ designSystem.get('/', (c) => {
           </div>
         </section>
 
-        <div class="l-cluster" style="--cluster-space: var(--flex-space-sm);">
+        <nav
+          aria-label="Filter components by kind"
+          class="l-cluster"
+          style="--cluster-space: var(--flex-space-sm);"
+        >
           <span class="catalog-group-label">Filter:</span>
           <a
             href={resolveUrl('/catalog/design-system')}
-            data-active={!kindFilter}
+            aria-current={!kindFilter ? 'page' : undefined}
           >
             All
           </a>
           <a
             href={resolveUrl('/catalog/design-system?kind=uswds-derived')}
-            data-active={kindFilter === 'uswds-derived'}
+            aria-current={kindFilter === 'uswds-derived' ? 'page' : undefined}
           >
             USWDS-derived
           </a>
           <a
             href={resolveUrl('/catalog/design-system?kind=custom')}
-            data-active={kindFilter === 'custom'}
+            aria-current={kindFilter === 'custom' ? 'page' : undefined}
           >
             Custom
           </a>
-        </div>
+        </nav>
 
         {Object.entries(filtered).map(([category, components]) => (
           <section>
@@ -181,13 +184,8 @@ designSystem.get('/', (c) => {
                   <StatusBadge
                     status={comp.category === 'action' ? 'stable' : 'working'}
                   />
-                  <span
-                    class="badge"
-                    data-state={
-                      comp.kind === 'uswds-derived' ? 'closed' : 'open'
-                    }
-                  >
-                    {comp.kind === 'uswds-derived' ? 'USWDS' : 'Custom'}
+                  <span class="badge" data-kind={comp.kind}>
+                    {comp.kind === 'uswds-derived' ? 'USWDS-derived' : 'Custom'}
                   </span>
                 </ContentCard>
               ))}
@@ -1264,10 +1262,7 @@ designSystem.get('/:slug', async (c) => {
         <span class="badge" data-variant="milestone">
           {meta.category}
         </span>
-        <span
-          class="badge"
-          data-state={meta.kind === 'uswds-derived' ? 'closed' : 'open'}
-        >
+        <span class="badge" data-kind={meta.kind}>
           {meta.kind === 'uswds-derived' ? 'USWDS-derived' : 'Custom'}
         </span>
         {meta.interactive && (
