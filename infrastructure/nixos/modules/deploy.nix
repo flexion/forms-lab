@@ -53,6 +53,42 @@ let
 
     echo "Deploying $BRANCH at $SHA..."
 
+    # --- Lockfile + stale-build recovery -----------------------------------
+    # If the previous deploy process crashed (OOM, kernel panic, host reboot
+    # mid-build) the worktree can be left with:
+    #   - a lingering .deploy-in-progress lockfile
+    #   - a partially-built dist/ directory
+    # On the *next* push we treat a lockfile older than 10 minutes as proof
+    # that the previous run is gone, and we wipe dist/ so the build starts
+    # clean. A fresh lockfile (< 10 minutes) means another deploy is actually
+    # running and we bail to avoid two processes stomping on each other.
+    LOCKFILE="$BRANCH_DIR/.deploy-in-progress"
+    STALE_AGE_SECONDS=600  # 10 minutes
+    if [ -d "$BRANCH_DIR" ] && [ -f "$LOCKFILE" ]; then
+      LOCK_MTIME=$(${pkgs.coreutils}/bin/stat -c %Y "$LOCKFILE" 2>/dev/null || echo 0)
+      NOW=$(${pkgs.coreutils}/bin/date +%s)
+      AGE=$((NOW - LOCK_MTIME))
+      if [ "$AGE" -gt "$STALE_AGE_SECONDS" ]; then
+        echo "Found stale lockfile (age $${AGE}s > $${STALE_AGE_SECONDS}s) — cleaning up partial build"
+        ${pkgs.coreutils}/bin/rm -f "$LOCKFILE"
+        ${pkgs.coreutils}/bin/rm -rf "$BRANCH_DIR/dist"
+      else
+        echo "ERROR: Fresh lockfile at $LOCKFILE (age $${AGE}s) — another deploy is in progress"
+        exit 1
+      fi
+    fi
+    # Make sure the lockfile is removed on any exit — normal, failure, signal.
+    # Trap is installed AFTER the stale-check above so we don't accidentally
+    # blow away a fresh lockfile belonging to a concurrent deploy that
+    # already exited with code 1 before its own trap fired.
+    cleanup_lockfile() {
+      if [ -n "''${LOCKFILE:-}" ] && [ -f "$LOCKFILE" ]; then
+        ${pkgs.coreutils}/bin/rm -f "$LOCKFILE"
+      fi
+    }
+    trap cleanup_lockfile EXIT
+    # -----------------------------------------------------------------------
+
     # Initialize bare repo if needed
     if [ ! -d "$REPO_DIR" ]; then
       ${pkgs.git}/bin/git clone --bare https://github.com/flexion/forms-lab.git "$REPO_DIR"
@@ -80,8 +116,15 @@ let
 
     cd "$BRANCH_DIR"
 
+    # Create the lockfile now that the worktree exists. Re-touch on each
+    # long-running step so the mtime reflects the currently-active phase,
+    # and the 10-minute stale threshold is measured from the last real
+    # progress rather than from deploy start.
+    ${pkgs.coreutils}/bin/touch "$LOCKFILE"
+
     # Install and build
     ${pkgs.bun}/bin/bun install
+    ${pkgs.coreutils}/bin/touch "$LOCKFILE"
 
     # Bootstrap guard: verify deploy.json entrypoints exist before building
     if [ -f "$BRANCH_DIR/deploy.json" ]; then
@@ -110,6 +153,7 @@ let
     fi
 
     ${pkgs.bun}/bin/bun run build
+    ${pkgs.coreutils}/bin/touch "$LOCKFILE"
 
     # Assign port — read from ports.json or assign next available
     if [ ! -f "$PORT_FILE" ]; then
