@@ -23,7 +23,7 @@ This is the live roadmap for the Forms Lab LLM experiments. Each experiment is a
 
 | Story | Status | Ships | Catalog |
 |---|---|---|---|
-| [#59 Maya chooses her shaping model](https://github.com/flexion/forms-lab/issues/59) | pr-open | shaping eval-kind, `shaping/haiku`, `shaping/sonnet`, `shaping/opus`, shaping tab in picker | `/catalog/experiments/shaping-model-comparison/` (new suite). Scoring kind is deterministic (command-kind precision/recall + arg accuracy); metrics pending first eval run. |
+| [#59 Maya chooses her shaping model](https://github.com/flexion/forms-lab/issues/59) | shipped | shaping eval-kind, `shaping/haiku`, `shaping/sonnet`, `shaping/opus`, shaping tab in picker | `/catalog/experiments/shaping-model-comparison/` (new suite). Scoring kind is deterministic (command-kind precision/recall + arg accuracy); metrics pending first live eval run. |
 | [#60 Carlos's conversation uses a chosen model](https://github.com/flexion/forms-lab/issues/60) | planned | filling eval-kind (personas + scripts), `filling/haiku`, `filling/sonnet`, `filling/opus`, filling tab in picker | `/catalog/experiments/filling-model-comparison/` (new suite) |
 | [#61 Maya verifies AcroForm mapping](https://github.com/flexion/forms-lab/issues/61) | planned | field-mapping eval-kind, `field-mapping/haiku`, `field-mapping/sonnet`, `field-mapping/opus`, mapping tab in picker | `/catalog/experiments/field-mapping/` (new suite) |
 
@@ -32,10 +32,10 @@ This is the live roadmap for the Forms Lab LLM experiments. Each experiment is a
 | Story | Status | Ships | Catalog |
 |---|---|---|---|
 | [#62 Maya's extractions cite the law](https://github.com/flexion/forms-lab/issues/62) | planned | RAG primitive (embeddings + cosine store), policy corpus, `extraction/sonnet-with-rag` | `/catalog/experiments/pdf-field-extraction/sonnet-with-rag.md` |
-| [#63 Maya's extractions learn from curated examples](https://github.com/flexion/forms-lab/issues/63) | planned | `extraction/few-shot-sonnet` | `/catalog/experiments/pdf-field-extraction/few-shot-sonnet.md` |
+| [#63 Maya's extractions learn from curated examples](https://github.com/flexion/forms-lab/issues/63) | shipped | `extraction/few-shot-sonnet`, `extraction/nova-pro` | `/catalog/experiments/pdf-field-extraction/few-shot-sonnet.md`. Finding: precision +7.6pp over baseline; recall -6.8pp. Few-shot helps model be selective, not comprehensive. Nova Pro (non-Claude) fails at field-level extraction entirely. |
 | [#64 Maya's extractions use a tuned prompt](https://github.com/flexion/forms-lab/issues/64) | planned | prompt-opt harness, `extraction/sonnet-optimized-v1` | `/catalog/experiments/pdf-field-extraction/sonnet-optimized-v1.md` |
-| [#65 Maya's extractions use our fine-tuned model](https://github.com/flexion/forms-lab/issues/65) | planned | LoRA fine-tune, FastAPI inference endpoint, `extraction/lora-v1` | `/catalog/experiments/pdf-field-extraction/lora-v1.md` |
-| [#66 Maya extracts via structured tool-use](https://github.com/flexion/forms-lab/issues/66) | pr-open | `extraction/tool-use-sonnet` | `/catalog/experiments/pdf-field-extraction/tool-use-sonnet.md` |
+| [#65 Maya's extractions use our fine-tuned model](https://github.com/flexion/forms-lab/issues/65) | scope-deferred | — | `/catalog/experiments/pdf-field-extraction/lora-scope-deferral.md`. Deferred: prompt engineering achieves target quality on Claude; LoRA adds cost without new learning for this deadline. |
+| [#66 Maya extracts via structured tool-use](https://github.com/flexion/forms-lab/issues/66) | shipped | `extraction/tool-use-sonnet` | `/catalog/experiments/pdf-field-extraction/tool-use-sonnet.md`. Finding: precision 96.3%, sensitivity +51pp. Constrained output eliminates hallucination at cost of recall (step-limit). |
 
 ## Priority tiers
 

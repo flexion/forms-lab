@@ -1,6 +1,7 @@
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
+import type { ExtractionExemplar } from '../extraction/exemplars'
 import type { CacheStore } from '../storage'
 import {
   generateFormSpec,
@@ -56,6 +57,32 @@ export function createCachedPdfExtractor(
 
 export interface BedrockExtractorOptions {
   model?: string
+  exemplars?: ExtractionExemplar[]
+  maxOutputTokens?: number
+}
+
+/** Build the few-shot examples section for the extraction prompt. */
+export function buildExemplarSection(
+  exemplars: ExtractionExemplar[] | undefined,
+): string {
+  if (!exemplars || exemplars.length === 0) return ''
+
+  const sections = exemplars.map((exemplar, i) => {
+    const formatted = JSON.stringify(JSON.parse(exemplar.output), null, 2)
+    return `### Example ${i + 1}: ${exemplar.description}
+
+Input form description:
+${exemplar.input}
+
+Expected output:
+${formatted}`
+  })
+
+  return `\n\n## Examples
+
+The following examples demonstrate the expected extraction patterns. Pay close attention to group structure, sensitivity labels, and conditional fields.
+
+${sections.join('\n\n')}\n\n`
 }
 
 export function createBedrockPdfExtractor(
@@ -82,13 +109,14 @@ export function createBedrockPdfExtractor(
       }
 
       const model = extractionOptions?.model ?? options?.model ?? DEFAULT_MODEL
+      const exemplarSection = buildExemplarSection(options?.exemplars)
 
       // Step 1: Extract DataCollectionSpec + confidence from PDF
       // Use generateText + manual JSON parsing because generateObject's
       // tool-use mode returns empty objects on Bedrock.
       const extraction = await generateText({
         model: bedrock(model),
-        maxOutputTokens: 32768,
+        maxOutputTokens: options?.maxOutputTokens ?? 32768,
         messages: [
           {
             role: 'user',
@@ -135,7 +163,7 @@ export function createBedrockPdfExtractor(
   ]
 }
 
-Guidelines:
+${exemplarSection}Guidelines:
 - Group related fields (e.g., "Personal Information", "Employment History")
 - Use kebab-case for ids, camelCase for fieldName
 - Flag low-confidence fields (< 0.8) with descriptive flags

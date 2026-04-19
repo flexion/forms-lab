@@ -58,7 +58,7 @@ export const dataCollectionSpecSchema = z.object({
 
 export const extractionResponseSchema = z.object({
   spec: dataCollectionSpecSchema,
-  confidence: z.array(fieldConfidenceSchema),
+  confidence: z.array(fieldConfidenceSchema).default([]),
 })
 
 export const formPageSchema = z.object({

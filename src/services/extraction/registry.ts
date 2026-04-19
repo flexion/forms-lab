@@ -2,7 +2,13 @@ import type { PdfExtractor } from '../form-documents/extraction'
 import { createBedrockPdfExtractor } from '../form-documents/extraction'
 import { createToolUsePdfExtractor } from '../form-documents/tool-use-extraction'
 import { StrategyRegistry } from '../strategy-registry'
-import { HAIKU_MODEL_ID, OPUS_MODEL_ID, SONNET_MODEL_ID } from './models'
+import { exemplars } from './exemplars'
+import {
+  HAIKU_MODEL_ID,
+  NOVA_PRO_MODEL_ID,
+  OPUS_MODEL_ID,
+  SONNET_MODEL_ID,
+} from './models'
 
 export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
   const registry = new StrategyRegistry<PdfExtractor>()
@@ -17,6 +23,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       courseTopics: ['evaluation'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/opus-baseline',
       modelId: OPUS_MODEL_ID,
+      pricing: { inputPer1k: 0.015, outputPer1k: 0.075 },
     },
     create: () => createBedrockPdfExtractor({ model: OPUS_MODEL_ID }),
   })
@@ -31,6 +38,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       courseTopics: ['evaluation', 'model-selection'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/sonnet',
       modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
     },
     create: () => createBedrockPdfExtractor({ model: SONNET_MODEL_ID }),
   })
@@ -45,8 +53,25 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       courseTopics: ['evaluation', 'model-selection'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/haiku',
       modelId: HAIKU_MODEL_ID,
+      pricing: { inputPer1k: 0.0008, outputPer1k: 0.004 },
     },
     create: () => createBedrockPdfExtractor({ model: HAIKU_MODEL_ID }),
+  })
+
+  registry.register({
+    id: 'few-shot-sonnet',
+    metadata: {
+      name: 'Claude Sonnet 4 (few-shot)',
+      description:
+        'Sonnet with curated examples that teach edge cases (nested groups, PII sensitivity, conditional fields). Higher precision (87%) than baseline Sonnet with improved sensitivity classification. Best when extraction accuracy on complex sections matters more than total field count.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'few-shot', 'prompt-conditioning'],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/few-shot-sonnet',
+      modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
+    },
+    create: () =>
+      createBedrockPdfExtractor({ model: SONNET_MODEL_ID, exemplars }),
   })
 
   registry.register({
@@ -59,8 +84,28 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       courseTopics: ['evaluation', 'constrained-generation', 'tool-use'],
       catalogPath: '/catalog/experiments/pdf-field-extraction/tool-use-sonnet',
       modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
     },
     create: () => createToolUsePdfExtractor({ model: SONNET_MODEL_ID }),
+  })
+
+  registry.register({
+    id: 'nova-pro',
+    metadata: {
+      name: 'Amazon Nova Pro',
+      description:
+        'Amazon multimodal model at 1/4 the cost of Sonnet. Supports PDF input natively. Coursework showed 97-100% on simple tool-calling tasks. Tests whether a non-Claude model can handle government form extraction.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'model-selection', 'cost-optimization'],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/nova-pro',
+      modelId: NOVA_PRO_MODEL_ID,
+      pricing: { inputPer1k: 0.0008, outputPer1k: 0.0032 },
+    },
+    create: () =>
+      createBedrockPdfExtractor({
+        model: NOVA_PRO_MODEL_ID,
+        maxOutputTokens: 10000,
+      }),
   })
 
   registry.setDefault('sonnet')
