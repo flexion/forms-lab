@@ -242,10 +242,16 @@ export function createProjectService(
     try {
       const fs = require('fs')
       fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} ${logMsg}\n`)
+      fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] About to call extractor.extract()\n`)
     } catch {}
     extractor
       .extract(pdf)
       .then(async (result) => {
+        const fs = require('fs')
+        try {
+          fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] Extract succeeded for ${slug}\n`)
+        } catch {}
+
         // Initial extraction lands on an "import" branch so the owner can
         // iterate before publishing to main via the review workflow.
         const branches = await repo.listBranches(slug)
@@ -285,6 +291,13 @@ export function createProjectService(
         if (err instanceof Error && err.stack) {
           console.error('Stack trace:', err.stack)
         }
+        const fs = require('fs')
+        try {
+          fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] Extract FAILED for ${slug}: ${err instanceof Error ? err.message : String(err)}\n`)
+          if (err instanceof Error && err.stack) {
+            fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [STACK] ${err.stack}\n`)
+          }
+        } catch {}
         store.update(projectId, {
           status: 'error',
           error: err instanceof Error ? err.message : String(err),

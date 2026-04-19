@@ -29,7 +29,13 @@ export function createCachedPdfExtractor(
       pdf: Buffer,
       options?: ExtractionOptions,
     ): Promise<ExtractionResult> {
-      console.log('[EXTRACTION] Starting extraction, PDF type:', typeof pdf, 'isBuffer:', Buffer.isBuffer(pdf))
+      const logMsg = `[EXTRACTION_CACHE] pdf_type=${typeof pdf} isBuffer=${Buffer.isBuffer(pdf)} length=${pdf?.length}`
+      console.log(logMsg)
+      try {
+        const fs = require('fs')
+        fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} ${logMsg}\n`)
+      } catch {}
+
       // Validate PDF buffer before caching
       if (!pdf || !Buffer.isBuffer(pdf)) {
         const error = `Invalid PDF buffer: expected Buffer, received ${typeof pdf}`
