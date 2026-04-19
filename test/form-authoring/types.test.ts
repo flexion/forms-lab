@@ -1,5 +1,8 @@
 import { describe, expect, test } from 'bun:test'
-import { criterionSchema, criteriaSetSchema } from '../../src/services/form-authoring/types'
+import {
+  criteriaSetSchema,
+  criterionSchema,
+} from '../../src/services/form-authoring/types'
 
 describe('Criterion schema', () => {
   test('accepts a valid criterion', () => {
