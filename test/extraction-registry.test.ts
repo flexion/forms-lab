@@ -5,7 +5,7 @@ describe('createExtractorRegistry', () => {
   it('returns a registry with strategies registered', () => {
     const registry = createExtractorRegistry()
     const strategies = registry.list()
-    expect(strategies.length).toBeGreaterThanOrEqual(5)
+    expect(strategies.length).toBeGreaterThanOrEqual(6)
   })
 
   it('registers opus as baseline', () => {
@@ -19,6 +19,19 @@ describe('createExtractorRegistry', () => {
   it('registers sonnet as production default', () => {
     const registry = createExtractorRegistry()
     expect(registry.getDefaultId()).toBe('sonnet')
+  })
+
+  it('registers tool-use-sonnet as experimental', () => {
+    const registry = createExtractorRegistry()
+    const strategies = registry.list()
+    const toolUse = strategies.find((s) => s.id === 'tool-use-sonnet')
+    expect(toolUse).toBeDefined()
+    expect(toolUse!.metadata.status).toBe('experimental')
+    expect(toolUse!.metadata.courseTopics).toContain('tool-use')
+    expect(toolUse!.metadata.courseTopics).toContain('constrained-generation')
+    expect(toolUse!.metadata.catalogPath).toBe(
+      '/catalog/experiments/pdf-field-extraction/tool-use-sonnet',
+    )
   })
 
   it('each strategy has courseTopics and catalogPath', () => {

@@ -1,5 +1,6 @@
 import type { PdfExtractor } from '../form-documents/extraction'
 import { createBedrockPdfExtractor } from '../form-documents/extraction'
+import { createToolUsePdfExtractor } from '../form-documents/tool-use-extraction'
 import { StrategyRegistry } from '../strategy-registry'
 import { exemplars } from './exemplars'
 import {
@@ -71,6 +72,21 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
     },
     create: () =>
       createBedrockPdfExtractor({ model: SONNET_MODEL_ID, exemplars }),
+  })
+
+  registry.register({
+    id: 'tool-use-sonnet',
+    metadata: {
+      name: 'Claude Sonnet 4 (tool-use)',
+      description:
+        'Uses structured tool calls instead of free-form JSON, eliminating malformed output. Very high precision (96%) and sensitivity accuracy (79%), but lower recall (35%) on large forms due to step limits. Best when output correctness matters more than completeness.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'constrained-generation', 'tool-use'],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/tool-use-sonnet',
+      modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
+    },
+    create: () => createToolUsePdfExtractor({ model: SONNET_MODEL_ID }),
   })
 
   registry.register({

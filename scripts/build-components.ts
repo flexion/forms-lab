@@ -1,3 +1,4 @@
+import { copyFileSync } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
@@ -21,5 +22,14 @@ if (!result.success) {
   }
   process.exit(1)
 }
+
+// Copy standalone client scripts
+copyFileSync(
+  resolve(
+    import.meta.dir,
+    '../src/entrypoints/app/public/conversational-form.js',
+  ),
+  resolve(outdir, 'conversational-form.js'),
+)
 
 console.log('Components built to dist/components.js')

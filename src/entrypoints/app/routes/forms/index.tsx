@@ -1,6 +1,7 @@
 import { type Context, Hono } from 'hono'
 import { FormConfirmation } from '../../../../design-system/components/flex-form-confirmation'
 import type { FormError } from '../../../../design-system/components/flex-form-error-summary'
+import { FormField } from '../../../../design-system/components/flex-form-field'
 import { FormLanding } from '../../../../design-system/components/flex-form-landing'
 import { FormPageView } from '../../../../design-system/components/flex-form-page'
 import { FormReview } from '../../../../design-system/components/flex-form-review'
@@ -12,6 +13,10 @@ import type {
 } from '../../../../services/data-collection/types'
 import { fillPdf } from '../../../../services/form-documents/filling'
 import type { FieldMapping } from '../../../../services/form-documents/types'
+import type {
+  ConversationGateway,
+  FillingAgent,
+} from '../../../../services/forms/filling-agent/types'
 import {
   countVisiblePages,
   findNextPage,
@@ -50,6 +55,8 @@ interface ResolvedSpecs {
 interface FormRouterDeps {
   sessionGateway: FormSessionGateway
   submissionGateway: SubmissionGateway
+  conversationGateway?: ConversationGateway
+  fillingAgent?: FillingAgent
   specSnapshotStore?: {
     get(specVersion: string): {
       specVersion: string
@@ -154,6 +161,8 @@ export function createFormRouter(deps: FormRouterDeps) {
   const {
     sessionGateway,
     submissionGateway,
+    conversationGateway,
+    fillingAgent,
     specSnapshotStore,
     getSpecs,
     listSpecs,
@@ -365,21 +374,34 @@ export function createFormRouter(deps: FormRouterDeps) {
       prev !== null
         ? resolveUrl(`${prefix}/sessions/${session.id}/pages/${prev}`)
         : null
+    const page = resolved.pages[pageIndex]
+    const deliveryMode = page.page.deliveryMode ?? 'static'
+    const showChatToggle =
+      (deliveryMode === 'conversational' || deliveryMode === 'hybrid') &&
+      conversationGateway &&
+      fillingAgent
     return c.html(
-      <Layout
-        user={user}
-        title={resolved.pages[pageIndex].page.title}
-        currentPath="/forms"
-      >
+      <Layout user={user} title={page.page.title} currentPath="/forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
+        {showChatToggle && (
+          <div class="flex-form" data-size="large">
+            <p>
+              <a
+                href={resolveUrl(
+                  `${prefix}/sessions/${session.id}/pages/${pageIndex}/chat`,
+                )}
+                class="flex-button flex-button--outline"
+              >
+                Switch to Chat View
+              </a>
+            </p>
+          </div>
+        )}
         <FormPageView
           page={{
-            title: resolved.pages[pageIndex].page.title,
-            description: resolved.pages[pageIndex].page.description,
-            groups: filterVisibleGroups(
-              resolved.pages[pageIndex].groups,
-              session.fields,
-            ),
+            title: page.page.title,
+            description: page.page.description,
+            groups: filterVisibleGroups(page.groups, session.fields),
           }}
           actionUrl={resolveUrl(
             `${prefix}/sessions/${session.id}/pages/${pageIndex}`,
@@ -650,6 +672,264 @@ export function createFormRouter(deps: FormRouterDeps) {
     }
   }
 
+  async function handleChatView(c: Context) {
+    const branch = readBranch(c)
+    const specId = c.req.param('specId')
+    const sessionId = c.req.param('sessionId')
+    const pageIndex = Number(c.req.param('pageIndex'))
+    if (!specId || !sessionId || Number.isNaN(pageIndex)) return c.notFound()
+
+    // Check if conversational mode is enabled
+    if (!conversationGateway || !fillingAgent) {
+      return c.text('Conversational mode not available', 503)
+    }
+
+    const specs = await getSpecs(specId, branch)
+    if (!specs) return c.notFound()
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
+    const session = sessionGateway.getSession(sessionId)
+    if (!session) return c.notFound()
+    if (session.ownerId !== user.login) return c.notFound()
+
+    const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
+    if (pageIndex < 0 || pageIndex >= resolved.pages.length) return c.notFound()
+    const page = resolved.pages[pageIndex]
+
+    // Check if this page has conversational delivery mode
+    const deliveryMode = page.page.deliveryMode ?? 'static'
+    if (deliveryMode !== 'conversational' && deliveryMode !== 'hybrid') {
+      return c.text('This page does not support conversational mode', 400)
+    }
+
+    // Get conversation messages
+    let messages = conversationGateway.getMessages(sessionId)
+
+    // If no messages yet, call agent to generate initial greeting
+    if (messages.length === 0) {
+      const turn = await fillingAgent.advance(
+        {
+          groups: page.groups,
+          collectedFields: session.fields,
+          messages: [],
+        },
+        null,
+      )
+
+      // Append assistant's initial message
+      const assistantMessageId = crypto.randomUUID()
+      conversationGateway.appendMessage(sessionId, {
+        id: assistantMessageId,
+        sessionId,
+        role: 'assistant',
+        content: turn.message,
+        toolCalls: turn.toolCalls,
+        createdAt: new Date().toISOString(),
+      })
+
+      messages = conversationGateway.getMessages(sessionId)
+    }
+
+    // Check if conversation is finished by inspecting the last assistant message
+    // If the last message says the conversation is complete, we're done
+    const lastMessage = messages[messages.length - 1]
+    const finished =
+      lastMessage?.role === 'assistant' &&
+      (lastMessage.content.toLowerCase().includes('complete') ||
+        lastMessage.content.toLowerCase().includes('all set'))
+
+    const visibleGroups = filterVisibleGroups(page.groups, session.fields)
+
+    const prefix = formPathPrefix(specs.dataSpec.id, branch)
+
+    // Prepare initial messages for flex-assistant
+    const initialMessages = messages.map((m) => ({
+      role: m.role,
+      html: m.content,
+    }))
+
+    return c.html(
+      <Layout
+        user={user}
+        title={page.page.title}
+        currentPath="/forms"
+        contentWidth="full"
+      >
+        {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
+        <div class="conversational-form-layout">
+          <div class="conversational-form-layout__form">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-block-end: var(--flex-space-md);">
+              <h1 style="margin: 0;">{page.page.title}</h1>
+              <a
+                href={resolveUrl(
+                  `${prefix}/sessions/${session.id}/pages/${pageIndex}`,
+                )}
+                class="flex-button flex-button--outline flex-button--sm"
+              >
+                Back to Form View
+              </a>
+            </div>
+            {page.page.description && <p>{page.page.description}</p>}
+            {visibleGroups.map((group) => (
+              <fieldset key={group.id}>
+                <legend>{group.title}</legend>
+                {group.description && <p>{group.description}</p>}
+                {group.requirements.map((req) => (
+                  <FormField
+                    key={req.fieldName}
+                    requirement={req}
+                    entry={session.fields[req.fieldName]}
+                  />
+                ))}
+              </fieldset>
+            ))}
+            <div
+              class="flex-form-nav"
+              style="margin-block-start: var(--flex-space-lg);"
+            >
+              {finished ? (
+                <a
+                  href={resolveUrl(`${prefix}/sessions/${session.id}/review`)}
+                  class="flex-button"
+                >
+                  Continue to Review
+                </a>
+              ) : (
+                <p style="color: var(--flex-color-text-muted); font-size: var(--flex-text-sm);">
+                  Chat with the assistant to complete this section
+                </p>
+              )}
+            </div>
+          </div>
+          <aside class="conversational-form-layout__assistant">
+            <flex-assistant data-session-id={sessionId} />
+          </aside>
+        </div>
+        <script
+          type="application/json"
+          data-initial-messages
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(initialMessages).replace(/</g, '\\u003c'),
+          }}
+        />
+        <script
+          type="module"
+          src={resolveUrl('/static/conversational-form.js')}
+        />
+      </Layout>,
+    )
+  }
+
+  async function handleChatMessage(c: Context) {
+    const branch = readBranch(c)
+    const specId = c.req.param('specId')
+    const sessionId = c.req.param('sessionId')
+    const pageIndex = Number(c.req.param('pageIndex'))
+    if (!specId || !sessionId || Number.isNaN(pageIndex)) return c.notFound()
+
+    // Check if conversational mode is enabled
+    if (!conversationGateway || !fillingAgent) {
+      return c.text('Conversational mode not available', 503)
+    }
+
+    const specs = await getSpecs(specId, branch)
+    if (!specs) return c.notFound()
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
+    const session = sessionGateway.getSession(sessionId)
+    if (!session) return c.notFound()
+    if (session.ownerId !== user.login) return c.notFound()
+
+    const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
+    if (pageIndex < 0 || pageIndex >= resolved.pages.length) return c.notFound()
+    const page = resolved.pages[pageIndex]
+
+    // Check if this page has conversational delivery mode
+    const chatDeliveryMode = page.page.deliveryMode ?? 'static'
+    if (
+      chatDeliveryMode !== 'conversational' &&
+      chatDeliveryMode !== 'hybrid'
+    ) {
+      return c.text('This page does not support conversational mode', 400)
+    }
+
+    // Parse user message
+    const body = await c.req.parseBody()
+    const userMessage = body.message as string
+    if (!userMessage || typeof userMessage !== 'string') {
+      return c.text('Missing message', 400)
+    }
+
+    // Build context for filling agent BEFORE appending current message
+    // The agent expects userMessage to NOT be in the history yet
+    // Note: Pass ALL groups (not filtered) because the agent needs to evaluate
+    // conditions dynamically as it collects fields
+    const messages = conversationGateway.getMessages(sessionId)
+
+    // Call filling agent to advance conversation
+    let turn: Awaited<ReturnType<typeof fillingAgent.advance>>
+    try {
+      turn = await fillingAgent.advance(
+        {
+          groups: page.groups,
+          collectedFields: session.fields,
+          messages,
+        },
+        userMessage,
+      )
+    } catch (error) {
+      console.error('Filling agent error:', error)
+      const isLive = c.req.header('X-Live-Chat') === 'true'
+      const errMsg = error instanceof Error ? error.message : 'Unknown error'
+      if (isLive) {
+        return c.json({ response: `Error: ${errMsg}`, finished: false })
+      }
+      return c.text(`Error processing message: ${errMsg}`, 500)
+    }
+
+    // Append user and assistant messages to conversation
+    const userMessageId = crypto.randomUUID()
+    conversationGateway.appendMessage(sessionId, {
+      id: userMessageId,
+      sessionId,
+      role: 'user',
+      content: userMessage,
+      createdAt: new Date().toISOString(),
+    })
+
+    const assistantMessageId = crypto.randomUUID()
+    conversationGateway.appendMessage(sessionId, {
+      id: assistantMessageId,
+      sessionId,
+      role: 'assistant',
+      content: turn.message,
+      toolCalls: turn.toolCalls,
+      createdAt: new Date().toISOString(),
+    })
+
+    // Update session with collected fields
+    if (Object.keys(turn.fieldsCollected).length > 0) {
+      sessionGateway.writeFields(sessionId, turn.fieldsCollected)
+    }
+
+    // Check if X-Live-Chat header is present (client-side JS request)
+    const isLiveChat = c.req.header('X-Live-Chat') === 'true'
+
+    if (isLiveChat) {
+      // Return JSON response for live chat
+      return c.json({
+        response: turn.message,
+        finished: turn.finished,
+      })
+    }
+
+    // Otherwise redirect back to chat view (for non-JS fallback)
+    const prefix = formPathPrefix(specs.dataSpec.id, branch)
+    return c.redirect(
+      resolveUrl(`${prefix}/sessions/${sessionId}/pages/${pageIndex}/chat`),
+    )
+  }
+
   // Submission detail (read-only review of completed form)
   forms.get('/sessions/:sessionId/submission', handleSubmissionDetail)
 
@@ -697,6 +977,26 @@ export function createFormRouter(deps: FormRouterDeps) {
   forms.get(
     '/:specId/branches/:branch/sessions/:sessionId/confirmation',
     handleConfirmation,
+  )
+
+  // Chat view (conversational mode)
+  forms.get(
+    '/:specId/sessions/:sessionId/pages/:pageIndex/chat',
+    handleChatView,
+  )
+  forms.get(
+    '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
+    handleChatView,
+  )
+
+  // Chat message (conversational mode)
+  forms.post(
+    '/:specId/sessions/:sessionId/pages/:pageIndex/chat',
+    handleChatMessage,
+  )
+  forms.post(
+    '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
+    handleChatMessage,
   )
 
   return forms

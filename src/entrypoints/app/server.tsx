@@ -14,6 +14,11 @@ import { createCachedPdfExtractor } from '../../services/form-documents/extracti
 import { createMappingRegistry } from '../../services/form-documents/mapping-registry'
 import { createFormProjectRepo } from '../../services/form-project-repo'
 import { createFillingRegistry } from '../../services/forms/filling/registry'
+import {
+  BedrockFillingAgent,
+  ScriptedFillingAgent,
+  SqliteConversationGateway,
+} from '../../services/forms/filling-agent'
 import { createReviewService } from '../../services/forms/review'
 import { createShapingRegistry } from '../../services/forms/shaping/registry'
 import { createSpecSnapshotStore } from '../../services/forms/spec-snapshot-store'
@@ -103,6 +108,11 @@ mkdirSync(dirname(formsDbPath), { recursive: true })
 const sessionGateway = new SqliteFormSessionGateway(formsDbPath)
 const submissionGateway = new SqliteSubmissionGateway(formsDbPath)
 const specSnapshotStore = createSpecSnapshotStore(formsDbPath)
+const conversationGateway = new SqliteConversationGateway(formsDbPath)
+const fillingAgent =
+  process.env.USE_SCRIPTED_AGENT === 'true'
+    ? new ScriptedFillingAgent()
+    : new BedrockFillingAgent()
 
 /**
  * Adapter: resolve a DataCollectionSpec id to (owner, slug, spec, formSpec)
@@ -399,10 +409,16 @@ app.get('/', (c) => {
 })
 
 // Mount edit routes BEFORE owner routes (more specific patterns first)
-app.route('/', createEditRoutes(projectService, shapingRegistry))
+app.route(
+  '/',
+  createEditRoutes(projectService, shapingRegistry, variantPreferences),
+)
 
 // Mount compare routes BEFORE owner routes (more specific patterns first)
-app.route('/', createCompareRoutes(projectService, reviewService))
+app.route(
+  '/',
+  createCompareRoutes(projectService, reviewService, shapingRegistry.list()),
+)
 
 // Mount form delivery routes under /forms. Fills and submissions are
 // git-backed; preview banner links back to the editor on non-main
@@ -412,6 +428,8 @@ app.route(
   createFormRouter({
     sessionGateway,
     submissionGateway,
+    conversationGateway,
+    fillingAgent,
     specSnapshotStore,
     async getSpecs(specId, ref) {
       const project = await findProjectBySpecId(specId)
