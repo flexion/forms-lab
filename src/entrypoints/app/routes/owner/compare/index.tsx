@@ -9,6 +9,7 @@ import {
 import { compareSpecs } from '../../../../../services/forms/comparison'
 import type { ReviewService } from '../../../../../services/forms/review'
 import type { ProjectService } from '../../../../../services/project-service'
+import type { StrategyListItem } from '../../../../../services/strategy-registry'
 import { resolveUrl } from '../../../../../shared/base-path'
 import { ErrorPage } from '../components'
 import { ReviewPage } from './components'
@@ -28,8 +29,17 @@ function parseRange(range: string): { base: string; head: string } | null {
 export function createCompareRoutes(
   project: ProjectService,
   review: ReviewService,
+  shapingVariants?: StrategyListItem[],
 ): Hono {
   const app = new Hono()
+
+  function resolveShapingBadge(variantId: string): {
+    variantId: string
+    variantName: string
+  } {
+    const meta = shapingVariants?.find((v) => v.id === variantId)
+    return { variantId, variantName: meta?.metadata.name ?? variantId }
+  }
 
   app.get('/:owner/:slug/compare/:range', async (c) => {
     const { owner, slug, range } = c.req.param()
@@ -81,6 +91,14 @@ export function createCompareRoutes(
       parsed.head,
     )
 
+    // Derive the shaping badge from the most recent LLM entry with provenance.
+    const lastLlmEntry = [...log]
+      .reverse()
+      .find((e) => e.source === 'llm' && e.variantId)
+    const shapingBadge = lastLlmEntry?.variantId
+      ? resolveShapingBadge(lastLlmEntry.variantId)
+      : null
+
     return c.html(
       <Layout
         user={user}
@@ -97,6 +115,7 @@ export function createCompareRoutes(
           log={log}
           baseView={baseView}
           headView={headView}
+          shapingBadge={shapingBadge}
         />
       </Layout>,
     )

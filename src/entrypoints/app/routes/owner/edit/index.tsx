@@ -12,6 +12,7 @@ import { humanize } from '../../../../../services/forms/shaping/humanize'
 import type { FormShaper } from '../../../../../services/forms/shaping/types'
 import type { ProjectService } from '../../../../../services/project-service'
 import type { StrategyRegistry } from '../../../../../services/strategy-registry'
+import type { VariantPreferencesService } from '../../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../../shared/base-path'
 import { ErrorPage } from '../components'
 import { EditorPage, PreviewPage } from './components'
@@ -19,6 +20,7 @@ import { EditorPage, PreviewPage } from './components'
 export function createEditRoutes(
   service: ProjectService,
   shapingRegistry: StrategyRegistry<FormShaper>,
+  variantPreferences?: VariantPreferencesService,
 ): Hono {
   const app = new Hono()
 
@@ -82,6 +84,22 @@ export function createEditRoutes(
       const log = await service.getShapingLog(owner, slug, branch)
       const branches = await service.listBranches(slug)
       const changed = await service.getChangedResources(slug, branch)
+
+      // Derive shaping badge from the most recent LLM entry with provenance.
+      const lastLlmEntry = [...log]
+        .reverse()
+        .find((e) => e.source === 'llm' && e.variantId)
+      let shapingBadge: { variantId: string; variantName: string } | null = null
+      if (lastLlmEntry?.variantId) {
+        const meta = shapingRegistry
+          .list()
+          .find((v) => v.id === lastLlmEntry.variantId)
+        shapingBadge = {
+          variantId: lastLlmEntry.variantId,
+          variantName: meta?.metadata.name ?? lastLlmEntry.variantId,
+        }
+      }
+
       return c.html(
         <Layout
           user={user}
@@ -97,6 +115,7 @@ export function createEditRoutes(
             branch={branch}
             branches={branches}
             changed={changed}
+            shapingBadge={shapingBadge}
           />
         </Layout>,
       )
@@ -152,7 +171,12 @@ export function createEditRoutes(
         dataSpec: view.spec as unknown as ProjectState['dataSpec'],
       }
 
-      const shaper = shapingRegistry.getDefault()
+      // Resolve variant per-user preference, falling back to registry default
+      const variantId =
+        (user && variantPreferences?.get(user.login, 'shaping')) ??
+        shapingRegistry.getDefaultId()
+      const shaper = shapingRegistry.get(variantId)
+      const variantMeta = shapingRegistry.list().find((v) => v.id === variantId)
       const result = await shaper.shape({
         intent: body.intent,
         state,
@@ -162,6 +186,8 @@ export function createEditRoutes(
       return c.json({
         commands: result.commands,
         explanation: result.explanation,
+        variantId,
+        modelId: variantMeta?.metadata.modelId,
       })
     } catch (err) {
       console.error('[edit/intent]', err)
@@ -212,6 +238,8 @@ export function createEditRoutes(
         parentSha: string
         summary?: string
         source: 'manual' | 'llm'
+        variantId?: string
+        modelId?: string
       }
       const view = await service.getProject(owner, slug, user, branch)
       if (!view.isOwner || !view.formSpec || !view.spec) {
@@ -234,7 +262,7 @@ export function createEditRoutes(
         explanation,
         body.source,
         user,
-        { branch },
+        { branch, variantId: body.variantId, modelId: body.modelId },
       )
       if (!result.ok) {
         return c.json(

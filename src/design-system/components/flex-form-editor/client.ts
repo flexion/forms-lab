@@ -99,6 +99,8 @@ class FlexFormEditor extends HTMLElement {
   private lastBatchWasChat = false
   private lastBatchSize = 0
   private lastBatchSummary = ''
+  private lastBatchVariantId?: string
+  private lastBatchModelId?: string
   private proposal: ProposalState | null = null
   private selectedPageIndex = 0
   private selection: SelectionTarget | null = null
@@ -265,12 +267,16 @@ class FlexFormEditor extends HTMLElement {
       const body = (await response.json()) as {
         commands: Command[]
         explanation: string
+        variantId?: string
+        modelId?: string
       }
       this.proposal = {
         commands: body.commands,
         explanation: body.explanation,
         originalIntent: text,
       }
+      this.lastBatchVariantId = body.variantId
+      this.lastBatchModelId = body.modelId
 
       this.replaceLastSystemMessage(
         this.renderProposal(body.commands, body.explanation),
@@ -459,6 +465,12 @@ class FlexFormEditor extends HTMLElement {
           parentSha,
           summary,
           source,
+          ...(source === 'llm' && this.lastBatchVariantId
+            ? { variantId: this.lastBatchVariantId }
+            : {}),
+          ...(source === 'llm' && this.lastBatchModelId
+            ? { modelId: this.lastBatchModelId }
+            : {}),
         }),
       })
       if (!response.ok) {
@@ -485,6 +497,8 @@ class FlexFormEditor extends HTMLElement {
       this.lastBatchWasChat = false
       this.lastBatchSize = 0
       this.lastBatchSummary = ''
+      this.lastBatchVariantId = undefined
+      this.lastBatchModelId = undefined
       this.dataset.currentSha = body.sha
       this.dispatchProjected()
     } catch (err) {

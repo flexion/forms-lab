@@ -14,14 +14,17 @@ This document is the executable handoff for the eight follow-up experiment stori
 
 | Issue | Title | Status | Branch | Tier | Blockers |
 |-------|-------|--------|--------|------|----------|
-| #59 | Maya chooses her shaping model | planned | — | 1 | #58 merged |
+| #59 | Maya chooses her shaping model | **shipped** | merged (PR #69) | 1 | — |
 | #60 | Carlos's conversation uses a chosen model | planned | — | 3 | #58 + #9 |
-| #61 | Maya verifies AcroForm mapping | planned | — | 2 | #58 |
-| #62 | Maya's extractions cite the law (RAG) | planned | — | 2 | #58 |
-| #63 | Maya's extractions learn from curated examples (few-shot) | planned | — | 1 | #58 |
-| #64 | Maya's extractions use a tuned prompt (prompt-opt) | planned | — | 2 | #58 |
-| #65 | Maya's extractions use our fine-tuned model (LoRA) | planned | — | 3 | #58, aspirational, requires user approval before starting |
-| #66 | Maya extracts via structured tool-use | planned | — | 1 | #58 |
+| #61 | Maya verifies AcroForm mapping | planned | — | 2 | — |
+| #62 | Maya's extractions cite the law (RAG) | planned | — | 2 | — |
+| #63 | Maya's extractions learn from curated examples (few-shot) | **shipped** | merged (PR #67) | 1 | — |
+| #64 | Maya's extractions use a tuned prompt (prompt-opt) | planned | — | 2 | — |
+| #65 | Maya's extractions use our fine-tuned model (LoRA) | **scope-deferred** | — | 3 | See catalog/experiments/pdf-field-extraction/lora-scope-deferral.md |
+| #66 | Maya extracts via structured tool-use | **shipped** | merged (PR #68) | 1 | — |
+| #73 | Prompt optimization (hybrid/temperature) | planned | — | 2 | — |
+| #74 | RAG extraction variant | planned | — | 2 | — |
+| #75 | Live shaping model evaluation | planned | — | 2 | — |
 
 **How to update this table** — edit it in a commit alongside any status change. This file is the source of truth; the catalog roadmap (`catalog/experiments/_roadmap.md`) mirrors it. Statuses: `planned` → `in-progress` → `pr-open` → `shipped`, or `scope-deferred` if cut.
 
