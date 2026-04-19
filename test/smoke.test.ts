@@ -155,7 +155,7 @@ describe('Smoke tests', () => {
   describe('PDF extractor configuration', () => {
     it('BedrockPdfExtractor can be instantiated', async () => {
       const { createBedrockPdfExtractor } = await import(
-        '../src/services/ingestion/pdf-extractor'
+        '../src/services/form-documents/extraction'
       )
       // Should not throw -- construction is lazy, no AWS calls yet
       const extractor = createBedrockPdfExtractor()

@@ -209,6 +209,24 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 
 **Residual risk:** Prompt injection via form field labels is partially mitigated by output validation but cannot be fully prevented -- a carefully crafted label could influence the LLM to produce valid but unexpected suggestions. The risk is limited because the LLM cannot produce invalid FormSpec output (schema validation rejects it) and cannot directly modify the filesystem (mutations are applied by authenticated application code). FormSpec metadata sent to the LLM could reveal domain-specific information about government forms, acceptable per the LLM provider's data handling policies but a consideration for production deployments with sensitive form domains.
 
+### Hono application to PDF output (completed PDF download)
+
+**What crosses:** Submission data (user-provided form values) is read from SQLite, combined with a field mapping from the git repo, and written into the AcroForm fields of the source PDF. The filled PDF is streamed to the authenticated user's browser.
+
+**Threats:**
+- **Unauthorized submission access** -- a user downloads another user's completed submission as a PDF.
+- **Submission data in PDF metadata** -- pdf-lib may write metadata (author, producer) into the output PDF, leaking system internals.
+- **PDF injection via field values** -- submission data containing special characters could exploit PDF rendering bugs in viewers, though AcroForm text fields are text-only (no markup interpretation).
+- **Field mapping tampering** -- a compromised field-mapping.json could map sensitive fields to unexpected PDF locations or omit critical fields, producing a misleading output document.
+
+**Mitigations:**
+- The download route verifies `submission.ownerId === user.login` before producing the PDF. Returns 404 for non-owners (information-leakproof).
+- pdf-lib writes field values as plain text into existing AcroForm fields; no JavaScript, annotation, or action injection is possible via `setText()`.
+- Field mapping is stored in the git repo alongside the spec — versioned, auditable, and only writable by the project owner through authenticated extraction or the shaping workflow.
+- Source PDFs are read from the `main` branch; field mappings are read at the `specVersion` SHA the submission was created against, ensuring consistency.
+
+**Residual risk:** If a project owner edits the field mapping maliciously after submissions exist, old submissions downloaded with the new mapping could display data in wrong fields. Mitigated by pinning downloads to the `specVersion` SHA. The pdf-lib dependency is an additional supply-chain surface; it has no native bindings and runs in pure JavaScript, limiting blast radius.
+
 ## Non-data-flow threats
 
 ### Dependency supply chain
@@ -268,6 +286,8 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | Slug enumeration via directory listing | Browser-Git HTTP | Certain | Low | Intentional public browsing | Accepted |
 | Non-owner bypass of mutations | Hono-ProjectService | Low | High | Service-layer permission checks, 59 unit + integration tests | Mitigated |
 | Direct store access bypassing service | Hono-ProjectService | Low | High | Convention only — no architectural test | Partially mitigated |
+| Unauthorized submission PDF download | Hono-PDF output | Low | High | Ownership check (ownerId === user.login), 404 for non-owners | Mitigated |
+| Field mapping tampering | Hono-PDF output | Low | Medium | Git-versioned, pinned to specVersion SHA | Mitigated |
 
 ## Change log
 
@@ -280,6 +300,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | 2026-04-14 | Story 4 | Added LLM form shaping trust boundary; prompt injection, unauthorized mutation, and data leakage threats |
 | 2026-04-15 | Story 4 v2 | Replaced full-spec rewrite with command-based shaping. LLM uses AI SDK tool-use mode to emit validated domain commands. Each command is individually executable and auditable. Command schemas replace free-form JSON validation as the primary integrity boundary for LLM output. |
 | 2026-04-17 | Story 4 review + PR #54 | Updated shaping route references for unified `/edit/save` (single commit endpoint, `parentSha` optimistic-concurrency guard). Added refinement-loop abuse and refinement-feedback prompt-injection threats surfaced in story-4 code review. |
+| 2026-04-18 | Story 7 | Added PDF output trust boundary for completed PDF download. Threats: unauthorized access, field mapping tampering. Both mitigated. |
 
 ## Sources
 

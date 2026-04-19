@@ -50,6 +50,7 @@ const stubResult: ExtractionResult = {
     updatedAt: '2026-04-14',
   },
   confidence: [{ fieldId: 'f1', confidence: 0.95 }],
+  fieldMapping: {},
 }
 
 const danielUser: SessionUser = {

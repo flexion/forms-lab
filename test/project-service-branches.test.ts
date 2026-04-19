@@ -9,9 +9,9 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../src/services/errors'
+import type { PdfExtractor } from '../src/services/form-documents/extraction'
 import type { FormProjectRepo } from '../src/services/form-project-repo'
 import { createFormProjectRepo } from '../src/services/form-project-repo'
-import type { PdfExtractor } from '../src/services/pdf-extractor'
 import {
   createProjectService,
   type ProjectService,
@@ -59,6 +59,7 @@ const SAMPLE_RESULT: ExtractionResult = {
     updatedAt: '2026-01-01T00:00:00Z',
   },
   confidence: [{ fieldId: 'field-name', confidence: 0.95 }],
+  fieldMapping: {},
 }
 
 function stubExtractor(result: ExtractionResult = SAMPLE_RESULT): PdfExtractor {

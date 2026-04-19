@@ -18,7 +18,12 @@ const testUser: SessionUser = {
 
 const dummyExtractor = {
   async extract() {
-    return { spec: testDataSpec, formSpec: testFormSpec, confidence: [] }
+    return {
+      spec: testDataSpec,
+      formSpec: testFormSpec,
+      confidence: [],
+      fieldMapping: {},
+    }
   },
 }
 

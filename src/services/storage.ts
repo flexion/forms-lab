@@ -86,6 +86,37 @@ export function createProjectStore(dbPath: string): ProjectStore {
     )
   `)
 
+  // Migration: handle incompatible old schema
+  const columns = (
+    db.query("SELECT name FROM pragma_table_info('projects')").all() as Array<{
+      name: string
+    }>
+  ).map((row) => row.name)
+
+  const hasOldColumns =
+    columns.includes('description') || columns.includes('source_pdf')
+
+  if (hasOldColumns) {
+    // Old incompatible schema - drop and recreate
+    console.warn('Incompatible old schema detected - recreating projects table')
+    console.warn('Existing project data will be lost')
+    db.run('DROP TABLE projects')
+    db.run(`
+      CREATE TABLE projects (
+        id TEXT PRIMARY KEY,
+        slug TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
+        forked_from TEXT,
+        status TEXT NOT NULL DEFAULT 'extracting',
+        error TEXT,
+        created_by TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      )
+    `)
+    console.log('Projects table recreated with current schema')
+  }
+
   function rowToProject(row: Record<string, unknown>): ProjectIndex {
     return {
       id: row.id as string,

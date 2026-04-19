@@ -3,7 +3,7 @@ import type { DataCollectionSpec } from '../src/services/data-collection/types'
 import { runEvaluation } from '../src/services/evaluation/harness'
 import { pdfFieldExtractionKind } from '../src/services/evaluation/kinds/pdf-field-extraction'
 import { evaluationRunSchema } from '../src/services/evaluation/schemas'
-import type { PdfExtractor } from '../src/services/ingestion/pdf-extractor'
+import type { PdfExtractor } from '../src/services/form-documents/extraction'
 
 const groundTruth: DataCollectionSpec = {
   id: 'test-spec',
@@ -47,6 +47,7 @@ function makeStubExtractor(output: DataCollectionSpec): PdfExtractor {
           updatedAt: '',
         },
         confidence: [],
+        fieldMapping: {},
       }
     },
   }

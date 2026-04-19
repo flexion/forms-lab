@@ -6,12 +6,26 @@ import type { DataCollectionSpec } from '../data-collection/types'
 import type { FormSpec } from '../forms/types'
 
 /**
+ * Maps DataCollectionSpec fieldNames to PDF AcroForm field names.
+ * Key: spec fieldName (camelCase, e.g. "firstName")
+ * Value: PDF form field name (e.g. "First Name" or "topmostSubform[0].f1_01[0]")
+ */
+export type FieldMapping = Record<string, string>
+
+export interface FillResult {
+  pdf: Uint8Array
+  unmappedFields: string[]
+  emptyFields: string[]
+}
+
+/**
  * PDF Extraction types
  */
 export interface ExtractionResult {
   spec: DataCollectionSpec
   formSpec: FormSpec
   confidence: FieldConfidence[]
+  fieldMapping: FieldMapping
 }
 
 export interface FieldConfidence {

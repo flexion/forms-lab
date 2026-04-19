@@ -10,6 +10,8 @@ import type {
   DataCollectionSpec,
   RequirementGroup,
 } from '../../../../services/data-collection/types'
+import { fillPdf } from '../../../../services/form-documents/filling'
+import type { FieldMapping } from '../../../../services/form-documents/types'
 import {
   countVisiblePages,
   findNextPage,
@@ -71,6 +73,11 @@ interface FormRouterDeps {
    * dep) suppresses the link.
    */
   getEditHref?: (specId: string, branch: string) => string | null
+  getSourcePdf?: (specId: string, specVersion: string) => Promise<Buffer | null>
+  getFieldMapping?: (
+    specId: string,
+    specVersion: string,
+  ) => Promise<FieldMapping | null>
 }
 
 const MAIN_BRANCH = 'main'
@@ -151,6 +158,8 @@ export function createFormRouter(deps: FormRouterDeps) {
     getSpecs,
     listSpecs,
     getEditHref,
+    getSourcePdf,
+    getFieldMapping,
   } = deps
   const forms = new Hono()
 
@@ -541,7 +550,12 @@ export function createFormRouter(deps: FormRouterDeps) {
         {specs
           ? previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)
           : null}
-        <FormConfirmation submission={submission} />
+        <FormConfirmation
+          submission={submission}
+          pdfDownloadUrl={resolveUrl(
+            `/forms/${submission.specId}/submissions/${submission.id}/pdf`,
+          )}
+        />
       </Layout>,
     )
   }
@@ -574,15 +588,73 @@ export function createFormRouter(deps: FormRouterDeps) {
     const resolved = resolveFormSpec(formSpec, dataSpec)
     const reviewPages = buildReviewPages(resolved, session.fields)
 
+    const submissions = submissionGateway.listByOwner(user.login)
+    const submission = submissions.find((s) => s.sessionId === sessionId)
+
     return c.html(
       <Layout user={user} title="Submission Details" currentPath="/forms">
         <FormReview pages={reviewPages} fields={session.fields} readOnly />
+        {submission && (
+          <div class="flex-form" data-size="large">
+            <p>
+              <a
+                href={resolveUrl(
+                  `/forms/${session.specId}/submissions/${submission.id}/pdf`,
+                )}
+                class="flex-button flex-button--outline"
+              >
+                Download completed PDF
+              </a>
+            </p>
+          </div>
+        )}
       </Layout>,
     )
   }
 
+  async function handlePdfDownload(c: Context) {
+    const user = c.get('user')
+    if (!user) return c.text('Unauthorized', 401)
+    const submissionId = c.req.param('submissionId')
+    if (!submissionId) return c.notFound()
+
+    try {
+      const submission = submissionGateway.getSubmission(submissionId)
+      if (!submission) return c.notFound()
+      if (submission.ownerId !== user.login) return c.notFound()
+
+      if (!getSourcePdf || !getFieldMapping) return c.notFound()
+
+      const sourcePdf = await getSourcePdf(
+        submission.specId,
+        submission.specVersion,
+      )
+      if (!sourcePdf) return c.notFound()
+
+      const fieldMapping = await getFieldMapping(
+        submission.specId,
+        submission.specVersion,
+      )
+      if (!fieldMapping) return c.notFound()
+
+      const result = await fillPdf(sourcePdf, fieldMapping, submission.data)
+
+      return new Response(result.pdf.buffer as ArrayBuffer, {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${submission.specId}-${submissionId}.pdf"`,
+        },
+      })
+    } catch {
+      return c.text('Error generating PDF', 500)
+    }
+  }
+
   // Submission detail (read-only review of completed form)
   forms.get('/sessions/:sessionId/submission', handleSubmissionDetail)
+
+  // PDF download
+  forms.get('/:specId/submissions/:submissionId/pdf', handlePdfDownload)
 
   // Form landing page
   forms.get('/:specId', handleLanding)

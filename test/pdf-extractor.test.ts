@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test'
 import {
   createCachedPdfExtractor,
   type PdfExtractor,
-} from '../src/services/ingestion/pdf-extractor'
-import type { ExtractionResult } from '../src/services/ingestion/types'
+} from '../src/services/form-documents/extraction'
+import type { ExtractionResult } from '../src/services/form-documents/types'
 import { createCacheStore } from '../src/services/storage'
 
 const stubResult: ExtractionResult = {
@@ -40,6 +40,7 @@ const stubResult: ExtractionResult = {
     ],
   },
   confidence: [{ fieldId: 'f1', confidence: 0.95 }],
+  fieldMapping: {},
 }
 
 function createStubExtractor(

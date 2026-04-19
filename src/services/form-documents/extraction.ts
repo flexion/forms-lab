@@ -1,9 +1,10 @@
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
-import type { ExtractionOptions, ExtractionResult } from '../types/models'
-import { extractionResponseSchema, formSpecSchema } from './extraction-schemas'
-import type { CacheStore } from './storage'
+import type { CacheStore } from '../storage'
+import { enumerateFields } from './field-mapping'
+import { extractionResponseSchema, formSpecSchema } from './schemas'
+import type { ExtractionOptions, ExtractionResult, FieldMapping } from './types'
 
 export interface PdfExtractor {
   extract(pdf: Buffer, options?: ExtractionOptions): Promise<ExtractionResult>
@@ -21,18 +22,23 @@ function cacheKey(pdf: Buffer, model: string): string {
 export function createCachedPdfExtractor(
   inner: PdfExtractor,
   cacheStore: CacheStore,
+  cacheModel?: string,
 ): PdfExtractor {
   return {
     async extract(
       pdf: Buffer,
       options?: ExtractionOptions,
     ): Promise<ExtractionResult> {
-      const model = options?.model ?? DEFAULT_MODEL
+      const model = options?.model ?? cacheModel ?? DEFAULT_MODEL
       const key = cacheKey(pdf, model)
 
       const cached = cacheStore.get(key)
       if (cached) {
-        return JSON.parse(cached.result) as ExtractionResult
+        const result = JSON.parse(cached.result) as ExtractionResult
+        if (result.fieldMapping) {
+          return result
+        }
+        // Cache entry predates fieldMapping — fall through to re-extract
       }
 
       const result = await inner.extract(pdf, options)
@@ -56,7 +62,13 @@ function parseJsonResponse<T>(
   return schema.parse(parsed)
 }
 
-export function createBedrockPdfExtractor(): PdfExtractor {
+export interface BedrockExtractorOptions {
+  model?: string
+}
+
+export function createBedrockPdfExtractor(
+  options?: BedrockExtractorOptions,
+): PdfExtractor {
   const bedrock = createAmazonBedrock({
     credentialProvider: fromNodeProviderChain(),
     region: process.env.AWS_BEDROCK_REGION ?? process.env.AWS_REGION,
@@ -65,16 +77,26 @@ export function createBedrockPdfExtractor(): PdfExtractor {
   return {
     async extract(
       pdf: Buffer,
-      options?: ExtractionOptions,
+      extractionOptions?: ExtractionOptions,
     ): Promise<ExtractionResult> {
-      const model = options?.model ?? DEFAULT_MODEL
+      // Validate PDF buffer
+      if (!pdf || !Buffer.isBuffer(pdf)) {
+        throw new Error(
+          `Invalid PDF buffer: expected Buffer, received ${typeof pdf}`,
+        )
+      }
+      if (pdf.length === 0) {
+        throw new Error('PDF buffer is empty')
+      }
+
+      const model = extractionOptions?.model ?? options?.model ?? DEFAULT_MODEL
 
       // Step 1: Extract DataCollectionSpec + confidence from PDF
       // Use generateText + manual JSON parsing because generateObject's
       // tool-use mode returns empty objects on Bedrock.
       const extraction = await generateText({
         model: bedrock(model),
-        maxOutputTokens: 16384,
+        maxOutputTokens: 32768,
         messages: [
           {
             role: 'user',
@@ -141,7 +163,7 @@ Guidelines:
       // Step 2: Generate default FormSpec from extracted spec
       const formSpecResult = await generateText({
         model: bedrock(model),
-        maxOutputTokens: 4096,
+        maxOutputTokens: 8192,
         messages: [
           {
             role: 'user',
@@ -176,10 +198,51 @@ ${JSON.stringify(spec, null, 2)}`,
 
       const formSpec = parseJsonResponse(formSpecResult.text, formSpecSchema)
 
+      // Step 3: Enumerate PDF AcroForm fields and map to spec fieldNames
+      const pdfFieldNames = await enumerateFields(pdf)
+      let fieldMapping: FieldMapping = {}
+
+      if (pdfFieldNames.length > 0) {
+        const allFieldNames = spec.groups
+          .flatMap((g) => g.requirements)
+          .map((r) => ({ fieldName: r.fieldName, label: r.label }))
+
+        const mappingResult = await generateText({
+          model: bedrock(model),
+          maxOutputTokens: 4096,
+          messages: [
+            {
+              role: 'user',
+              content: `Map these DataCollectionSpec fields to the PDF form fields. Return ONLY valid JSON (no markdown, no explanation) as an object where keys are spec fieldNames and values are PDF field names.
+
+Spec fields:
+${JSON.stringify(allFieldNames, null, 2)}
+
+PDF AcroForm field names:
+${JSON.stringify(pdfFieldNames, null, 2)}
+
+Rules:
+- Only include mappings where you are confident the spec field corresponds to the PDF field
+- Key = spec fieldName (camelCase), Value = exact PDF field name string
+- If a spec field has no clear PDF counterpart, omit it`,
+            },
+          ],
+        })
+
+        const mappingText = mappingResult.text.trim()
+        const jsonStr = mappingText.startsWith('```')
+          ? mappingText
+              .replace(/^```(?:json)?\s*\n?/, '')
+              .replace(/\n?```\s*$/, '')
+          : mappingText
+        fieldMapping = JSON.parse(jsonStr) as FieldMapping
+      }
+
       return {
         spec,
         formSpec,
         confidence,
+        fieldMapping,
       }
     },
   }

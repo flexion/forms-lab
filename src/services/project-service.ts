@@ -12,6 +12,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from './errors'
+import type { PdfExtractor } from './form-documents/extraction'
 import type {
   BranchEntry,
   CommitEntry,
@@ -20,7 +21,6 @@ import type {
 } from './form-project-repo'
 import type { Command } from './forms/shaping/commands'
 import { executeBatch } from './forms/shaping/executor'
-import type { PdfExtractor } from './pdf-extractor'
 import type { ProjectStore } from './storage'
 
 export type { BranchEntry } from './form-project-repo'
@@ -260,6 +260,12 @@ export function createProjectService(
               path: 'forms/default/confidence.json',
               content: Buffer.from(JSON.stringify(result.confidence, null, 2)),
             },
+            {
+              path: 'forms/default/field-mapping.json',
+              content: Buffer.from(
+                JSON.stringify(result.fieldMapping ?? {}, null, 2),
+              ),
+            },
           ],
           'Extract form specifications',
           author,
@@ -403,7 +409,8 @@ export function createProjectService(
       if (!pdfBuffer) {
         store.update(project.id, {
           status: 'error',
-          error: 'Source PDF not found in repository',
+          error:
+            'Source PDF not found in repository. The project may need to be recreated.',
         })
         return
       }

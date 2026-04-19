@@ -9,6 +9,10 @@ import {
 } from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
 import type { DataCollectionSpec } from '../../services/data-collection/types'
+import {
+  createBedrockPdfExtractor,
+  createCachedPdfExtractor,
+} from '../../services/form-documents/extraction'
 import { createFormProjectRepo } from '../../services/form-project-repo'
 import { createReviewService } from '../../services/forms/review'
 import { createShapingRegistry } from '../../services/forms/shaping/registry'
@@ -16,10 +20,6 @@ import { createSpecSnapshotStore } from '../../services/forms/spec-snapshot-stor
 import { SqliteFormSessionGateway } from '../../services/forms/sqlite-session-gateway'
 import { SqliteSubmissionGateway } from '../../services/forms/sqlite-submission-gateway'
 import type { FormSpec } from '../../services/forms/types'
-import {
-  createBedrockPdfExtractor,
-  createCachedPdfExtractor,
-} from '../../services/pdf-extractor'
 import { createProjectService } from '../../services/project-service'
 import { createCacheStore, createProjectStore } from '../../services/storage'
 import { createUserStore } from '../../services/user-store'
@@ -249,42 +249,58 @@ app.post('/new', async (c) => {
   const user = c.get('user')
   if (!user) return c.redirect(resolveUrl('/auth/signin'))
 
-  // Parse form body - fixture or file upload
-  const contentType = c.req.header('content-type') ?? ''
-  let pdf: Buffer
-  let name: string
+  try {
+    // Parse form body - fixture or file upload
+    const contentType = c.req.header('content-type') ?? ''
+    let pdf: Buffer
+    let name: string
 
-  if (contentType.includes('multipart/form-data')) {
-    const body = await c.req.parseBody()
-    const file = body.pdf
-    if (!(file instanceof File) || file.size === 0) {
-      return c.html(
-        <Layout currentPath="/new" user={user}>
-          <NewProjectPage fixtures={demoFixtures} />
-        </Layout>,
-        400,
-      )
+    if (contentType.includes('multipart/form-data')) {
+      const body = await c.req.parseBody()
+      const file = body.pdf
+      if (!(file instanceof File) || file.size === 0) {
+        return c.html(
+          <Layout currentPath="/new" user={user}>
+            <NewProjectPage fixtures={demoFixtures} />
+          </Layout>,
+          400,
+        )
+      }
+      pdf = Buffer.from(await file.arrayBuffer())
+      name = file.name.replace(/\.pdf$/i, '')
+    } else {
+      const body = await c.req.parseBody()
+      const fixtureSlug = body.fixture as string
+      const fixture = getFixture(fixtureSlug)
+      if (!fixture) {
+        return c.html(
+          <Layout currentPath="/new" user={user}>
+            <NewProjectPage fixtures={demoFixtures} />
+          </Layout>,
+          400,
+        )
+      }
+      pdf = loadFixturePdf(fixture)
+      name = fixture.name
     }
-    pdf = Buffer.from(await file.arrayBuffer())
-    name = file.name.replace(/\.pdf$/i, '')
-  } else {
-    const body = await c.req.parseBody()
-    const fixtureSlug = body.fixture as string
-    const fixture = getFixture(fixtureSlug)
-    if (!fixture) {
-      return c.html(
-        <Layout currentPath="/new" user={user}>
-          <NewProjectPage fixtures={demoFixtures} />
-        </Layout>,
-        400,
-      )
-    }
-    pdf = loadFixturePdf(fixture)
-    name = fixture.name
+
+    const project = await projectService.createProject(name, pdf, user)
+    return c.redirect(resolveUrl(`/${user.login}/${project.slug}`))
+  } catch (err) {
+    console.error('Error creating project:', err)
+    return c.html(
+      <Layout currentPath="/new" user={user}>
+        <div class="flex-alert flex-alert--error" role="alert">
+          <h2>Error creating project</h2>
+          <p>{err instanceof Error ? err.message : 'Unknown error occurred'}</p>
+          <p>
+            <a href={resolveUrl('/new')}>Try again</a>
+          </p>
+        </div>
+      </Layout>,
+      500,
+    )
   }
-
-  const project = await projectService.createProject(name, pdf, user)
-  return c.redirect(resolveUrl(`/${user.login}/${project.slug}`))
 })
 
 // Root page - dashboard for authenticated users, landing for anonymous
@@ -357,6 +373,26 @@ app.route(
       const entry = specIdIndex.get(specId)
       if (!entry) return null
       return resolveUrl(`/${entry.owner}/${entry.slug}/edit/${branch}`)
+    },
+    async getSourcePdf(specId, _specVersion) {
+      const project = await findProjectBySpecId(specId)
+      if (!project) return null
+      return formProjectRepo.readFile(
+        project.slug,
+        'main',
+        `source/${project.slug}.pdf`,
+      )
+    },
+    async getFieldMapping(specId, specVersion) {
+      const project = await findProjectBySpecId(specId)
+      if (!project) return null
+      const buf = await formProjectRepo.readFile(
+        project.slug,
+        specVersion,
+        'forms/default/field-mapping.json',
+      )
+      if (!buf) return null
+      return JSON.parse(buf.toString())
     },
   }),
 )

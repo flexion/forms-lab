@@ -8,9 +8,9 @@ import {
   ForbiddenError,
   UnauthenticatedError,
 } from '../../../src/services/errors'
+import type { PdfExtractor } from '../../../src/services/form-documents/extraction'
 import type { FormProjectRepo } from '../../../src/services/form-project-repo'
 import { createFormProjectRepo } from '../../../src/services/form-project-repo'
-import type { PdfExtractor } from '../../../src/services/pdf-extractor'
 import {
   createProjectService,
   type ProjectService,
@@ -27,6 +27,7 @@ function createTestExtractionResult(): ExtractionResult {
     spec: testDataSpec,
     formSpec: testFormSpec,
     confidence: [{ fieldId: 'full-name', confidence: 0.95 }],
+    fieldMapping: {},
   }
 }
 
