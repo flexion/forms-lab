@@ -1,4 +1,4 @@
-import { StrategyRegistry } from '../../strategy-registry'
+import { StrategyRegistry } from '../../../shared/strategy-registry'
 
 // Placeholder until Story 12 wires up conversational filling variants.
 export function createFillingRegistry(): StrategyRegistry<unknown> {

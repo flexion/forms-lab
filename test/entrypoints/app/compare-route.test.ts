@@ -13,7 +13,7 @@ import type { FormShaper } from '../../../src/services/forms/shaping/types'
 import type { ProjectService } from '../../../src/services/project-service'
 import { createProjectService } from '../../../src/services/project-service'
 import { createProjectStore } from '../../../src/services/storage'
-import { StrategyRegistry } from '../../../src/services/strategy-registry'
+import { StrategyRegistry } from '../../../src/shared/strategy-registry'
 import type { ExtractionResult, ProjectIndex } from '../../../src/types/models'
 
 // ---------------------------------------------------------------------------

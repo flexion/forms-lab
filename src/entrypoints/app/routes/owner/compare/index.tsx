@@ -9,8 +9,8 @@ import {
 import { compareSpecs } from '../../../../../services/forms/comparison'
 import type { ReviewService } from '../../../../../services/forms/review'
 import type { ProjectService } from '../../../../../services/project-service'
-import type { StrategyListItem } from '../../../../../services/strategy-registry'
 import { resolveUrl } from '../../../../../shared/base-path'
+import type { StrategyListItem } from '../../../../../shared/strategy-registry'
 import { ErrorPage } from '../components'
 import { ReviewPage } from './components'
 

@@ -6,7 +6,7 @@ import type { SessionUser } from '../../src/services/auth/session'
 import { createFormProjectRepo } from '../../src/services/form-project-repo'
 import { createProjectService } from '../../src/services/project-service'
 import { createProjectStore } from '../../src/services/storage'
-import { StrategyRegistry } from '../../src/services/strategy-registry'
+import { StrategyRegistry } from '../../src/shared/strategy-registry'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 const TEST_DIR = 'test-data/edit-flow'

@@ -1,9 +1,9 @@
+import { StrategyRegistry } from '../../../shared/strategy-registry'
 import {
   HAIKU_MODEL_ID,
   OPUS_MODEL_ID,
   SONNET_MODEL_ID,
 } from '../../extraction/models'
-import { StrategyRegistry } from '../../strategy-registry'
 import { createBedrockFormShaper } from './bedrock-shaper'
 import type { FormShaper } from './types'
 
