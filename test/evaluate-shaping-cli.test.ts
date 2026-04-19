@@ -1,19 +1,16 @@
-import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import * as registryModule from '../src/services/forms/shaping/registry'
-import { StrategyRegistry } from '../src/services/strategy-registry'
+import { evaluate } from '../src/entrypoints/cli/commands/evaluate'
 import { evaluationRunSchema } from '../src/services/evaluation/schemas'
-import type {
-  Command,
-  ProjectState,
-} from '../src/services/forms/shaping/commands'
+import type { Command } from '../src/services/forms/shaping/commands'
 import type {
   FormShaper,
   ShapingRequest,
   ShapingResult,
 } from '../src/services/forms/shaping/types'
+import { StrategyRegistry } from '../src/services/strategy-registry'
 
 type ShapeFn = (request: ShapingRequest) => Promise<ShapingResult>
 
@@ -37,15 +34,6 @@ function buildMockRegistry(
   return registry
 }
 
-function installRegistryMock(
-  registry: StrategyRegistry<FormShaper>,
-): void {
-  mock.module('../src/services/forms/shaping/registry', () => ({
-    ...registryModule,
-    createShapingRegistry: () => registry,
-  }))
-}
-
 describe('evaluate shaping CLI subcommand', () => {
   let tempDir: string
 
@@ -58,42 +46,20 @@ describe('evaluate shaping CLI subcommand', () => {
   })
 
   it('returns exit code 1 for unknown variant', async () => {
-    const registry = new StrategyRegistry<FormShaper>()
-    registry.register({
-      id: 'bedrock-sonnet',
-      metadata: {
-        name: 'Sonnet',
-        description: 'mock',
-        status: 'baseline',
-        courseTopics: [],
-        modelId: 'sonnet',
-      },
-      create: () => ({
-        async shape() {
-          return { commands: [], explanation: '' }
-        },
-      }),
-    })
-    installRegistryMock(registry)
-    const { evaluate } = await import(
-      '../src/entrypoints/cli/commands/evaluate'
-    )
+    const registry = buildMockRegistry('bedrock-sonnet', async () => ({
+      commands: [],
+      explanation: '',
+    }))
 
-    const exitCode = await evaluate([
-      'shaping',
-      'nonexistent-variant',
-      '--out-dir',
-      tempDir,
-    ])
+    const exitCode = await evaluate(
+      ['shaping', 'nonexistent-variant', '--out-dir', tempDir],
+      { shapingRegistry: registry },
+    )
 
     expect(exitCode).toBe(1)
   })
 
   it('returns exit code 1 when no variant id is provided', async () => {
-    const { evaluate } = await import(
-      '../src/entrypoints/cli/commands/evaluate'
-    )
-
     const exitCode = await evaluate(['shaping'])
 
     expect(exitCode).toBe(1)
@@ -131,8 +97,6 @@ describe('evaluate shaping CLI subcommand', () => {
       ],
     }
 
-    // Look up the expected commands by matching the intent text against
-    // the fixtures. The shape function receives the intent string.
     const { shapingIntentFixtures } = await import(
       '../src/services/evaluation/fixtures/shaping-intents'
     )
@@ -149,17 +113,11 @@ describe('evaluate shaping CLI subcommand', () => {
     }
 
     const registry = buildMockRegistry('bedrock-mock', shape)
-    installRegistryMock(registry)
-    const { evaluate } = await import(
-      '../src/entrypoints/cli/commands/evaluate'
-    )
 
-    const exitCode = await evaluate([
-      'shaping',
-      'bedrock-mock',
-      '--out-dir',
-      tempDir,
-    ])
+    const exitCode = await evaluate(
+      ['shaping', 'bedrock-mock', '--out-dir', tempDir],
+      { shapingRegistry: registry },
+    )
 
     expect(exitCode).toBe(0)
 
@@ -186,14 +144,14 @@ describe('evaluate shaping CLI subcommand', () => {
   })
 
   it('records a zero-metric case when shape() throws', async () => {
+    const { shapingIntentFixtures } = await import(
+      '../src/services/evaluation/fixtures/shaping-intents'
+    )
+
     const shape: ShapeFn = async (request) => {
       if (request.intent.startsWith('Swap')) {
         throw new Error('LLM produced invalid command sequence')
       }
-      // Return the matching expected commands for the other intents.
-      const { shapingIntentFixtures } = await import(
-        '../src/services/evaluation/fixtures/shaping-intents'
-      )
       const fixture = shapingIntentFixtures.find(
         (f) => f.intent === request.intent,
       )
@@ -205,17 +163,11 @@ describe('evaluate shaping CLI subcommand', () => {
     }
 
     const registry = buildMockRegistry('bedrock-mock', shape)
-    installRegistryMock(registry)
-    const { evaluate } = await import(
-      '../src/entrypoints/cli/commands/evaluate'
-    )
 
-    const exitCode = await evaluate([
-      'shaping',
-      'bedrock-mock',
-      '--out-dir',
-      tempDir,
-    ])
+    const exitCode = await evaluate(
+      ['shaping', 'bedrock-mock', '--out-dir', tempDir],
+      { shapingRegistry: registry },
+    )
 
     expect(exitCode).toBe(0)
 

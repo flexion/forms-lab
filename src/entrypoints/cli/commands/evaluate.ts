@@ -1,11 +1,32 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import {
+  fixtureProjectState,
+  shapingIntentFixtures,
+} from '../../../services/evaluation/fixtures/shaping-intents'
 import { runEvaluation } from '../../../services/evaluation/harness'
 import { pdfFieldExtractionKind } from '../../../services/evaluation/kinds/pdf-field-extraction'
+import { shapingCommandsKind } from '../../../services/evaluation/kinds/shaping-commands'
 import { evaluationRunSchema } from '../../../services/evaluation/schemas'
+import type { RunResult } from '../../../services/evaluation/types'
 import { createExtractorRegistry } from '../../../services/extraction/registry'
 import { createCachedPdfExtractor } from '../../../services/form-documents/extraction'
+import type { FormShaper } from '../../../services/forms/shaping/types'
 import { createCacheStore } from '../../../services/storage'
+import type {
+  StrategyMetadata,
+  StrategyRegistry,
+} from '../../../services/strategy-registry'
+
+export interface EvaluateOptions {
+  /**
+   * Override the shaping registry used by the `shaping` subcommand. Tests
+   * pass a mock registry to avoid reaching Bedrock and to avoid polluting
+   * `bun:test`'s process-global `mock.module` state, which would leak into
+   * other test files that import the real registry.
+   */
+  shapingRegistry?: StrategyRegistry<FormShaper>
+}
 
 function printUsage(): void {
   console.log('Usage: bun run cli evaluate <subcommand>\n')
@@ -24,9 +45,18 @@ function printUsage(): void {
   console.log(
     '  validate               Validate all fixtures and evaluation files',
   )
+  console.log(
+    '  shaping <variant-id>   Run a shaping variant against the scripted intent suite',
+  )
+  console.log(
+    '    --out-dir <path>     Override catalog output dir (for tests)',
+  )
 }
 
-export async function evaluate(args: string[]): Promise<number> {
+export async function evaluate(
+  args: string[],
+  options: EvaluateOptions = {},
+): Promise<number> {
   const subcommand = args[0]
 
   switch (subcommand) {
@@ -257,6 +287,117 @@ export async function evaluate(args: string[]): Promise<number> {
       return 0
     }
 
+    case 'shaping': {
+      const variantId = args[1]
+      if (!variantId) {
+        console.error('Usage: evaluate shaping <variant-id> [--out-dir <path>]')
+        return 1
+      }
+
+      const outDirIdx = args.indexOf('--out-dir')
+      const outDir =
+        outDirIdx !== -1 && args[outDirIdx + 1]
+          ? args[outDirIdx + 1]
+          : join('catalog', 'experiments', 'shaping-model-comparison')
+
+      let registry: StrategyRegistry<FormShaper>
+      if (options.shapingRegistry) {
+        registry = options.shapingRegistry
+      } else {
+        const { createShapingRegistry } = await import(
+          '../../../services/forms/shaping/registry'
+        )
+        registry = createShapingRegistry()
+      }
+      const variantMeta = registry.list().find((v) => v.id === variantId)
+      if (!variantMeta) {
+        console.error(`Unknown shaping variant: ${variantId}`)
+        console.error(
+          'Available:',
+          registry
+            .list()
+            .map((v) => v.id)
+            .join(', '),
+        )
+        return 1
+      }
+
+      const shaper = registry.get(variantId)
+      console.log(`Running shaping evaluation: ${variantMeta.metadata.name}`)
+      console.log(`Intents: ${shapingIntentFixtures.length}`)
+
+      const start = Date.now()
+      const cases: RunResult['cases'] = []
+      for (const fixture of shapingIntentFixtures) {
+        try {
+          const result = await shaper.shape({
+            intent: fixture.intent,
+            state: fixtureProjectState,
+          })
+          const caseMetrics = await shapingCommandsKind.score(
+            { commands: result.commands, explanation: result.explanation },
+            fixture.groundTruth,
+          )
+          cases.push({
+            fixture: fixture.id,
+            metrics: caseMetrics.metrics,
+            details: caseMetrics.details,
+          })
+          console.log(
+            `  ${fixture.id}: recall=${(caseMetrics.metrics.kindRecall * 100).toFixed(0)}% precision=${(caseMetrics.metrics.kindPrecision * 100).toFixed(0)}% arg=${(caseMetrics.metrics.argumentAccuracy * 100).toFixed(0)}%`,
+          )
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err)
+          cases.push({
+            fixture: fixture.id,
+            metrics: {
+              kindRecall: 0,
+              kindPrecision: 0,
+              argumentAccuracy: 0,
+            },
+            details: { error: message },
+          })
+          console.log(`  ${fixture.id}: FAILED — ${message}`)
+        }
+      }
+
+      const summary = shapingCommandsKind.summarize(cases)
+      const result: RunResult = {
+        kind: shapingCommandsKind.id,
+        implementation: variantId,
+        specVersion: '2026-04-19',
+        status: 'current',
+        timestamp: new Date().toISOString(),
+        model: variantMeta.metadata.name,
+        summary: summary.metrics,
+        cases,
+      }
+      evaluationRunSchema.parse(result)
+
+      mkdirSync(outDir, { recursive: true })
+      const jsonPath = join(outDir, `${variantId}.json`)
+      writeFileSync(jsonPath, JSON.stringify(result, null, 2))
+
+      const shortId = variantId.replace(/^bedrock-/, '')
+      const md = generateShapingMarkdown(
+        variantId,
+        variantMeta.metadata,
+        result,
+      )
+      const mdPath = join(outDir, `${shortId}.md`)
+      writeFileSync(mdPath, md)
+
+      const elapsed = ((Date.now() - start) / 1000).toFixed(1)
+      console.log(`\nEvaluation complete (${elapsed}s)`)
+      console.log('Summary:')
+      for (const [key, value] of Object.entries(result.summary)) {
+        console.log(`  ${key}: ${(value * 100).toFixed(1)}%`)
+      }
+      console.log(`\nResults written to ${outDir}/`)
+
+      return 0
+    }
+
     case 'validate': {
       const { loadAllFixturesForEvaluation } = await import(
         '../../../../fixtures/index'
@@ -339,5 +480,95 @@ function generateRunMarkdown(
     lines.push('')
   }
 
+  return lines.join('\n')
+}
+
+const SHAPING_METRIC_LABELS: Record<string, string> = {
+  kindRecall: 'Command-Kind Recall',
+  kindPrecision: 'Command-Kind Precision',
+  argumentAccuracy: 'Argument Accuracy',
+}
+
+function formatCommandList(kinds: unknown): string {
+  if (!Array.isArray(kinds) || kinds.length === 0) return '—'
+  return (kinds as string[]).join(', ')
+}
+
+function generateShapingMarkdown(
+  variantId: string,
+  metadata: StrategyMetadata,
+  result: RunResult,
+): string {
+  const lines: string[] = []
+  lines.push('---')
+  lines.push('kind: shaping-commands')
+  lines.push(`implementation: ${variantId}`)
+  lines.push('status: current')
+  lines.push('course-topics: [evaluation, model-selection]')
+  lines.push('---')
+  lines.push('')
+  lines.push(`# Form Shaping: ${metadata.name}`)
+  lines.push('')
+  lines.push('> Selectable in **Settings \u2192 Variants \u2192 Shaping**.')
+  lines.push('')
+  lines.push(`**Status:** ${metadata.status}`)
+  lines.push('')
+  lines.push('## Summary')
+  lines.push('')
+  lines.push('| Metric | Value |')
+  lines.push('|---|---|')
+  const summaryOrder = ['kindRecall', 'kindPrecision', 'argumentAccuracy']
+  for (const key of summaryOrder) {
+    if (key in result.summary) {
+      const label = SHAPING_METRIC_LABELS[key] ?? key
+      lines.push(`| ${label} | ${(result.summary[key] * 100).toFixed(1)}% |`)
+    }
+  }
+  for (const [key, value] of Object.entries(result.summary)) {
+    if (summaryOrder.includes(key)) continue
+    const label = SHAPING_METRIC_LABELS[key] ?? key
+    lines.push(`| ${label} | ${(value * 100).toFixed(1)}% |`)
+  }
+  lines.push('')
+  lines.push(
+    `_Run timestamp: ${result.timestamp}. Spec version: ${result.specVersion}._`,
+  )
+  lines.push('')
+  lines.push('## Approach')
+  lines.push('')
+  lines.push(
+    `Uses the registered shaping variant \`${variantId}\` (${metadata.name}) via \`createBedrockFormShaper\` with the standard 25-command tool-use prompt. All three variants share the same prompt and toolset; only the model differs.`,
+  )
+  lines.push('')
+  lines.push('## Per-intent Results')
+  lines.push('')
+  lines.push(
+    '| Intent | Recall | Precision | Arg Acc | Matched | Missing | Extra |',
+  )
+  lines.push('|---|---|---|---|---|---|---|')
+  for (const c of result.cases) {
+    const details = c.details as Record<string, unknown>
+    const matched = formatCommandList(details.matchedKinds)
+    const missing = formatCommandList(details.missingKinds)
+    const extra = formatCommandList(details.extraKinds)
+    const errorNote =
+      typeof details.error === 'string' ? ` (error: ${details.error})` : ''
+    lines.push(
+      `| ${c.fixture}${errorNote} | ${(c.metrics.kindRecall * 100).toFixed(0)}% | ${(c.metrics.kindPrecision * 100).toFixed(0)}% | ${(c.metrics.argumentAccuracy * 100).toFixed(0)}% | ${matched} | ${missing} | ${extra} |`,
+    )
+  }
+  lines.push('')
+  lines.push('## Findings')
+  lines.push('')
+  lines.push(
+    '_Interpretation pending — see Summary table for headline numbers._',
+  )
+  lines.push('')
+  lines.push('## Cost')
+  lines.push('')
+  lines.push(
+    `Bedrock on-demand pricing for ${metadata.name} (model id \`${metadata.modelId ?? 'unknown'}\`). Each scripted intent is a single short tool-calling turn; total run cost is well under $0.05 per variant at current pricing.`,
+  )
+  lines.push('')
   return lines.join('\n')
 }
