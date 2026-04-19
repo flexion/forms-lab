@@ -29,44 +29,16 @@ export function createCachedPdfExtractor(
       pdf: Buffer,
       options?: ExtractionOptions,
     ): Promise<ExtractionResult> {
-      const logMsg = `[EXTRACTION_CACHE] pdf_type=${typeof pdf} isBuffer=${Buffer.isBuffer(pdf)} length=${pdf?.length}`
-      console.log(logMsg)
-      try {
-        const fs = require('node:fs')
-        fs.appendFileSync(
-          '/tmp/extraction-debug.log',
-          `${new Date().toISOString()} ${logMsg}\n`,
-        )
-      } catch {}
-
-      // Validate PDF buffer before caching
-      if (!pdf || !Buffer.isBuffer(pdf)) {
-        const error = `Invalid PDF buffer: expected Buffer, received ${typeof pdf}`
-        console.error('[EXTRACTION]', error)
-        throw new Error(error)
-      }
-      if (pdf.length === 0) {
-        const error = 'PDF buffer is empty'
-        console.error('[EXTRACTION]', error)
-        throw new Error(error)
-      }
-      console.log('[EXTRACTION] PDF validation passed, size:', pdf.length)
-
       const model = options?.model ?? cacheModel ?? DEFAULT_MODEL
       const key = cacheKey(pdf, model)
 
       const cached = cacheStore.get(key)
       if (cached) {
         const result = JSON.parse(cached.result) as ExtractionResult
-        // Invalidate cache entries that don't have fieldMapping (from before story 7)
-        if (!result.fieldMapping) {
-          console.log(
-            '[CACHE] Invalidating old cache entry without fieldMapping',
-          )
-          // Don't return cached result, fall through to re-extract
-        } else {
+        if (result.fieldMapping) {
           return result
         }
+        // Cache entry predates fieldMapping — fall through to re-extract
       }
 
       const result = await inner.extract(pdf, options)
