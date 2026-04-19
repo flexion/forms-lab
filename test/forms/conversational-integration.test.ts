@@ -113,19 +113,21 @@ describe('Conversational form filling integration', () => {
     // Should show toggle to switch to chat view
     expect(page1Html).toContain('Switch to Chat View')
 
-    // Now navigate to chat view
+    // Now navigate to chat view - this generates initial greeting
     const page1ChatGet = await app.request(`${baseUrl}/pages/1/chat`)
     expect(page1ChatGet.status).toBe(200)
     const page1ChatHtml = await page1ChatGet.text()
     expect(page1ChatHtml).toContain('Employment')
     expect(page1ChatHtml).toContain('chat-panel')
 
-    // Verify conversation is empty
+    // Verify initial greeting was generated
     let messages = conversationGateway.getMessages(sessionId!)
-    expect(messages).toHaveLength(0)
+    expect(messages.length).toBeGreaterThanOrEqual(1)
+    expect(messages[0].role).toBe('assistant')
+    // Initial greeting should ask about the first field (employed)
+    expect(messages[0].content.toLowerCase()).toContain('employ')
 
-    // Send first message - agent will collect it as answer to first field ('employed')
-    // and then ask for the next field ('employmentType')
+    // Send first message - agent will collect it and ask for next field
     const chat1 = await app.request(`${baseUrl}/pages/1/chat`, {
       method: 'POST',
       headers: {
@@ -139,13 +141,12 @@ describe('Conversational form filling integration', () => {
     expect(chat1Json.response.toLowerCase()).toContain('employment type')
     expect(chat1Json.finished).toBe(false)
 
-    // Verify conversation has 2 messages (user 'Yes' + assistant asking for employment type)
+    // Verify conversation now has 3 messages (initial + user 'Yes' + assistant asking for employment type)
     messages = conversationGateway.getMessages(sessionId!)
-    expect(messages.length).toBeGreaterThanOrEqual(2)
-    expect(messages[0].role).toBe('user')
-    expect(messages[0].content).toBe('Yes')
-    expect(messages[1].role).toBe('assistant')
-    expect(messages[1].content.toLowerCase()).toContain('employment type')
+    expect(messages.length).toBeGreaterThanOrEqual(3)
+    const userMessage = messages.find((m) => m.content === 'Yes')
+    expect(userMessage).toBeDefined()
+    expect(userMessage?.role).toBe('user')
 
     // Verify 'employed' field was collected
     let session = sessionGateway.getSession(sessionId!)

@@ -703,7 +703,32 @@ export function createFormRouter(deps: FormRouterDeps) {
     }
 
     // Get conversation messages
-    const messages = conversationGateway.getMessages(sessionId)
+    let messages = conversationGateway.getMessages(sessionId)
+
+    // If no messages yet, call agent to generate initial greeting
+    if (messages.length === 0) {
+      const turn = await fillingAgent.advance(
+        {
+          groups: page.groups,
+          collectedFields: session.fields,
+          messages: [],
+        },
+        null,
+      )
+
+      // Append assistant's initial message
+      const assistantMessageId = crypto.randomUUID()
+      conversationGateway.appendMessage(sessionId, {
+        id: assistantMessageId,
+        sessionId,
+        role: 'assistant',
+        content: turn.message,
+        toolCalls: turn.toolCalls,
+        createdAt: new Date().toISOString(),
+      })
+
+      messages = conversationGateway.getMessages(sessionId)
+    }
 
     // Check if conversation is finished (all fields collected)
     const visibleGroups = filterVisibleGroups(page.groups, session.fields)
