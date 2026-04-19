@@ -273,17 +273,45 @@ app.get('/health', (c) => {
 
 // New project routes (requires auth)
 app.use('/new', requireAuth())
+
+// Resolve the callout payload the /new page needs to describe the user's
+// currently-selected extraction variant. Factored out because both GET and
+// POST (on validation errors) re-render the same page.
+function getExtractionVariantForCallout(userLogin: string) {
+  const variantId =
+    variantPreferences.get(userLogin, 'extraction') ??
+    extractionRegistry.getDefaultId()
+  const meta = extractionRegistry.list().find((v) => v.id === variantId)
+  return {
+    name: meta?.metadata.name ?? variantId,
+    description: meta?.metadata.description ?? '',
+    // TODO: Derive this from the set of fixtures that have ground truth AND
+    // are reviewed (the evaluation CLI already does this). Hardcoding the
+    // count matches today's fixture set.
+    evaluationSummary: `${extractionRegistry.list().length} variants evaluated on 3 government PDF fixtures`,
+    catalogHref: resolveUrl(
+      meta?.metadata.catalogPath ?? '/catalog/experiments/pdf-field-extraction',
+    ),
+  }
+}
+
 app.get('/new', (c) => {
   const user = c.get('user')
+  if (!user) return c.redirect(resolveUrl('/auth/signin'))
+  const extractionVariant = getExtractionVariantForCallout(user.login)
   return c.html(
     <Layout currentPath="/new" user={user}>
-      <NewProjectPage fixtures={demoFixtures} />
+      <NewProjectPage
+        fixtures={demoFixtures}
+        extractionVariant={extractionVariant}
+      />
     </Layout>,
   )
 })
 app.post('/new', async (c) => {
   const user = c.get('user')
   if (!user) return c.redirect(resolveUrl('/auth/signin'))
+  const extractionVariant = getExtractionVariantForCallout(user.login)
 
   try {
     // Parse form body - fixture or file upload
@@ -297,7 +325,10 @@ app.post('/new', async (c) => {
       if (!(file instanceof File) || file.size === 0) {
         return c.html(
           <Layout currentPath="/new" user={user}>
-            <NewProjectPage fixtures={demoFixtures} />
+            <NewProjectPage
+              fixtures={demoFixtures}
+              extractionVariant={extractionVariant}
+            />
           </Layout>,
           400,
         )
@@ -311,7 +342,10 @@ app.post('/new', async (c) => {
       if (!fixture) {
         return c.html(
           <Layout currentPath="/new" user={user}>
-            <NewProjectPage fixtures={demoFixtures} />
+            <NewProjectPage
+              fixtures={demoFixtures}
+              extractionVariant={extractionVariant}
+            />
           </Layout>,
           400,
         )

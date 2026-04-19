@@ -4,6 +4,7 @@ import { Alert } from '../../../../design-system/components/flex-alert'
 import { BranchSwitcher } from '../../../../design-system/components/flex-branch-switcher'
 import { SpecBrowser } from '../../../../design-system/components/flex-spec-browser'
 import { VariantBadge } from '../../../../design-system/components/flex-variant-badge'
+import { VariantCallout } from '../../../../design-system/components/flex-variant-callout'
 import type { SessionUser } from '../../../../services/auth/session'
 import type {
   CommitEntry,
@@ -923,11 +924,26 @@ export const ErrorPage: FC<{
 // 8. NewProjectPage (updated for /:owner URL structure)
 // ---------------------------------------------------------------------------
 
-export const NewProjectPage: FC<{ fixtures: DemoFixture[] }> = ({
-  fixtures,
-}) => (
+export const NewProjectPage: FC<{
+  fixtures: DemoFixture[]
+  extractionVariant: {
+    name: string
+    description: string
+    evaluationSummary: string
+    catalogHref: string
+  }
+}> = ({ fixtures, extractionVariant }) => (
   <div class="l-stack">
     <h1>New Project</h1>
+
+    <VariantCallout
+      taskLabel="Extraction model"
+      variantName={extractionVariant.name}
+      variantDescription={extractionVariant.description}
+      evaluationSummary={extractionVariant.evaluationSummary}
+      changeHref={resolveUrl('/settings/variants?task=extraction')}
+      catalogHref={extractionVariant.catalogHref}
+    />
 
     <section class="l-stack">
       <h2>Start from a demo form</h2>

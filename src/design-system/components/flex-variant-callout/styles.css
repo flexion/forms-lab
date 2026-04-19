@@ -1,0 +1,54 @@
+/* flex-variant-callout — bordered, accent-tinted card that announces which
+   LLM variant is configured for a task and offers quick links to change the
+   selection or see the evaluation benchmarks. */
+
+.flex-variant-callout {
+  background-color: color-mix(
+    in srgb,
+    var(--flex-color-accent) 4%,
+    var(--flex-color-surface)
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--flex-color-accent) 30%, var(--flex-color-border));
+  border-radius: var(--flex-radius-md);
+  padding: var(--flex-space-lg);
+  color: var(--flex-color-text);
+
+  --stack-space: var(--flex-space-md);
+}
+
+.flex-variant-callout__task-label {
+  display: block;
+  font-size: var(--flex-text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--flex-color-text-muted);
+}
+
+.flex-variant-callout__body {
+  --stack-space: var(--flex-space-2xs);
+}
+
+.flex-variant-callout__variant-name {
+  display: block;
+  font-size: var(--flex-text-uswds);
+  font-weight: 600;
+  color: var(--flex-color-text);
+  line-height: 1.3;
+}
+
+.flex-variant-callout__variant-description {
+  display: block;
+  color: var(--flex-color-text-muted);
+}
+
+.flex-variant-callout__evaluation-summary {
+  margin: 0;
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+}
+
+.flex-variant-callout__actions {
+  --cluster-space: var(--flex-space-sm);
+}
