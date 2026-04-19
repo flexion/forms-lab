@@ -1,0 +1,42 @@
+/* flex-eval-scorecard — RAG authoring pipeline evaluation results display */
+
+.eval-scorecard__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-xs);
+}
+
+.eval-scorecard__item {
+  display: flex;
+  align-items: center;
+  gap: var(--flex-space-sm);
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+}
+
+.eval-scorecard__icon {
+  font-size: var(--flex-text-sm);
+}
+
+.eval-scorecard__item[data-pass="true"] .eval-scorecard__icon {
+  color: var(--flex-color-success);
+}
+
+.eval-scorecard__item[data-pass="false"] .eval-scorecard__icon {
+  color: var(--flex-color-error);
+}
+
+.eval-scorecard__text {
+  flex: 1;
+}
+
+.eval-scorecard__explanation {
+  font-size: var(--flex-text-xs);
+  color: var(--flex-color-text-muted);
+}
+
+.eval-scorecard__retry {
+  font-size: var(--flex-text-xs);
+  color: var(--flex-color-warning);
+}

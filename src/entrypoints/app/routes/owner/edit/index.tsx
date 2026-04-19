@@ -17,6 +17,7 @@ import { resolveUrl } from '../../../../../shared/base-path'
 import { AppError, UnauthenticatedError } from '../../../../../shared/errors'
 import type { StrategyRegistry } from '../../../../../shared/strategy-registry'
 import { ErrorPage } from '../components'
+import { createAuthoringRoutes } from './authoring'
 import { EditorPage, PreviewPage } from './components'
 
 export function createEditRoutes(
@@ -25,6 +26,10 @@ export function createEditRoutes(
   variantPreferences?: VariantPreferencesService,
 ): Hono {
   const app = new Hono()
+
+  // Mount authoring routes
+  const authoringRoutes = createAuthoringRoutes(service)
+  app.route('/', authoringRoutes)
 
   // GET /:owner/:slug/edit — redirect to a working branch, or show the
   // "no branch yet" shell when only main exists.
