@@ -86,7 +86,13 @@ const variantPreferences = createVariantPreferencesService(
 const projectService = createProjectService(projectStore, formProjectRepo, {
   resolveExtractor(variantId) {
     const inner = extractionRegistry.get(variantId)
-    return createCachedPdfExtractor(inner, cacheStore)
+    const meta = extractionRegistry.list().find((v) => v.id === variantId)
+    return createCachedPdfExtractor(
+      inner,
+      cacheStore,
+      meta?.metadata.modelId,
+      variantId,
+    )
   },
   resolveVariant(userLogin) {
     const variantId =
