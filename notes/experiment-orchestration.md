@@ -14,7 +14,7 @@ This document is the executable handoff for the eight follow-up experiment stori
 
 | Issue | Title | Status | Branch | Tier | Blockers |
 |-------|-------|--------|--------|------|----------|
-| #59 | Maya chooses her shaping model | planned | — | 1 | #58 merged |
+| #59 | Maya chooses her shaping model | pr-open | experiment/59-shaping-model-comparison | 1 | #58 merged |
 | #60 | Carlos's conversation uses a chosen model | planned | — | 3 | #58 + #9 |
 | #61 | Maya verifies AcroForm mapping | planned | — | 2 | #58 |
 | #62 | Maya's extractions cite the law (RAG) | planned | — | 2 | #58 |
