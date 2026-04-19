@@ -618,32 +618,45 @@ export function createFormRouter(deps: FormRouterDeps) {
     const submissionId = c.req.param('submissionId')
     if (!submissionId) return c.notFound()
 
-    const submission = submissionGateway.getSubmission(submissionId)
-    if (!submission) return c.notFound()
-    if (submission.ownerId !== user.login) return c.notFound()
+    try {
+      const submission = submissionGateway.getSubmission(submissionId)
+      if (!submission) return c.notFound()
+      if (submission.ownerId !== user.login) return c.notFound()
 
-    if (!getSourcePdf || !getFieldMapping) return c.notFound()
+      if (!getSourcePdf || !getFieldMapping) return c.notFound()
 
-    const sourcePdf = await getSourcePdf(
-      submission.specId,
-      submission.specVersion,
-    )
-    if (!sourcePdf) return c.notFound()
+      const sourcePdf = await getSourcePdf(
+        submission.specId,
+        submission.specVersion,
+      )
+      if (!sourcePdf) {
+        console.error(`Source PDF not found for ${submission.specId}@${submission.specVersion}`)
+        return c.text('Source PDF not found', 404)
+      }
 
-    const fieldMapping = await getFieldMapping(
-      submission.specId,
-      submission.specVersion,
-    )
-    if (!fieldMapping) return c.notFound()
+      const fieldMapping = await getFieldMapping(
+        submission.specId,
+        submission.specVersion,
+      )
+      if (!fieldMapping) {
+        console.error(`Field mapping not found for ${submission.specId}@${submission.specVersion}`)
+        return c.text('Field mapping not found', 404)
+      }
 
-    const result = await fillPdf(sourcePdf, fieldMapping, submission.data)
+      console.log(`Filling PDF for ${submissionId}, ${Object.keys(fieldMapping).length} mapped fields`)
+      const result = await fillPdf(sourcePdf, fieldMapping, submission.data)
+      console.log(`PDF filled successfully, ${result.unmappedFields.length} unmapped, ${result.emptyFields.length} empty`)
 
-    return new Response(result.pdf.buffer as ArrayBuffer, {
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${submission.specId}-${submissionId}.pdf"`,
-      },
-    })
+      return new Response(result.pdf.buffer as ArrayBuffer, {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${submission.specId}-${submissionId}.pdf"`,
+        },
+      })
+    } catch (err) {
+      console.error('PDF download error:', err)
+      return c.text(`Error generating PDF: ${err instanceof Error ? err.message : String(err)}`, 500)
+    }
   }
 
   // Submission detail (read-only review of completed form)
