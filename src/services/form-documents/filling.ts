@@ -27,20 +27,30 @@ export async function fillPdf(
       continue
     }
 
-    const field = form.getField(pdfFieldName)
+    try {
+      const field = form.getField(pdfFieldName)
 
-    if (field instanceof PDFTextField) {
-      field.setText(String(value))
-    } else if (field instanceof PDFCheckBox) {
-      if (value === true || value === 'true' || value === 'Yes') {
-        field.check()
-      } else {
-        field.uncheck()
+      if (field instanceof PDFTextField) {
+        field.setText(String(value))
+      } else if (field instanceof PDFCheckBox) {
+        if (value === true || value === 'true' || value === 'Yes') {
+          field.check()
+        } else {
+          field.uncheck()
+        }
+      } else if (field instanceof PDFDropdown) {
+        field.select(String(value))
+      } else if (field instanceof PDFRadioGroup) {
+        field.select(String(value))
       }
-    } else if (field instanceof PDFDropdown) {
-      field.select(String(value))
-    } else if (field instanceof PDFRadioGroup) {
-      field.select(String(value))
+    } catch (err) {
+      // Field value is invalid (e.g., dropdown option doesn't exist)
+      // Skip this field and log the error
+      console.warn(
+        `Failed to fill field ${pdfFieldName} with value ${value}:`,
+        err instanceof Error ? err.message : String(err),
+      )
+      unmappedFields.push(specField)
     }
   }
 
