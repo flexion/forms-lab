@@ -178,6 +178,7 @@ export const ProjectOverview: FC<{
         owner={owner}
         isOwner={isOwner}
         branch={pendingBranch}
+        extractionBadge={extractionBadge}
       />
     )
   }
@@ -539,7 +540,8 @@ const PendingReviewBanner: FC<{
   owner: string
   isOwner: boolean
   branch: string
-}> = ({ project, owner, isOwner, branch }) => {
+  extractionBadge?: { variantId: string; variantName: string } | null
+}> = ({ project, owner, isOwner, branch, extractionBadge }) => {
   const repoBase = `/${owner}/${project.slug}`
   return (
     <div class="l-stack">
@@ -555,6 +557,13 @@ const PendingReviewBanner: FC<{
           <h1 class="repo-header__title">{project.name}</h1>
         </div>
       </header>
+      {extractionBadge ? (
+        <VariantBadge
+          task="extraction"
+          variantId={extractionBadge.variantId}
+          variantName={extractionBadge.variantName}
+        />
+      ) : null}
       <Alert variant="info" heading="Initial extraction ready for review">
         The imported form lives on branch <code>{branch}</code>. Nothing has
         been published to <code>main</code> yet. Review the extracted structure
