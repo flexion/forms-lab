@@ -2,6 +2,6 @@
   "name": "IRS Form W-9 — Request for Taxpayer Identification",
   "specVersion": "2026-04-18",
   "groundTruthModel": "opus-baseline",
-  "reviewed": false,
-  "notes": "Downloaded from irs.gov 2026-04-18. Ground truth pending generation via Opus."
+  "reviewed": true,
+  "notes": "Claude Opus 4.6 extraction generated 2026-04-19T04:23:04.230Z. Reviewed 2026-04-18: 8 groups, 16 fields covering entity identification, tax classification, exemptions, address, requester info, account numbers, taxpayer identification, and certification."
 }

@@ -2,6 +2,6 @@
   "name": "USCIS Form I-9 — Employment Eligibility Verification",
   "specVersion": "2026-04-18",
   "groundTruthModel": "opus-baseline",
-  "reviewed": false,
-  "notes": "Downloaded from uscis.gov 2026-04-18. Ground truth pending generation via Opus."
+  "reviewed": true,
+  "notes": "Claude Opus 4.6 extraction generated 2026-04-19T04:22:14.252Z. Reviewed 2026-04-18: 4 groups, 128 fields covering employee info, employer verification, preparer/translator supplement A, reverification supplement B."
 }
