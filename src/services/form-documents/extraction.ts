@@ -32,7 +32,7 @@ export function createCachedPdfExtractor(
       const logMsg = `[EXTRACTION_CACHE] pdf_type=${typeof pdf} isBuffer=${Buffer.isBuffer(pdf)} length=${pdf?.length}`
       console.log(logMsg)
       try {
-        const fs = require('fs')
+        const fs = require('node:fs')
         fs.appendFileSync(
           '/tmp/extraction-debug.log',
           `${new Date().toISOString()} ${logMsg}\n`,

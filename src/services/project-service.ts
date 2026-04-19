@@ -240,7 +240,7 @@ export function createProjectService(
     console.log(logMsg)
     // Also write to file for debugging
     try {
-      const fs = require('fs')
+      const fs = require('node:fs')
       fs.appendFileSync(
         '/tmp/extraction-debug.log',
         `${new Date().toISOString()} ${logMsg}\n`,
@@ -253,7 +253,7 @@ export function createProjectService(
     extractor
       .extract(pdf)
       .then(async (result) => {
-        const fs = require('fs')
+        const fs = require('node:fs')
         try {
           fs.appendFileSync(
             '/tmp/extraction-debug.log',
@@ -328,7 +328,7 @@ export function createProjectService(
         if (err instanceof Error && err.stack) {
           console.error('Stack trace:', err.stack)
         }
-        const fs = require('fs')
+        const fs = require('node:fs')
         try {
           fs.appendFileSync(
             '/tmp/extraction-debug.log',
