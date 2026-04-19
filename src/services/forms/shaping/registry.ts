@@ -15,7 +15,7 @@ export function createShapingRegistry(): StrategyRegistry<FormShaper> {
     metadata: {
       name: 'Claude Sonnet 4',
       description:
-        'Balanced quality and speed. Current default for interactive shaping.',
+        'Recommended default. Responds quickly and handles most shaping requests (page reordering, field edits, delivery mode changes) accurately. Good balance of quality and interactive speed.',
       status: 'baseline',
       courseTopics: ['llm-integration', 'form-authoring', 'model-selection'],
       catalogPath: '/catalog/experiments/shaping-model-comparison/sonnet',
@@ -29,7 +29,7 @@ export function createShapingRegistry(): StrategyRegistry<FormShaper> {
     metadata: {
       name: 'Claude Haiku 4.5',
       description:
-        'Fast and cheap. May miss nuance in complex shaping requests.',
+        'Fastest responses, lowest cost. Handles simple edits (rename, reorder) well but may misinterpret complex multi-step requests like "reorganize all sections by complexity." Best for quick, straightforward changes.',
       status: 'experimental',
       courseTopics: ['llm-integration', 'form-authoring', 'model-selection'],
       catalogPath: '/catalog/experiments/shaping-model-comparison/haiku',
@@ -43,7 +43,7 @@ export function createShapingRegistry(): StrategyRegistry<FormShaper> {
     metadata: {
       name: 'Claude Opus 4.6',
       description:
-        'Frontier model. Highest quality for complex multi-step shaping.',
+        'Frontier model, most capable for complex multi-step shaping. Best at interpreting ambiguous requests and generating multi-command sequences (e.g., "suggest delivery modes based on section complexity"). Slower and more expensive per request.',
       status: 'experimental',
       courseTopics: ['llm-integration', 'form-authoring', 'model-selection'],
       catalogPath: '/catalog/experiments/shaping-model-comparison/opus',

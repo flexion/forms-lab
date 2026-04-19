@@ -19,25 +19,25 @@ const TASK_META: Record<Task, TaskMeta> = {
   extraction: {
     label: 'Extraction',
     description:
-      'Parse a PDF into a structured DataCollectionSpec. Runs when you upload a new form.',
+      'Reads a PDF and identifies every field, group, and sensitivity level. Different variants trade off completeness vs. accuracy: some find more fields but make more mistakes, others are highly precise but may miss fields on complex forms. Your choice takes effect the next time you upload a form.',
     benchmarksPath: '/catalog/experiments/pdf-field-extraction',
   },
   shaping: {
     label: 'Shaping',
     description:
-      'Apply natural-language edit instructions to a form spec as a sequence of structured commands. Runs when you describe a change on the edit page.',
+      'Interprets your natural-language edit instructions (e.g., "swap pages 2 and 3") and translates them into structured form commands. Larger models handle ambiguous or multi-step requests better; smaller models respond faster for simple edits. Your choice takes effect the next time you describe a change on the edit page.',
     benchmarksPath: '/catalog/experiments/shaping-model-comparison',
   },
   filling: {
     label: 'Conversational filling',
     description:
-      'Guide Carlos through complex form sections as an adaptive interview. Runs when a section is configured for conversational delivery.',
+      'Guides respondents through complex form sections as an adaptive interview. Runs when a section is configured for conversational delivery.',
     benchmarksPath: '/catalog/experiments/roadmap',
   },
   'field-mapping': {
     label: 'Field mapping',
     description:
-      "Match extracted spec fields to the source PDF's AcroForm fields. Runs automatically after extraction.",
+      "Matches extracted spec fields to the source PDF's AcroForm fields so completed forms can be written back to the original PDF. Runs automatically after extraction.",
     benchmarksPath: '/catalog/experiments/roadmap',
   },
 }
