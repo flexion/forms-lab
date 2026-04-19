@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fixtureManifestSchema } from '../src/services/evaluation'
-import { dataCollectionSpecSchema } from '../src/services/form-documents'
+import { dataCollectionSpecSchema } from '../src/services/form-documents/schemas'
 
 const fixturesDir = join(import.meta.dir, '..', 'fixtures')
 

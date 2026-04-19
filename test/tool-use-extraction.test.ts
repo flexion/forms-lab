@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import {
   extractionTools,
   reconstructSpec,
-} from '../src/services/form-documents'
+} from '../src/services/form-documents/extraction-tools'
 
 describe('extractionTools', () => {
   it('defines createSpec, addGroup, addField, and flagLowConfidence tools', () => {

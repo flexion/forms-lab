@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import type { ExtractionExemplar } from '../src/services/extraction'
-import { buildExemplarSection } from '../src/services/form-documents'
+import { buildExemplarSection } from '../src/services/form-documents/extraction'
 
 describe('buildExemplarSection', () => {
   const sampleExemplars: ExtractionExemplar[] = [
