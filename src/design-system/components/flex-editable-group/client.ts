@@ -1,5 +1,5 @@
 import type { RequirementGroup } from '../../../services/data-collection'
-import type { Command } from '../../../services/forms'
+import type { Command } from '../../../services/forms/shaping/commands'
 import type { SelectionTarget } from '../flex-form-editor/protocol'
 
 class FlexEditableGroup extends HTMLElement {

@@ -204,6 +204,14 @@ async function findCrossServiceViolations(): Promise<CrossServiceViolation[]> {
     // shared/ importing services/ is already blocked by the P2 test;
     // skip to avoid double-reporting.
     if (fromLayer === 'shared') continue
+    // design-system/ client.ts files are browser bundle entry points.
+    // A service barrel re-exports server-only modules (bun:sqlite, AWS SDK,
+    // etc.); when a client.ts imports from services/<B>, Bun.build()'s
+    // browser target errors on those imports before tree-shaking can drop
+    // them. client.ts files are already classified as entrypoint-level by
+    // the P2 rule for the same physical reason, so they may deep-import
+    // to narrow the browser-bundle graph to server-safe modules.
+    if (file.endsWith('/client.ts')) continue
     const content = await readFile(file, 'utf-8')
     const imports = parseAllImports(content)
     for (const imp of imports) {

@@ -1,5 +1,9 @@
-import type { Command, ProjectState } from '../../../services/forms'
-import { executeBatch, humanize } from '../../../services/forms'
+import type {
+  Command,
+  ProjectState,
+} from '../../../services/forms/shaping/commands'
+import { executeBatch } from '../../../services/forms/shaping/executor'
+import { humanize } from '../../../services/forms/shaping/humanize'
 
 class FlexStagedChanges extends HTMLElement {
   private commands: Command[] = []

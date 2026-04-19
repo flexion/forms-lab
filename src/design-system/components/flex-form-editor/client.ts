@@ -1,5 +1,5 @@
-import type { Command } from '../../../services/forms'
-import { executeBatch } from '../../../services/forms'
+import type { Command } from '../../../services/forms/shaping/commands'
+import { executeBatch } from '../../../services/forms/shaping/executor'
 import type { ProjectStateClient, SelectionTarget } from './protocol'
 
 interface AssistantElement extends HTMLElement {

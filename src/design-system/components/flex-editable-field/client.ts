@@ -2,7 +2,7 @@ import type {
   DataRequirement,
   RequirementGroup,
 } from '../../../services/data-collection'
-import type { Command } from '../../../services/forms'
+import type { Command } from '../../../services/forms/shaping/commands'
 import type {
   ProjectStateClient,
   SelectionTarget,
