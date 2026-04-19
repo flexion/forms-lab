@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
-import type { DataCollectionSpec } from '../src/services/data-collection/types'
+import type { DataCollectionSpec } from '../src/services/data-collection'
+import { createLlmJudgeKind } from '../src/services/evaluation'
 import type { FieldJudge } from '../src/services/evaluation/judge'
 import type { JudgeResponse } from '../src/services/evaluation/judge-schemas'
-import { createLlmJudgeKind } from '../src/services/evaluation/kinds/pdf-field-extraction-judge'
 
 function makeSpec(
   fields: Array<{ fieldName: string; label: string; groupId: string }>,

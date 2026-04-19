@@ -1,5 +1,5 @@
-import type { GitHubClient } from '../../services/deployment/github'
-import { notifyEvent } from '../../services/notifications/client'
+import type { GitHubClient } from '../../services/deployment'
+import { notifyEvent } from '../../services/notifications'
 
 export interface DeployResult {
   success: boolean

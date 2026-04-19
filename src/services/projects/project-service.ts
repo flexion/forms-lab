@@ -1,36 +1,33 @@
-import { slugify } from '../shared/slugify'
-import type {
-  DataCollectionSpec,
-  FieldConfidence,
-  FormSpec,
-  ProjectIndex,
-} from '../types/models'
-import type { SessionUser } from './auth/session'
 import {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
   UnauthenticatedError,
-} from './errors'
-import type { PdfExtractor } from './form-documents/extraction'
+} from '../../shared/errors'
+import { slugify } from '../../shared/slugify'
+import type {
+  DataCollectionSpec,
+  FieldConfidence,
+  FormSpec,
+  ProjectIndex,
+} from '../../types/models'
+import type { SessionUser } from '../auth'
+import type { PdfExtractor } from '../form-documents'
+import { type Command, executeBatch } from '../forms'
+import type { ProjectStore } from '../storage'
+import {
+  appendProvenance,
+  type ProvenanceEntry,
+  type ProvenanceFile,
+  readProvenance,
+  type Task,
+} from '../variant-preferences'
 import type {
   BranchEntry,
   CommitEntry,
   FormProjectRepo,
   TreeEntry,
 } from './form-project-repo'
-import type { Command } from './forms/shaping/commands'
-import { executeBatch } from './forms/shaping/executor'
-import type { ProjectStore } from './storage'
-import {
-  appendProvenance,
-  type ProvenanceEntry,
-  type ProvenanceFile,
-  readProvenance,
-} from './variant-preferences/provenance'
-import type { Task } from './variant-preferences/types'
-
-export type { BranchEntry } from './form-project-repo'
 
 /**
  * Dependency passed to `createProjectService` so it can resolve the
@@ -671,10 +668,8 @@ export function createProjectService(
 
       const batchResult = executeBatch(
         {
-          formSpec:
-            currentFormSpec as unknown as import('./forms/types').FormSpec,
-          dataSpec:
-            currentDataSpec as unknown as import('./data-collection/types').DataCollectionSpec,
+          formSpec: currentFormSpec as unknown as FormSpec,
+          dataSpec: currentDataSpec as unknown as DataCollectionSpec,
         },
         commands,
       )

@@ -13,7 +13,7 @@
  * it would create a maintenance hazard.
  */
 
-import type { ExtractionExemplar } from '../extraction/exemplars'
+import type { ExtractionExemplar } from '../extraction'
 
 /**
  * Build the hybrid Step-1 prompt for a single exemplar.

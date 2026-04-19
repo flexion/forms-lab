@@ -1,8 +1,5 @@
-import type {
-  DataCollectionSpec,
-  DataRequirement,
-} from '../../data-collection/types'
-import type { FieldConfidence } from '../../form-documents/types'
+import type { DataCollectionSpec, DataRequirement } from '../../data-collection'
+import type { FieldConfidence } from '../../form-documents'
 
 /**
  * Output format for PDF field extraction

@@ -17,8 +17,9 @@ import {
   parseMarkdown,
   readMarkdownDir,
   renderMarkdown,
-} from '../../../../services/content/markdown'
+} from '../../../../services/content'
 import { resolveUrl } from '../../../../shared/base-path'
+import { getBuildInfo } from '../../../../shared/build-info'
 import { getArchitectureSidebar } from './sidebar'
 
 const diagramsBySlug: Record<string, GraphDefinition> = {
@@ -125,7 +126,7 @@ architecture.get('/:slug', async (c) => {
           ]}
         />
         {diagram && <DiagramRenderer graph={diagram} />}
-        <Prose html={renderMarkdown(file.content)} />
+        <Prose html={renderMarkdown(file.content, { build: getBuildInfo() })} />
       </Layout>,
     )
   } catch {

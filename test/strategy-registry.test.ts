@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { StrategyRegistry } from '../src/services/strategy-registry'
+import { StrategyRegistry } from '../src/shared/strategy-registry'
 
 interface TestService {
   doWork(): string

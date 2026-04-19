@@ -1,19 +1,21 @@
 import { type Context, Hono } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { Layout } from '../../../../../design-system/components/flex-layout'
-import { AppError, UnauthenticatedError } from '../../../../../services/errors'
 import type {
   Command,
+  FormShaper,
   ProjectState,
-} from '../../../../../services/forms/shaping/commands'
-import { commandSchema } from '../../../../../services/forms/shaping/commands'
-import { executeBatch } from '../../../../../services/forms/shaping/executor'
-import { humanize } from '../../../../../services/forms/shaping/humanize'
-import type { FormShaper } from '../../../../../services/forms/shaping/types'
-import type { ProjectService } from '../../../../../services/project-service'
-import type { StrategyRegistry } from '../../../../../services/strategy-registry'
+} from '../../../../../services/forms'
+import {
+  commandSchema,
+  executeBatch,
+  humanize,
+} from '../../../../../services/forms'
+import type { ProjectService } from '../../../../../services/projects'
 import type { VariantPreferencesService } from '../../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../../shared/base-path'
+import { AppError, UnauthenticatedError } from '../../../../../shared/errors'
+import type { StrategyRegistry } from '../../../../../shared/strategy-registry'
 import { ErrorPage } from '../components'
 import { EditorPage, PreviewPage } from './components'
 

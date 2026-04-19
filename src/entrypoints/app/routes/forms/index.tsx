@@ -10,30 +10,26 @@ import { PreviewBanner } from '../../../../design-system/components/flex-preview
 import type {
   DataCollectionSpec,
   RequirementGroup,
-} from '../../../../services/data-collection/types'
-import { fillPdf } from '../../../../services/form-documents/filling'
-import type { FieldMapping } from '../../../../services/form-documents/types'
+} from '../../../../services/data-collection'
+import type { FieldMapping } from '../../../../services/form-documents'
+import { fillPdf } from '../../../../services/form-documents'
 import type {
   ConversationGateway,
-  FillingAgent,
-} from '../../../../services/forms/filling-agent/types'
-import {
-  countVisiblePages,
-  findNextPage,
-  findPrevPage,
-  visiblePageNumber,
-} from '../../../../services/forms/navigation'
-import {
-  evaluateCondition,
-  resolveFormSpec,
-} from '../../../../services/forms/resolver'
-import type {
   FieldEntry,
+  FillingAgent,
   FormSessionGateway,
   FormSpec,
   SubmissionGateway,
-} from '../../../../services/forms/types'
-import { validateFields } from '../../../../services/forms/validation'
+} from '../../../../services/forms'
+import {
+  countVisiblePages,
+  evaluateCondition,
+  findNextPage,
+  findPrevPage,
+  resolveFormSpec,
+  validateFields,
+  visiblePageNumber,
+} from '../../../../services/forms'
 import { resolveUrl } from '../../../../shared/base-path'
 import { requireAuth } from '../../middleware/auth'
 

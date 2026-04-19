@@ -1,4 +1,4 @@
-import type { FormProjectRepo } from '../../form-project-repo'
+import type { FormProjectRepo } from '../../projects'
 import { createCommentsStore } from './comments'
 import type { MergeOutcome, ReviewRef } from './types'
 

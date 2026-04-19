@@ -1,16 +1,16 @@
 import { type Context, Hono } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { Layout } from '../../../../../design-system/components/flex-layout'
+import type { ReviewService } from '../../../../../services/forms'
+import { compareSpecs } from '../../../../../services/forms'
+import type { ProjectService } from '../../../../../services/projects'
+import { resolveUrl } from '../../../../../shared/base-path'
 import {
   AppError,
   ForbiddenError,
   UnauthenticatedError,
-} from '../../../../../services/errors'
-import { compareSpecs } from '../../../../../services/forms/comparison'
-import type { ReviewService } from '../../../../../services/forms/review'
-import type { ProjectService } from '../../../../../services/project-service'
-import type { StrategyListItem } from '../../../../../services/strategy-registry'
-import { resolveUrl } from '../../../../../shared/base-path'
+} from '../../../../../shared/errors'
+import type { StrategyListItem } from '../../../../../shared/strategy-registry'
 import { ErrorPage } from '../components'
 import { ReviewPage } from './components'
 

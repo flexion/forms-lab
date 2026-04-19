@@ -1,9 +1,13 @@
+// Public interface for the storage service.
+// External imports (other services, entrypoints, design-system) MUST come
+// through this file. Enforced by test/architecture/dependency-rule.test.ts.
+
 import { Database } from 'bun:sqlite'
 import type {
   NewProjectIndex,
   ProjectIndex,
   ProjectStatus,
-} from '../types/models'
+} from '../../types/models'
 
 export interface CacheEntry {
   key: string

@@ -1,7 +1,7 @@
 import type { FC } from 'hono/jsx'
 // biome-ignore format: keep on one line so the dep-rule parser (which is line-based) recognizes this as a type-only import
-import type { DataCollectionSpec, RequirementGroup } from '../../../services/data-collection/types'
-import type { FormPage, FormSpec } from '../../../services/forms/types'
+import type { DataCollectionSpec, RequirementGroup } from '../../../services/data-collection'
+import type { FormPage, FormSpec } from '../../../services/forms'
 import { resolveUrl } from '../../../shared/base-path'
 import type { FieldConfidence } from '../../../types/models'
 import { ConfidenceBadge } from '../flex-confidence-badge'

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import type { FormSpec } from '../../../../src/services/forms'
 import { diffFormSpecs } from '../../../../src/services/forms/comparison/form-spec-differ'
-import type { FormSpec } from '../../../../src/services/forms/types'
 
 const baseSpec: FormSpec = {
   id: 'form1',

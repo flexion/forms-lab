@@ -1,7 +1,4 @@
-import type {
-  DataCollectionSpec,
-  DataRequirement,
-} from '../../data-collection/types'
+import type { DataCollectionSpec, DataRequirement } from '../../data-collection'
 import type { SpecChange } from './types'
 
 // Compares structural attributes only: required, fieldType, label.

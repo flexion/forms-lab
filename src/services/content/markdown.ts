@@ -3,9 +3,15 @@ import { join } from 'node:path'
 import MarkdownIt from 'markdown-it'
 import taskLists from 'markdown-it-task-lists'
 
+import type { BuildInfo } from '../../shared/build-info'
+import { githubPermalink } from './github-permalink'
 import type { MarkdownFile } from './types'
 
 export type { MarkdownFile }
+
+export interface RenderOptions {
+  build: BuildInfo
+}
 
 /**
  * Parse markdown file with YAML frontmatter
@@ -79,16 +85,60 @@ export async function readMarkdownDir(
   return results
 }
 
-const md = new MarkdownIt({
-  html: false,
-  linkify: true,
-  typographer: true,
-})
-md.use(taskLists)
-
 /**
- * Render markdown string to HTML
+ * Render markdown string to HTML. Rewrites `src:` links to GitHub permalinks
+ * pinned to the current build's git ref.
  */
-export function renderMarkdown(input: string): string {
-  return md.render(input)
+export function renderMarkdown(content: string, opts: RenderOptions): string {
+  const md = new MarkdownIt({
+    html: false,
+    linkify: true,
+    typographer: true,
+  })
+    .use(taskLists)
+    .use(srcUrlPlugin(opts.build))
+  return md.render(content)
+}
+
+function srcUrlPlugin(build: BuildInfo) {
+  return (md: MarkdownIt) => {
+    const defaultLinkOpen =
+      md.renderer.rules.link_open ??
+      ((tokens, idx, options, _env, self) =>
+        self.renderToken(tokens, idx, options))
+
+    md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+      const token = tokens[idx]
+      const hrefIdx = token.attrIndex('href')
+      if (hrefIdx >= 0) {
+        const href = token.attrs?.[hrefIdx][1] ?? ''
+        const rewritten = rewriteSrcHref(href, build)
+        if (rewritten !== href && token.attrs) {
+          token.attrs[hrefIdx][1] = rewritten
+        }
+      }
+      return defaultLinkOpen(tokens, idx, options, env, self)
+    }
+  }
+}
+
+function rewriteSrcHref(href: string, build: BuildInfo): string {
+  if (!href.startsWith('src:')) return href
+  const rest = href.slice(4)
+  const hashIdx = rest.indexOf('#')
+  const path = hashIdx >= 0 ? rest.slice(0, hashIdx) : rest
+  const fragment = hashIdx >= 0 ? rest.slice(hashIdx + 1) : ''
+  const lines = parseLineFragment(fragment)
+  return githubPermalink({ path, lines }, build)
+}
+
+function parseLineFragment(
+  fragment: string,
+): number | [number, number] | undefined {
+  if (!fragment) return undefined
+  const range = fragment.match(/^L(\d+)-L(\d+)$/)
+  if (range) return [Number(range[1]), Number(range[2])]
+  const single = fragment.match(/^L(\d+)$/)
+  if (single) return Number(single[1])
+  return undefined
 }

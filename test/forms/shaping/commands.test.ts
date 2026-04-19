@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'bun:test'
-import type { DataCollectionSpec } from '../../../src/services/data-collection/types'
+import type { DataCollectionSpec } from '../../../src/services/data-collection'
+import type { FormSpec } from '../../../src/services/forms'
 import {
   type Command,
   commandSchema,
   type ProjectState,
-} from '../../../src/services/forms/shaping/commands'
-import type { FormSpec } from '../../../src/services/forms/types'
+} from '../../../src/services/forms'
 
 describe('Command schemas', () => {
   it('validates reorderPages command', () => {

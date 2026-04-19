@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import app from '../src/entrypoints/app/server'
-import { COOKIE_NAME, encryptSession } from '../src/services/auth/session'
+import { COOKIE_NAME, encryptSession } from '../src/services/auth'
 
 describe('Server', () => {
   it('responds to health check', async () => {

@@ -1,6 +1,6 @@
 import type { FC } from 'hono/jsx'
-import type { DataCollectionSpec } from '../../../services/data-collection/types'
-import type { FormSpec } from '../../../services/forms/types'
+import type { DataCollectionSpec } from '../../../services/data-collection'
+import type { FormSpec } from '../../../services/forms'
 import { SpecBrowser } from './index'
 
 const minimalDataSpec: DataCollectionSpec = {

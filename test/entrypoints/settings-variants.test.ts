@@ -5,11 +5,13 @@ import { join } from 'node:path'
 import { Hono } from 'hono'
 import { sessionReader } from '../../src/entrypoints/app/middleware/auth'
 import { createSettingsRoutes } from '../../src/entrypoints/app/routes/settings/index'
-import { COOKIE_NAME, encryptSession } from '../../src/services/auth/session'
-import { StrategyRegistry } from '../../src/services/strategy-registry'
-import { createVariantPreferencesService } from '../../src/services/variant-preferences/service'
-import { createVariantPreferencesGateway } from '../../src/services/variant-preferences/sqlite-gateway'
-import type { Task } from '../../src/services/variant-preferences/types'
+import { COOKIE_NAME, encryptSession } from '../../src/services/auth'
+import type { Task } from '../../src/services/variant-preferences'
+import {
+  createVariantPreferencesGateway,
+  createVariantPreferencesService,
+} from '../../src/services/variant-preferences'
+import { StrategyRegistry } from '../../src/shared/strategy-registry'
 
 const SESSION_SECRET = 'test-secret-test-secret-test-secret'
 

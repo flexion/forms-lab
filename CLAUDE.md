@@ -241,15 +241,20 @@ Follows [meta-knowledge-base](https://github.com/danielnaab/meta-knowledge-base)
 - `src/entrypoints/notify/` — Notification delivery server
 - `src/entrypoints/cli/` — CLI commands (sync-stories, infra, nixos, webhook, deploy)
 - `src/services/data-collection/` — Core domain model: what data to collect
-- `src/services/forms/` — Form resolution, delivery, sessions, submission
-- `src/services/ingestion/` — PDF to structured spec pipeline
-- `src/services/auth/` — Authentication and sessions (GitHub OAuth)
+- `src/services/forms/` — Form resolution, delivery, sessions, submission, shaping, filling (internal sub-modules)
+- `src/services/form-documents/` — PDF extraction, field mapping, filling
+- `src/services/extraction/` — PDF extractor variant registry
+- `src/services/evaluation/` — Evaluation harness and LLM-as-judge kinds
+- `src/services/projects/` — Project service and form-project git repo
+- `src/services/auth/` — Authentication, sessions, user store (GitHub OAuth)
 - `src/services/deployment/` — Deploy orchestration and metadata
 - `src/services/notifications/` — Notification types and client
-- `src/services/content/` — Content rendering (markdown, catalog types)
-- `src/services/storage.ts` — Persistence layer (SQLite)
+- `src/services/content/` — Content rendering (markdown, github-permalink, catalog types)
+- `src/services/storage/` — Persistence layer (SQLite project + cache stores)
+- `src/services/variant-preferences/` — Per-user variant selection
+- Each service exposes its public API via `src/services/<name>/index.ts` — external imports must go through that file (see `catalog/architecture/navigation.md`)
 - `src/design-system/` — UI components (flex-* component library, conformance, registry)
-- `src/shared/` — Pure utilities (base-path, format-html, test-helpers, visual-descriptor)
+- `src/shared/` — Pure utilities (base-path, format-html, slugify, strategy-registry, build-info, errors, test-helpers, visual-descriptor)
 - `infrastructure/pulumi/` — EC2 provisioning (Pulumi TypeScript)
 - `infrastructure/nixos/` — Server configuration (NixOS flake)
 - `catalog/` — Catalog content (personas, stories, decisions, architecture, experiments)

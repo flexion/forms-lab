@@ -1,11 +1,11 @@
 import { type Context, Hono } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { Layout } from '../../../../design-system/components/flex-layout'
-import { AppError, UnauthenticatedError } from '../../../../services/errors'
-import type { ProjectService } from '../../../../services/project-service'
-import type { VariantRegistry } from '../../../../services/strategy-registry'
-import type { UserStore } from '../../../../services/user-store'
+import type { UserStore } from '../../../../services/auth'
+import type { ProjectService } from '../../../../services/projects'
 import { resolveUrl } from '../../../../shared/base-path'
+import { AppError, UnauthenticatedError } from '../../../../shared/errors'
+import type { VariantRegistry } from '../../../../shared/strategy-registry'
 import {
   BlobPage,
   CommitListPage,

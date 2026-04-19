@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { syncStoriesFromIssues } from '../src/entrypoints/cli/commands/sync-stories'
-import type { GitHubIssue } from '../src/services/deployment/github'
+import type { GitHubIssue } from '../src/services/deployment'
 
 const testDir = join(import.meta.dir, '__fixtures__', 'stories')
 

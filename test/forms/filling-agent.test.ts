@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { ScriptedFillingAgent } from '../../src/services/forms/filling-agent/scripted'
+import { ScriptedFillingAgent } from '../../src/services/forms'
 import type { FillingContext } from '../../src/services/forms/filling-agent/types'
 import { testDataSpec } from './fixtures'
 

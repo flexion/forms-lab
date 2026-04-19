@@ -1,8 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from 'bun:test'
 import { mkdirSync, rmSync } from 'node:fs'
-import type { SessionUser } from '../../../src/services/auth/session'
-import { createFormProjectRepo } from '../../../src/services/form-project-repo'
-import { createProjectService } from '../../../src/services/project-service'
+import type { SessionUser } from '../../../src/services/auth'
+import {
+  createFormProjectRepo,
+  createProjectService,
+} from '../../../src/services/projects'
 import { createProjectStore } from '../../../src/services/storage'
 import { testDataSpec, testFormSpec } from '../fixtures'
 

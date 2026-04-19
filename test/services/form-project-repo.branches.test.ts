@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'bun:test'
 import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createFormProjectRepo } from '../../src/services/form-project-repo'
+import { createFormProjectRepo } from '../../src/services/projects'
 
 describe('FormProjectRepo branches', () => {
   let basePath: string

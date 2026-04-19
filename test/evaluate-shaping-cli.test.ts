@@ -10,7 +10,7 @@ import type {
   ShapingRequest,
   ShapingResult,
 } from '../src/services/forms/shaping/types'
-import { StrategyRegistry } from '../src/services/strategy-registry'
+import { StrategyRegistry } from '../src/shared/strategy-registry'
 
 type ShapeFn = (request: ShapingRequest) => Promise<ShapingResult>
 

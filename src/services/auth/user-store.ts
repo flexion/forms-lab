@@ -1,5 +1,5 @@
 import { Database } from 'bun:sqlite'
-import type { UserProfile } from '../types/models'
+import type { UserProfile } from '../../types/models'
 
 export interface UserStore {
   upsert(user: { login: string; name: string; avatarUrl: string }): void

@@ -4,7 +4,7 @@ import {
   requireAuth,
   sessionReader,
 } from '../src/entrypoints/app/middleware/auth'
-import { COOKIE_NAME, encryptSession } from '../src/services/auth/session'
+import { COOKIE_NAME, encryptSession } from '../src/services/auth'
 
 describe('Auth Middleware', () => {
   describe('sessionReader', () => {

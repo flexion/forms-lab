@@ -1,5 +1,5 @@
 // src/services/forms/filling-agent/scripted.ts
-import type { DataRequirement } from '../../data-collection/types'
+import type { DataRequirement } from '../../data-collection'
 import { evaluateCondition } from '../resolver'
 import type { FieldEntry } from '../types'
 import type {

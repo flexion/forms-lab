@@ -1,7 +1,6 @@
 import type { FC } from 'hono/jsx'
-import type { DataCollectionSpec } from '../../../services/data-collection/types'
-import type { SpecChange } from '../../../services/forms/comparison'
-import type { FormSpec } from '../../../services/forms/types'
+import type { DataCollectionSpec } from '../../../services/data-collection'
+import type { FormSpec, SpecChange } from '../../../services/forms'
 import { SpecDiffBrowser } from './index'
 
 // ---------------------------------------------------------------------------

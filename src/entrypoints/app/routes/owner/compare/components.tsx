@@ -7,13 +7,13 @@ import { SpecDiffBrowser } from '../../../../../design-system/components/flex-sp
 import { VariantBadge } from '../../../../../design-system/components/flex-variant-badge'
 import type {
   ChangeResource,
+  Comment,
   SpecChange,
-} from '../../../../../services/forms/comparison'
-import type { Comment } from '../../../../../services/forms/review'
+} from '../../../../../services/forms'
 import type {
   ProjectView,
   ShapingLogEntry,
-} from '../../../../../services/project-service'
+} from '../../../../../services/projects'
 import { resolveUrl } from '../../../../../shared/base-path'
 
 const RESOURCE_LABELS: Record<ChangeResource, string> = {

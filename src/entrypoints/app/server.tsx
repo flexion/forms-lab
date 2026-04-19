@@ -8,26 +8,30 @@ import {
   loadFixturePdf,
 } from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
-import type { DataCollectionSpec } from '../../services/data-collection/types'
-import { createExtractorRegistry } from '../../services/extraction/registry'
-import { createCachedPdfExtractor } from '../../services/form-documents/extraction'
-import { createMappingRegistry } from '../../services/form-documents/mapping-registry'
-import { createFormProjectRepo } from '../../services/form-project-repo'
-import { createFillingRegistry } from '../../services/forms/filling/registry'
+import { createUserStore } from '../../services/auth'
+import type { DataCollectionSpec } from '../../services/data-collection'
+import { createExtractorRegistry } from '../../services/extraction'
+import {
+  createCachedPdfExtractor,
+  createMappingRegistry,
+} from '../../services/form-documents'
+import type { FormSpec } from '../../services/forms'
 import {
   BedrockFillingAgent,
+  createFillingRegistry,
+  createReviewService,
+  createShapingRegistry,
+  createSpecSnapshotStore,
   ScriptedFillingAgent,
   SqliteConversationGateway,
-} from '../../services/forms/filling-agent'
-import { createReviewService } from '../../services/forms/review'
-import { createShapingRegistry } from '../../services/forms/shaping/registry'
-import { createSpecSnapshotStore } from '../../services/forms/spec-snapshot-store'
-import { SqliteFormSessionGateway } from '../../services/forms/sqlite-session-gateway'
-import { SqliteSubmissionGateway } from '../../services/forms/sqlite-submission-gateway'
-import type { FormSpec } from '../../services/forms/types'
-import { createProjectService } from '../../services/project-service'
+  SqliteFormSessionGateway,
+  SqliteSubmissionGateway,
+} from '../../services/forms'
+import {
+  createFormProjectRepo,
+  createProjectService,
+} from '../../services/projects'
 import { createCacheStore, createProjectStore } from '../../services/storage'
-import { createUserStore } from '../../services/user-store'
 import {
   createVariantPreferencesGateway,
   createVariantPreferencesService,

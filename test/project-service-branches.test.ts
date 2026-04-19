@@ -2,22 +2,22 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import type { SessionUser } from '../src/services/auth/session'
+import type { SessionUser } from '../src/services/auth'
+import type { PdfExtractor } from '../src/services/form-documents'
+import {
+  createFormProjectRepo,
+  createProjectService,
+  type FormProjectRepo,
+  type ProjectService,
+} from '../src/services/projects'
+import type { ProjectStore } from '../src/services/storage'
+import { createProjectStore } from '../src/services/storage'
 import {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
   UnauthenticatedError,
-} from '../src/services/errors'
-import type { PdfExtractor } from '../src/services/form-documents/extraction'
-import type { FormProjectRepo } from '../src/services/form-project-repo'
-import { createFormProjectRepo } from '../src/services/form-project-repo'
-import {
-  createProjectService,
-  type ProjectService,
-} from '../src/services/project-service'
-import type { ProjectStore } from '../src/services/storage'
-import { createProjectStore } from '../src/services/storage'
+} from '../src/shared/errors'
 import type { ExtractionResult } from '../src/types/models'
 
 const SAMPLE_PDF = Buffer.from('%PDF-1.4 sample')

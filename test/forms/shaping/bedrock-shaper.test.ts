@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import type { ProjectState } from '../../../src/services/forms'
 import { validateCommands } from '../../../src/services/forms/shaping/bedrock-shaper'
-import type { ProjectState } from '../../../src/services/forms/shaping/commands'
 
 function fixture(): ProjectState {
   return {

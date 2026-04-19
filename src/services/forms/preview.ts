@@ -6,7 +6,7 @@
  * reviewer to see the form's pages, groups, and fields.
  */
 
-import type { DataCollectionSpec } from '../data-collection/types'
+import type { DataCollectionSpec } from '../data-collection'
 import type { DeliveryMode, FormSpec } from './types'
 
 export interface PreviewField {

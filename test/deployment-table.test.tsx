@@ -5,8 +5,8 @@ import {
   getCombinedHealthStatus,
   relativeTime,
 } from '../src/entrypoints/dashboard/deployment-table'
-import { sortDeploymentsByDate } from '../src/services/deployment/metadata'
-import type { DeploymentInfo } from '../src/services/deployment/types'
+import type { DeploymentInfo } from '../src/services/deployment'
+import { sortDeploymentsByDate } from '../src/services/deployment'
 
 function makeDeployment(branch: string, date: string): DeploymentInfo {
   return {

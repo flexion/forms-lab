@@ -3,10 +3,7 @@ import { Alert } from '../../../../design-system/components/flex-alert'
 import { Button } from '../../../../design-system/components/flex-button'
 import { Radio } from '../../../../design-system/components/flex-radio'
 import type { TaskRegistries } from '../../../../services/variant-preferences'
-import {
-  TASKS,
-  type Task,
-} from '../../../../services/variant-preferences/types'
+import { TASKS, type Task } from '../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../shared/base-path'
 
 interface TaskMeta {

@@ -6,7 +6,7 @@ import type {
   DataCollectionSpec,
   FieldCondition,
   RequirementGroup,
-} from '../data-collection/types'
+} from '../data-collection'
 
 export type DeliveryMode = 'static' | 'conversational' | 'hybrid'
 

@@ -1,3 +1,7 @@
+// Public interface for the form-documents service.
+// External imports (other services, entrypoints, design-system) MUST come
+// through this file. Enforced by test/architecture/dependency-rule.test.ts.
+
 export type { BedrockExtractorOptions, PdfExtractor } from './extraction'
 export {
   createBedrockPdfExtractor,
@@ -5,6 +9,8 @@ export {
 } from './extraction'
 export { enumerateFields } from './field-mapping'
 export { fillPdf } from './filling'
+export { createMappingRegistry } from './mapping-registry'
+export { createToolUsePdfExtractor } from './tool-use-extraction'
 export type {
   ExtractionOptions,
   ExtractionResult,

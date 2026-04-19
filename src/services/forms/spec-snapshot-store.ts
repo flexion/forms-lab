@@ -1,5 +1,5 @@
 import { Database } from 'bun:sqlite'
-import type { DataCollectionSpec } from '../data-collection/types'
+import type { DataCollectionSpec } from '../data-collection'
 import type { FormSpec } from './types'
 
 export interface SpecSnapshot {

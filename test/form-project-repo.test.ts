@@ -2,8 +2,10 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import type { FormProjectRepo } from '../src/services/form-project-repo'
-import { createFormProjectRepo } from '../src/services/form-project-repo'
+import {
+  createFormProjectRepo,
+  type FormProjectRepo,
+} from '../src/services/projects'
 
 describe('FormProjectRepo', () => {
   let basePath: string

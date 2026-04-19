@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test'
 import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createFormProjectRepo } from '../../../../src/services/form-project-repo'
-import { createReviewService } from '../../../../src/services/forms/review'
+import { createReviewService } from '../../../../src/services/forms'
+import { createFormProjectRepo } from '../../../../src/services/projects'
 
 describe('review service', () => {
   const slug = 'proj'

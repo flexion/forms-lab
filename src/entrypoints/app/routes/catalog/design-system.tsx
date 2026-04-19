@@ -26,7 +26,8 @@ import {
   getComponentBySlug,
   getComponentsByCategory,
 } from '../../../../design-system/registry'
-import { renderMarkdown } from '../../../../services/content/markdown'
+import { renderMarkdown } from '../../../../services/content'
+import { getBuildInfo } from '../../../../shared/build-info'
 import { getDesignSystemSidebar } from './sidebar'
 
 const designSystem = new Hono()
@@ -542,6 +543,7 @@ designSystem.get('/:slug', async (c) => {
           <Prose
             html={renderMarkdown(
               '### Token Rules\n\n- All colors must use `--flex-color-*` tokens (no hardcoded hex)\n- Spacing must use `--flex-space-*` tokens\n- Font families must use `--flex-font-sans` or `--flex-font-mono`\n- Font sizes must use `--flex-text-*` tokens\n- Border radii must use `--flex-radius-*` tokens\n- Exception: USWDS components may use hardcoded rem/px for visual conformance\n\n### Component Rules\n\n- One CSS file per component, co-located with its TSX\n- Block CSS handles appearance (color, typography, borders), not layout between siblings\n- Use `data-` attributes for state/variants (`data-status`, `data-variant`, `data-size`)\n- Every interactive component must have `:focus-visible` and `:disabled` styles\n\n### Accessibility\n\n- 44px minimum touch target\n- Form fields must have associated `<label>`\n- Error states need color + text (not color alone)\n- Respect `prefers-reduced-motion`\n- Support `prefers-contrast`',
+              { build: getBuildInfo() },
             )}
           />
         </section>

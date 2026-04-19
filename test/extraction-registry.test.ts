@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { createExtractorRegistry } from '../src/services/extraction/registry'
+import { createExtractorRegistry } from '../src/services/extraction'
 
 describe('createExtractorRegistry', () => {
   it('returns a registry with strategies registered', () => {

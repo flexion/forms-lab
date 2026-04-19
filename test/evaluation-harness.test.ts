@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'bun:test'
-import type { DataCollectionSpec } from '../src/services/data-collection/types'
-import { runEvaluation } from '../src/services/evaluation/harness'
-import { pdfFieldExtractionKind } from '../src/services/evaluation/kinds/pdf-field-extraction'
-import { evaluationRunSchema } from '../src/services/evaluation/schemas'
-import type { PdfExtractor } from '../src/services/form-documents/extraction'
+import type { DataCollectionSpec } from '../src/services/data-collection'
+import {
+  evaluationRunSchema,
+  pdfFieldExtractionKind,
+  runEvaluation,
+} from '../src/services/evaluation'
+import type { PdfExtractor } from '../src/services/form-documents'
 
 const groundTruth: DataCollectionSpec = {
   id: 'test-spec',

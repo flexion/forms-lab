@@ -3,7 +3,7 @@ import {
   decryptSession,
   encryptSession,
   type SessionUser,
-} from '../src/services/auth/session'
+} from '../src/services/auth'
 
 describe('Session', () => {
   const secret = 'test-secret-key-32-bytes-long!'

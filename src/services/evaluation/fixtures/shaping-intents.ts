@@ -5,12 +5,8 @@
  * comparison (catalog/experiments/shaping-architecture/_suite.md), now with
  * concrete expected Command[] outputs for deterministic scoring.
  */
-import type { DataCollectionSpec } from '../../../services/data-collection/types'
-import type {
-  Command,
-  ProjectState,
-} from '../../../services/forms/shaping/commands'
-import type { FormSpec } from '../../../services/forms/types'
+import type { DataCollectionSpec } from '../../data-collection'
+import type { Command, FormSpec, ProjectState } from '../../forms'
 import type { ShapingGroundTruth } from '../kinds/shaping-commands'
 
 // ---------------------------------------------------------------------------

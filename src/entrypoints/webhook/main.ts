@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { createGitHubClient } from '../../services/deployment/github'
+import { createGitHubClient } from '../../services/deployment'
 import {
   deployMainBranch,
   teardownBranch,

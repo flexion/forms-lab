@@ -3,8 +3,8 @@ import {
   HAIKU_MODEL_ID,
   OPUS_MODEL_ID,
   SONNET_MODEL_ID,
-} from '../../../src/services/extraction/models'
-import { createShapingRegistry } from '../../../src/services/forms/shaping/registry'
+} from '../../../src/services/extraction'
+import { createShapingRegistry } from '../../../src/services/forms'
 
 describe('shaping registry', () => {
   it('registers all three variants', () => {

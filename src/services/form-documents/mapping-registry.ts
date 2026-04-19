@@ -1,4 +1,4 @@
-import { StrategyRegistry } from '../strategy-registry'
+import { StrategyRegistry } from '../../shared/strategy-registry'
 
 // Placeholder until Story 13 wires up field-mapping variants.
 export function createMappingRegistry(): StrategyRegistry<unknown> {

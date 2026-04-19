@@ -10,8 +10,9 @@ import {
   parseMarkdown,
   readMarkdownDir,
   renderMarkdown,
-} from '../../../../services/content/markdown'
+} from '../../../../services/content'
 import { resolveUrl } from '../../../../shared/base-path'
+import { getBuildInfo } from '../../../../shared/build-info'
 import {
   type ExperimentSuite,
   getExperimentsSidebar,
@@ -243,7 +244,9 @@ experiments.get('/:kind', async (c) => {
           currentPath="/catalog"
           user={c.get('user')}
         >
-          <Prose html={renderMarkdown(file.content)} />
+          <Prose
+            html={renderMarkdown(file.content, { build: getBuildInfo() })}
+          />
           <p style="margin-top: var(--flex-space-lg);">
             <a href={resolveUrl('/catalog/experiments')}>
               ← Back to Experiments
@@ -301,7 +304,9 @@ experiments.get('/:kind', async (c) => {
         currentPath="/catalog"
         user={c.get('user')}
       >
-        <Prose html={renderMarkdown(suite.content)} />
+        <Prose
+          html={renderMarkdown(suite.content, { build: getBuildInfo() })}
+        />
 
         {runSummaries.length > 0 && (
           <>
@@ -391,7 +396,9 @@ experiments.get('/:kind', async (c) => {
             currentPath="/catalog"
             user={c.get('user')}
           >
-            <Prose html={renderMarkdown(file.content)} />
+            <Prose
+              html={renderMarkdown(file.content, { build: getBuildInfo() })}
+            />
             <p style="margin-top: var(--flex-space-lg);">
               <a href={resolveUrl('/catalog/experiments')}>
                 ← Back to Experiments
@@ -459,7 +466,7 @@ experiments.get('/:kind/:slug', async (c) => {
         currentPath="/catalog"
         user={c.get('user')}
       >
-        <Prose html={renderMarkdown(file.content)} />
+        <Prose html={renderMarkdown(file.content, { build: getBuildInfo() })} />
         <p style="margin-top: var(--flex-space-lg);">
           <a href={resolveUrl(`/catalog/experiments/${kind}`)}>
             ← Back to {kind}

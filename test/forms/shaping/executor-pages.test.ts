@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import type { DataCollectionSpec } from '../../../src/services/data-collection/types'
-import type { ProjectState } from '../../../src/services/forms/shaping/commands'
+import type { DataCollectionSpec } from '../../../src/services/data-collection'
+import type { FormSpec, ProjectState } from '../../../src/services/forms'
 import { executeCommand } from '../../../src/services/forms/shaping/executor'
-import type { FormSpec } from '../../../src/services/forms/types'
 
 function fixture(): ProjectState {
   const dataSpec: DataCollectionSpec = {

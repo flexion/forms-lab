@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import type { DataRequirement } from '../../../src/services/data-collection/types'
+import type { DataRequirement } from '../../../src/services/data-collection'
 
 describe('DataRequirement.control', () => {
   it('accepts radio control for choice fields', () => {

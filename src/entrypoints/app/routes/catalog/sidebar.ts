@@ -3,7 +3,7 @@ import type {
   Decision,
   Story,
   WalkthroughPage,
-} from '../../../../services/content/types'
+} from '../../../../services/content'
 import { resolveUrl } from '../../../../shared/base-path'
 
 export function getCatalogSidebar(currentPath?: string) {

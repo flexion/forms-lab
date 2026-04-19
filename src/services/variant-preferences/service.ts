@@ -1,4 +1,4 @@
-import type { VariantRegistry } from '../strategy-registry'
+import type { VariantRegistry } from '../../shared/strategy-registry'
 import { TASKS, type Task, type VariantPreferencesGateway } from './types'
 
 export interface VariantPreferencesService {

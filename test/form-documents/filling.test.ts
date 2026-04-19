@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { PDFDocument } from 'pdf-lib'
-import { fillPdf } from '../../src/services/form-documents/filling'
-import type { FieldMapping } from '../../src/services/form-documents/types'
+import type { FieldMapping } from '../../src/services/form-documents'
+import { fillPdf } from '../../src/services/form-documents'
 
 async function createTestPdf(): Promise<Buffer> {
   const doc = await PDFDocument.create()

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { exemplars } from '../src/services/extraction/exemplars'
+import { exemplars } from '../src/services/extraction'
 
 describe('extraction exemplars', () => {
   it('exports between 2 and 3 exemplars', () => {

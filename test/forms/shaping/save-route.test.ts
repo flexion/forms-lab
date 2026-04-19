@@ -2,12 +2,14 @@ import { afterAll, beforeAll, describe, expect, it } from 'bun:test'
 import { mkdirSync, rmSync } from 'node:fs'
 import { Hono } from 'hono'
 import { createEditRoutes } from '../../../src/entrypoints/app/routes/owner/edit'
-import type { SessionUser } from '../../../src/services/auth/session'
-import { createFormProjectRepo } from '../../../src/services/form-project-repo'
-import type { FormShaper } from '../../../src/services/forms/shaping/types'
-import { createProjectService } from '../../../src/services/project-service'
+import type { SessionUser } from '../../../src/services/auth'
+import type { FormShaper } from '../../../src/services/forms'
+import {
+  createFormProjectRepo,
+  createProjectService,
+} from '../../../src/services/projects'
 import { createProjectStore } from '../../../src/services/storage'
-import { StrategyRegistry } from '../../../src/services/strategy-registry'
+import { StrategyRegistry } from '../../../src/shared/strategy-registry'
 import { testDataSpec, testFormSpec } from '../fixtures'
 
 const TEST_DIR = 'test-data/save-route'

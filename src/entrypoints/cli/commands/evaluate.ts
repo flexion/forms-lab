@@ -1,22 +1,22 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
+  evaluationRunSchema,
   fixtureProjectState,
+  pdfFieldExtractionKind,
+  type RunResult,
+  runEvaluation,
+  shapingCommandsKind,
   shapingIntentFixtures,
-} from '../../../services/evaluation/fixtures/shaping-intents'
-import { runEvaluation } from '../../../services/evaluation/harness'
-import { pdfFieldExtractionKind } from '../../../services/evaluation/kinds/pdf-field-extraction'
-import { shapingCommandsKind } from '../../../services/evaluation/kinds/shaping-commands'
-import { evaluationRunSchema } from '../../../services/evaluation/schemas'
-import type { RunResult } from '../../../services/evaluation/types'
-import { createExtractorRegistry } from '../../../services/extraction/registry'
-import { createCachedPdfExtractor } from '../../../services/form-documents/extraction'
-import type { FormShaper } from '../../../services/forms/shaping/types'
+} from '../../../services/evaluation'
+import { createExtractorRegistry } from '../../../services/extraction'
+import { createCachedPdfExtractor } from '../../../services/form-documents'
+import type { FormShaper } from '../../../services/forms'
 import { createCacheStore } from '../../../services/storage'
 import type {
   StrategyMetadata,
   StrategyRegistry,
-} from '../../../services/strategy-registry'
+} from '../../../shared/strategy-registry'
 
 export interface EvaluateOptions {
   /**
@@ -206,14 +206,12 @@ export async function evaluate(
       let kind = pdfFieldExtractionKind
       if (scorerType === 'llm-judge') {
         const { createBedrockFieldJudge } = await import(
-          '../../../services/evaluation/judge'
+          '../../../services/evaluation'
         )
         const { createLlmJudgeKind } = await import(
-          '../../../services/evaluation/kinds/pdf-field-extraction-judge'
+          '../../../services/evaluation'
         )
-        const { OPUS_MODEL_ID } = await import(
-          '../../../services/extraction/models'
-        )
+        const { OPUS_MODEL_ID } = await import('../../../services/extraction')
         const judge = createBedrockFieldJudge(OPUS_MODEL_ID)
         kind = createLlmJudgeKind(judge)
         console.log('Using LLM judge (Opus) for semantic field matching')
@@ -305,7 +303,7 @@ export async function evaluate(
         registry = options.shapingRegistry
       } else {
         const { createShapingRegistry } = await import(
-          '../../../services/forms/shaping/registry'
+          '../../../services/forms'
         )
         registry = createShapingRegistry()
       }

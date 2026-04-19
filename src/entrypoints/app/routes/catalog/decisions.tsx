@@ -8,13 +8,14 @@ import { CatalogSidebar } from '../../../../design-system/components/flex-catalo
 import { Layout } from '../../../../design-system/components/flex-layout'
 import { Prose } from '../../../../design-system/components/flex-prose'
 import { TagList } from '../../../../design-system/components/flex-tag-list'
+import type { Decision } from '../../../../services/content'
 import {
   parseMarkdown,
   readMarkdownDir,
   renderMarkdown,
-} from '../../../../services/content/markdown'
-import type { Decision } from '../../../../services/content/types'
+} from '../../../../services/content'
 import { resolveUrl } from '../../../../shared/base-path'
+import { getBuildInfo } from '../../../../shared/build-info'
 import { getDecisionsSidebar } from './sidebar'
 
 const groupLabels: Record<string, string> = {
@@ -150,7 +151,7 @@ decisions.get('/:group/:slug', async (c) => {
           <TagList tags={tags} />
           {decided && <span class="u-text-muted">Decided: {decided}</span>}
         </div>
-        <Prose html={renderMarkdown(file.content)} />
+        <Prose html={renderMarkdown(file.content, { build: getBuildInfo() })} />
       </Layout>,
     )
   } catch {

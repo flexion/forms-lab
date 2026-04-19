@@ -144,6 +144,107 @@ async function findViolations(): Promise<Violation[]> {
   return violations
 }
 
+/**
+ * Returns the service name if the file is under `src/services/<name>/...`,
+ * else null. Note: files directly under `src/services/` (e.g. `storage.ts`)
+ * return null — they are not inside a named service subdirectory.
+ */
+function getServiceName(absolutePath: string): string | null {
+  const rel = relative(SRC_ROOT, absolutePath)
+  const parts = rel.split('/')
+  if (parts[0] !== 'services') return null
+  if (parts.length < 3) return null
+  return parts[1]
+}
+
+interface CrossServiceViolation {
+  file: string
+  line: number
+  fromService: string | null
+  toService: string
+  importPath: string
+  resolved: string
+  suggestion: string
+}
+
+/**
+ * Parse all imports, including type-only imports. The public-interface rule
+ * treats type-only imports as just as much a part of the interface as runtime
+ * imports — the concern is intent visibility, not runtime coupling alone.
+ */
+function parseAllImports(content: string): ParsedImport[] {
+  const imports: ParsedImport[] = []
+  const lines = content.split('\n')
+  const importPattern = /\bfrom\s+['"]([^'"]+)['"]/
+  for (let i = 0; i < lines.length; i++) {
+    const match = lines[i].match(importPattern)
+    if (match) {
+      imports.push({ line: i + 1, source: match[1] })
+    }
+  }
+  return imports
+}
+
+/**
+ * Truncate the import path so it ends at `services/<toService>` — the
+ * suggested replacement for a deep cross-service import.
+ */
+function computeSuggestion(importPath: string, toService: string): string {
+  const marker = `services/${toService}`
+  const idx = importPath.indexOf(marker)
+  if (idx < 0) return importPath
+  return importPath.slice(0, idx + marker.length)
+}
+
+async function findCrossServiceViolations(): Promise<CrossServiceViolation[]> {
+  const violations: CrossServiceViolation[] = []
+  for await (const file of walk(SRC_ROOT)) {
+    const fromLayer = getLayer(file)
+    if (!fromLayer) continue
+    // shared/ importing services/ is already blocked by the P2 test;
+    // skip to avoid double-reporting.
+    if (fromLayer === 'shared') continue
+    // design-system/ client.ts files are browser bundle entry points.
+    // A service barrel re-exports server-only modules (bun:sqlite, AWS SDK,
+    // etc.); when a client.ts imports from services/<B>, Bun.build()'s
+    // browser target errors on those imports before tree-shaking can drop
+    // them. client.ts files are already classified as entrypoint-level by
+    // the P2 rule for the same physical reason, so they may deep-import
+    // to narrow the browser-bundle graph to server-safe modules.
+    if (file.endsWith('/client.ts')) continue
+    const content = await readFile(file, 'utf-8')
+    const imports = parseAllImports(content)
+    for (const imp of imports) {
+      const resolved = resolveImport(file, imp.source)
+      if (!resolved) continue
+      if (!resolved.startsWith(SRC_ROOT)) continue
+      const servicesRoot = `${SRC_ROOT}/services/`
+      if (!resolved.startsWith(servicesRoot)) continue
+
+      const toService = getServiceName(resolved)
+      if (!toService) continue
+
+      const fromService = getServiceName(file)
+      if (fromService === toService) continue
+
+      const allowedRoot = `${SRC_ROOT}/services/${toService}`
+      const allowedIndex = `${SRC_ROOT}/services/${toService}/index`
+      if (resolved === allowedRoot || resolved === allowedIndex) continue
+
+      violations.push({
+        file: relative(process.cwd(), file),
+        line: imp.line,
+        fromService,
+        toService,
+        importPath: imp.source,
+        resolved,
+        suggestion: computeSuggestion(imp.source, toService),
+      })
+    }
+  }
+  return violations
+}
+
 describe('dependency rule (P2)', () => {
   it('shared/ imports only from shared/', async () => {
     const violations = (await findViolations()).filter(
@@ -189,6 +290,22 @@ describe('dependency rule (P2)', () => {
         )
         .join('\n')
       throw new Error(`design-system/ dependency rule violations:\n${report}`)
+    }
+    expect(violations).toHaveLength(0)
+  })
+})
+
+describe('service public interface rule', () => {
+  it('forbids deep cross-service imports (importer must go through index.ts)', async () => {
+    const violations = await findCrossServiceViolations()
+    if (violations.length > 0) {
+      const report = violations
+        .map(
+          (v) =>
+            `  ${v.file}:${v.line} — deep import '${v.importPath}' from services/${v.fromService ?? '<outside services>'} into services/${v.toService}; use '${v.suggestion}' instead`,
+        )
+        .join('\n')
+      throw new Error(`service public interface violations:\n${report}`)
     }
     expect(violations).toHaveLength(0)
   })

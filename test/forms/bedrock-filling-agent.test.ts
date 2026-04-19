@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
-import { BedrockFillingAgent } from '../../src/services/forms/filling-agent/bedrock'
+import { BedrockFillingAgent } from '../../src/services/forms'
 import type { FillingContext } from '../../src/services/forms/filling-agent/types'
 import { testDataSpec } from './fixtures'
 

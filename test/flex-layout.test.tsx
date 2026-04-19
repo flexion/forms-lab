@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { Layout } from '../src/design-system/components/flex-layout'
-import type { SessionUser } from '../src/services/auth/session'
+import type { SessionUser } from '../src/services/auth'
 
 describe('Layout with auth', () => {
   it('renders a profile dropdown menu when signed in', () => {

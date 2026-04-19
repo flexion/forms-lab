@@ -2,8 +2,8 @@
  * Ingestion pipeline types — PDF extraction, project storage, confidence tracking
  */
 
-import type { DataCollectionSpec } from '../data-collection/types'
-import type { FormSpec } from '../forms/types'
+import type { DataCollectionSpec } from '../data-collection'
+import type { FormSpec } from '../forms'
 
 /**
  * Maps DataCollectionSpec fieldNames to PDF AcroForm field names.
