@@ -147,6 +147,10 @@ export class BedrockFillingAgent implements FillingAgent {
 
   /**
    * Build messages array from conversation history and current user response
+   *
+   * Note: We exclude assistant messages that had tool calls, since we don't
+   * include tool results in the conversation history (we handle tool execution
+   * outside the AI SDK). This avoids Bedrock expecting tool results.
    */
   private buildMessages(
     context: FillingContext,
@@ -154,8 +158,17 @@ export class BedrockFillingAgent implements FillingAgent {
   ): Array<{ role: 'user' | 'assistant'; content: string }> {
     const messages: Array<{ role: 'user' | 'assistant'; content: string }> = []
 
-    // Add conversation history
+    // Add conversation history, skipping assistant messages with tool calls
     for (const msg of context.messages) {
+      // Skip assistant messages that had tool calls to avoid Bedrock expecting tool results
+      if (
+        msg.role === 'assistant' &&
+        msg.toolCalls &&
+        msg.toolCalls.length > 0
+      ) {
+        continue
+      }
+
       messages.push({
         role: msg.role,
         content: msg.content,
