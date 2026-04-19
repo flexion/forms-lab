@@ -250,11 +250,13 @@ export function createProjectService(
         const fs = require('fs')
         try {
           fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] Extract succeeded for ${slug}\n`)
+          fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [RESULT] spec=${!!result.spec} formSpec=${!!result.formSpec} fieldMapping=${!!result.fieldMapping}\n`)
         } catch {}
 
-        // Initial extraction lands on an "import" branch so the owner can
-        // iterate before publishing to main via the review workflow.
-        const branches = await repo.listBranches(slug)
+        try {
+          // Initial extraction lands on an "import" branch so the owner can
+          // iterate before publishing to main via the review workflow.
+          const branches = await repo.listBranches(slug)
         if (!branches.some((b) => b.name === 'import')) {
           await repo.createBranch(slug, 'import', 'main')
         }
@@ -284,7 +286,19 @@ export function createProjectService(
           author,
           { branch: 'import' },
         )
+        try {
+          fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] Commit succeeded, updating status to ready\n`)
+        } catch {}
         store.update(projectId, { status: 'ready' })
+        } catch (err) {
+          try {
+            fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [FIRE_AND_FORGET] Error in then handler: ${err instanceof Error ? err.message : String(err)}\n`)
+            if (err instanceof Error && err.stack) {
+              fs.appendFileSync('/tmp/extraction-debug.log', `${new Date().toISOString()} [THEN_STACK] ${err.stack}\n`)
+            }
+          } catch {}
+          throw err
+        }
       })
       .catch((err) => {
         console.error(`Extraction failed for project ${slug}:`, err)
