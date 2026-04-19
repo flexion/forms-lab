@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import type { DataCollectionSpec } from '../src/services/data-collection'
-import type { FieldJudge } from '../src/services/evaluation'
 import { createLlmJudgeKind } from '../src/services/evaluation'
+import type { FieldJudge } from '../src/services/evaluation/judge'
 import type { JudgeResponse } from '../src/services/evaluation/judge-schemas'
 
 function makeSpec(
