@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import type { ProjectState } from '../../../src/services/forms/shaping/commands'
+import type { ProjectState } from '../../../src/services/forms'
 import { project } from '../../../src/services/forms/shaping/projector'
 
 describe('project', () => {
