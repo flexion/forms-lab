@@ -57,14 +57,6 @@ export class BedrockFillingAgent implements FillingAgent {
     // Build messages array from conversation history
     const messages = this.buildMessages(context, userResponse)
 
-    console.log(
-      '[BedrockFillingAgent] Sending messages:',
-      JSON.stringify(
-        messages.map((m) => ({ role: m.role, len: m.content.length })),
-      ),
-    )
-
-    // Call LLM with tools - use tool() helper for proper schema format
     const result = await generateText({
       model: this.bedrock(this.model),
       system: systemPrompt,
@@ -78,7 +70,7 @@ export class BedrockFillingAgent implements FillingAgent {
               .describe('The field name to collect (camelCase)'),
             value: z.string().describe('The value provided by the user'),
           }),
-          execute: async () => ({}), // No-op: we handle tool calls manually below
+          execute: async () => ({}),
         }),
         explain_field: tool({
           description:
@@ -86,7 +78,7 @@ export class BedrockFillingAgent implements FillingAgent {
           inputSchema: z.object({
             fieldName: z.string().describe('The field name to explain'),
           }),
-          execute: async () => ({}), // No-op: we handle tool calls manually below
+          execute: async () => ({}),
         }),
         skip_field: tool({
           description: 'Mark a field as intentionally skipped',
@@ -94,19 +86,16 @@ export class BedrockFillingAgent implements FillingAgent {
             fieldName: z.string().describe('The field name to skip'),
             reason: z.string().describe('Why the field is being skipped'),
           }),
-          execute: async () => ({}), // No-op: we handle tool calls manually below
+          execute: async () => ({}),
         }),
       },
+    }).catch((error) => {
+      const message =
+        error instanceof Error ? error.message : 'Unknown Bedrock error'
+      throw new Error(`Bedrock filling agent failed: ${message}`, {
+        cause: error,
+      })
     })
-
-    console.log(
-      '[BedrockFillingAgent] Result:',
-      JSON.stringify({
-        text: result.text?.slice(0, 100),
-        toolCallCount: result.toolCalls?.length ?? 0,
-        finishReason: result.finishReason,
-      }),
-    )
 
     // Parse tool calls and collect fields
     const toolCalls: ToolCallRecord[] = []
@@ -167,8 +156,13 @@ export class BedrockFillingAgent implements FillingAgent {
         message =
           'This section is now complete. You can continue to the next step.'
       } else {
-        message =
-          "I'm here to help you fill out this section. Could you tell me more about your situation?"
+        const nextField = this.findNextRequiredField(
+          context.groups,
+          updatedCollectedFields,
+        )
+        message = nextField
+          ? `Could you provide your ${nextField.label}?`
+          : "I'm here to help you fill out this section. What information can I help you with?"
       }
     }
 
@@ -258,6 +252,22 @@ export class BedrockFillingAgent implements FillingAgent {
 
     // Default to string if field not found
     return value
+  }
+
+  private findNextRequiredField(
+    groups: FillingContext['groups'],
+    collectedFields: FillingContext['collectedFields'],
+  ): { fieldName: string; label: string } | null {
+    for (const group of groups) {
+      if (!evaluateCondition(group.condition, collectedFields)) continue
+      for (const req of group.requirements) {
+        if (!req.required) continue
+        if (req.fieldName in collectedFields) continue
+        if (!evaluateCondition(req.condition, collectedFields)) continue
+        return { fieldName: req.fieldName, label: req.label }
+      }
+    }
+    return null
   }
 
   /**

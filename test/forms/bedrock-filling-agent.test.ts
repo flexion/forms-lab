@@ -109,6 +109,48 @@ describe('BedrockFillingAgent', () => {
         (m: { role: string; content: string }) => m.role === 'user',
       ),
     ).toBe(true)
+
+    // Bedrock requires first message to be user role
+    expect(call.messages[0].role).toBe('user')
+  })
+
+  it('prepends synthetic user message when history starts with assistant', async () => {
+    const agent = new BedrockFillingAgent()
+    const context: FillingContext = {
+      groups: testDataSpec.groups,
+      collectedFields: {},
+      messages: [
+        {
+          id: '1',
+          sessionId: 'test',
+          role: 'assistant',
+          content: 'Welcome! What is your name?',
+          toolCalls: [],
+          createdAt: '2026-04-18T00:00:00Z',
+        },
+      ],
+    }
+
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'Got it, thanks!',
+      toolCalls: [],
+    })
+
+    await agent.advance(context, 'Alice')
+
+    const call = mockGenerateText.mock.calls[0][0]
+    // First message must be user role for Bedrock
+    expect(call.messages[0].role).toBe('user')
+    // Should still include the assistant message from history
+    expect(
+      call.messages.some(
+        (m: { role: string; content: string }) =>
+          m.role === 'assistant' && m.content === 'Welcome! What is your name?',
+      ),
+    ).toBe(true)
+    // Should include the current user response
+    expect(call.messages[call.messages.length - 1].role).toBe('user')
+    expect(call.messages[call.messages.length - 1].content).toBe('Alice')
   })
 
   it('parses tool calls from LLM response', async () => {
@@ -278,5 +320,67 @@ describe('BedrockFillingAgent', () => {
     expect(turn.toolCalls).toHaveLength(2)
     expect(turn.fieldsCollected).toHaveProperty('fullName')
     expect(turn.fieldsCollected).toHaveProperty('email')
+  })
+
+  it('wraps LLM errors with context', async () => {
+    const agent = new BedrockFillingAgent()
+    const context: FillingContext = {
+      groups: testDataSpec.groups,
+      collectedFields: {},
+      messages: [],
+    }
+
+    mockGenerateText.mockRejectedValueOnce(
+      new Error('AccessDeniedException: User is not authorized'),
+    )
+
+    await expect(agent.advance(context, null)).rejects.toThrow(
+      'Bedrock filling agent failed: AccessDeniedException: User is not authorized',
+    )
+  })
+
+  it('generates fallback message when LLM returns empty text with tool calls', async () => {
+    const agent = new BedrockFillingAgent()
+    const context: FillingContext = {
+      groups: testDataSpec.groups,
+      collectedFields: {},
+      messages: [],
+    }
+
+    mockGenerateText.mockResolvedValueOnce({
+      text: '',
+      toolCalls: [
+        {
+          toolName: 'collect_field',
+          args: { fieldName: 'fullName', value: 'Alice Johnson' },
+        },
+      ],
+    })
+
+    const turn = await agent.advance(context, 'Alice Johnson')
+
+    expect(turn.message).toContain('fullName')
+    expect(turn.fieldsCollected).toHaveProperty('fullName')
+  })
+
+  it('asks for next required field when LLM returns empty response', async () => {
+    const agent = new BedrockFillingAgent()
+    const context: FillingContext = {
+      groups: testDataSpec.groups,
+      collectedFields: {
+        fullName: { value: 'Dan' },
+      },
+      messages: [],
+    }
+
+    mockGenerateText.mockResolvedValueOnce({
+      text: '',
+      toolCalls: [],
+    })
+
+    const turn = await agent.advance(context, 'yes, what else do you need?')
+
+    expect(turn.message).toContain('Could you provide your')
+    expect(turn.finished).toBe(false)
   })
 })

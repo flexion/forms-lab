@@ -707,25 +707,36 @@ export function createFormRouter(deps: FormRouterDeps) {
 
     // If no messages yet, call agent to generate initial greeting
     if (messages.length === 0) {
-      const turn = await fillingAgent.advance(
-        {
-          groups: page.groups,
-          collectedFields: session.fields,
-          messages: [],
-        },
-        null,
-      )
+      try {
+        const turn = await fillingAgent.advance(
+          {
+            groups: page.groups,
+            collectedFields: session.fields,
+            messages: [],
+          },
+          null,
+        )
 
-      // Append assistant's initial message
-      const assistantMessageId = crypto.randomUUID()
-      conversationGateway.appendMessage(sessionId, {
-        id: assistantMessageId,
-        sessionId,
-        role: 'assistant',
-        content: turn.message,
-        toolCalls: turn.toolCalls,
-        createdAt: new Date().toISOString(),
-      })
+        const assistantMessageId = crypto.randomUUID()
+        conversationGateway.appendMessage(sessionId, {
+          id: assistantMessageId,
+          sessionId,
+          role: 'assistant',
+          content: turn.message,
+          toolCalls: turn.toolCalls,
+          createdAt: new Date().toISOString(),
+        })
+      } catch (error) {
+        const errMsg = error instanceof Error ? error.message : 'Unknown error'
+        console.error('Filling agent initial greeting failed:', error)
+        conversationGateway.appendMessage(sessionId, {
+          id: crypto.randomUUID(),
+          sessionId,
+          role: 'assistant',
+          content: `I'm having trouble connecting to the assistant service. Error: ${errMsg}`,
+          createdAt: new Date().toISOString(),
+        })
+      }
 
       messages = conversationGateway.getMessages(sessionId)
     }

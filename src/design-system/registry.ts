@@ -1,5 +1,6 @@
 import { meta as accordion } from './components/flex-accordion/meta'
 import { meta as alert } from './components/flex-alert/meta'
+import { meta as assistant } from './components/flex-assistant/meta'
 import { meta as banner } from './components/flex-banner/meta'
 import { meta as branchSwitcher } from './components/flex-branch-switcher/meta'
 import { meta as breadcrumb } from './components/flex-breadcrumb/meta'
@@ -60,6 +61,7 @@ import type { ComponentMeta } from './types'
 const components: ComponentMeta[] = [
   accordion,
   alert,
+  assistant,
   banner,
   branchSwitcher,
   breadcrumb,
