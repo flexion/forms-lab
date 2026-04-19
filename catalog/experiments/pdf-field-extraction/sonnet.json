@@ -1,503 +1,272 @@
 {
-  "kind": "pdf-field-extraction-llm-judge",
+  "kind": "pdf-field-extraction",
   "implementation": "sonnet",
   "specVersion": "2026-04-11",
   "status": "current",
-  "timestamp": "2026-04-13T14:54:45.154Z",
+  "timestamp": "2026-04-19T04:30:31.886Z",
   "model": "Claude Sonnet 4",
   "summary": {
-    "fieldRecall": 0.292817679558011,
-    "fieldPrecision": 0.7361111111111112,
-    "typeAccuracy": 0.9245283018867925,
-    "groupAccuracy": 0.6037735849056604,
-    "sensitivityAccuracy": 0.41509433962264153
+    "fieldRecall": 0.6206980893186004,
+    "fieldPrecision": 0.7890439579861637,
+    "typeAccuracy": 0.9702020202020202,
+    "groupAccuracy": 0.3141414141414141,
+    "sensitivityAccuracy": 0.2726262626262626
   },
   "cases": [
     {
       "fixture": "pardon-application",
       "metrics": {
-        "fieldRecall": 0.292817679558011,
-        "fieldPrecision": 0.7361111111111112,
-        "typeAccuracy": 0.9245283018867925,
-        "groupAccuracy": 0.6037735849056604,
-        "sensitivityAccuracy": 0.41509433962264153
+        "fieldRecall": 0.7292817679558011,
+        "fieldPrecision": 0.8198757763975155,
+        "typeAccuracy": 0.9772727272727273,
+        "groupAccuracy": 0.4090909090909091,
+        "sensitivityAccuracy": 0.20454545454545456
       },
       "details": {
         "missed": [
-          "firstName",
-          "middleName",
-          "lastName",
           "convictionFirstName",
           "convictionMiddleName",
           "convictionLastName",
           "otherNationality",
-          "cityState",
-          "zipCode",
-          "childFullName",
+          "parent2FullName",
           "childDateOfBirth",
-          "childOtherParentNames",
-          "childCustody",
-          "formerSpouseName",
-          "formerSpousePhone",
-          "formerMarriageDate",
-          "formerDivorceDate",
-          "formerMarriagePlace",
-          "formerDivorcePlace",
           "familyAdditionalPages",
           "reasonsAdditionalPages",
-          "communityActivityDescription",
-          "communityActivityDates",
-          "communityActivityContactNames",
           "communityActivityContactInfo",
-          "communityActivityReasons",
           "communityAdditionalPages",
-          "schoolProgramName",
-          "subjectStudiedDegree",
-          "educationDatesAttended",
-          "licenseType",
-          "licenseDateIssued",
           "educationDenialProgramName",
           "educationDenialDetails",
-          "educationDenialDate",
           "educationAdditionalPages",
-          "previousStreetAddress",
-          "previousApartmentUnit",
-          "previousCityState",
-          "previousZipCode",
-          "previousDatesLiving",
+          "militaryNotApplicable",
           "militaryAdditionalPages",
           "currentEmployerType",
-          "currentEmployerStreetAddress",
+          "currentJobStartDate",
           "currentEmployerCityState",
           "currentEmployerZipCode",
           "currentSupervisorNamePhone",
-          "previousEmployerName",
           "previousEmployerType",
-          "previousPosition",
           "previousEmployerAddressPhone",
-          "previousEmployerDates",
           "jobAdditionalPages",
-          "substanceType",
-          "substanceFrequency",
-          "substanceUseDates",
+          "substanceUseNotApplicable",
           "substanceUseDiagnosis",
-          "substanceUseDiagnosisDate",
-          "treatmentFacilityName",
-          "treatmentDates",
-          "treatmentStreetAddress",
-          "treatmentSuiteNo",
-          "treatmentCityState",
-          "treatmentZipCode",
           "treatmentPhoneNumber",
           "treatmentEmailAddress",
-          "sobrietyAdditionalInfo",
           "sobrietyAdditionalPages",
-          "debtDescription",
-          "debtAmount",
-          "bankruptcyCourt",
-          "bankruptcyYearOutcome",
-          "bankruptcyDischargeAmount",
-          "financialAdditionalInfo",
           "financialAdditionalPages",
           "attachingCaseDocuments",
-          "prisonSentence",
-          "prisonReleaseDate",
-          "probationSupervisedReleaseSentence",
-          "probationCompletionDate",
-          "assessmentAmount",
-          "fineAmount",
-          "restitutionAmount",
           "offenseConductAdditionalPages",
           "otherCriminalHistoryAdditionalPages",
           "oathDay",
           "oathMonth",
           "oathYear",
-          "releaseOtherNames",
-          "releaseStreetAddress",
           "releaseCity",
           "releaseState",
-          "releaseZipCode",
-          "releasePhoneNumber",
-          "releaseSsn",
           "support1PrimaryReference",
           "support1PetitionerName",
           "support1YearsKnown",
-          "support1Statement",
           "support1AdditionalPages",
-          "support1Signature",
-          "support1PrintName",
-          "support1Date",
-          "support1Address",
-          "support1Phone",
-          "support1Email",
           "support2PrimaryReference",
           "support2PetitionerName",
           "support2YearsKnown",
-          "support2Statement",
           "support2AdditionalPages",
-          "support2Signature",
-          "support2PrintName",
-          "support2Date",
-          "support2Address",
-          "support2Phone",
-          "support2Email",
           "support3PrimaryReference",
           "support3PetitionerName",
           "support3YearsKnown",
-          "support3Statement",
-          "support3AdditionalPages",
-          "support3Signature",
-          "support3PrintName",
-          "support3Date",
-          "support3Address",
-          "support3Phone",
-          "support3Email"
+          "support3AdditionalPages"
         ],
         "extra": [
-          "fullName",
-          "legalNameAtConviction",
-          "cityStateZip",
-          "childrenDependents",
-          "formerSpouseInfo",
-          "communityInvolvement",
-          "activityContacts",
-          "educationPrograms",
-          "educationDenials",
-          "residentialHistory",
-          "previousEmployment",
-          "substanceUseDetails",
+          "legalNameAtConvictionFirst",
+          "legalNameAtConvictionMiddle",
+          "legalNameAtConvictionLast",
+          "parent2Name",
+          "childBirthDate",
+          "activityContactInfo",
+          "denialProgramName",
+          "denialDetails",
+          "militaryServiceQuestion",
+          "currentBusinessType",
+          "currentStartDate",
+          "employerCityState",
+          "supervisorContact",
+          "previousBusinessType",
+          "previousEmployerAddress",
+          "substanceUseStruggle",
           "substanceDisorderDiagnosis",
-          "treatmentHistory",
-          "debtInformation",
-          "bankruptcyHistory",
-          "sentenceReceived",
-          "certificationDate",
-          "supportLetters"
+          "signatureDateDay",
+          "signatureDateMonth",
+          "signatureDateYear",
+          "authCityStateZip",
+          "letter1PetitionerName",
+          "letter1YearsKnown",
+          "letter2PetitionerName",
+          "letter2YearsKnown",
+          "letter3PetitionerName",
+          "letter3YearsKnown",
+          "letter3Phone",
+          "letter3Email"
         ],
         "totalGroundTruth": 181,
-        "totalExtracted": 72,
-        "totalMatched": 53,
-        "judgeMatches": [
-          {
-            "groundTruthFieldName": "otherNames",
-            "extractedFieldName": "otherNames",
-            "confidence": 1,
-            "reasoning": "Exact same field name and label"
-          },
-          {
-            "groundTruthFieldName": "socialSecurityNumber",
-            "extractedFieldName": "socialSecurityNumber",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "dateOfBirth",
-            "extractedFieldName": "dateOfBirth",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "countryOfBirth",
-            "extractedFieldName": "countryOfBirth",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "cityStateOfBirth",
-            "extractedFieldName": "cityStateOfBirth",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "citizenship",
-            "extractedFieldName": "citizenshipStatus",
-            "confidence": 0.9,
-            "reasoning": "Same concept, extracted has 'Status' suffix"
-          },
-          {
-            "groundTruthFieldName": "parent1FullName",
-            "extractedFieldName": "parent1Name",
-            "confidence": 0.95,
-            "reasoning": "Same concept - parent #1 full name, minor naming difference"
-          },
-          {
-            "groundTruthFieldName": "parent2FullName",
-            "extractedFieldName": "parent2Name",
-            "confidence": 0.95,
-            "reasoning": "Same concept - parent #2 full name, minor naming difference"
-          },
-          {
-            "groundTruthFieldName": "streetAddress",
-            "extractedFieldName": "streetAddress",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "apartmentUnit",
-            "extractedFieldName": "apartmentUnit",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "emailAddress",
-            "extractedFieldName": "emailAddress",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "phoneNumber",
-            "extractedFieldName": "phoneNumber",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "attorneyName",
-            "extractedFieldName": "attorneyName",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "attorneyContact",
-            "extractedFieldName": "attorneyContact",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "hasPreviousApplication",
-            "extractedFieldName": "previousApplication",
-            "confidence": 0.95,
-            "reasoning": "Same concept - whether previously applied for commutation/pardon"
-          },
-          {
-            "groundTruthFieldName": "previousApplicationDate",
-            "extractedFieldName": "previousApplicationDate",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "previousDecisionDate",
-            "extractedFieldName": "previousDecisionDate",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "isHispanicLatino",
-            "extractedFieldName": "hispanicOrLatino",
-            "confidence": 0.95,
-            "reasoning": "Same concept - Hispanic/Latino identification"
-          },
-          {
-            "groundTruthFieldName": "race",
-            "extractedFieldName": "race",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "sex",
-            "extractedFieldName": "sex",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "maritalStatus",
-            "extractedFieldName": "maritalStatus",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "spousePartnerName",
-            "extractedFieldName": "spousePartnerName",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "dateOfMarriage",
-            "extractedFieldName": "marriageDate",
-            "confidence": 0.95,
-            "reasoning": "Same concept - date of marriage"
-          },
-          {
-            "groundTruthFieldName": "placeOfMarriage",
-            "extractedFieldName": "marriagePlace",
-            "confidence": 0.95,
-            "reasoning": "Same concept - place of marriage"
-          },
-          {
-            "groundTruthFieldName": "reasonsForPardon",
-            "extractedFieldName": "pardonReasons",
-            "confidence": 0.95,
-            "reasoning": "Same concept - reasons for seeking pardon"
-          },
-          {
-            "groundTruthFieldName": "homelessnessDates",
-            "extractedFieldName": "homelessnessPeriods",
-            "confidence": 0.9,
-            "reasoning": "Same concept - dates of homelessness"
-          },
-          {
-            "groundTruthFieldName": "militaryDatesOfService",
-            "extractedFieldName": "serviceDates",
-            "confidence": 0.95,
-            "reasoning": "Same concept - military dates of service"
-          },
-          {
-            "groundTruthFieldName": "militaryBranches",
-            "extractedFieldName": "serviceBranch",
-            "confidence": 0.95,
-            "reasoning": "Same concept - military branch(es)"
-          },
-          {
-            "groundTruthFieldName": "militarySerialNumber",
-            "extractedFieldName": "serialNumber",
-            "confidence": 0.95,
-            "reasoning": "Same concept - military serial number"
-          },
-          {
-            "groundTruthFieldName": "militaryDischargeType",
-            "extractedFieldName": "dischargeType",
-            "confidence": 0.95,
-            "reasoning": "Same concept - type of military discharge"
-          },
-          {
-            "groundTruthFieldName": "militaryServiceDetails",
-            "extractedFieldName": "militaryServiceDetails",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "currentEmployer",
-            "extractedFieldName": "currentEmployer",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "currentPosition",
-            "extractedFieldName": "currentPosition",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "currentJobStartDate",
-            "extractedFieldName": "employmentStartDate",
-            "confidence": 0.9,
-            "reasoning": "Same concept - month/year started current job"
-          },
-          {
-            "groundTruthFieldName": "unemploymentDetails",
-            "extractedFieldName": "unemploymentPeriods",
-            "confidence": 0.85,
-            "reasoning": "Same concept - unemployment dates and how supported yourself"
-          },
-          {
-            "groundTruthFieldName": "criminalRecordEmploymentImpact",
-            "extractedFieldName": "employmentChallenges",
-            "confidence": 0.9,
-            "reasoning": "Same concept - criminal record affecting ability to find work"
-          },
-          {
-            "groundTruthFieldName": "jobMisconductDetails",
-            "extractedFieldName": "workMisconduct",
-            "confidence": 0.95,
-            "reasoning": "Same concept - fired/misconduct/unsatisfactory performance"
-          },
-          {
-            "groundTruthFieldName": "sobrietyLength",
-            "extractedFieldName": "sobrietyLength",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "pleadedGuilty",
-            "extractedFieldName": "guiltyPlea",
-            "confidence": 0.95,
-            "reasoning": "Same concept - did you plead guilty"
-          },
-          {
-            "groundTruthFieldName": "offenseDates",
-            "extractedFieldName": "offenseDates",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "sentencingDate",
-            "extractedFieldName": "sentencingDate",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "courtOfProsecution",
-            "extractedFieldName": "prosecutionCourt",
-            "confidence": 1,
-            "reasoning": "Same concept - court of prosecution, word order differs"
-          },
-          {
-            "groundTruthFieldName": "caseNumber",
-            "extractedFieldName": "caseNumber",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "convictionCharge",
-            "extractedFieldName": "convictionCharges",
-            "confidence": 0.95,
-            "reasoning": "Same concept - what you were convicted of, singular vs plural"
-          },
-          {
-            "groundTruthFieldName": "offenseConductNarrative",
-            "extractedFieldName": "conductExplanation",
-            "confidence": 0.9,
-            "reasoning": "Same concept - tell us about your conduct for which you were convicted"
-          },
-          {
-            "groundTruthFieldName": "acceptResponsibility",
-            "extractedFieldName": "acceptResponsibility",
-            "confidence": 1,
-            "reasoning": "Exact same field name"
-          },
-          {
-            "groundTruthFieldName": "otherCriminalHistoryNarrative",
-            "extractedFieldName": "otherCriminalHistory",
-            "confidence": 0.95,
-            "reasoning": "Same concept - other criminal history narrative"
-          },
-          {
-            "groundTruthFieldName": "applicantSignature",
-            "extractedFieldName": "certificationSignature",
-            "confidence": 0.9,
-            "reasoning": "Same concept - applicant's signature in certification section"
-          },
-          {
-            "groundTruthFieldName": "releaseSignature",
-            "extractedFieldName": "authorizationSignature",
-            "confidence": 0.9,
-            "reasoning": "Same concept - signature on authorization for release of information"
-          },
-          {
-            "groundTruthFieldName": "releaseFullName",
-            "extractedFieldName": "authorizationFullName",
-            "confidence": 0.9,
-            "reasoning": "Same concept - full name on authorization/release form"
-          },
-          {
-            "groundTruthFieldName": "releaseDateSigned",
-            "extractedFieldName": "authorizationDate",
-            "confidence": 0.9,
-            "reasoning": "Same concept - date signed on authorization/release form"
-          },
-          {
-            "groundTruthFieldName": "substanceUseNotApplicable",
-            "extractedFieldName": "substanceUseHistory",
-            "confidence": 0.7,
-            "reasoning": "Related but inverted - one is 'not applicable' boolean, other is 'have you struggled' boolean. They capture the same branching logic."
-          },
-          {
-            "groundTruthFieldName": "militaryNotApplicable",
-            "extractedFieldName": "militaryServiceStatus",
-            "confidence": 0.7,
-            "reasoning": "Related but inverted - one is 'not applicable' boolean, other is 'have you served' boolean. They capture the same branching logic."
-          }
+        "totalExtracted": 161,
+        "totalMatched": 132
+      }
+    },
+    {
+      "fixture": "i-9",
+      "metrics": {
+        "fieldRecall": 0.1953125,
+        "fieldPrecision": 0.6097560975609756,
+        "typeAccuracy": 1,
+        "groupAccuracy": 0,
+        "sensitivityAccuracy": 0.48
+      },
+      "details": {
+        "missed": [
+          "lawfulPermanentResidentUscisNumber",
+          "alienWorkAuthorizationExpiration",
+          "alienUscisANumber",
+          "alienForeignPassportCountry",
+          "listADocumentTitle1",
+          "listAIssuingAuthority1",
+          "listADocumentNumber1",
+          "listAExpirationDate1",
+          "listADocumentTitle2",
+          "listAIssuingAuthority2",
+          "listADocumentNumber2",
+          "listAExpirationDate2",
+          "listADocumentTitle3",
+          "listAIssuingAuthority3",
+          "listADocumentNumber3",
+          "listAExpirationDate3",
+          "listBDocumentTitle",
+          "listBIssuingAuthority",
+          "listBDocumentNumber",
+          "listBExpirationDate",
+          "listCDocumentTitle",
+          "listCIssuingAuthority",
+          "listCDocumentNumber",
+          "listCExpirationDate",
+          "alternativeProcedureCheckbox",
+          "supplementAEmployeeLastName",
+          "supplementAEmployeeFirstName",
+          "supplementAEmployeeMiddleInitial",
+          "preparer1Signature",
+          "preparer1Date",
+          "preparer1LastName",
+          "preparer1FirstName",
+          "preparer1MiddleInitial",
+          "preparer1Address",
+          "preparer1City",
+          "preparer1State",
+          "preparer1ZipCode",
+          "preparer2Signature",
+          "preparer2Date",
+          "preparer2LastName",
+          "preparer2FirstName",
+          "preparer2MiddleInitial",
+          "preparer2Address",
+          "preparer2City",
+          "preparer2State",
+          "preparer2ZipCode",
+          "preparer3Signature",
+          "preparer3Date",
+          "preparer3LastName",
+          "preparer3FirstName",
+          "preparer3MiddleInitial",
+          "preparer3Address",
+          "preparer3City",
+          "preparer3State",
+          "preparer3ZipCode",
+          "preparer4Signature",
+          "preparer4Date",
+          "preparer4LastName",
+          "preparer4FirstName",
+          "preparer4MiddleInitial",
+          "preparer4Address",
+          "preparer4City",
+          "preparer4State",
+          "preparer4ZipCode",
+          "suppBEmployeeLastName",
+          "suppBEmployeeFirstName",
+          "suppBEmployeeMiddleInitial",
+          "suppB1RehireDate",
+          "suppB1NewLastName",
+          "suppB1NewFirstName",
+          "suppB1NewMiddleInitial",
+          "suppB1DocumentTitle",
+          "suppB1DocumentNumber",
+          "suppB1ExpirationDate",
+          "suppB1EmployerName",
+          "suppB1EmployerSignature",
+          "suppB1TodayDate",
+          "suppB1AdditionalInfo",
+          "suppB1AlternativeProcedure",
+          "suppB2RehireDate",
+          "suppB2NewLastName",
+          "suppB2NewFirstName",
+          "suppB2NewMiddleInitial",
+          "suppB2DocumentTitle",
+          "suppB2DocumentNumber",
+          "suppB2ExpirationDate",
+          "suppB2EmployerName",
+          "suppB2EmployerSignature",
+          "suppB2TodayDate",
+          "suppB2AdditionalInfo",
+          "suppB2AlternativeProcedure",
+          "suppB3RehireDate",
+          "suppB3NewLastName",
+          "suppB3NewFirstName",
+          "suppB3NewMiddleInitial",
+          "suppB3DocumentTitle",
+          "suppB3DocumentNumber",
+          "suppB3ExpirationDate",
+          "suppB3EmployerName",
+          "suppB3EmployerSignature",
+          "suppB3TodayDate",
+          "suppB3AdditionalInfo",
+          "suppB3AlternativeProcedure"
         ],
-        "scorer": "llm-judge"
+        "extra": [
+          "alienNumber",
+          "countryOfIssuance",
+          "expirationDate",
+          "documentTitle1",
+          "issuingAuthority1",
+          "documentNumber1",
+          "documentExpiration1",
+          "documentTitle2",
+          "issuingAuthority2",
+          "documentNumber2",
+          "documentExpiration2",
+          "documentTitle3",
+          "issuingAuthority3",
+          "documentNumber3",
+          "documentExpiration3",
+          "alternativeProcedure"
+        ],
+        "totalGroundTruth": 128,
+        "totalExtracted": 41,
+        "totalMatched": 25
+      }
+    },
+    {
+      "fixture": "w-9",
+      "metrics": {
+        "fieldRecall": 0.9375,
+        "fieldPrecision": 0.9375,
+        "typeAccuracy": 0.9333333333333333,
+        "groupAccuracy": 0.5333333333333333,
+        "sensitivityAccuracy": 0.13333333333333333
+      },
+      "details": {
+        "missed": [
+          "otherClassification"
+        ],
+        "extra": [
+          "certificationStatements"
+        ],
+        "totalGroundTruth": 16,
+        "totalExtracted": 16,
+        "totalMatched": 15
       }
     }
   ]
