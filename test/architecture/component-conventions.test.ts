@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { getComponents } from '../../src/design-system/registry'
 
 describe('component metadata: kind and reference invariants', () => {
@@ -40,6 +42,38 @@ describe('custom components: variant/example alignment', () => {
       )
 
       expect([...declaredVariants].sort()).toEqual([...exportedVariants].sort())
+    })
+  }
+})
+
+describe('component file conventions', () => {
+  const componentsDir = join(process.cwd(), 'src/design-system/components')
+
+  for (const meta of getComponents()) {
+    describe(meta.slug, () => {
+      const dir = join(componentsDir, meta.slug)
+
+      it('has meta.ts', () => {
+        expect(existsSync(join(dir, 'meta.ts'))).toBe(true)
+      })
+
+      it('has index.tsx', () => {
+        expect(existsSync(join(dir, 'index.tsx'))).toBe(true)
+      })
+
+      it('has examples.tsx', () => {
+        expect(existsSync(join(dir, 'examples.tsx'))).toBe(true)
+      })
+
+      it('has contract.ts or contract.tsx', () => {
+        const hasTs = existsSync(join(dir, 'contract.ts'))
+        const hasTsx = existsSync(join(dir, 'contract.tsx'))
+        expect(hasTs || hasTsx).toBe(true)
+      })
+
+      it('has contract.test.ts', () => {
+        expect(existsSync(join(dir, 'contract.test.ts'))).toBe(true)
+      })
     })
   }
 })
