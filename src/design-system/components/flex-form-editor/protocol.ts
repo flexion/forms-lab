@@ -1,6 +1,5 @@
 import type { DataCollectionSpec } from '../../../services/data-collection'
-import type { Command } from '../../../services/forms/shaping/commands'
-import type { FormSpec } from '../../../services/forms/types'
+import type { Command, FormSpec } from '../../../services/forms'
 
 export interface ProjectStateClient {
   formSpec: FormSpec

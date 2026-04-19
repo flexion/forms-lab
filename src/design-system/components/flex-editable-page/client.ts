@@ -1,5 +1,4 @@
-import type { Command } from '../../../services/forms/shaping/commands'
-import type { FormPage } from '../../../services/forms/types'
+import type { Command, FormPage } from '../../../services/forms'
 import type {
   ProjectStateClient,
   SelectionTarget,

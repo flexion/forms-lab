@@ -4,7 +4,7 @@ import {
   OPUS_MODEL_ID,
   SONNET_MODEL_ID,
 } from '../../../src/services/extraction'
-import { createShapingRegistry } from '../../../src/services/forms/shaping/registry'
+import { createShapingRegistry } from '../../../src/services/forms'
 
 describe('shaping registry', () => {
   it('registers all three variants', () => {

@@ -6,8 +6,8 @@ import {
   ForbiddenError,
   UnauthenticatedError,
 } from '../../../../../services/errors'
-import { compareSpecs } from '../../../../../services/forms/comparison'
-import type { ReviewService } from '../../../../../services/forms/review'
+import type { ReviewService } from '../../../../../services/forms'
+import { compareSpecs } from '../../../../../services/forms'
 import type { ProjectService } from '../../../../../services/projects'
 import { resolveUrl } from '../../../../../shared/base-path'
 import type { StrategyListItem } from '../../../../../shared/strategy-registry'

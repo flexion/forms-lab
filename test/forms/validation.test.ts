@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import type { DataRequirement } from '../../src/services/data-collection'
-import type { FieldEntry } from '../../src/services/forms/types'
-import { validateFields } from '../../src/services/forms/validation'
+import type { FieldEntry } from '../../src/services/forms'
+import { validateFields } from '../../src/services/forms'
 
 describe('validateFields', () => {
   const textReq: DataRequirement = {

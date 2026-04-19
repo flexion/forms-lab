@@ -17,7 +17,11 @@ export {
 } from './filling-agent'
 export type {
   ConversationGateway,
+  ConversationMessage,
   FillingAgent,
+  FillingContext,
+  FillingTurn,
+  ToolCallRecord,
 } from './filling-agent/types'
 export {
   countVisiblePages,
@@ -25,9 +29,11 @@ export {
   findPrevPage,
   visiblePageNumber,
 } from './navigation'
+export { buildFormPreview } from './preview'
 export { evaluateCondition, resolveFormSpec } from './resolver'
 export type { Comment, ReviewService } from './review'
 export { createReviewService } from './review'
+export { InMemoryFormSessionGateway } from './session'
 export type { Command, ProjectState } from './shaping/commands'
 export { commandSchema } from './shaping/commands'
 export { executeBatch } from './shaping/executor'
@@ -37,11 +43,13 @@ export type { FormShaper } from './shaping/types'
 export { createSpecSnapshotStore } from './spec-snapshot-store'
 export { SqliteFormSessionGateway } from './sqlite-session-gateway'
 export { SqliteSubmissionGateway } from './sqlite-submission-gateway'
+export { InMemorySubmissionGateway } from './submission'
 export type {
   FieldEntry,
   FormPage,
   FormSessionGateway,
   FormSpec,
+  Submission,
   SubmissionGateway,
 } from './types'
 export { validateFields } from './validation'

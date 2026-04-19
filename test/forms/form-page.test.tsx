@@ -2,10 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import type { FormError } from '../../src/design-system/components/flex-form-error-summary'
 import type { FormFieldEntry } from '../../src/design-system/components/flex-form-field'
 import { FormPageView } from '../../src/design-system/components/flex-form-page'
-import {
-  evaluateCondition,
-  resolveFormSpec,
-} from '../../src/services/forms/resolver'
+import { evaluateCondition, resolveFormSpec } from '../../src/services/forms'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 describe('FormPageView', () => {

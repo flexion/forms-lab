@@ -4,7 +4,7 @@ import {
   type ShapingOutput,
   shapingCommandsKind,
 } from '../../src/services/evaluation'
-import type { Command } from '../../src/services/forms/shaping/commands'
+import type { Command } from '../../src/services/forms'
 
 describe('shaping-commands evaluation kind', () => {
   it('has correct id and description', () => {

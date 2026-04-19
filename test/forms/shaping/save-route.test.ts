@@ -3,7 +3,7 @@ import { mkdirSync, rmSync } from 'node:fs'
 import { Hono } from 'hono'
 import { createEditRoutes } from '../../../src/entrypoints/app/routes/owner/edit'
 import type { SessionUser } from '../../../src/services/auth'
-import type { FormShaper } from '../../../src/services/forms/shaping/types'
+import type { FormShaper } from '../../../src/services/forms'
 import {
   createFormProjectRepo,
   createProjectService,

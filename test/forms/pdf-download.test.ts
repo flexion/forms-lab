@@ -3,8 +3,10 @@ import { Hono } from 'hono'
 import { PDFDocument } from 'pdf-lib'
 import { createFormRouter } from '../../src/entrypoints/app/routes/forms/index'
 import type { FieldMapping } from '../../src/services/form-documents'
-import { InMemoryFormSessionGateway } from '../../src/services/forms/session'
-import { InMemorySubmissionGateway } from '../../src/services/forms/submission'
+import {
+  InMemoryFormSessionGateway,
+  InMemorySubmissionGateway,
+} from '../../src/services/forms'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 const TEST_SHA = 'abc1234567890def1234567890abc1234567890'

@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, it } from 'bun:test'
 import { unlinkSync } from 'node:fs'
-import { SqliteFormSessionGateway } from '../../src/services/forms/sqlite-session-gateway'
+import { SqliteFormSessionGateway } from '../../src/services/forms'
 
 const TEST_DB = 'data/test-form-sessions.sqlite'
 

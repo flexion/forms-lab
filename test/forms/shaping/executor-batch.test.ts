@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import type { ProjectState } from '../../../src/services/forms/shaping/commands'
-import { executeBatch } from '../../../src/services/forms/shaping/executor'
+import type { ProjectState } from '../../../src/services/forms'
+import { executeBatch } from '../../../src/services/forms'
 
 function fixture(): ProjectState {
   return {

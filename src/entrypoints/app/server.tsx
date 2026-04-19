@@ -15,18 +15,18 @@ import {
   createCachedPdfExtractor,
   createMappingRegistry,
 } from '../../services/form-documents'
-import { createFillingRegistry } from '../../services/forms/filling/registry'
+import type { FormSpec } from '../../services/forms'
 import {
   BedrockFillingAgent,
+  createFillingRegistry,
+  createReviewService,
+  createShapingRegistry,
+  createSpecSnapshotStore,
   ScriptedFillingAgent,
   SqliteConversationGateway,
-} from '../../services/forms/filling-agent'
-import { createReviewService } from '../../services/forms/review'
-import { createShapingRegistry } from '../../services/forms/shaping/registry'
-import { createSpecSnapshotStore } from '../../services/forms/spec-snapshot-store'
-import { SqliteFormSessionGateway } from '../../services/forms/sqlite-session-gateway'
-import { SqliteSubmissionGateway } from '../../services/forms/sqlite-submission-gateway'
-import type { FormSpec } from '../../services/forms/types'
+  SqliteFormSessionGateway,
+  SqliteSubmissionGateway,
+} from '../../services/forms'
 import {
   createFormProjectRepo,
   createProjectService,

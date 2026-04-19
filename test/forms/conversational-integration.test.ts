@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
 import { createFormRouter } from '../../src/entrypoints/app/routes/forms/index'
-import { ScriptedFillingAgent } from '../../src/services/forms/filling-agent/scripted'
 import type {
   ConversationGateway,
   ConversationMessage,
-} from '../../src/services/forms/filling-agent/types'
-import { InMemoryFormSessionGateway } from '../../src/services/forms/session'
-import { InMemorySubmissionGateway } from '../../src/services/forms/submission'
+} from '../../src/services/forms'
+import {
+  InMemoryFormSessionGateway,
+  InMemorySubmissionGateway,
+  ScriptedFillingAgent,
+} from '../../src/services/forms'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 /**

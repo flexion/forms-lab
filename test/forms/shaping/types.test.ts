@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import type { FormPage } from '../../../src/services/forms/types'
+import type { FormPage } from '../../../src/services/forms'
 
 describe('FormPage type', () => {
   it('accepts deliveryMode property', () => {

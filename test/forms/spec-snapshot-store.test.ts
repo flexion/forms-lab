@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, it } from 'bun:test'
 import { unlinkSync } from 'node:fs'
-import { createSpecSnapshotStore } from '../../src/services/forms/spec-snapshot-store'
+import { createSpecSnapshotStore } from '../../src/services/forms'
 import { testDataSpec, testFormSpec } from './fixtures'
 
 const TEST_DB = 'data/test-spec-snapshots.sqlite'
