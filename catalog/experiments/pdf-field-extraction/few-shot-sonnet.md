@@ -5,31 +5,49 @@ status: current
 course-topics: [evaluation, few-shot, prompt-conditioning]
 ---
 
-# PDF Field Extraction: Claude Sonnet 4 (few-shot)
+# PDF Field Extraction: Claude Sonnet 4 (Few-Shot)
 
-**Status:** experimental
+> Selectable in **Settings → Variants → Extraction**.
 
-## Summary
+## Approach
 
-| Metric | Value |
-|---|---|
-| Field Recall | 55.3% |
-| Field Precision | 86.5% |
-| Type Accuracy | 96.3% |
-| Group Accuracy | 36.7% |
-| Sensitivity Accuracy | 21.3% |
+Prepends 2-3 curated exemplar pairs (input description → output spec) to the standard extraction prompt. Each exemplar targets an edge case the base prompt struggles with:
 
-## pardon-application
+1. **Nested groups** — teaches hierarchical grouping (employment with current/previous sub-sections)
+2. **Sensitivity labels** — teaches correct PII classification (SSN → pii, DOB → high, name → medium)
+3. **Conditional fields** — teaches condition objects for fields gated on prior answers
 
-- Missed: firstName, middleName, lastName, convictionFirstName, convictionMiddleName, convictionLastName, otherNationality, previousApplicationDate, previousDecisionDate, childFullName, childDateOfBirth, childOtherParentNames, childCustody, formerSpouseName, formerSpousePhone, formerMarriageDate, formerDivorceDate, formerMarriagePlace, formerDivorcePlace, familyAdditionalPages, reasonsAdditionalPages, communityActivityDescription, communityActivityDates, communityActivityContactNames, communityActivityContactInfo, communityActivityReasons, communityAdditionalPages, schoolProgramName, subjectStudiedDegree, educationDatesAttended, licenseType, licenseDateIssued, educationDenialProgramName, educationDenialDetails, educationDenialDate, educationAdditionalPages, previousStreetAddress, previousApartmentUnit, previousCityState, previousZipCode, previousDatesLiving, homelessnessDates, militaryServiceDetails, militaryAdditionalPages, currentEmployerType, currentPosition, currentJobStartDate, currentEmployerStreetAddress, currentEmployerCityState, currentEmployerZipCode, currentSupervisorNamePhone, previousEmployerName, previousEmployerType, previousPosition, previousEmployerAddressPhone, previousEmployerDates, unemploymentDetails, criminalRecordEmploymentImpact, jobMisconductDetails, jobAdditionalPages, substanceType, substanceFrequency, substanceUseDates, substanceUseDiagnosis, substanceUseDiagnosisDate, treatmentFacilityName, treatmentDates, treatmentStreetAddress, treatmentSuiteNo, treatmentCityState, treatmentZipCode, treatmentPhoneNumber, treatmentEmailAddress, sobrietyAdditionalInfo, sobrietyAdditionalPages, debtDescription, debtAmount, bankruptcyCourt, bankruptcyYearOutcome, bankruptcyDischargeAmount, financialAdditionalInfo, financialAdditionalPages, attachingCaseDocuments, prisonSentence, prisonReleaseDate, probationSupervisedReleaseSentence, probationCompletionDate, assessmentAmount, fineAmount, restitutionAmount, offenseConductAdditionalPages, otherCriminalHistoryAdditionalPages, oathDay, oathMonth, oathYear, releaseOtherNames, releaseStreetAddress, releaseCity, releaseState, releaseZipCode, releasePhoneNumber, releaseSsn, support1PrimaryReference, support1PetitionerName, support1YearsKnown, support1Statement, support1AdditionalPages, support1Signature, support1PrintName, support1Date, support1Address, support1Phone, support1Email, support2PrimaryReference, support2PetitionerName, support2YearsKnown, support2Statement, support2AdditionalPages, support2Signature, support2PrintName, support2Date, support2Address, support2Phone, support2Email, support3PrimaryReference, support3PetitionerName, support3YearsKnown, support3Statement, support3AdditionalPages, support3Signature, support3PrintName, support3Date, support3Address, support3Phone, support3Email
-- Extra: fullName, legalNameAtConviction, communityInvolvement, educationPrograms, recentAddresses, employmentHistory, substanceHistory, financialDebts, sentenceReceived, submissionDate, referenceLetters
+Exemplars are compact (~400 tokens each) to stay within budget. Total prompt overhead: ~1,200 tokens.
 
-## i-9
+## Metrics (LLM Judge, Opus scorer)
 
-- Missed: alienUscisANumber, listBDocumentTitle, listBIssuingAuthority, listBDocumentNumber, listBExpirationDate, listCDocumentTitle, listCIssuingAuthority, listCDocumentNumber, listCExpirationDate, supplementAEmployeeLastName, supplementAEmployeeFirstName, supplementAEmployeeMiddleInitial, preparer2Signature, preparer2Date, preparer2LastName, preparer2FirstName, preparer2MiddleInitial, preparer2Address, preparer2City, preparer2State, preparer2ZipCode, preparer3Signature, preparer3Date, preparer3LastName, preparer3FirstName, preparer3MiddleInitial, preparer3Address, preparer3City, preparer3State, preparer3ZipCode, preparer4Signature, preparer4Date, preparer4LastName, preparer4FirstName, preparer4MiddleInitial, preparer4Address, preparer4City, preparer4State, preparer4ZipCode, suppBEmployeeLastName, suppBEmployeeFirstName, suppBEmployeeMiddleInitial, suppB1AdditionalInfo, suppB1AlternativeProcedure, suppB2RehireDate, suppB2NewLastName, suppB2NewFirstName, suppB2NewMiddleInitial, suppB2DocumentTitle, suppB2DocumentNumber, suppB2ExpirationDate, suppB2EmployerName, suppB2EmployerSignature, suppB2TodayDate, suppB2AdditionalInfo, suppB2AlternativeProcedure, suppB3RehireDate, suppB3NewLastName, suppB3NewFirstName, suppB3NewMiddleInitial, suppB3DocumentTitle, suppB3DocumentNumber, suppB3ExpirationDate, suppB3EmployerName, suppB3EmployerSignature, suppB3TodayDate, suppB3AdditionalInfo, suppB3AlternativeProcedure
-- Extra: none
+| Metric | Few-Shot | Baseline Sonnet | Delta |
+|---|---|---|---|
+| Field Recall | 55.3% | 62.1% | -6.8pp |
+| Field Precision | 86.5% | 78.9% | **+7.6pp** |
+| Type Accuracy | 96.3% | 97.0% | -0.7pp |
+| Group Accuracy | 36.7% | 31.4% | **+5.3pp** |
+| Sensitivity Accuracy | 21.3% | 27.3% | -6.0pp |
 
-## w-9
+## Findings
 
-- Missed: otherClassification
-- Extra: tinCertification, backupWithholdingCertification, usPersonCertification, fatcaCodeCertification
+**Precision improved at the cost of recall.** The exemplars teach the model to be more selective — it emits fewer spurious fields (precision up 7.6pp) but also fewer total fields (recall down 6.8pp). Group accuracy improved 5.3pp, suggesting the nested-groups exemplar works.
+
+**Sensitivity exemplar underperformed.** Despite a dedicated exemplar, sensitivity accuracy dropped slightly. The model may be over-indexing on the exemplar's specific sensitivity patterns rather than generalizing the classification rules.
+
+**Trade-off profile:** Few-shot is best when you need high-confidence fields and can tolerate gaps. For forms where completeness matters more than correctness of individual fields, the baseline Sonnet remains preferred.
+
+## Course Connection
+
+Assignment 10 showed that few-shot examples beat verbose instructions for small models (Mistral 3B: 99% with examples vs 63% with instructions alone). However, for a large model like Sonnet that already follows instructions well, adding examples may constrain rather than assist — consistent with the homework finding that Tier A models (Haiku, Sonnet) need no prompting help to achieve their ceiling.
+
+The strategy inversion documented in the homework applies here: the same technique that dramatically helps an 8B model can slightly hurt a frontier model by anchoring its output patterns too narrowly.
+
+## Cost
+
+Same model (Sonnet) with ~1,200 additional input tokens per extraction. Marginal cost increase: ~$0.0036/extraction. Negligible relative to the base extraction cost of ~$0.15-0.40 depending on form size.
+
+| Model | Input $/1K | Output $/1K | Est. Cost/Extraction |
+|---|---|---|---|
+| Sonnet (baseline) | $0.003 | $0.015 | $0.15-0.40 |
+| Sonnet (few-shot) | $0.003 | $0.015 | $0.16-0.41 |
