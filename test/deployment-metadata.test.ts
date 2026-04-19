@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
-import { getDeploymentSummary } from '../src/services/deployment/metadata'
+import { getDeploymentSummary } from '../src/services/deployment'
 
 describe('deployment-metadata', () => {
   const originalEnv = { ...process.env }

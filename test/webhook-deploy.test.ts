@@ -4,7 +4,7 @@ import {
   triggerDeploy,
   triggerDeployWithStatus,
 } from '../src/entrypoints/webhook/deploy'
-import type { GitHubClient } from '../src/services/deployment/github'
+import type { GitHubClient } from '../src/services/deployment'
 import type { NotifyEvent } from '../src/services/notifications'
 
 function captureNotifyEvents(): {

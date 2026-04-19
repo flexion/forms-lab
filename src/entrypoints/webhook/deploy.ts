@@ -1,4 +1,4 @@
-import type { GitHubClient } from '../../services/deployment/github'
+import type { GitHubClient } from '../../services/deployment'
 import { notifyEvent } from '../../services/notifications'
 
 export interface DeployResult {

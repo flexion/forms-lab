@@ -4,7 +4,7 @@ import { Layout } from '../../design-system/components/flex-layout'
 import {
   getDeploymentSummary,
   groupDeploymentsByStatus,
-} from '../../services/deployment/metadata'
+} from '../../services/deployment'
 import { GroupedDeploymentTable } from './deployment-table'
 
 const app = new Hono()

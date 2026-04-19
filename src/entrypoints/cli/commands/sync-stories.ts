@@ -1,10 +1,10 @@
 import { mkdir, readdir, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import type { GitHubIssue } from '../../../services/deployment/github'
+import type { GitHubIssue } from '../../../services/deployment'
 import {
   createGitHubClient,
   getGitHubToken,
-} from '../../../services/deployment/github'
+} from '../../../services/deployment'
 
 function slugify(title: string): string {
   return title
