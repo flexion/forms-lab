@@ -86,49 +86,23 @@ export function createProjectStore(dbPath: string): ProjectStore {
     )
   `)
 
-  // Migration: handle schema evolution from old versions
-  try {
-    const columns = (
-      db.query("SELECT name FROM pragma_table_info('projects')").all() as Array<{
-        name: string
-      }>
-    ).map((row) => row.name)
+  // Migration: handle incompatible old schema
+  const columns = (
+    db.query("SELECT name FROM pragma_table_info('projects')").all() as Array<{
+      name: string
+    }>
+  ).map((row) => row.name)
 
-    const currentSchema = [
-      'id',
-      'slug',
-      'name',
-      'forked_from',
-      'status',
-      'error',
-      'created_by',
-      'created_at',
-      'updated_at',
-    ]
+  const hasOldColumns =
+    columns.includes('description') || columns.includes('source_pdf')
 
-    // Detect if this is an old schema (has description/source_pdf) or incomplete new schema
-    const hasOldColumns =
-      columns.includes('description') || columns.includes('source_pdf')
-    const missingNewColumns = currentSchema.filter(
-      (col) => !columns.includes(col),
-    )
-    const needsMigration = hasOldColumns || missingNewColumns.length > 0
-
-    if (needsMigration) {
-      console.log('Starting database migration...')
-      console.log('Old columns:', columns)
-      console.log('Has old schema columns:', hasOldColumns)
-      console.log('Missing new columns:', missingNewColumns)
-
-      // For old schema, we need to migrate data; for incomplete new schema, we can just copy
-      const projects = db
-        .query('SELECT * FROM projects')
-        .all() as Array<Record<string, unknown>>
-      console.log(`Migrating ${projects.length} projects...`)
-
-    // Create new table with current schema
+  if (hasOldColumns) {
+    // Old incompatible schema - drop and recreate
+    console.warn('Incompatible old schema detected - recreating projects table')
+    console.warn('Existing project data will be lost')
+    db.run('DROP TABLE projects')
     db.run(`
-      CREATE TABLE projects_new (
+      CREATE TABLE projects (
         id TEXT PRIMARY KEY,
         slug TEXT NOT NULL UNIQUE,
         name TEXT NOT NULL,
@@ -140,53 +114,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
         updated_at INTEGER NOT NULL
       )
     `)
-
-    // Migrate each project
-    const usedSlugs = new Set<string>()
-    for (const project of projects) {
-      const id = project.id as string
-      const name = project.name as string
-      const createdBy = project.created_by as string
-      const createdAt = project.created_at as number
-      const updatedAt = project.updated_at as number
-      const status = (project.status as string) ?? 'extracting'
-      const error = (project.error as string | null) ?? null
-      const forkedFrom = (project.forked_from as string | null) ?? null
-
-      // Generate slug if missing (from old schema)
-      let slug = (project.slug as string | null) ?? null
-      if (!slug) {
-        const baseSlug = name
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-|-$/g, '')
-        slug = baseSlug
-        let counter = 2
-        while (usedSlugs.has(slug)) {
-          slug = `${baseSlug}-${counter}`
-          counter++
-        }
-      }
-      usedSlugs.add(slug)
-
-      db.run(
-        `INSERT INTO projects_new (id, slug, name, forked_from, status, error, created_by, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id, slug, name, forkedFrom, status, error, createdBy, createdAt, updatedAt],
-      )
-    }
-
-      db.run('DROP TABLE projects')
-      db.run('ALTER TABLE projects_new RENAME TO projects')
-      console.log('Migration completed successfully')
-    }
-  } catch (err) {
-    console.error('Database migration failed:', err)
-    console.error(
-      'Database may be in inconsistent state. Consider deleting the database file and restarting.',
-    )
-    // Don't throw - allow service to start even if migration fails
-    // Worst case, operations will fail with clearer errors
+    console.log('Projects table recreated with current schema')
   }
 
   function rowToProject(row: Record<string, unknown>): ProjectIndex {
