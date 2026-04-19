@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'bun:test'
-import type { Command } from '../../src/services/forms/shaping/commands'
 import {
   type ShapingGroundTruth,
   type ShapingOutput,
   shapingCommandsKind,
 } from '../../src/services/evaluation/kinds/shaping-commands'
+import type { Command } from '../../src/services/forms/shaping/commands'
 
 describe('shaping-commands evaluation kind', () => {
   it('has correct id and description', () => {

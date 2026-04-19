@@ -55,9 +55,7 @@ describe('shaping intent fixtures', () => {
   })
 
   it('expected commands reference valid ids from the project state', () => {
-    const pageIds = new Set(
-      fixtureProjectState.formSpec.pages.map((p) => p.id),
-    )
+    const pageIds = new Set(fixtureProjectState.formSpec.pages.map((p) => p.id))
     const groupIds = new Set(
       fixtureProjectState.dataSpec.groups.map((g) => g.id),
     )
