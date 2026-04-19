@@ -65,7 +65,7 @@ Each service owns its domain types (architecture principle P3):
 - `DataCollectionSpec`, `DataRequirement`, and field/validation types → [`src/services/data-collection/types.ts`](https://github.com/flexion/forms-lab/tree/main/src/services/data-collection/types.ts)
 - `FormSpec`, `FormPage`, `ResolvedForm`, `FormSession` → [`src/services/forms/types.ts`](https://github.com/flexion/forms-lab/tree/main/src/services/forms/types.ts)
 - Shaping commands (discriminated union + Zod schemas) → [`src/services/forms/shaping/commands.ts`](https://github.com/flexion/forms-lab/tree/main/src/services/forms/shaping/commands.ts)
-- Ingestion and extraction types → [`src/services/ingestion/types.ts`](https://github.com/flexion/forms-lab/tree/main/src/services/ingestion/types.ts)
+- Form-document extraction types → [`src/services/form-documents/types.ts`](https://github.com/flexion/forms-lab/tree/main/src/services/form-documents/types.ts)
 
 ## Sources
 

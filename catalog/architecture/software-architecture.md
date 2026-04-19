@@ -19,7 +19,7 @@ Directory and file names reveal what a thing is *for*, not what it is *built wit
 
 *The point is legibility and domain organization.* A reader — human or agent — navigates the code by what things do, not by what they're built with. Opening `src/` should match the business purpose of the system, not the framework it runs on. Each name points at a domain concept the reader can grasp without opening the file.
 
-**Worked example:** PDF extraction lives in `services/ingestion/`, not `services/llm-client/`. We currently use Bedrock, but that's an implementation detail — a reader looking for "how do we turn PDFs into specs?" finds it under its domain name.
+**Worked example:** PDF extraction lives in `services/form-documents/`, not `services/llm-client/`. We currently use Bedrock, but that's an implementation detail — a reader looking for "how do we turn PDFs into specs?" finds it under its domain name.
 
 *A consequence:* implementation changes don't force renames. Swapping markdown-it doesn't rename `services/content/markdown.ts`. That's a side effect of the naming being domain-shaped, not the reason for it.
 
@@ -46,7 +46,7 @@ Each service directory has a `types.ts` that defines the shapes it owns. Cross-b
 
 *The point is clear authority.* Where a type lives answers "who decides when this changes?" A type in `services/forms/types.ts` is owned by the forms domain — changes to it are a forms-domain decision. Types in a grab-bag file are owned by nobody, which means changes become political. Explicit ownership lets changes ripple along an explicit dependency edge instead of through negotiation.
 
-**Worked example:** `DataCollectionSpec` lives in `services/data-collection/types.ts` because data-collection is the authoritative definition. `services/forms/types.ts` imports it because forms is downstream. `services/ingestion/types.ts` also imports it because ingestion produces data-collection specs. When data-collection needs to change, the change radiates outward from one authoritative source.
+**Worked example:** `DataCollectionSpec` lives in `services/data-collection/types.ts` because data-collection is the authoritative definition. `services/forms/types.ts` imports it because forms is downstream. `services/form-documents/types.ts` also imports it because form-documents produces data-collection specs from PDFs. When data-collection needs to change, the change radiates outward from one authoritative source.
 
 *A consequence:* services evolve independently because ownership is explicit.
 
@@ -84,14 +84,14 @@ Core domain services. Each service directory has a `types.ts` (P3) and one or mo
 - **`data-collection/`** — The core domain model: what data a form collects. `DataCollectionSpec`, `DataRequirement`, field types, validation rules, conditions.
 - **`deployment/`** — GitHub API client and deployment metadata (branch state, commit info, PR status).
 - **`forms/`** — Form resolution, validation, navigation, sessions, and submission. `FormSpec`, `ResolvedForm`, `FormSession`.
-- **`forms/shaping/`** — LLM-assisted form shaping. Command vocabulary (`commands.ts`), atomic batch executor (`executor.ts`), humanizer (`humanize.ts`), client-safe projector (`projector.ts`), AI SDK tool registry (`tools.ts`), Bedrock-backed shaper (`bedrock-shaper.ts`). Each accepted batch produces one git commit plus a structured entry in `forms/<slug>/shaping-log.json`. See the [command-based shaping decision](../decisions/architecture/command-based-shaping.md).
-- **`ingestion/`** — PDF → structured spec extraction pipeline. Uses Bedrock (Claude) to parse PDFs into `DataCollectionSpec`s.
+- **`forms/`** — Internally contains sub-modules (`comparison/`, `filling-agent/`, `filling/`, `review/`, `shaping/`) that are implementation details of the forms service; external callers see only the public interface at `services/forms/index.ts`. Shaping uses LLM-assisted commands with an atomic batch executor; each accepted batch produces one git commit plus a structured entry in the shaping log. See the [command-based shaping decision](../decisions/architecture/command-based-shaping.md).
+- **`form-documents/`** — PDF → structured spec extraction pipeline. Uses Bedrock (Claude) to parse PDFs into `DataCollectionSpec`s, plus AcroForm field mapping and filling.
+- **`evaluation/`** — Evaluation harness and LLM-as-judge kinds for scoring extraction and shaping output against fixtures.
+- **`extraction/`** — Pluggable PDF extractor registry, enabling variant selection for evaluation and deployment.
 - **`notifications/`** — Notification event types and Slack client used by the deploy pipeline.
-- **`storage.ts`** — SQLite stores: `ProjectStore` (project index), `CacheStore` (LLM extraction cache).
-- **`user-store.ts`** — SQLite-backed `UserStore` persisting GitHub profile data upserted on OAuth login.
-- **`form-project-repo.ts`** — `FormProjectRepo` service wrapping git plumbing commands against bare repos. The app never checks out a working tree — it operates directly on the object store. See [form-project-repos-and-permissions decision](../decisions/architecture/form-project-repos-and-permissions.md).
-- **`project-service.ts`** — `ProjectService` owns project business logic and permission enforcement. Composes `ProjectStore` and `FormProjectRepo` to create, read, update, delete, and fork projects. Throws typed errors (`UnauthenticatedError`, `ForbiddenError`, `NotFoundError`, `BadRequestError`) that route handlers map to HTTP status codes.
-- **`errors.ts`** — `AppError` hierarchy used to signal HTTP-mappable conditions from services to routes without coupling services to HTTP.
+- **`projects/`** — `ProjectService` and `FormProjectRepo`: project business logic, permission enforcement, and git plumbing (the app operates on bare repos, never a working tree). See [form-project-repos-and-permissions decision](../decisions/architecture/form-project-repos-and-permissions.md).
+- **`storage/`** — SQLite stores: `ProjectStore` (project index) and `CacheStore` (LLM extraction cache).
+- **`variant-preferences/`** — Per-user variant selection for extraction, shaping, and future tabs of the variant picker.
 
 **Thin route handlers, rich services.** Routes in `entrypoints/app/routes/` parse requests, call service methods, and render responses. They do not hold business logic. Anything that can throw a `ForbiddenError` or needs an ownership check belongs in a service. This keeps permission rules unit-testable without an HTTP harness and prevents drift between routes.
 
@@ -140,7 +140,7 @@ Neither choice is wrong. What matters is that the choice is explicit. Drifting i
 
 **Current state:**
 
-- **Isolated:** USWDS (design-system only), Bedrock (`services/ingestion/` and `services/forms/shaping/` only), AI SDK tool-use (`services/forms/shaping/` only), `bun:sqlite` (`services/storage.ts` and `services/user-store.ts` only), git CLI (`services/form-project-repo.ts` only), `markdown-it` (`services/content/markdown.ts` only)
+- **Isolated:** USWDS (design-system only), Bedrock (`services/form-documents/`, `services/forms/shaping/`, `services/forms/filling-agent/`, `services/evaluation/` only), AI SDK tool-use (`services/form-documents/` and `services/forms/shaping/` only), `bun:sqlite` (`services/storage/`, `services/auth/user-store.ts` only), git CLI (`services/projects/form-project-repo.ts` only), `markdown-it` (`services/content/markdown.ts` only)
 - **Embraced:** `hono/jsx` (design-system components), Hono routing (entrypoints), Bun (runtime)
 
 When adding a new dependency, note the choice in the commit or ADR that introduces it. Future axes of change are cheaper to plan for when they're visible.
