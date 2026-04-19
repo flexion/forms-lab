@@ -403,10 +403,16 @@ app.get('/', (c) => {
 })
 
 // Mount edit routes BEFORE owner routes (more specific patterns first)
-app.route('/', createEditRoutes(projectService, shapingRegistry))
+app.route(
+  '/',
+  createEditRoutes(projectService, shapingRegistry, variantPreferences),
+)
 
 // Mount compare routes BEFORE owner routes (more specific patterns first)
-app.route('/', createCompareRoutes(projectService, reviewService))
+app.route(
+  '/',
+  createCompareRoutes(projectService, reviewService, shapingRegistry.list()),
+)
 
 // Mount form delivery routes under /forms. Fills and submissions are
 // git-backed; preview banner links back to the editor on non-main

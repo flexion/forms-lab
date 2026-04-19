@@ -4,6 +4,7 @@ import { BranchSwitcher } from '../../../../../design-system/components/flex-bra
 import { ChangeIndicator } from '../../../../../design-system/components/flex-change-indicator'
 import type { FormFieldRequirement } from '../../../../../design-system/components/flex-form-field'
 import { FormPageView } from '../../../../../design-system/components/flex-form-page'
+import { VariantBadge } from '../../../../../design-system/components/flex-variant-badge'
 import type { SessionUser } from '../../../../../services/auth/session'
 import type {
   BranchEntry,
@@ -33,6 +34,7 @@ export type EditorPageProps =
       branch: string
       branches: BranchEntry[]
       changed: { dataSpec: boolean; formSpec: boolean }
+      shapingBadge?: { variantId: string; variantName: string } | null
     }
 
 export const EditorPage: FC<EditorPageProps> = (props) => {
@@ -79,7 +81,8 @@ const EditingShell: FC<{
   branch: string
   branches: BranchEntry[]
   changed: { dataSpec: boolean; formSpec: boolean }
-}> = ({ view, owner, log, branch, branches, changed }) => {
+  shapingBadge?: { variantId: string; variantName: string } | null
+}> = ({ view, owner, log, branch, branches, changed, shapingBadge }) => {
   const { project, formSpec, spec } = view
   const editBase = `/${owner}/${project.slug}/edit/${branch}`
   const previewBase = `/${owner}/${project.slug}/preview/${branch}`
@@ -147,6 +150,13 @@ const EditingShell: FC<{
                 <span class="editor-breadcrumb__change-label">Form spec</span>
                 <ChangeIndicator variant="modified" />
               </span>
+            ) : null}
+            {shapingBadge ? (
+              <VariantBadge
+                task="shaping"
+                variantId={shapingBadge.variantId}
+                variantName={shapingBadge.variantName}
+              />
             ) : null}
             {branch !== 'main' ? (
               <a

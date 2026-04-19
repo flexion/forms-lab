@@ -23,7 +23,7 @@ This is the live roadmap for the Forms Lab LLM experiments. Each experiment is a
 
 | Story | Status | Ships | Catalog |
 |---|---|---|---|
-| [#59 Maya chooses her shaping model](https://github.com/flexion/forms-lab/issues/59) | planned | shaping eval-kind, `shaping/haiku`, `shaping/sonnet`, `shaping/opus`, shaping tab in picker | `/catalog/experiments/shaping-model-comparison/` (new suite) |
+| [#59 Maya chooses her shaping model](https://github.com/flexion/forms-lab/issues/59) | pr-open | shaping eval-kind, `shaping/haiku`, `shaping/sonnet`, `shaping/opus`, shaping tab in picker | `/catalog/experiments/shaping-model-comparison/` (new suite). Scoring kind is deterministic (command-kind precision/recall + arg accuracy); metrics pending first eval run. |
 | [#60 Carlos's conversation uses a chosen model](https://github.com/flexion/forms-lab/issues/60) | planned | filling eval-kind (personas + scripts), `filling/haiku`, `filling/sonnet`, `filling/opus`, filling tab in picker | `/catalog/experiments/filling-model-comparison/` (new suite) |
 | [#61 Maya verifies AcroForm mapping](https://github.com/flexion/forms-lab/issues/61) | planned | field-mapping eval-kind, `field-mapping/haiku`, `field-mapping/sonnet`, `field-mapping/opus`, mapping tab in picker | `/catalog/experiments/field-mapping/` (new suite) |
 
