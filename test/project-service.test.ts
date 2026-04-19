@@ -541,6 +541,28 @@ describe('ProjectService', () => {
       expect(view.project.name).toBe('Ref Test')
     })
   })
+
+  describe('getProvenance', () => {
+    it('returns extraction provenance recorded by the extraction commit', async () => {
+      const project = await service.createProject(
+        'Provenance',
+        SAMPLE_PDF,
+        alice,
+      )
+      await waitForStatus(store, project.id, 'ready')
+
+      const entry = await service.getProvenance(
+        'alice',
+        project.slug,
+        'extraction',
+        'import',
+      )
+      expect(entry).not.toBeNull()
+      expect(entry?.variantId).toBe('sonnet')
+      expect(entry?.modelId).toBe('test-model')
+      expect(typeof entry?.timestamp).toBe('string')
+    })
+  })
 })
 
 /** Poll store until project reaches expected status or timeout */

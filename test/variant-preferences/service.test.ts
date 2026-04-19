@@ -100,3 +100,29 @@ test('list returns per-task defaults when unset, overrides when set', () => {
   expect(all.filling).toBeNull()
   expect(all['field-mapping']).toBeNull()
 })
+
+test('get returns registry default when stored variantId no longer exists in registry', () => {
+  // Store a preference for 'haiku' directly through the gateway so it
+  // bypasses the service's set-time validation — simulates a variant that
+  // was valid at save time but has since been removed or renamed.
+  const gateway = inMemoryGateway()
+  gateway.set('alice', 'extraction', 'haiku')
+
+  const service = createVariantPreferencesService(
+    gateway,
+    registriesWithExtraction(),
+  )
+  expect(service.get('alice', 'extraction')).toBe('sonnet')
+})
+
+test('list returns default for stale stored preferences', () => {
+  const gateway = inMemoryGateway()
+  gateway.set('alice', 'extraction', 'haiku')
+
+  const service = createVariantPreferencesService(
+    gateway,
+    registriesWithExtraction(),
+  )
+  const all = service.list('alice')
+  expect(all.extraction).toBe('sonnet')
+})

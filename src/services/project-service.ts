@@ -255,35 +255,6 @@ export function createProjectService(
     return JSON.parse(buf.toString()) as ShapingLogEntry[]
   }
 
-  async function writeProvenance(
-    slug: string,
-    task: Task,
-    entry: ProvenanceEntry,
-    author: string,
-  ): Promise<void> {
-    const existingBuf = await repo.readFile(
-      slug,
-      'import',
-      'forms/default/provenance.json',
-    )
-    const existing = existingBuf
-      ? (JSON.parse(existingBuf.toString()) as ProvenanceFile)
-      : null
-    const next = appendProvenance(existing, task, entry)
-    await repo.commit(
-      slug,
-      [
-        {
-          path: 'forms/default/provenance.json',
-          content: Buffer.from(JSON.stringify(next, null, 2)),
-        },
-      ],
-      'Record extraction provenance',
-      author,
-      { branch: 'import' },
-    )
-  }
-
   function fireAndForgetExtraction(
     projectId: string,
     slug: string,
@@ -301,7 +272,26 @@ export function createProjectService(
         if (!branches.some((b) => b.name === 'import')) {
           await repo.createBranch(slug, 'import', 'main')
         }
-        const sha = await repo.commit(
+
+        // Append the extraction provenance into the same commit as the
+        // specs. We don't include specVersion because the entry is pinned
+        // to this commit by virtue of being in it — readers can recover
+        // the sha via `git log forms/default/provenance.json`.
+        const existingProvBuf = await repo.readFile(
+          slug,
+          'import',
+          'forms/default/provenance.json',
+        )
+        const existingProv = existingProvBuf
+          ? (JSON.parse(existingProvBuf.toString()) as ProvenanceFile)
+          : null
+        const nextProv = appendProvenance(existingProv, 'extraction', {
+          variantId,
+          modelId,
+          timestamp: new Date().toISOString(),
+        })
+
+        await repo.commit(
           slug,
           [
             {
@@ -322,21 +312,14 @@ export function createProjectService(
                 JSON.stringify(result.fieldMapping ?? {}, null, 2),
               ),
             },
+            {
+              path: 'forms/default/provenance.json',
+              content: Buffer.from(JSON.stringify(nextProv, null, 2)),
+            },
           ],
           'Extract form specifications',
           author,
           { branch: 'import' },
-        )
-        await writeProvenance(
-          slug,
-          'extraction',
-          {
-            variantId,
-            modelId,
-            timestamp: new Date().toISOString(),
-            specVersion: sha,
-          },
-          author,
         )
         store.update(projectId, { status: 'ready' })
       })

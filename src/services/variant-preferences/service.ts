@@ -21,10 +21,13 @@ export function createVariantPreferencesService(
     return registry.getDefaultId()
   }
 
+  function variantExists(task: Task, variantId: string): boolean {
+    return registries[task].list().some((v) => v.id === variantId)
+  }
+
   function ensureVariantExists(task: Task, variantId: string): void {
-    const registry = registries[task]
-    const ids = registry.list().map((v) => v.id)
-    if (!ids.includes(variantId)) {
+    if (!variantExists(task, variantId)) {
+      const ids = registries[task].list().map((v) => v.id)
       throw new Error(
         `Unknown variant '${variantId}' for task '${task}'. Known: ${ids.join(', ') || '(none)'}`,
       )
@@ -34,7 +37,9 @@ export function createVariantPreferencesService(
   return {
     get(userLogin, task) {
       const stored = gateway.get(userLogin, task)
-      if (stored) return stored.variantId
+      if (stored && variantExists(task, stored.variantId)) {
+        return stored.variantId
+      }
       return defaultFor(task)
     },
     set(userLogin, task, variantId) {
@@ -48,7 +53,10 @@ export function createVariantPreferencesService(
       const out = {} as Record<Task, string | null>
       for (const task of TASKS) {
         const override = stored.get(task)
-        out[task] = override ?? defaultFor(task)
+        out[task] =
+          override && variantExists(task, override)
+            ? override
+            : defaultFor(task)
       }
       return out
     },
