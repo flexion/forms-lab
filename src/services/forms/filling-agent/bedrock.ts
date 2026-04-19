@@ -66,20 +66,20 @@ export class BedrockFillingAgent implements FillingAgent {
           description: 'Record a field value when the user provides it',
           parameters: {
             json: {
-              type: 'object',
+              type: 'object' as const,
               properties: {
                 fieldName: {
-                  type: 'string',
+                  type: 'string' as const,
                   description: 'The field name to collect (camelCase)',
                 },
                 value: {
-                  type: 'string',
+                  type: 'string' as const,
                   description: 'The value provided by the user',
                 },
               },
-              required: ['fieldName', 'value'],
+              required: ['fieldName', 'value'] as const,
             },
-          } as const,
+          },
           // biome-ignore lint/suspicious/noExplicitAny: Bedrock expects json wrapper around schema
         } as any,
         explain_field: {
@@ -87,36 +87,36 @@ export class BedrockFillingAgent implements FillingAgent {
             'Provide additional context about a field when the user asks for clarification',
           parameters: {
             json: {
-              type: 'object',
+              type: 'object' as const,
               properties: {
                 fieldName: {
-                  type: 'string',
+                  type: 'string' as const,
                   description: 'The field name to explain',
                 },
               },
-              required: ['fieldName'],
+              required: ['fieldName'] as const,
             },
-          } as const,
+          },
           // biome-ignore lint/suspicious/noExplicitAny: Bedrock expects json wrapper around schema
         } as any,
         skip_field: {
           description: 'Mark a field as intentionally skipped',
           parameters: {
             json: {
-              type: 'object',
+              type: 'object' as const,
               properties: {
                 fieldName: {
-                  type: 'string',
+                  type: 'string' as const,
                   description: 'The field name to skip',
                 },
                 reason: {
-                  type: 'string',
+                  type: 'string' as const,
                   description: 'Why the field is being skipped',
                 },
               },
-              required: ['fieldName', 'reason'],
+              required: ['fieldName', 'reason'] as const,
             },
-          } as const,
+          },
           // biome-ignore lint/suspicious/noExplicitAny: Bedrock expects json wrapper around schema
         } as any,
       },
