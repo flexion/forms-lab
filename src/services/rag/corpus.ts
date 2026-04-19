@@ -25,6 +25,7 @@ const CORPUS_FILES: Array<{ path: string }> = [
   { path: 'pardon-application.md' },
   { path: 'i-9.md' },
   { path: 'w-9.md' },
+  { path: 'snap-wisconsin.md' },
 ]
 
 /**
