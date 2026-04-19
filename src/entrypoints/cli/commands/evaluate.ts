@@ -85,6 +85,7 @@ export async function evaluate(args: string[]): Promise<number> {
         registry.get(strategyId),
         cacheStore,
         strategyMeta.metadata.modelId,
+        strategyId,
       )
 
       const start = Date.now()
@@ -169,6 +170,7 @@ export async function evaluate(args: string[]): Promise<number> {
         registry.get(strategyId),
         cacheStore,
         strategyMeta.metadata.modelId,
+        strategyId,
       )
 
       let kind = pdfFieldExtractionKind

@@ -12,6 +12,7 @@ import {
 
 export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
   const registry = new StrategyRegistry<PdfExtractor>()
+  const [nestedGroupsExemplar] = exemplars
 
   registry.register({
     id: 'opus-baseline',
@@ -56,6 +57,50 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       pricing: { inputPer1k: 0.0008, outputPer1k: 0.004 },
     },
     create: () => createBedrockPdfExtractor({ model: HAIKU_MODEL_ID }),
+  })
+
+  registry.register({
+    id: 'sonnet-temperature-zero',
+    metadata: {
+      name: 'Claude Sonnet 4 (temperature=0)',
+      description:
+        'Baseline Sonnet prompt with temperature=0. Ablates the "free optimization" lever from Assignment 10: deterministic output at zero marginal cost.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'prompt-optimization', 'determinism'],
+      catalogPath:
+        '/catalog/experiments/pdf-field-extraction/sonnet-temperature-zero',
+      modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
+    },
+    create: () =>
+      createBedrockPdfExtractor({ model: SONNET_MODEL_ID, temperature: 0 }),
+  })
+
+  registry.register({
+    id: 'sonnet-hybrid-v1',
+    metadata: {
+      name: 'Claude Sonnet 4 (hybrid prompt)',
+      description:
+        'Concise instructions + 1 exemplar + temperature=0. Ports the Assignment 10 hybrid-v2 strategy to extraction: less is more, even for frontier models.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'prompt-optimization', 'few-shot'],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/sonnet-hybrid-v1',
+      modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
+    },
+    create: () => {
+      if (!nestedGroupsExemplar) {
+        throw new Error(
+          'sonnet-hybrid-v1: nested-groups exemplar missing from exemplars[]',
+        )
+      }
+      return createBedrockPdfExtractor({
+        model: SONNET_MODEL_ID,
+        temperature: 0,
+        promptVariant: 'hybrid',
+        hybridExemplar: nestedGroupsExemplar,
+      })
+    },
   })
 
   registry.register({

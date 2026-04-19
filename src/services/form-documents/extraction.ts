@@ -8,6 +8,7 @@ import {
   mapAcroFormFields,
   parseJsonResponse,
 } from './extraction-steps'
+import { buildHybridExtractionPrompt } from './hybrid-extraction-prompt'
 import { extractionResponseSchema } from './schemas'
 import type { ExtractionOptions, ExtractionResult } from './types'
 
@@ -59,6 +60,32 @@ export interface BedrockExtractorOptions {
   model?: string
   exemplars?: ExtractionExemplar[]
   maxOutputTokens?: number
+  /**
+   * Sampling temperature for Step 1 (the extraction prompt). When
+   * undefined, the underlying provider default is used. Setting `0`
+   * produces deterministic output and is used by the
+   * `sonnet-temperature-zero` variant.
+   *
+   * Scoped to Step 1 only — Steps 2 (formSpec) and 3 (field mapping)
+   * keep provider defaults so the variant measures the extraction
+   * prompt specifically.
+   */
+  temperature?: number
+  /**
+   * Which Step-1 prompt shape to use.
+   *
+   * - `default` (implicit) — the baseline prompt with optional few-shot
+   *   appendix (controlled by `exemplars`).
+   * - `hybrid` — a concise rewrite that front-loads a single exemplar.
+   *   Requires `hybridExemplar`. Used by the `sonnet-hybrid-v1`
+   *   variant.
+   */
+  promptVariant?: 'default' | 'hybrid'
+  /**
+   * The single exemplar embedded in the hybrid prompt. Only consulted
+   * when `promptVariant === 'hybrid'`.
+   */
+  hybridExemplar?: ExtractionExemplar
 }
 
 /** Build the few-shot examples section for the extraction prompt. */
@@ -109,26 +136,21 @@ export function createBedrockPdfExtractor(
       }
 
       const model = extractionOptions?.model ?? options?.model ?? DEFAULT_MODEL
-      const exemplarSection = buildExemplarSection(options?.exemplars)
 
-      // Step 1: Extract DataCollectionSpec + confidence from PDF
-      // Use generateText + manual JSON parsing because generateObject's
-      // tool-use mode returns empty objects on Bedrock.
-      const extraction = await generateText({
-        model: bedrock(model),
-        maxOutputTokens: options?.maxOutputTokens ?? 32768,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'file',
-                data: pdf,
-                mediaType: 'application/pdf',
-              },
-              {
-                type: 'text',
-                text: `Analyze this government PDF form and extract its structure. Return ONLY valid JSON (no markdown, no explanation) matching this exact schema:
+      // Select the Step-1 prompt shape. The hybrid variant is a full
+      // rewrite; the default variant is the baseline template with an
+      // optional few-shot appendix.
+      let step1PromptText: string
+      if (options?.promptVariant === 'hybrid') {
+        if (!options.hybridExemplar) {
+          throw new Error(
+            'createBedrockPdfExtractor: promptVariant="hybrid" requires hybridExemplar',
+          )
+        }
+        step1PromptText = buildHybridExtractionPrompt(options.hybridExemplar)
+      } else {
+        const exemplarSection = buildExemplarSection(options?.exemplars)
+        step1PromptText = `Analyze this government PDF form and extract its structure. Return ONLY valid JSON (no markdown, no explanation) matching this exact schema:
 
 {
   "spec": {
@@ -168,7 +190,30 @@ ${exemplarSection}Guidelines:
 - Use kebab-case for ids, camelCase for fieldName
 - Flag low-confidence fields (< 0.8) with descriptive flags
 - Only include validation rules and conditions if clearly specified in the form
-- Be thorough — extract every field visible in the form`,
+- Be thorough — extract every field visible in the form`
+      }
+
+      // Step 1: Extract DataCollectionSpec + confidence from PDF
+      // Use generateText + manual JSON parsing because generateObject's
+      // tool-use mode returns empty objects on Bedrock.
+      const extraction = await generateText({
+        model: bedrock(model),
+        maxOutputTokens: options?.maxOutputTokens ?? 32768,
+        ...(options?.temperature !== undefined
+          ? { temperature: options.temperature }
+          : {}),
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'file',
+                data: pdf,
+                mediaType: 'application/pdf',
+              },
+              {
+                type: 'text',
+                text: step1PromptText,
               },
             ],
           },
