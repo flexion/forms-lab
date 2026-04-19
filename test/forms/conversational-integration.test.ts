@@ -118,7 +118,8 @@ describe('Conversational form filling integration', () => {
     expect(page1ChatGet.status).toBe(200)
     const page1ChatHtml = await page1ChatGet.text()
     expect(page1ChatHtml).toContain('Employment')
-    expect(page1ChatHtml).toContain('chat-panel')
+    expect(page1ChatHtml).toContain('flex-assistant')
+    expect(page1ChatHtml).toContain('conversational-form-layout')
 
     // Verify initial greeting was generated
     let messages = conversationGateway.getMessages(sessionId!)
@@ -295,13 +296,13 @@ describe('Conversational form filling integration', () => {
     expect(formHtml).toContain('Switch to Chat View')
     expect(formHtml).not.toContain('chat-panel')
 
-    // GET chat view for page 1 - shows chat interface
+    // GET chat view for page 1 - shows chat interface with form
     const chatGet = await app.request(`${baseUrl}/pages/1/chat`)
     expect(chatGet.status).toBe(200)
     const chatHtml = await chatGet.text()
-    expect(chatHtml).toContain('chat-panel')
-    // For pure conversational mode, there's no toggle back to form
-    // (that would require hybrid mode)
+    expect(chatHtml).toContain('flex-assistant')
+    expect(chatHtml).toContain('conversational-form-layout')
+    // Hybrid layout shows both form and assistant
   })
 
   it('handles skipped conditional fields in conversational mode', async () => {
