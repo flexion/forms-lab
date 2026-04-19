@@ -6,6 +6,7 @@ export interface StrategyMetadata {
   catalogPath?: string
   modelId?: string
   metrics?: Record<string, number>
+  pricing?: { inputPer1k: number; outputPer1k: number }
 }
 
 export interface StrategyEntry<T> {
