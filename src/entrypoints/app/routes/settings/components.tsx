@@ -2,8 +2,10 @@ import type { FC } from 'hono/jsx'
 import { Alert } from '../../../../design-system/components/flex-alert'
 import { Button } from '../../../../design-system/components/flex-button'
 import { Radio } from '../../../../design-system/components/flex-radio'
-import type { TaskRegistries } from '../../../../services/variant-preferences'
-import { TASKS, type Task } from '../../../../services/variant-preferences'
+import type {
+  Task,
+  TaskRegistries,
+} from '../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../shared/base-path'
 
 interface TaskMeta {
@@ -56,6 +58,34 @@ const TASK_META: Record<Task, TaskMeta> = {
     benchmarksPath: '/catalog/experiments/authoring-pipeline',
   },
 }
+
+interface TaskGroup {
+  id: string
+  label: string
+  tasks: Task[]
+}
+
+const TASK_GROUPS: TaskGroup[] = [
+  {
+    id: 'document-processing',
+    label: 'Document Processing',
+    tasks: ['extraction', 'field-mapping'],
+  },
+  {
+    id: 'form-editing',
+    label: 'Form Editing',
+    tasks: ['shaping', 'filling'],
+  },
+  {
+    id: 'authoring-pipeline',
+    label: 'Authoring Pipeline',
+    tasks: [
+      'authoring-criteria',
+      'authoring-structure',
+      'authoring-generation',
+    ],
+  },
+]
 
 interface VariantLabelProps {
   name: string
@@ -123,73 +153,108 @@ export const VariantPickerPage: FC<VariantPickerPageProps> = ({
 
       {saved ? <Alert variant="success">Preferences saved.</Alert> : null}
 
-      <form method="post" action={action} class="l-stack">
-        <div class="l-stack">
-          {TASKS.map((task) => {
-            const variants = registries[task].list()
-            const current = selections[task]
-            const highlighted = highlightTask === task
-            const meta = TASK_META[task]
-            const benchmarksHref = resolveUrl(meta.benchmarksPath)
-            return (
-              <section
-                key={task}
-                id={`task-${task}`}
-                class="variant-settings__task"
-                data-highlighted={highlighted ? 'true' : undefined}
-              >
-                <div class="variant-settings__task-header">
-                  <div class="variant-settings__task-heading">
-                    <h2 class="variant-settings__task-label">{meta.label}</h2>
-                    <p class="variant-settings__task-description">
-                      {meta.description}
-                    </p>
-                  </div>
-                  <a
-                    class="variant-settings__task-benchmarks"
-                    href={benchmarksHref}
-                  >
-                    View benchmarks →
-                  </a>
-                </div>
+      <div class="variant-settings__layout">
+        <nav class="variant-settings__nav" aria-label="Task groups">
+          {TASK_GROUPS.map((group) => (
+            <div key={group.id} class="variant-settings__nav-group">
+              <span class="variant-settings__nav-group-label">
+                {group.label}
+              </span>
+              <ul class="variant-settings__nav-list">
+                {group.tasks.map((task) => (
+                  <li key={task}>
+                    <a
+                      href={`#task-${task}`}
+                      class="variant-settings__nav-link"
+                    >
+                      {TASK_META[task].label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
 
-                {variants.length === 0 ? (
-                  <p class="variant-settings__empty">
-                    No variants yet — available in a later release. See the{' '}
-                    <a class="variant-settings__option-link" href={roadmapHref}>
-                      experiment roadmap
-                    </a>{' '}
-                    for what's planned.
-                  </p>
-                ) : (
-                  <div class="variant-settings__options">
-                    {variants.map((variant) => (
-                      <Radio
-                        key={variant.id}
-                        tile
-                        id={`variant__${task}__${variant.id}`}
-                        name={`variant__${task}`}
-                        value={variant.id}
-                        checked={current === variant.id}
-                        label={
-                          <VariantLabel
-                            name={variant.metadata.name}
-                            description={variant.metadata.description}
-                            catalogPath={variant.metadata.catalogPath}
-                          />
-                        }
-                      />
-                    ))}
-                  </div>
-                )}
-              </section>
-            )
-          })}
+        <div class="variant-settings__content">
+          <form method="post" action={action} class="l-stack">
+            {TASK_GROUPS.map((group) => (
+              <div key={group.id} class="variant-settings__group">
+                <h2 class="variant-settings__group-heading">{group.label}</h2>
+                {group.tasks.map((task) => {
+                  const variants = registries[task].list()
+                  const current = selections[task]
+                  const highlighted = highlightTask === task
+                  const meta = TASK_META[task]
+                  const benchmarksHref = resolveUrl(meta.benchmarksPath)
+                  return (
+                    <section
+                      key={task}
+                      id={`task-${task}`}
+                      class="variant-settings__task"
+                      data-highlighted={highlighted ? 'true' : undefined}
+                    >
+                      <div class="variant-settings__task-header">
+                        <div class="variant-settings__task-heading">
+                          <h3 class="variant-settings__task-label">
+                            {meta.label}
+                          </h3>
+                          <p class="variant-settings__task-description">
+                            {meta.description}
+                          </p>
+                        </div>
+                        <a
+                          class="variant-settings__task-benchmarks"
+                          href={benchmarksHref}
+                        >
+                          View benchmarks →
+                        </a>
+                      </div>
+
+                      {variants.length === 0 ? (
+                        <p class="variant-settings__empty">
+                          No variants yet — available in a later release. See
+                          the{' '}
+                          <a
+                            class="variant-settings__option-link"
+                            href={roadmapHref}
+                          >
+                            experiment roadmap
+                          </a>{' '}
+                          for what's planned.
+                        </p>
+                      ) : (
+                        <div class="variant-settings__options">
+                          {variants.map((variant) => (
+                            <Radio
+                              key={variant.id}
+                              tile
+                              id={`variant__${task}__${variant.id}`}
+                              name={`variant__${task}`}
+                              value={variant.id}
+                              checked={current === variant.id}
+                              label={
+                                <VariantLabel
+                                  name={variant.metadata.name}
+                                  description={variant.metadata.description}
+                                  catalogPath={variant.metadata.catalogPath}
+                                />
+                              }
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                  )
+                })}
+              </div>
+            ))}
+            <div class="l-cluster variant-settings__actions">
+              <Button type="submit">Save changes</Button>
+            </div>
+          </form>
         </div>
-        <div class="l-cluster variant-settings__actions">
-          <Button type="submit">Save changes</Button>
-        </div>
-      </form>
+      </div>
     </div>
   )
 }

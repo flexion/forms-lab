@@ -11,6 +11,115 @@
   gap: var(--flex-space-2xs);
 }
 
+/* Two-column layout: sticky side nav + scrolling content area */
+.variant-settings__layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--flex-space-lg);
+  align-items: start;
+}
+
+.variant-settings__nav {
+  position: sticky;
+  top: var(--flex-space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-md);
+}
+
+.variant-settings__nav-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.variant-settings__nav-group-label {
+  font-size: var(--flex-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--flex-color-text-muted);
+  display: block;
+  margin-block-end: var(--flex-space-xs);
+}
+
+.variant-settings__nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.variant-settings__nav-list li {
+  margin: 0;
+}
+
+.variant-settings__nav-link {
+  display: block;
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+  text-decoration: none;
+  border-radius: var(--flex-radius-md);
+}
+
+.variant-settings__nav-link:hover {
+  color: var(--flex-color-text);
+  background: var(--flex-gray-5);
+}
+
+.variant-settings__content {
+  min-inline-size: 0;
+}
+
+.variant-settings__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-md);
+}
+
+.variant-settings__group-heading {
+  font-size: var(--flex-text-base);
+  font-weight: 600;
+  margin: var(--flex-space-lg) 0 var(--flex-space-sm);
+  padding-block-end: var(--flex-space-xs);
+  border-block-end: 1px solid var(--flex-color-border);
+}
+
+.variant-settings__group-heading:first-child {
+  margin-block-start: 0;
+}
+
+/* Mobile: collapse nav to horizontal list */
+@media (max-width: 64rem) {
+  .variant-settings__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .variant-settings__nav {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--flex-space-sm);
+    border-block-end: 1px solid var(--flex-color-border);
+    padding-block-end: var(--flex-space-sm);
+    margin-block-end: var(--flex-space-md);
+  }
+
+  .variant-settings__nav-group {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--flex-space-xs);
+  }
+
+  .variant-settings__nav-group-label {
+    display: none;
+  }
+
+  .variant-settings__nav-list {
+    display: flex;
+    gap: var(--flex-space-xs);
+  }
+}
+
 .variant-settings__breadcrumb {
   display: flex;
   flex-wrap: wrap;
