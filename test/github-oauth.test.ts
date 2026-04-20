@@ -3,8 +3,11 @@ import {
   checkOrgMembership,
   checkRepoPermission,
   exchangeCodeForToken,
+  fetchUserEmails,
   fetchUserProfile,
+  type GitHubEmail,
   type GitHubUser,
+  hasAllowedEmailDomain,
 } from '../src/services/auth'
 
 describe('GitHub OAuth', () => {
@@ -213,6 +216,116 @@ describe('GitHub OAuth', () => {
         'flexion/forms-lab',
       )
       expect(hasPermission).toBe(false)
+    })
+  })
+
+  describe('fetchUserEmails', () => {
+    it('returns the email list on success', async () => {
+      const emails: GitHubEmail[] = [
+        {
+          email: 'daniel@flexion.us',
+          primary: true,
+          verified: true,
+          visibility: 'private',
+        },
+        {
+          email: 'daniel@example.com',
+          primary: false,
+          verified: false,
+          visibility: null,
+        },
+      ]
+      global.fetch = mock(
+        () =>
+          Promise.resolve(
+            new Response(JSON.stringify(emails), { status: 200 }),
+          ),
+        // biome-ignore lint/suspicious/noExplicitAny: mock signature
+      ) as any
+
+      const result = await fetchUserEmails('gho_test_token')
+      expect(result).toHaveLength(2)
+      expect(result[0].email).toBe('daniel@flexion.us')
+    })
+
+    it('returns empty array when scope is missing', async () => {
+      global.fetch = mock(
+        () => Promise.resolve(new Response('', { status: 404 })),
+        // biome-ignore lint/suspicious/noExplicitAny: mock signature
+      ) as any
+
+      const result = await fetchUserEmails('gho_test_token')
+      expect(result).toEqual([])
+    })
+  })
+
+  describe('hasAllowedEmailDomain', () => {
+    const emails: GitHubEmail[] = [
+      {
+        email: 'person@flexion.us',
+        primary: true,
+        verified: true,
+        visibility: null,
+      },
+      {
+        email: 'person@example.com',
+        primary: false,
+        verified: true,
+        visibility: null,
+      },
+      {
+        email: 'person@unverified-flexion.us',
+        primary: false,
+        verified: false,
+        visibility: null,
+      },
+    ]
+
+    it('matches a verified email on the allowed domain', () => {
+      expect(hasAllowedEmailDomain(emails, ['flexion.us'])).toBe(true)
+    })
+
+    it('is case-insensitive on the domain', () => {
+      expect(hasAllowedEmailDomain(emails, ['FLEXION.US'])).toBe(true)
+      const cased: GitHubEmail[] = [
+        { ...emails[0], email: 'Person@Flexion.US' },
+      ]
+      expect(hasAllowedEmailDomain(cased, ['flexion.us'])).toBe(true)
+    })
+
+    it('ignores unverified emails even when the domain matches', () => {
+      const unverified: GitHubEmail[] = [
+        { ...emails[2], email: 'person@flexion.us', verified: false },
+      ]
+      expect(hasAllowedEmailDomain(unverified, ['flexion.us'])).toBe(false)
+    })
+
+    it('returns false when no domain matches', () => {
+      expect(hasAllowedEmailDomain(emails, ['other.org'])).toBe(false)
+    })
+
+    it('returns false when allowedDomains is empty', () => {
+      expect(hasAllowedEmailDomain(emails, [])).toBe(false)
+    })
+
+    it('supports multiple allowed domains', () => {
+      expect(hasAllowedEmailDomain(emails, ['other.org', 'flexion.us'])).toBe(
+        true,
+      )
+    })
+
+    it('does not match substrings of a domain', () => {
+      // "not-flexion.us" ends with "flexion.us" but is not equal; the
+      // check must not admit it.
+      const tricky: GitHubEmail[] = [
+        {
+          email: 'attacker@not-flexion.us',
+          primary: true,
+          verified: true,
+          visibility: null,
+        },
+      ]
+      expect(hasAllowedEmailDomain(tricky, ['flexion.us'])).toBe(false)
     })
   })
 })

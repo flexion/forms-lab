@@ -194,6 +194,7 @@ GITHUB_CLIENT_SECRET=$(cat /run/secrets/github-client-secret 2>/dev/null || echo
 SESSION_SECRET=$(cat /run/secrets/session-secret 2>/dev/null || echo "")
 GITHUB_AUTHZ_ORG=flexion
 ALLOWED_USERS=danielnaab,FlexionCodeReview
+ALLOWED_EMAIL_DOMAINS=flexion.us
 AWS_REGION=us-east-1
 AWS_BEDROCK_REGION=us-west-2
 CACHE_DB_PATH=/srv/forms-lab/cache.sqlite

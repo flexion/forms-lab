@@ -6,7 +6,9 @@ import {
   COOKIE_NAME,
   encryptSession,
   exchangeCodeForToken,
+  fetchUserEmails,
   fetchUserProfile,
+  hasAllowedEmailDomain,
 } from '../../../../services/auth'
 import { resolveUrl } from '../../../../shared/base-path'
 
@@ -53,7 +55,10 @@ export function createAuthRoutes(userStore: UserStore): Hono {
     const authUrl = new URL('https://github.com/login/oauth/authorize')
     authUrl.searchParams.set('client_id', clientId)
     authUrl.searchParams.set('redirect_uri', callbackUrl)
-    authUrl.searchParams.set('scope', 'read:user read:org')
+    // `user:email` is required to check the user's verified email
+    // domain against ALLOWED_EMAIL_DOMAINS; `read:org` remains for
+    // the legacy org-membership path.
+    authUrl.searchParams.set('scope', 'read:user read:org user:email')
     authUrl.searchParams.set('state', state)
 
     return c.redirect(authUrl.toString())
@@ -98,14 +103,48 @@ export function createAuthRoutes(userStore: UserStore): Hono {
       // Fetch user profile
       const ghUser = await fetchUserProfile(token)
 
-      // TODO: Replace with org membership check once OAuth app is approved
-      // Temporary allowlist for development
-      const allowedUsers = (process.env.ALLOWED_USERS ?? 'danielnaab').split(
-        ',',
-      )
-      if (!allowedUsers.includes(ghUser.login)) {
-        console.log(`Authorization failed for user: ${ghUser.login}`)
+      // Authorization: user passes if their GitHub login is on the
+      // ALLOWED_USERS list OR any of their verified emails matches a
+      // domain on ALLOWED_EMAIL_DOMAINS. Either mechanism alone is
+      // sufficient; both are evaluated so a personal-login dev can
+      // still get in on an instance with a strict corporate domain.
+      const allowedUsers = (process.env.ALLOWED_USERS ?? 'danielnaab')
+        .split(',')
+        .map((u) => u.trim())
+        .filter(Boolean)
+      const allowedDomains = (process.env.ALLOWED_EMAIL_DOMAINS ?? '')
+        .split(',')
+        .map((d) => d.trim())
+        .filter(Boolean)
+
+      let authorised = allowedUsers.includes(ghUser.login)
+      let emailMatchDomain: string | null = null
+
+      if (!authorised && allowedDomains.length > 0) {
+        const emails = await fetchUserEmails(token)
+        if (hasAllowedEmailDomain(emails, allowedDomains)) {
+          authorised = true
+          emailMatchDomain =
+            emails.find((e) => {
+              const at = e.email.lastIndexOf('@')
+              if (at === -1 || !e.verified) return false
+              const domain = e.email.slice(at + 1).toLowerCase()
+              return allowedDomains.map((d) => d.toLowerCase()).includes(domain)
+            })?.email ?? null
+        }
+      }
+
+      if (!authorised) {
+        console.log(
+          `Authorization failed for user: ${ghUser.login} (allowlist=${allowedUsers.length} users, ${allowedDomains.length} domains)`,
+        )
         return c.redirect(resolveUrl('/?error=unauthorized'))
+      }
+
+      if (emailMatchDomain) {
+        console.log(
+          `Authorized ${ghUser.login} via email domain match: ${emailMatchDomain}`,
+        )
       }
 
       // Persist user profile
