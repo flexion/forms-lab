@@ -236,6 +236,7 @@ export function createBedrockPdfExtractor(
             "fieldType": "text|email|phone|url|number|currency|date|boolean|choice|longText",
             "required": true/false,
             "helpText": "string (optional)",
+            "choices": ["string"] (required for fieldType "choice", otherwise omit),
             "sensitivity": "low|medium|high|pii (optional)"
           }
         ]
@@ -254,6 +255,8 @@ export function createBedrockPdfExtractor(
 ${exemplarSection}Guidelines:
 - Group related fields (e.g., "Personal Information", "Employment History")
 - Use kebab-case for ids, camelCase for fieldName
+- For yes/no questions, use fieldType "choice" with choices ["Yes", "No"] rather than boolean. Reserve boolean for agreement checkboxes (e.g., "I agree to the terms").
+- Every "choice" field MUST include a non-empty \`choices\` array listing the options (e.g., ["US Citizen", "Permanent Resident", "Other"]).
 - Flag low-confidence fields (< 0.8) with descriptive flags
 - Only include validation rules and conditions if clearly specified in the form
 - Be thorough — extract every field visible in the form`

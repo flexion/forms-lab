@@ -38,7 +38,8 @@ export const extractionTools = {
     execute: async ({ id }) => `Group "${id}" added.`,
   }),
   addField: tool({
-    description: 'Add a field (requirement) to the most recently added group.',
+    description:
+      'Add a field (requirement) to the most recently added group. For yes/no questions, pass fieldType "choice" with choices ["Yes","No"] rather than boolean. Reserve boolean for agreement checkboxes.',
     inputSchema: z.object({
       id: z.string().describe('kebab-case field ID'),
       fieldName: z.string().describe('camelCase field name'),
@@ -46,6 +47,12 @@ export const extractionTools = {
       fieldType: fieldType,
       required: z.boolean(),
       helpText: z.string().optional(),
+      choices: z
+        .array(z.string())
+        .optional()
+        .describe(
+          'Required when fieldType is "choice" (e.g. ["Yes","No"] or ["Single","Married","Other"]). Omit for other field types.',
+        ),
       sensitivity: sensitivity.optional(),
     }),
     execute: async ({ id }) => `Field "${id}" added.`,
@@ -139,6 +146,7 @@ export function reconstructSpec(
           fieldType: string
           required: boolean
           helpText?: string
+          choices?: string[]
           sensitivity?: string
         }
         spec.groups[currentGroupIndex].requirements.push({
@@ -149,6 +157,7 @@ export function reconstructSpec(
             input.fieldType as DataCollectionSpec['groups'][0]['requirements'][0]['fieldType'],
           required: input.required,
           helpText: input.helpText,
+          choices: input.choices,
           sensitivity: input.sensitivity as
             | 'low'
             | 'medium'

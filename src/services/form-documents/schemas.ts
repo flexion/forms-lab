@@ -18,28 +18,38 @@ export const fieldConfidenceSchema = z.object({
   flags: z.array(z.string()).optional(),
 })
 
-export const dataRequirementSchema = z.object({
-  id: z.string(),
-  fieldName: z.string(),
-  label: z.string(),
-  fieldType: z.enum([
-    'text',
-    'email',
-    'phone',
-    'url',
-    'number',
-    'currency',
-    'date',
-    'boolean',
-    'choice',
-    'longText',
-  ]),
-  required: z.boolean(),
-  helpText: z.string().optional(),
-  validation: z.array(validationRuleSchema).optional(),
-  condition: conditionSchema.optional(),
-  sensitivity: z.enum(['low', 'medium', 'high', 'pii']).optional(),
-})
+export const dataRequirementSchema = z
+  .object({
+    id: z.string(),
+    fieldName: z.string(),
+    label: z.string(),
+    fieldType: z.enum([
+      'text',
+      'email',
+      'phone',
+      'url',
+      'number',
+      'currency',
+      'date',
+      'boolean',
+      'choice',
+      'longText',
+    ]),
+    required: z.boolean(),
+    helpText: z.string().optional(),
+    choices: z.array(z.string()).optional(),
+    validation: z.array(validationRuleSchema).optional(),
+    condition: conditionSchema.optional(),
+    sensitivity: z.enum(['low', 'medium', 'high', 'pii']).optional(),
+  })
+  .refine(
+    (r) => r.fieldType !== 'choice' || (r.choices && r.choices.length > 0),
+    {
+      message:
+        'choice fields must include a non-empty `choices` array (e.g. ["Yes", "No"] for yes/no questions)',
+      path: ['choices'],
+    },
+  )
 
 export const requirementGroupSchema = z.object({
   id: z.string(),
