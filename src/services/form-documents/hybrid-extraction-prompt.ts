@@ -56,6 +56,7 @@ ${formattedOutput}
             "fieldType": "text|email|phone|url|number|currency|date|boolean|choice|longText",
             "required": true/false,
             "helpText": "string (optional)",
+            "choices": ["string"] (required for fieldType "choice", otherwise omit),
             "sensitivity": "low|medium|high|pii (optional)"
           }
         ]
@@ -73,5 +74,5 @@ ${formattedOutput}
 
 ## Your extraction
 
-Return ONLY the JSON. Use kebab-case ids, camelCase fieldNames. Flag fields you're less than 80% confident on. Be thorough.`
+Return ONLY the JSON. Use kebab-case ids, camelCase fieldNames. Flag fields you're less than 80% confident on. Be thorough. For yes/no questions use fieldType "choice" with choices ["Yes", "No"] (reserve boolean for agreement checkboxes). Every "choice" field MUST include a non-empty \`choices\` array.`
 }
