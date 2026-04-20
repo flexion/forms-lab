@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { ContentCard } from '../../../../design-system/components/flex-card'
 import { CatalogSidebar } from '../../../../design-system/components/flex-catalog-sidebar'
 import { Layout } from '../../../../design-system/components/flex-layout'
+import { SummaryBox } from '../../../../design-system/components/flex-summary-box'
 import { readMarkdownDir } from '../../../../services/content'
 import { resolveUrl } from '../../../../shared/base-path'
 import architecture from './architecture'
@@ -65,6 +66,29 @@ catalog.get('/', async (c) => {
       </p>
 
       <div class="l-stack" style="--stack-space: var(--flex-space-xl)">
+        <SummaryBox heading="Headline finding">
+          <p>
+            The{' '}
+            <a
+              href={resolveUrl(
+                '/catalog/experiments/pdf-field-extraction/sonnet-hybrid-v1',
+              )}
+            >
+              <strong>hybrid-v1</strong> extraction variant
+            </a>{' '}
+            (one instruction, one exemplar, temperature=0) Pareto-dominates
+            every other prompt-only variant on the PDF field extraction suite —
+            precision 99.2%, recall 72.6%, sensitivity +23.8pp over baseline —
+            and is the production default. Same prompt shape that topped the
+            Assignment 10 tool-calling leaderboard; the rank ordering reproduces
+            across model scale and task type. See the{' '}
+            <a href={resolveUrl('/catalog/experiments/pdf-field-extraction')}>
+              extraction suite
+            </a>{' '}
+            for the full comparison.
+          </p>
+        </SummaryBox>
+
         <section>
           <p class="catalog-group-label">Presentation</p>
           <div class="l-grid" style="--grid-min: 280px">
@@ -77,6 +101,27 @@ catalog.get('/', async (c) => {
               title="Walkthrough"
               href={resolveUrl('/catalog/walkthrough')}
               description="Guided tour of the project — problem, approach, LLM integration, and demo"
+            />
+          </div>
+        </section>
+
+        <section>
+          <p class="catalog-group-label">Experiment suites</p>
+          <div class="l-grid" style="--grid-min: 280px">
+            <ContentCard
+              title="PDF field extraction"
+              href={resolveUrl('/catalog/experiments/pdf-field-extraction')}
+              description="Nine variants compared on recall, precision, sensitivity. Hybrid-v1 is the current default."
+            />
+            <ContentCard
+              title="Shaping model comparison"
+              href={resolveUrl('/catalog/experiments/shaping-model-comparison')}
+              description="Haiku vs Sonnet vs Opus on conversational shaping commands. Prompt disambiguation, not model size, is the bottleneck."
+            />
+            <ContentCard
+              title="Authoring pipeline"
+              href={resolveUrl('/catalog/experiments/authoring-pipeline/index')}
+              description="RAG-assisted spec authoring — corpus ingestion, grounded extraction, citation rendering."
             />
           </div>
         </section>

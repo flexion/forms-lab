@@ -1,99 +1,156 @@
 # Forms Lab
 
-LLM-Assisted Forms Platform for government forms. Upload a PDF, extract structured specs, deliver form experiences (static or conversational), and generate completed PDFs.
+LLM-assisted forms platform for government forms. Upload a PDF, extract a
+structured spec, deliver a form experience (static or conversational), and
+generate a filled PDF back out.
 
-## Quick Start
+The core idea: **separate _what to collect_ from _how to present it_.** A
+`DataCollectionSpec` describes the fields and their semantics; a `FormSpec`
+describes how they are presented. Swap the presentation (static page,
+conversational chat, review layout) without touching the extraction pipeline,
+and swap the extraction strategy without touching delivery. Every LLM-powered
+step is a pluggable _variant_ that can be selected per user at runtime.
 
-**Prerequisites:**
-- [Bun](https://bun.sh/) 1.x or later
+## Live demo
 
-**Install dependencies:**
+Final project deployment for LLM Class 2026 Winter Cohort.
+
+- **Slide deck** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/presentation](https://ec2-34-197-222-16.compute-1.amazonaws.com/presentation)
+- **Catalog** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/catalog](https://ec2-34-197-222-16.compute-1.amazonaws.com/catalog)
+  (architecture, decisions, experiments, personas, stories, design system)
+- **Application** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/](https://ec2-34-197-222-16.compute-1.amazonaws.com/)
+  (main branch)
+
+Each active branch is deployed at `/<branch>/` alongside main.
+
+## Key findings
+
+Full write-ups live in the catalog. Headlines:
+
+1. **Hybrid-v1 Pareto-dominates prompt-only extraction.**
+   [`sonnet-hybrid-v1`](catalog/experiments/pdf-field-extraction/sonnet-hybrid-v1.md)
+   (one short instruction, one inline exemplar, temperature=0) wins four of
+   five metrics outright — precision 99.2%, recall 72.6%, sensitivity 51.1% —
+   and ties on type accuracy, at the same cost as baseline Sonnet. It is now
+   the production default. The prompt shape that topped the Assignment 10
+   tool-calling leaderboard on Mistral 8B reproduces on Claude Sonnet 4 for a
+   completely different task.
+
+2. **Tool-use is the structural precision/sensitivity lever.**
+   [`tool-use-sonnet`](catalog/experiments/pdf-field-extraction/tool-use-sonnet.md)
+   forces typed tool calls instead of free JSON: sensitivity accuracy jumps
+   27% → 79% (+51pp) and precision reaches 96.3%. Recall is step-limited at
+   20 rounds, so it shines on short-to-moderate forms.
+
+3. **Nova Pro marks the non-Claude capability boundary for extraction.**
+   [`nova-pro`](catalog/experiments/pdf-field-extraction/nova-pro.md) scored
+   97% on the homework's 10-field tool-calling task but extracts at 0.6%
+   recall here — it summarizes sections instead of enumerating fields. Prompt
+   engineering does not recover this. Model selection dominates prompt
+   engineering once the task is outside the model's capability range.
+
+4. **Model size is not the dominant lever for shaping.**
+   [Shaping model comparison](catalog/experiments/shaping-model-comparison/_suite.md):
+   Opus/Sonnet/Haiku all cluster around 67-73% command-kind precision.
+   Three intents are at ceiling across all three models; two fail across all
+   three. Prompt disambiguation (e.g. `renamePage` vs `renameGroup`) is the
+   bottleneck, not parameter count.
+
+Suite indexes:
+[PDF extraction](catalog/experiments/pdf-field-extraction/_suite.md) ·
+[Shaping](catalog/experiments/shaping-model-comparison/_suite.md) ·
+[Authoring pipeline](catalog/experiments/authoring-pipeline/index.md) ·
+[Roadmap](catalog/experiments/_roadmap.md)
+
+## Quick start
+
+**Prerequisites:** [Bun](https://bun.sh/) 1.x or later.
+
 ```bash
 bun install
+bun run dev                # dev server at http://localhost:3000
+bun test                   # tests
+bun run check              # lint + type check + tests (run before push)
 ```
 
-**Run development server:**
-```bash
-bun run dev
-```
+See [CLAUDE.md](CLAUDE.md) for the full command reference, session workflow,
+deployment architecture, and contribution conventions.
 
-Server starts at http://localhost:3000
-
-**Run tests:**
-```bash
-bun test
-```
-
-**Run type checking:**
-```bash
-bun run --no-warnings tsc --noEmit
-```
-
-## Project Structure
+## Project layout
 
 ```
-/
-├── src/
-│   ├── routes/          # Hono routes (catalog, forms, auth, compare)
-│   ├── services/        # LLM services, git adapter, auth
-│   ├── components/      # JSX components (server-rendered + islands)
-│   ├── types/           # TypeScript types
-│   ├── lib/             # Utilities
-│   └── server.ts        # Hono app entry point
-│
-├── catalog/             # Catalog content (versioned with code)
-│   ├── personas/        # Persona markdown files
-│   ├── stories/         # User stories (synced from GitHub Issues)
-│   ├── architecture/    # Architecture docs
-│   ├── experiments/     # LLM experiments
-│   └── decisions/       # ADRs
-│
-├── projects/            # Form projects (specs, assets)
-├── test/                # Tests (Bun test suite)
-├── infrastructure/      # Deployment scripts
-└── .github/workflows/   # CI/CD
+src/
+├── entrypoints/           # Hono servers and CLI
+│   ├── app/               # Forms platform web app (routes, middleware, public)
+│   ├── dashboard/         # Deployment dashboard (homepage service)
+│   ├── webhook/           # GitHub webhook listener
+│   ├── notify/            # Notification delivery
+│   └── cli/               # CLI commands
+├── services/              # Domain services (one public entry per service)
+│   ├── data-collection/   # Core model: what to collect
+│   ├── forms/             # Resolution, delivery, sessions, shaping, filling
+│   ├── form-documents/    # PDF extraction, field mapping, filling
+│   ├── extraction/        # Extraction variant registry
+│   ├── evaluation/        # Evaluation harness and LLM-as-judge kinds
+│   ├── projects/          # Project service and form-project git repo
+│   ├── auth/              # GitHub OAuth, sessions
+│   ├── deployment/        # Deploy orchestration
+│   └── ...
+├── design-system/         # flex-* components (server-rendered JSX)
+└── shared/                # Pure utilities
+
+catalog/                   # Versioned catalog content (markdown/JSON)
+├── personas/              # Who the system serves
+├── stories/               # GitHub Issue copies (user stories)
+├── architecture/          # System docs
+├── decisions/             # ADRs
+└── experiments/           # LLM experiment suites + runs
+
+projects/                  # Form project directories (specs, assets)
+infrastructure/            # Pulumi (EC2) + NixOS (server config)
+test/                      # Bun test suite
 ```
 
-## Tech Stack
+Dependencies flow one way: `shared → services/design-system → entrypoints`.
+Each service exposes its public API through `src/services/<name>/index.ts`
+and is enforced by `test/architecture/dependency-rule.test.ts`. See the
+[architecture principles](catalog/decisions/architecture/architecture-principles.md).
+
+## Tech stack
 
 - **Runtime:** Bun
-- **Framework:** Hono
+- **Framework:** Hono (server-rendered JSX, no client runtime)
 - **Language:** TypeScript
 - **Testing:** Bun test
-- **Linting:** Biome
-- **CI/CD:** GitHub Actions
+- **Linting:** Biome + Stylelint (design-token enforcement)
+- **Persistence:** Git-based — specs and catalog content live in the repo
+- **LLMs:** Claude (Opus/Sonnet/Haiku) via Anthropic SDK and AWS Bedrock;
+  Amazon Nova Pro for cross-provider comparison
+- **Deployment:** Pulumi + NixOS on EC2, branch-per-deployment via GitHub
+  webhook
 
-## Architecture
+## Workflow
 
-- **Data Model:** DataCollectionSpec (what to collect), FormSpec (how to present), Submission (collected data)
-- **Persistence:** Git-based (specs and assets in `projects/`)
-- **Catalog:** Self-documenting system (personas, stories, architecture, experiments)
-- **LLM Integration:** Strategy pattern with feature flags for experimentation
+Session commands (installed in `.claude/commands/`):
 
-## Development Workflow
+```bash
+/create-story                # New user story (GitHub issue + notes dir)
+/start-story <description>   # Initialize a session (worktree, context)
+/finish-story                # Run checks, code review, open PR
+/review-story <PR>           # Review another session's PR
+```
 
-1. Pick a user story from [GitHub Issues](../../issues) (labeled `user-story`)
-2. Create branch: `story/<issue-number>-<slug>` or `experiment/<name>`
-3. Implement with TDD
-4. Run tests and type checking
-5. Commit frequently with descriptive messages
-6. Open PR and review on deployed branch
-7. Merge when approved
-8. Run `bun run sync:stories` to update local story copies
-
-## Deployment
-
-Branch-per-deployment model: every branch gets its own deployment URL.
-
-**Infrastructure:** Server-per-branch (container or EC2), Bun + Hono, reverse proxy routes `<branch>.domain.com` to appropriate process.
-
-**CI/CD:** GitHub Actions runs tests on every push. Deployment triggered on push to branch.
-
-See `infrastructure/` directory for deployment scripts and configuration.
+Infrastructure changes branch from main as `infra/YYYY-MM-DD-description`;
+feature work branches as `story-N/name` or `docs/<description>`. See
+[CLAUDE.md](CLAUDE.md) for commit conventions, the stacked branch workflow,
+and deployment details.
 
 ## Contributing
 
-This is a class project for LLM Class 2026 Winter Cohort. Development follows the vertical slicing approach: each user story delivers a complete, demoable capability.
+Class project for [LLM Class 2026 Winter Cohort](https://github.com/flexion/llm-class-2026-winter-cohort).
+Development follows vertical slicing: each user story delivers a complete,
+demoable capability through all layers. Tests are required for new
+functionality; `bun run check` must pass before push.
 
 ## License
 
