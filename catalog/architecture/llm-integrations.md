@@ -65,12 +65,47 @@ the source at the commit currently deployed.
 - **Judge prompt.** [`judge-prompt.ts`](src:src/services/evaluation/judge-prompt.ts)
 - **Related experiment.** [PDF field extraction](../experiments/pdf-field-extraction/)
 
-## Future
+### Retrieval-augmented generation (RAG)
 
-### Retrieval-augmented generation
+The RAG service (`src/services/rag/`) provides in-memory vector retrieval over policy corpus documents. Used by both extraction (to ground field generation in regulatory text) and the authoring pipeline (to drive criteria analysis and field generation from corpus alone).
 
-Not yet implemented. The existing experiment roadmap tracks the work if
-it lands — see [experiments roadmap](../experiments/roadmap).
+**Components:**
+- **Corpus loader** ([`corpus.ts`](src:src/services/rag/corpus.ts)) — Reads `catalog/references/*.md` files with YAML frontmatter + `## Section — <citation>` headings. Also supports project-scoped `references/` via `projectDir` option.
+- **Retriever** ([`retrieval.ts`](src:src/services/rag/retrieval.ts)) — In-memory cosine similarity over L2-normalized embeddings. O(n·d) per query; fast for ≤50 chunks.
+- **Embedder** — AWS Bedrock Titan Embed V2 (production) or deterministic hash fallback (offline/testing).
+- **Policy corpus** — 13 sections from 7 CFR 273 (SNAP Wisconsin) at `catalog/references/snap-wisconsin.md`.
+
+**Integration points:**
+- `src/services/extraction/` — RAG-grounded extraction variants prepend policy context to prompts.
+- `src/services/form-authoring/` — Full pipeline reads corpus for criteria, structure, and field generation.
+
+**Variant settings:** Three independent tasks in the variant system:
+- Authoring: Criteria Analysis (Sonnet/Haiku/Opus)
+- Authoring: Structure Generation (Sonnet/Haiku/Opus)
+- Authoring: Field Generation (Sonnet/Haiku/Opus)
+
+**Related experiments:** [Authoring pipeline](../experiments/authoring-pipeline/), [RAG extraction](../experiments/pdf-field-extraction/sonnet-with-rag.md)
+
+### Form authoring pipeline
+
+The authoring pipeline (`src/services/form-authoring/`) generates complete form specifications from a policy corpus without a source PDF. Runs as a server-side background task with client polling for progress.
+
+**Stages:**
+1. **Criteria analysis** — LLM reads corpus, produces evaluation criteria with regulatory citations (`generateObject` with structured schema)
+2. **Structure generation** — LLM proposes pages via `addPage` tool calls (`generateText` with `toolChoice: required`)
+3. **Group creation** — Deterministic: one group per page using real page IDs from step 2
+4. **Field generation** — Per group, LLM proposes `addField` tool calls grounded in criteria and corpus
+
+**Key files:**
+- **Pipeline** ([`pipeline.ts`](src:src/services/form-authoring/pipeline.ts)) — `createAuthoringPipeline(config)` factory, per-stage model configuration
+- **Prompts** ([`prompts.ts`](src:src/services/form-authoring/prompts.ts)) — Stage-specific prompt builders
+- **Registry** ([`registry.ts`](src:src/services/form-authoring/registry.ts)) — Three variant registries (criteria, structure, generation)
+- **Route orchestrator** ([`authoring.tsx`](src:src/entrypoints/app/routes/owner/edit/authoring.tsx)) — Server-side `runBuild` background task with progress tracking
+- **Evaluator** ([`evaluator.ts`](src:src/services/form-authoring/evaluator.ts)) — LLM-as-judge for criteria scoring (Haiku)
+
+**CLI evaluation:** `bun run cli evaluate authoring <variant-id>` runs the pipeline against SNAP ground truth fixture and scores field recall/precision/type accuracy.
+
+**Related experiment:** [Authoring pipeline](../experiments/authoring-pipeline/)
 
 ## Adding a new LLM integration
 
