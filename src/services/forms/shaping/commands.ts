@@ -163,6 +163,8 @@ const addFieldSchema = z.object({
   label: z.string(),
   fieldType: fieldTypeSchema,
   required: z.boolean(),
+  control: controlSchema.optional(),
+  helpText: z.string().optional(),
 })
 const removeFieldSchema = z.object({
   kind: z.literal('removeField'),

@@ -1,5 +1,6 @@
 import type {
   DataCollectionSpec,
+  DataRequirement,
   RequirementGroup,
 } from '../../data-collection'
 import type { FormPage, FormSpec } from '../types'
@@ -608,12 +609,14 @@ function execAddField(
   )
   if (groupIdx < 0) return fail(command, `Unknown groupId: ${command.groupId}`)
   const dataSpec = cloneDataSpec(state.dataSpec)
-  const newField = {
+  const newField: DataRequirement = {
     id: command.id ?? generateFieldId(),
     fieldName: command.label.toLowerCase().replace(/\s+/g, '_').slice(0, 40),
     label: command.label,
     fieldType: command.fieldType,
     required: command.required,
+    ...(command.control ? { control: command.control } : {}),
+    ...(command.helpText ? { helpText: command.helpText } : {}),
   }
   dataSpec.groups[groupIdx] = {
     ...dataSpec.groups[groupIdx],

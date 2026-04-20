@@ -184,13 +184,15 @@ export const commandTools = {
   }),
   addField: tool({
     description:
-      'Add a new field to a group. Optionally specify an id to reference this field in subsequent commands.',
+      'Add a new field to a group. Optionally specify id (to reference in later commands), control (only needed to override the default for the field type), and helpText. Use these shortcuts to avoid separate setFieldControl / relabelField commands.',
     inputSchema: z.object({
       id: z.string().optional(),
       groupId: z.string(),
       label: z.string(),
       fieldType,
       required: z.boolean(),
+      control: control.optional(),
+      helpText: z.string().optional(),
     }),
   }),
   removeField: tool({
