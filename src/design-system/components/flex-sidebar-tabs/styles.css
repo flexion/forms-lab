@@ -1,0 +1,43 @@
+flex-sidebar-tabs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-tabs__header {
+  display: flex;
+  border-block-end: 1px solid var(--flex-color-border);
+  flex-shrink: 0;
+}
+
+.sidebar-tabs__tab {
+  flex: 1;
+  padding: var(--flex-space-xs) var(--flex-space-sm);
+  background: none;
+  border: none;
+  border-block-end: 2px solid transparent;
+  font-size: var(--flex-text-sm);
+  font-weight: 500;
+  color: var(--flex-color-text-muted);
+  cursor: pointer;
+}
+
+.sidebar-tabs__tab[data-active] {
+  color: var(--flex-color-text);
+  border-block-end-color: var(--flex-color-accent, currentColor);
+}
+
+.sidebar-tabs__panel {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.sidebar-tabs__panel[hidden] {
+  display: none;
+}
+
+/* Hide assistant close button when inside tabs */
+flex-sidebar-tabs .assistant__close {
+  display: none;
+}

@@ -4,7 +4,6 @@ flex-pipeline-panel {
 
 .pipeline-panel {
   padding: var(--flex-space-sm) var(--flex-space-md);
-  border-block-end: 1px solid var(--flex-color-border);
 }
 
 .pipeline-panel__header {
@@ -20,19 +19,30 @@ flex-pipeline-panel {
   color: var(--flex-color-text);
 }
 
-.pipeline-panel__badge {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 1px 6px;
-  border-radius: var(--flex-radius-md);
-  background: var(--flex-gray-5);
-  color: var(--flex-color-text-muted);
+.pipeline-panel__dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }
 
-.pipeline-panel__badge[data-stage="complete"] {
-  background: var(--flex-color-success-lighter, #d4edda);
-  color: var(--flex-color-success, #155724);
+.pipeline-panel__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--flex-color-border);
+}
+
+.pipeline-panel__dot[data-state="complete"] {
+  background: var(--flex-color-success, #28a745);
+}
+
+.pipeline-panel__dot[data-state="current"] {
+  background: var(--flex-color-accent, #2563eb);
+}
+
+.pipeline-panel__stage-label {
+  font-size: var(--flex-text-xs);
+  color: var(--flex-color-text-muted);
 }
 
 .pipeline-panel__body {

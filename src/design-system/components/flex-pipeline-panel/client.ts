@@ -121,10 +121,21 @@ class FlexPipelinePanel extends HTMLElement {
       complete: 'Complete',
     }[stage]
 
+    const stages = ['criteria', 'structure', 'sections']
+    const stageIndex = stages.indexOf(stage)
+    const dots = stages
+      .map((_s, i) => {
+        const state =
+          i < stageIndex ? 'complete' : i === stageIndex ? 'current' : 'future'
+        return `<span class="pipeline-panel__dot" data-state="${state}"></span>`
+      })
+      .join('')
+
     this.innerHTML = `<div class="pipeline-panel">
       <div class="pipeline-panel__header">
         <span class="pipeline-panel__title">Pipeline</span>
-        <span class="pipeline-panel__badge" data-stage="${stage}">${stageLabel}</span>
+        <span class="pipeline-panel__dots">${dots}</span>
+        <span class="pipeline-panel__stage-label">${stageLabel}</span>
       </div>
       <div class="pipeline-panel__body">${body}</div>
     </div>`
