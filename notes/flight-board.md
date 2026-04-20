@@ -6,7 +6,6 @@
 |-------|--------|--------|----------|---------|
 | #9 Carlos completes complex sections through conversation | story-9/conversational-sections | in-progress | .worktrees/story-9-conversational-sections | 2026-04-18 |
 | #9 UX fixes (live field updates, loading, context) | story-9/ux-fixes | pr-open ([#83](https://github.com/flexion/forms-lab/pull/83)) | main repo checkout | 2026-04-19 |
-| #87 Maya authors SNAP form guided by policy corpus | story-87/rag-authoring-pipeline | pr-open ([#88](https://github.com/flexion/forms-lab/pull/88)) | .worktrees/story-87-rag-authoring-pipeline | 2026-04-20 |
 
 ## Landed
 
@@ -14,6 +13,7 @@ Most recent first.
 
 | Story | Branch | Status | PR | Merged |
 |-------|--------|--------|----|--------|
+| #87 Maya authors SNAP form guided by policy corpus | story-87/rag-authoring-pipeline | shipped | [#88](https://github.com/flexion/forms-lab/pull/88) | 2026-04-20 |
 | #71 Developer navigates LLM integrations via a screaming service layer | story-71/llm-integrations-catalog | shipped | [#84](https://github.com/flexion/forms-lab/pull/84) | 2026-04-19 |
 | #74 Maya's extractions cite the law (RAG) | experiment/74-rag-extraction | shipped | [#78](https://github.com/flexion/forms-lab/pull/78) | 2026-04-19 |
 | #75 Run live shaping model evaluation | experiment/75-shaping-eval | shipped | [#77](https://github.com/flexion/forms-lab/pull/77) | 2026-04-19 |

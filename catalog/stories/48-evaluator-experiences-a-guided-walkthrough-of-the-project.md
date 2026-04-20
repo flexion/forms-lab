@@ -3,8 +3,8 @@ issue: 48
 title: Evaluator experiences a guided walkthrough of the project
 milestone: ""
 labels: [user-story]
-state: open
-synced_at: 2026-04-14T00:31:42.549Z
+state: closed
+synced_at: 2026-04-20T15:40:03.188Z
 ---
 
 ## User Story:

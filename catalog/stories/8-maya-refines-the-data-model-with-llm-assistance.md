@@ -4,7 +4,7 @@ title: Maya refines the data model with LLM assistance
 milestone: "Final Project"
 labels: [user-story, llm-integration]
 state: open
-synced_at: 2026-04-09T14:40:12.308Z
+synced_at: 2026-04-20T15:40:03.188Z
 ---
 
 ## User Story:

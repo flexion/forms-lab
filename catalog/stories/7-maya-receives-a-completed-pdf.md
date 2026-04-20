@@ -3,8 +3,8 @@ issue: 7
 title: Maya receives a completed PDF
 milestone: "Final Project"
 labels: [user-story]
-state: open
-synced_at: 2026-04-09T14:40:12.308Z
+state: closed
+synced_at: 2026-04-20T15:40:03.188Z
 ---
 
 ## User Story:
@@ -18,11 +18,11 @@ As a **form creator (Maya)**, in order to **process applications using existing 
 
 ## Acceptance Criteria:
 
-- [ ] Maya can view a list of submissions for her forms
-- [ ] Maya can select a submission and download a completed PDF
-- [ ] The PDF maps submission data onto the original PDF form fields
-- [ ] All filled fields are legible and correctly positioned
-- [ ] The completed PDF is visually consistent with the original paper form
+- [x] Maya can view a list of submissions for her forms
+- [x] Maya can select a submission and download a completed PDF
+- [x] The PDF maps submission data onto the original PDF form fields
+- [x] All filled fields are legible and correctly positioned
+- [x] The completed PDF is visually consistent with the original paper form
 
 ## Success Metrics:
 
@@ -38,11 +38,12 @@ As a **form creator (Maya)**, in order to **process applications using existing 
 
 ## Definition of Done:
 
-- [ ] Acceptance criteria met
-- [ ] Threat model updated -- any new trust boundaries, data flows, or attack surfaces are reflected in `catalog/architecture/threat-model.md`
-- [ ] Technical documentation updated -- architecture docs and decisions are current
-- [ ] At least one end-to-end test: upload PDF → extract → fill → generate completed PDF
-- [ ] Tests pass
-- [ ] Type checking passes
-- [ ] CI pipeline green
-- [ ] Deployed and demoable
+- [x] Acceptance criteria met
+- [x] Threat model updated -- any new trust boundaries, data flows, or attack surfaces are reflected in `catalog/architecture/threat-model.md`
+- [x] Technical documentation updated -- architecture docs and decisions are current
+- [x] At least one end-to-end test: upload PDF → extract → fill → generate completed PDF
+- [x] Tests pass
+- [x] Type checking passes
+- [x] CI pipeline green
+- [x] Deployed and demoable
+

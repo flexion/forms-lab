@@ -3,8 +3,8 @@ issue: 14
 title: Developer establishes and maintains a living threat model
 milestone: "Final Project"
 labels: [user-story]
-state: open
-synced_at: 2026-04-09T14:40:12.308Z
+state: closed
+synced_at: 2026-04-20T15:40:03.188Z
 ---
 
 ## User Story:
