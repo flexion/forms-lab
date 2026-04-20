@@ -227,8 +227,12 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
         state,
       )
 
+      // Only return addPage commands — addGroup commands from the LLM
+      // reference fake page IDs. Groups will be created in a follow-up step.
+      const pageCommands = result.commands.filter((c) => c.kind === 'addPage')
+
       return c.json({
-        commands: result.commands,
+        commands: pageCommands.length > 0 ? pageCommands : result.commands,
         explanation: result.explanation,
       })
     } catch (err) {
@@ -416,10 +420,19 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
           }))
         : []
 
+      const pages = view.formSpec
+        ? view.formSpec.pages.map((p) => ({
+            id: p.id,
+            title: p.title,
+            groups: p.groups,
+          }))
+        : []
+
       return c.json({
         stage,
         criteria,
         groups,
+        pages,
         currentSha: view.currentSha,
       })
     } catch (err) {

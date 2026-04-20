@@ -181,6 +181,37 @@ class FlexPipelinePanel extends HTMLElement {
       }
     }
 
+    // Step 3b: Create one group per page (pages were just saved, now we know real IDs)
+    await this.log('Creating groups for each page...')
+    await this.refreshState()
+
+    // Read the actual pages from the saved state via the stage endpoint
+    const stageRes2 = await fetch(`${this.editBase}/authoring/stage`)
+    if (stageRes2.ok) {
+      const stageData = await stageRes2.json()
+      if (stageData.pages && stageData.pages.length > 0) {
+        const groupCommands = stageData.pages
+          .filter((p: { groups: string[] }) => p.groups.length === 0)
+          .map((p: { id: string; title: string }) => ({
+            kind: 'addGroup',
+            pageId: p.id,
+            title: p.title,
+          }))
+        if (groupCommands.length > 0) {
+          await this.log(`  Adding ${groupCommands.length} groups...`)
+          const saved = await this.saveCommands(
+            groupCommands,
+            'Add groups to pages',
+          )
+          if (!saved) {
+            this.running = false
+            this.render()
+            return
+          }
+        }
+      }
+    }
+
     // Step 4: Generate fields for each uncovered section
     await this.log('Generating fields for all sections...')
     await this.refreshState()
