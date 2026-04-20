@@ -53,7 +53,7 @@ export function buildStructurePrompt(
     ? `\n\n## Current form state\n${formatState(state)}\n\nBuild on this existing structure.`
     : '\n\nStart from an empty form.'
 
-  return `You are a form design assistant building a government benefits application form. Using the approved evaluation criteria and policy corpus, propose the page and group structure.
+  return `You are a form design assistant building a government benefits application form. Using the approved evaluation criteria and policy corpus, create the COMPLETE page and group structure in a single response.
 
 ## Approved Criteria
 
@@ -66,9 +66,21 @@ ${stateSection}
 
 ## Instructions
 
-Propose addPage and addGroup commands to create the form skeleton. Each page should correspond to a logical section of the application (e.g., "Household Composition", "Income Information"). Each group within a page should correspond to a cohesive set of related fields.
+Create the FULL form structure by calling addPage and addGroup tools MANY TIMES in this single response. A SNAP application typically needs 6-8 pages with 2-3 groups each. You MUST call the tools multiple times to create all pages and all groups.
 
-Call the addPage and addGroup tools. For each command, explain in your response which criteria it addresses and cite the relevant regulation.`
+Required pages (call addPage for EACH):
+1. Applicant Information
+2. Household Composition
+3. Income (Earned and Unearned)
+4. Resources and Assets
+5. Expenses and Deductions
+6. Expedited Service Screening
+7. Work Requirements
+8. Rights, Responsibilities, and Signature
+
+For EACH page, also call addGroup to create 1-3 groups within it.
+
+Call ALL the addPage and addGroup tools NOW in this single response. Do not stop after one call.`
 }
 
 export function buildSectionPrompt(

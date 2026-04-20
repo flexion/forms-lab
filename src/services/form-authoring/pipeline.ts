@@ -74,8 +74,9 @@ export function createAuthoringPipeline(
     ): Promise<{ commands: Command[]; explanation: string }> {
       const response = await generateText({
         model: bedrock(config.structure.modelId),
-        maxOutputTokens: 4096,
+        maxOutputTokens: 8192,
         tools: commandTools,
+        toolChoice: 'required',
         messages: [
           {
             role: 'user',
@@ -106,6 +107,7 @@ export function createAuthoringPipeline(
         model: bedrock(config.generation.modelId),
         maxOutputTokens: 4096,
         tools: commandTools,
+        toolChoice: 'required',
         messages: [
           {
             role: 'user',
