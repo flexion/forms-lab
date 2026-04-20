@@ -1,0 +1,805 @@
+{
+  "variant": "haiku-generation",
+  "variantName": "Sonnet criteria+structure, Haiku generation",
+  "metrics": {
+    "fieldRecall": 0.058823529411764705,
+    "fieldPrecision": 0.047619047619047616,
+    "typeAccuracy": 1,
+    "groupAccuracy": 0,
+    "sensitivityAccuracy": 0.4
+  },
+  "durationMs": 80361,
+  "fieldCount": 105,
+  "groupCount": 8,
+  "pageCount": 8,
+  "spec": {
+    "id": "spec-snap-eval",
+    "title": "SNAP Eval",
+    "description": "",
+    "groups": [
+      {
+        "id": "group-new-4bee5633",
+        "title": "Applicant Information",
+        "requirements": [
+          {
+            "id": "field-new-017ae20a",
+            "fieldName": "applicant_name",
+            "label": "Applicant Name",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-085e44c8",
+            "fieldName": "date_of_birth",
+            "label": "Date of Birth",
+            "fieldType": "date",
+            "required": true
+          },
+          {
+            "id": "field-new-cee6762e",
+            "fieldName": "social_security_number",
+            "label": "Social Security Number",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-1e362c24",
+            "fieldName": "citizenship_status",
+            "label": "Citizenship Status",
+            "fieldType": "choice",
+            "required": true
+          },
+          {
+            "id": "field-new-b0281a89",
+            "fieldName": "are_you_a_u.s._citizen?",
+            "label": "Are you a U.S. Citizen?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-fac80094",
+            "fieldName": "immigration_status_(if_not_a_u.s._citize",
+            "label": "Immigration Status (if not a U.S. Citizen)",
+            "fieldType": "choice",
+            "required": false
+          },
+          {
+            "id": "field-new-31327e9c",
+            "fieldName": "relationship_to_household_head",
+            "label": "Relationship to Household Head",
+            "fieldType": "choice",
+            "required": true
+          },
+          {
+            "id": "field-new-4ea6c906",
+            "fieldName": "are_you_the_household_representative_sig",
+            "label": "Are you the household representative signing this application?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-c40114d9",
+            "fieldName": "authorized_representative_name_(if_appli",
+            "label": "Authorized Representative Name (if applicable)",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-6faf9b80",
+            "fieldName": "authorized_representative_relationship",
+            "label": "Authorized Representative Relationship",
+            "fieldType": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "group-new-05a32583",
+        "title": "Household Composition",
+        "requirements": [
+          {
+            "id": "field-new-947a14e1",
+            "fieldName": "household_size",
+            "label": "Household Size",
+            "fieldType": "number",
+            "required": true
+          },
+          {
+            "id": "field-new-63bb6de7",
+            "fieldName": "member_name",
+            "label": "Member Name",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-c7956cba",
+            "fieldName": "date_of_birth",
+            "label": "Date of Birth",
+            "fieldType": "date",
+            "required": true
+          },
+          {
+            "id": "field-new-26e3087b",
+            "fieldName": "relationship_to_household_head",
+            "label": "Relationship to Household Head",
+            "fieldType": "choice",
+            "required": true
+          },
+          {
+            "id": "field-new-27bfc506",
+            "fieldName": "u.s._citizen_or_qualified_alien_status",
+            "label": "U.S. Citizen or Qualified Alien Status",
+            "fieldType": "choice",
+            "required": true
+          },
+          {
+            "id": "field-new-a0dee260",
+            "fieldName": "social_security_number",
+            "label": "Social Security Number",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-3081d483",
+            "fieldName": "currently_employed_(at_least_30_hours_pe",
+            "label": "Currently Employed (at least 30 hours per week)",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-4465950b",
+            "fieldName": "in_school_or_training_program",
+            "label": "In School or Training Program",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-210b2c0c",
+            "fieldName": "caring_for_dependent_child_under_6_or_in",
+            "label": "Caring for Dependent Child Under 6 or Incapacitated Person",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-20543dc9",
+            "fieldName": "physically_or_mentally_unfit_for_employm",
+            "label": "Physically or Mentally Unfit for Employment",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-ae579ac5",
+            "fieldName": "receiving_unemployment_compensation",
+            "label": "Receiving Unemployment Compensation",
+            "fieldType": "boolean",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "group-new-6f98df68",
+        "title": "Income (Earned and Unearned)",
+        "requirements": [
+          {
+            "id": "field-new-4657cf75",
+            "fieldName": "household_member_name",
+            "label": "Household Member Name",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-62bd4cd8",
+            "fieldName": "date_of_birth",
+            "label": "Date of Birth",
+            "fieldType": "date",
+            "required": true
+          },
+          {
+            "id": "field-new-ec9f01d0",
+            "fieldName": "social_security_number",
+            "label": "Social Security Number",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-e7275c2e",
+            "fieldName": "employment_status",
+            "label": "Employment Status",
+            "fieldType": "choice",
+            "required": true
+          },
+          {
+            "id": "field-new-ab44f7bf",
+            "fieldName": "employer_name",
+            "label": "Employer Name",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-2646b390",
+            "fieldName": "monthly_gross_wages_and_salaries",
+            "label": "Monthly Gross Wages and Salaries",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-928fc195",
+            "fieldName": "self-employment_income_(net_after_allowa",
+            "label": "Self-Employment Income (net after allowable deductions)",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-aa146d17",
+            "fieldName": "training_allowance",
+            "label": "Training Allowance",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-32360a90",
+            "fieldName": "receives_tanf_(temporary_assistance_for_",
+            "label": "Receives TANF (Temporary Assistance for Needy Families)",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-df19410e",
+            "fieldName": "tanf_monthly_benefit_amount",
+            "label": "TANF Monthly Benefit Amount",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-ddc47068",
+            "fieldName": "receives_ssi_(supplemental_security_inco",
+            "label": "Receives SSI (Supplemental Security Income)",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-2c6103f0",
+            "fieldName": "ssi_monthly_benefit_amount",
+            "label": "SSI Monthly Benefit Amount",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-a7de75cd",
+            "fieldName": "receives_general_assistance",
+            "label": "Receives General Assistance",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-de64259c",
+            "fieldName": "general_assistance_monthly_amount",
+            "label": "General Assistance Monthly Amount",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-ad0bcdad",
+            "fieldName": "receives_social_security_benefits",
+            "label": "Receives Social Security Benefits",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-db9730a6",
+            "fieldName": "social_security_monthly_benefit_amount",
+            "label": "Social Security Monthly Benefit Amount",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-fe749306",
+            "fieldName": "receives_veterans'_benefits",
+            "label": "Receives Veterans' Benefits",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-2276cc8f",
+            "fieldName": "veterans'_benefits_monthly_amount",
+            "label": "Veterans' Benefits Monthly Amount",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-706f81bf",
+            "fieldName": "receives_unemployment_compensation",
+            "label": "Receives Unemployment Compensation",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-9b39ae77",
+            "fieldName": "unemployment_compensation_monthly_amount",
+            "label": "Unemployment Compensation Monthly Amount",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-5abb0549",
+            "fieldName": "rental_property_income_(gross)",
+            "label": "Rental Property Income (gross)",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-a7a6ebac",
+            "fieldName": "interest_and_dividend_income",
+            "label": "Interest and Dividend Income",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-78498df8",
+            "fieldName": "cash_contributions_from_outside_the_hous",
+            "label": "Cash Contributions from Outside the Household",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-b86f55e5",
+            "fieldName": "other_unearned_income_(describe)",
+            "label": "Other Unearned Income (describe)",
+            "fieldType": "longText",
+            "required": false
+          },
+          {
+            "id": "field-new-222dfb0e",
+            "fieldName": "other_unearned_income_amount",
+            "label": "Other Unearned Income Amount",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-f1133b0b",
+            "fieldName": "total_monthly_gross_income_(all_sources)",
+            "label": "Total Monthly Gross Income (all sources)",
+            "fieldType": "currency",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "group-new-7daa71d5",
+        "title": "Resources and Assets",
+        "requirements": [
+          {
+            "id": "field-new-ab86b527",
+            "fieldName": "does_the_household_own_a_home_or_propert",
+            "label": "Does the household own a home or property?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-feb78547",
+            "fieldName": "estimated_home_value",
+            "label": "Estimated home value",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-cfcc6118",
+            "fieldName": "outstanding_mortgage_or_property_lien_am",
+            "label": "Outstanding mortgage or property lien amount",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-4113fb84",
+            "fieldName": "does_the_household_have_a_checking_or_sa",
+            "label": "Does the household have a checking or savings account?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-4e79f5ab",
+            "fieldName": "total_liquid_resources_(cash,_checking,_",
+            "label": "Total liquid resources (cash, checking, savings accounts)",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-d37a7fd2",
+            "fieldName": "does_the_household_own_stocks_or_bonds?",
+            "label": "Does the household own stocks or bonds?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-d3df653d",
+            "fieldName": "total_value_of_stocks_and_bonds",
+            "label": "Total value of stocks and bonds",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-ed4c98b3",
+            "fieldName": "does_the_household_own_vehicles?",
+            "label": "Does the household own vehicles?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-829fa9af",
+            "fieldName": "number_of_vehicles_owned",
+            "label": "Number of vehicles owned",
+            "fieldType": "number",
+            "required": false
+          },
+          {
+            "id": "field-new-e4d6babb",
+            "fieldName": "total_equity_value_of_all_vehicles",
+            "label": "Total equity value of all vehicles",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-be0de34c",
+            "fieldName": "does_the_household_own_life_insurance_po",
+            "label": "Does the household own life insurance policies?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-dda69fbb",
+            "fieldName": "does_the_household_have_pension_plans_or",
+            "label": "Does the household have pension plans or retirement accounts?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-d4f671c8",
+            "fieldName": "does_the_household_have_other_resources_",
+            "label": "Does the household have other resources (lump-sum payments, tax refunds, settlements)?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-f1db3c03",
+            "fieldName": "description_of_other_resources",
+            "label": "Description of other resources",
+            "fieldType": "longText",
+            "required": false
+          },
+          {
+            "id": "field-new-2c3e9f65",
+            "fieldName": "total_value_of_other_resources",
+            "label": "Total value of other resources",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-9afaeae1",
+            "fieldName": "does_the_household_own_property_essentia",
+            "label": "Does the household own property essential to employment or self-employment?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-f0e3e2d9",
+            "fieldName": "description_of_employment-related_proper",
+            "label": "Description of employment-related property",
+            "fieldType": "longText",
+            "required": false
+          },
+          {
+            "id": "field-new-f7606ed3",
+            "fieldName": "total_value_of_employment-related_proper",
+            "label": "Total value of employment-related property",
+            "fieldType": "currency",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "group-new-6eac5ba9",
+        "title": "Expenses and Deductions",
+        "requirements": [
+          {
+            "id": "field-new-b7f55f02",
+            "fieldName": "earned_income_deduction_(20%_of_gross_ea",
+            "label": "Earned Income Deduction (20% of gross earned income)",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-5806be76",
+            "fieldName": "dependent_care_costs",
+            "label": "Dependent Care Costs",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-629f2945",
+            "fieldName": "medical_expenses_(for_elderly_or_disable",
+            "label": "Medical Expenses (for elderly or disabled members)",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-70a53470",
+            "fieldName": "does_your_household_have_out-of-pocket_m",
+            "label": "Does your household have out-of-pocket medical expenses for elderly or disabled members exceeding $35/month?",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-38cd19d1",
+            "fieldName": "rent_or_mortgage_payment",
+            "label": "Rent or Mortgage Payment",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-8a69086a",
+            "fieldName": "property_taxes",
+            "label": "Property Taxes",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-c207bc0c",
+            "fieldName": "homeowner's_or_rental_insurance",
+            "label": "Homeowner's or Rental Insurance",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-ec6d66a3",
+            "fieldName": "utility_allowance_or_actual_utility_cost",
+            "label": "Utility Allowance or Actual Utility Costs",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-4d045217",
+            "fieldName": "child_support_payments_(to_non-household",
+            "label": "Child Support Payments (to non-household members)",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-e2c72ddd",
+            "fieldName": "does_your_household_have_a_legal_obligat",
+            "label": "Does your household have a legal obligation to pay child support?",
+            "fieldType": "boolean",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "group-new-d9bb9af9",
+        "title": "Expedited Service Screening",
+        "requirements": [
+          {
+            "id": "field-new-556a3f4f",
+            "fieldName": "total_monthly_gross_household_income",
+            "label": "Total monthly gross household income",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-5de89942",
+            "fieldName": "total_liquid_resources_(cash,_checking,_",
+            "label": "Total liquid resources (cash, checking, savings, stocks, bonds, etc.)",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-fdeef2b0",
+            "fieldName": "monthly_rent_or_mortgage_and_utilities_c",
+            "label": "Monthly rent or mortgage and utilities costs",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-7c548595",
+            "fieldName": "is_the_household_a_migrant_or_seasonal_f",
+            "label": "Is the household a migrant or seasonal farmworker household?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-54742e0b",
+            "fieldName": "total_income_received_in_the_month_of_ap",
+            "label": "Total income received in the month of application (for migrant/seasonal farmworkers)",
+            "fieldType": "currency",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "group-new-44b0b633",
+        "title": "Work Requirements",
+        "requirements": [
+          {
+            "id": "field-new-e60d8451",
+            "fieldName": "household_members_age_16-59_who_need_to_",
+            "label": "Household members age 16-59 who need to register for work",
+            "fieldType": "longText",
+            "required": true
+          },
+          {
+            "id": "field-new-ebe56443",
+            "fieldName": "is_this_household_member_currently_emplo",
+            "label": "Is this household member currently employed?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-3d2473c1",
+            "fieldName": "weekly_work_hours",
+            "label": "Weekly work hours",
+            "fieldType": "number",
+            "required": false
+          },
+          {
+            "id": "field-new-b170312b",
+            "fieldName": "is_household_member_receiving_unemployme",
+            "label": "Is household member receiving unemployment compensation?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-b0262ed9",
+            "fieldName": "is_household_member_enrolled_in_school_o",
+            "label": "Is household member enrolled in school or training program at least half-time?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-401acc1b",
+            "fieldName": "is_household_member_caring_for_a_depende",
+            "label": "Is household member caring for a dependent child under age 6 or incapacitated person?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-9647a24c",
+            "fieldName": "has_household_member_been_medically_cert",
+            "label": "Has household member been medically certified as physically or mentally unfit for employment?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-ccafa3c0",
+            "fieldName": "is_household_member_participating_in_dru",
+            "label": "Is household member participating in drug addiction or alcohol treatment program?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-b8552aea",
+            "fieldName": "household_member_names_exempt_from_work_",
+            "label": "Household member names exempt from work requirements",
+            "fieldType": "longText",
+            "required": false
+          },
+          {
+            "id": "field-new-d3f896f0",
+            "fieldName": "household_member_willing_to_accept_suita",
+            "label": "Household member willing to accept suitable employment?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-34ef57f9",
+            "fieldName": "has_household_member_voluntarily_quit_a_",
+            "label": "Has household member voluntarily quit a job in the past 30 days?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-85b3066e",
+            "fieldName": "reason_for_quitting_job",
+            "label": "Reason for quitting job",
+            "fieldType": "longText",
+            "required": false
+          },
+          {
+            "id": "field-new-2e20f26a",
+            "fieldName": "has_household_member_voluntarily_reduced",
+            "label": "Has household member voluntarily reduced work hours below 30 hours per week?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-dbb47faa",
+            "fieldName": "reason_for_reducing_work_hours",
+            "label": "Reason for reducing work hours",
+            "fieldType": "longText",
+            "required": false
+          },
+          {
+            "id": "field-new-46dd0324",
+            "fieldName": "is_household_member_able-bodied_adult_wi",
+            "label": "Is household member able-bodied adult without dependents age 18-50?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-31516972",
+            "fieldName": "currently_employed_or_participating_in_w",
+            "label": "Currently employed or participating in work program 20+ hours per week?",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-0a262748",
+            "fieldName": "household_member_willingness_to_particip",
+            "label": "Household member willingness to participate in assigned work program",
+            "fieldType": "boolean",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "group-new-15757edc",
+        "title": "Rights, Responsibilities, and Signature",
+        "requirements": [
+          {
+            "id": "field-new-5aa19c1c",
+            "fieldName": "i_acknowledge_that_i_have_received_and_u",
+            "label": "I acknowledge that I have received and understand the rights and responsibilities of SNAP participants",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-3e072c1c",
+            "fieldName": "i_understand_that_i_will_use_snap_benefi",
+            "label": "I understand that I will use SNAP benefits only to purchase eligible food items",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-faf3f6f2",
+            "fieldName": "i_understand_that_providing_false_inform",
+            "label": "I understand that providing false information is subject to prosecution under State and Federal law",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-f00d3eae",
+            "fieldName": "i_authorize_the_state_agency_to_verify_i",
+            "label": "I authorize the State agency to verify information through collateral contacts, computer matches, and other means permitted by law",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-85429c01",
+            "fieldName": "signature_of_household_member_or_authori",
+            "label": "Signature of Household Member or Authorized Representative",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-9a6ea4a4",
+            "fieldName": "date_of_signature",
+            "label": "Date of Signature",
+            "fieldType": "date",
+            "required": true
+          },
+          {
+            "id": "field-new-fd7bb3dc",
+            "fieldName": "name_of_authorized_representative_(if_ap",
+            "label": "Name of Authorized Representative (if applicable)",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-c7839e11",
+            "fieldName": "i_understand_that_i_am_responsible_for_c",
+            "label": "I understand that I am responsible for complying with SNAP program rules and reporting required changes",
+            "fieldType": "boolean",
+            "required": true
+          }
+        ]
+      }
+    ]
+  }
+}

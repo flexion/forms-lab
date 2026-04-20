@@ -1,0 +1,656 @@
+{
+  "variant": "all-sonnet",
+  "variantName": "All Sonnet 4",
+  "metrics": {
+    "fieldRecall": 0.11764705882352941,
+    "fieldPrecision": 0.11904761904761904,
+    "typeAccuracy": 0.9,
+    "groupAccuracy": 0,
+    "sensitivityAccuracy": 0.2
+  },
+  "durationMs": 136691,
+  "fieldCount": 84,
+  "groupCount": 8,
+  "pageCount": 8,
+  "spec": {
+    "id": "spec-snap-eval",
+    "title": "SNAP Eval",
+    "description": "",
+    "groups": [
+      {
+        "id": "group-new-b53d75ac",
+        "title": "Applicant Information",
+        "requirements": [
+          {
+            "id": "field-new-bfc2f25f",
+            "fieldName": "first_name",
+            "label": "First Name",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-3a50c482",
+            "fieldName": "middle_name_(if_any)",
+            "label": "Middle Name (if any)",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-59839eb9",
+            "fieldName": "last_name",
+            "label": "Last Name",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-d8710f9e",
+            "fieldName": "date_of_birth",
+            "label": "Date of Birth",
+            "fieldType": "date",
+            "required": true
+          },
+          {
+            "id": "field-new-c3e36907",
+            "fieldName": "social_security_number",
+            "label": "Social Security Number",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-20a5aa35",
+            "fieldName": "gender",
+            "label": "Gender",
+            "fieldType": "choice",
+            "required": false
+          },
+          {
+            "id": "field-new-183e4d87",
+            "fieldName": "home_address_(street)",
+            "label": "Home Address (Street)",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-5cd1a018",
+            "fieldName": "apartment/unit_number_(if_any)",
+            "label": "Apartment/Unit Number (if any)",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-6b006f12",
+            "fieldName": "city",
+            "label": "City",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-ea7ba5e6",
+            "fieldName": "state",
+            "label": "State",
+            "fieldType": "choice",
+            "required": true
+          },
+          {
+            "id": "field-new-161bf768",
+            "fieldName": "zip_code",
+            "label": "ZIP Code",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-d122e88c",
+            "fieldName": "phone_number",
+            "label": "Phone Number",
+            "fieldType": "phone",
+            "required": false
+          },
+          {
+            "id": "field-new-135dcac5",
+            "fieldName": "email_address_(if_any)",
+            "label": "Email Address (if any)",
+            "fieldType": "email",
+            "required": false
+          },
+          {
+            "id": "field-new-9fb2d10c",
+            "fieldName": "u.s._citizenship_status",
+            "label": "U.S. Citizenship Status",
+            "fieldType": "choice",
+            "required": true
+          },
+          {
+            "id": "field-new-80809ff0",
+            "fieldName": "if_not_a_u.s._citizen,_immigration_docum",
+            "label": "If not a U.S. citizen, immigration document type",
+            "fieldType": "choice",
+            "required": false
+          },
+          {
+            "id": "field-new-6639b183",
+            "fieldName": "immigration_document_number_(if_applicab",
+            "label": "Immigration document number (if applicable)",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-d4813e99",
+            "fieldName": "marital_status",
+            "label": "Marital Status",
+            "fieldType": "choice",
+            "required": true
+          },
+          {
+            "id": "field-new-da5affa1",
+            "fieldName": "are_you_a_student_enrolled_at_least_half",
+            "label": "Are you a student enrolled at least half-time?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-cc4ba3c8",
+            "fieldName": "are_you_disabled_or_over_age_60?",
+            "label": "Are you disabled or over age 60?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-67391104",
+            "fieldName": "are_you_currently_employed_or_working_at",
+            "label": "Are you currently employed or working at least 30 hours per week?",
+            "fieldType": "boolean",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "group-new-aefb2caa",
+        "title": "Household Composition",
+        "requirements": [
+          {
+            "id": "field-new-c3ecba95",
+            "fieldName": "how_many_people_live_in_your_household?",
+            "label": "How many people live in your household?",
+            "fieldType": "number",
+            "required": true
+          },
+          {
+            "id": "field-new-fe9d0d96",
+            "fieldName": "list_the_name_of_each_person_who_lives_i",
+            "label": "List the name of each person who lives in your household",
+            "fieldType": "longText",
+            "required": true
+          },
+          {
+            "id": "field-new-2debfb2b",
+            "fieldName": "what_is_your_relationship_to_each_househ",
+            "label": "What is your relationship to each household member? (e.g., spouse, child, parent, roommate)",
+            "fieldType": "longText",
+            "required": true
+          },
+          {
+            "id": "field-new-d5bfb0c7",
+            "fieldName": "date_of_birth_for_each_household_member",
+            "label": "Date of birth for each household member",
+            "fieldType": "longText",
+            "required": true
+          },
+          {
+            "id": "field-new-182078e2",
+            "fieldName": "do_you_purchase_and_prepare_food_togethe",
+            "label": "Do you purchase and prepare food together as one household?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-2a172850",
+            "fieldName": "if_you_answered_no_above,_explain_who_pu",
+            "label": "If you answered no above, explain who purchases and prepares food separately",
+            "fieldType": "longText",
+            "required": false
+          },
+          {
+            "id": "field-new-5158ba6f",
+            "fieldName": "are_any_household_members_elderly_(60_or",
+            "label": "Are any household members elderly (60 or older) or disabled?",
+            "fieldType": "choice",
+            "required": true
+          },
+          {
+            "id": "field-new-94a7f2d5",
+            "fieldName": "if_yes,_which_household_members_are_elde",
+            "label": "If yes, which household members are elderly or disabled and what is their condition?",
+            "fieldType": "longText",
+            "required": false
+          },
+          {
+            "id": "field-new-9bdda73b",
+            "fieldName": "are_there_any_children_under_22_living_i",
+            "label": "Are there any children under 22 living in your household?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-1f38bac7",
+            "fieldName": "if_yes,_list_their_names_and_ages",
+            "label": "If yes, list their names and ages",
+            "fieldType": "longText",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "group-new-b3353616",
+        "title": "Income (Earned and Unearned)",
+        "requirements": []
+      },
+      {
+        "id": "group-new-4150f107",
+        "title": "Resources and Assets",
+        "requirements": [
+          {
+            "id": "field-new-d3059a9e",
+            "fieldName": "cash_on_hand_(bills_and_coins)",
+            "label": "Cash on hand (bills and coins)",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-e729fd8c",
+            "fieldName": "money_in_checking_accounts",
+            "label": "Money in checking accounts",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-6a220875",
+            "fieldName": "money_in_savings_accounts",
+            "label": "Money in savings accounts",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-b27bcf06",
+            "fieldName": "savings_certificates_or_cds",
+            "label": "Savings certificates or CDs",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-2d0a1c9a",
+            "fieldName": "stocks_or_bonds",
+            "label": "Stocks or bonds",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-c5843dd6",
+            "fieldName": "other_liquid_resources_(money_orders,_pr",
+            "label": "Other liquid resources (money orders, prepaid cards, etc.)",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-9b7a45c9",
+            "fieldName": "do_you_own_your_home?",
+            "label": "Do you own your home?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-0260a757",
+            "fieldName": "do_you_own_any_vehicles_(cars,_trucks,_m",
+            "label": "Do you own any vehicles (cars, trucks, motorcycles, boats, etc.)?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-a1b78fca",
+            "fieldName": "vehicle_1_-_year,_make,_model",
+            "label": "Vehicle 1 - Year, Make, Model",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-d56bbe42",
+            "fieldName": "vehicle_1_-_current_value",
+            "label": "Vehicle 1 - Current value",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-e27332aa",
+            "fieldName": "vehicle_1_-_amount_owed",
+            "label": "Vehicle 1 - Amount owed",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-4ee9680c",
+            "fieldName": "vehicle_2_-_year,_make,_model",
+            "label": "Vehicle 2 - Year, Make, Model",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-2e784578",
+            "fieldName": "vehicle_2_-_current_value",
+            "label": "Vehicle 2 - Current value",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-3ac135fd",
+            "fieldName": "vehicle_2_-_amount_owed",
+            "label": "Vehicle 2 - Amount owed",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-4c00cef9",
+            "fieldName": "do_you_own_any_real_estate_other_than_yo",
+            "label": "Do you own any real estate other than your home?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-1213fac7",
+            "fieldName": "other_real_estate_-_description_and_addr",
+            "label": "Other real estate - Description and address",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-0e29c139",
+            "fieldName": "other_real_estate_-_current_value",
+            "label": "Other real estate - Current value",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-c0ee5811",
+            "fieldName": "other_real_estate_-_amount_owed",
+            "label": "Other real estate - Amount owed",
+            "fieldType": "currency",
+            "required": false
+          },
+          {
+            "id": "field-new-58cea3d1",
+            "fieldName": "do_you_have_any_other_resources_(busines",
+            "label": "Do you have any other resources (business equipment, rental property, etc.)?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-ba955a16",
+            "fieldName": "other_resources_-_description",
+            "label": "Other resources - Description",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-81e037af",
+            "fieldName": "other_resources_-_current_value",
+            "label": "Other resources - Current value",
+            "fieldType": "currency",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "group-new-b1901345",
+        "title": "Expenses and Deductions",
+        "requirements": []
+      },
+      {
+        "id": "group-new-355b77af",
+        "title": "Expedited Service Screening",
+        "requirements": [
+          {
+            "id": "field-new-9c97c94a",
+            "fieldName": "what_is_your_household's_total_monthly_g",
+            "label": "What is your household's total monthly gross income?",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-ec1eafd5",
+            "fieldName": "what_is_your_household's_total_liquid_re",
+            "label": "What is your household's total liquid resources (cash, checking/savings accounts, etc.)?",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-24541156",
+            "fieldName": "what_is_your_monthly_rent_or_mortgage_pa",
+            "label": "What is your monthly rent or mortgage payment?",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-a90211f6",
+            "fieldName": "what_is_your_average_monthly_cost_for_ut",
+            "label": "What is your average monthly cost for utilities (electricity, gas, water, phone, etc.)?",
+            "fieldType": "currency",
+            "required": true
+          },
+          {
+            "id": "field-new-60c7036a",
+            "fieldName": "is_anyone_in_your_household_a_migrant_or",
+            "label": "Is anyone in your household a migrant or seasonal farmworker?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-0f5a8478",
+            "fieldName": "how_much_income_did_your_household_recei",
+            "label": "How much income did your household receive in the current month of application?",
+            "fieldType": "currency",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "group-new-0e374221",
+        "title": "Work Requirements",
+        "requirements": [
+          {
+            "id": "field-new-68b6305e",
+            "fieldName": "are_you_currently_employed_or_working?",
+            "label": "Are you currently employed or working?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-02dc0e5d",
+            "fieldName": "how_many_hours_per_week_do_you_work?",
+            "label": "How many hours per week do you work?",
+            "fieldType": "number",
+            "required": false
+          },
+          {
+            "id": "field-new-afcc7c64",
+            "fieldName": "are_you_a_student_enrolled_at_least_half",
+            "label": "Are you a student enrolled at least half-time in school, training, or higher education?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-ede61b5e",
+            "fieldName": "are_you_caring_for_a_dependent_child_und",
+            "label": "Are you caring for a dependent child under 6 years old or an incapacitated person?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-295b269c",
+            "fieldName": "are_you_medically_certified_as_physicall",
+            "label": "Are you medically certified as physically or mentally unfit for employment?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-f4b084bf",
+            "fieldName": "are_you_currently_receiving_unemployment",
+            "label": "Are you currently receiving unemployment compensation?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-186f2646",
+            "fieldName": "are_you_participating_in_a_drug_addictio",
+            "label": "Are you participating in a drug addiction or alcohol treatment program?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-9a91f7c4",
+            "fieldName": "in_the_past_3_months,_have_you_voluntari",
+            "label": "In the past 3 months, have you voluntarily quit a job or reduced work hours to less than 30 hours per week?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-27d1cbc4",
+            "fieldName": "if_yes,_please_explain_the_reason_for_le",
+            "label": "If yes, please explain the reason for leaving or reducing hours",
+            "fieldType": "longText",
+            "required": false
+          },
+          {
+            "id": "field-new-1316fe67",
+            "fieldName": "are_you_an_able-bodied_adult_without_dep",
+            "label": "Are you an able-bodied adult without dependents between ages 18-50?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-0560e721",
+            "fieldName": "current_employer_name",
+            "label": "Current employer name",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-6449a6b9",
+            "fieldName": "job_title_or_type_of_work",
+            "label": "Job title or type of work",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-3c140f92",
+            "fieldName": "date_started_current_job",
+            "label": "Date started current job",
+            "fieldType": "date",
+            "required": false
+          },
+          {
+            "id": "field-new-e8935388",
+            "fieldName": "are_you_self-employed?",
+            "label": "Are you self-employed?",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-3277d844",
+            "fieldName": "type_of_self-employment_business",
+            "label": "Type of self-employment business",
+            "fieldType": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "id": "group-new-bfc62d28",
+        "title": "Rights, Responsibilities, and Signature",
+        "requirements": [
+          {
+            "id": "field-new-0670bdbe",
+            "fieldName": "i_understand_my_rights_under_the_snap_pr",
+            "label": "I understand my rights under the SNAP program",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-1cdfeea8",
+            "fieldName": "i_understand_my_responsibilities_under_t",
+            "label": "I understand my responsibilities under the SNAP program",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-524e7d69",
+            "fieldName": "i_certify_that_all_information_provided_",
+            "label": "I certify that all information provided is true and complete to the best of my knowledge",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-a37c5a21",
+            "fieldName": "i_agree_to_use_snap_benefits_only_to_pur",
+            "label": "I agree to use SNAP benefits only to purchase eligible food items for my household",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-5418bad6",
+            "fieldName": "i_understand_that_providing_false_inform",
+            "label": "I understand that providing false information may result in prosecution and program disqualification",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-8d2e7cd1",
+            "fieldName": "i_authorize_the_state_agency_to_verify_i",
+            "label": "I authorize the State agency to verify information through collateral contacts and computer matching",
+            "fieldType": "boolean",
+            "required": true
+          },
+          {
+            "id": "field-new-31fcb541",
+            "fieldName": "applicant's_printed_name",
+            "label": "Applicant's printed name",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-ff930078",
+            "fieldName": "applicant's_signature",
+            "label": "Applicant's signature",
+            "fieldType": "text",
+            "required": true
+          },
+          {
+            "id": "field-new-321ff34f",
+            "fieldName": "date_signed",
+            "label": "Date signed",
+            "fieldType": "date",
+            "required": true
+          },
+          {
+            "id": "field-new-bb32a565",
+            "fieldName": "are_you_signing_as_an_authorized_represe",
+            "label": "Are you signing as an authorized representative for the household?",
+            "fieldType": "boolean",
+            "required": false
+          },
+          {
+            "id": "field-new-aba53c77",
+            "fieldName": "if_authorized_representative,_what_is_yo",
+            "label": "If authorized representative, what is your relationship to the household?",
+            "fieldType": "text",
+            "required": false
+          },
+          {
+            "id": "field-new-153d4f06",
+            "fieldName": "authorized_representative's_printed_name",
+            "label": "Authorized representative's printed name",
+            "fieldType": "text",
+            "required": false
+          }
+        ]
+      }
+    ]
+  }
+}

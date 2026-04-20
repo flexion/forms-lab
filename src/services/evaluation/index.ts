@@ -8,7 +8,10 @@ export {
 } from './fixtures/shaping-intents'
 export { runEvaluation } from './harness'
 export { createBedrockFieldJudge } from './judge'
-export { pdfFieldExtractionKind } from './kinds/pdf-field-extraction'
+export {
+  type ExtractionOutput,
+  pdfFieldExtractionKind,
+} from './kinds/pdf-field-extraction'
 export { createLlmJudgeKind } from './kinds/pdf-field-extraction-judge'
 export { shapingCommandsKind } from './kinds/shaping-commands'
 export { evaluationRunSchema } from './schemas'
