@@ -16,7 +16,6 @@ import type {
   ShapingLogEntry,
 } from '../../../../../services/projects'
 import { resolveUrl } from '../../../../../shared/base-path'
-import { PipelineStageIndicator } from './authoring-components'
 
 function safeJsonForScript(value: unknown): string {
   return JSON.stringify(value).replace(/</g, '\\u003c')
@@ -147,11 +146,6 @@ const EditingShell: FC<{
             {' / '}
             <strong>Edit</strong>
           </h1>
-          {authoringStage ? (
-            <div class="editor-breadcrumb__pipeline">
-              <PipelineStageIndicator currentStage={authoringStage} />
-            </div>
-          ) : null}
           <div class="editor-breadcrumb__branch-controls">
             <BranchSwitcher
               current={branch}

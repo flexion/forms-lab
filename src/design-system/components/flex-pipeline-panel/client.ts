@@ -1,5 +1,3 @@
-// flex-pipeline-panel: RAG authoring pipeline status and action controls
-
 interface PipelineState {
   stage: 'criteria' | 'structure' | 'sections' | 'complete'
   criteria: {
@@ -18,6 +16,7 @@ interface PipelineState {
 class FlexPipelinePanel extends HTMLElement {
   private state: PipelineState | null = null
   private loading = false
+  private error: string | null = null
 
   connectedCallback() {
     const script = this.querySelector('script[data-pipeline-state]')
@@ -34,83 +33,73 @@ class FlexPipelinePanel extends HTMLElement {
     }
 
     const { stage, criteria, groups } = this.state
-    let content = ''
 
-    // Header with stage indicator
-    content += `<div class="pipeline-panel__header">
-      <span class="pipeline-panel__title">Authoring Pipeline</span>
-      <span class="pipeline-panel__stage" data-stage="${stage}">${this.stageLabel(stage)}</span>
-    </div>`
+    let body = ''
+
+    if (this.error) {
+      body += `<div class="pipeline-panel__error">${this.error}</div>`
+    }
 
     if (this.loading) {
-      content += `<div class="pipeline-panel__loading">Working...</div>`
+      body += `<div class="pipeline-panel__loading"><span class="pipeline-panel__spinner"></span> Working...</div>`
     } else if (stage === 'criteria' && criteria.criteria.length === 0) {
-      content += `<div class="pipeline-panel__action">
-        <p class="pipeline-panel__description">Analyze the SNAP policy corpus to generate evaluation criteria.</p>
-        <button type="button" class="flex-button" data-action="analyze-criteria">Analyze Corpus</button>
-      </div>`
+      body += `<button type="button" class="flex-button" data-action="analyze-criteria">Analyze Corpus</button>
+        <p class="pipeline-panel__hint">Extract evaluation criteria from the SNAP policy corpus.</p>`
     } else if (stage === 'criteria') {
-      content += `<div class="pipeline-panel__criteria">`
-      content += `<ul class="pipeline-panel__criteria-list">`
+      body += `<ul class="pipeline-panel__criteria-list">`
       for (const c of criteria.criteria) {
         if (c.status === 'rejected') continue
-        content += `<li class="pipeline-panel__criterion" data-status="${c.status}">
+        body += `<li class="pipeline-panel__criterion" data-status="${c.status}">
           <span class="pipeline-panel__criterion-text">${c.text}</span>
           <span class="pipeline-panel__criterion-source">${c.source}</span>
           ${
             c.status === 'pending'
               ? `<span class="pipeline-panel__criterion-actions">
-            <button type="button" data-action="approve-criterion" data-id="${c.id}" title="Approve">&#x2713;</button>
-            <button type="button" data-action="reject-criterion" data-id="${c.id}" title="Reject">&#x2717;</button>
-          </span>`
+              <button type="button" data-action="approve-criterion" data-id="${c.id}" title="Approve">\u2713</button>
+              <button type="button" data-action="reject-criterion" data-id="${c.id}" title="Reject">\u2717</button>
+            </span>`
               : ''
           }
         </li>`
       }
-      content += `</ul>`
-      content += `<button type="button" class="flex-button" data-action="approve-all">Approve All &amp; Continue</button>`
-      content += `</div>`
+      body += `</ul>`
+      body += `<button type="button" class="flex-button" data-action="approve-all">Approve All & Continue</button>`
     } else if (stage === 'structure') {
-      content += `<div class="pipeline-panel__action">
-        <p class="pipeline-panel__description">Generate page and group structure from approved criteria.</p>
-        <button type="button" class="flex-button" data-action="plan-structure">Generate Structure</button>
-      </div>`
+      body += `<button type="button" class="flex-button" data-action="plan-structure">Generate Structure</button>
+        <p class="pipeline-panel__hint">Create pages and groups from approved criteria.</p>`
     } else if (stage === 'sections') {
       const uncovered = groups.filter((g) => g.fieldCount === 0)
       if (uncovered.length === 0) {
-        content += `<div class="pipeline-panel__action"><p>All sections populated. Save to advance.</p></div>`
+        body += `<p class="pipeline-panel__hint">All sections populated. Save to advance.</p>`
       } else {
-        content += `<div class="pipeline-panel__sections">`
-        content += `<p class="pipeline-panel__description">${uncovered.length} section${uncovered.length > 1 ? 's' : ''} need fields:</p>`
-        content += `<ul class="pipeline-panel__section-list">`
+        body += `<ul class="pipeline-panel__section-list">`
         for (const g of uncovered) {
-          content += `<li class="pipeline-panel__section-item">
+          body += `<li class="pipeline-panel__section-item">
             <span>${g.title}</span>
-            <button type="button" class="flex-button" data-variant="outline" data-action="generate-section" data-group-id="${g.id}" data-group-title="${g.title}">Generate</button>
+            <button type="button" class="flex-button" data-variant="outline" data-size="sm" data-action="generate-section" data-group-id="${g.id}" data-group-title="${g.title}">Generate</button>
           </li>`
         }
-        content += `</ul>`
-        content += `</div>`
+        body += `</ul>`
       }
     } else if (stage === 'complete') {
-      content += `<div class="pipeline-panel__complete">
-        <span class="pipeline-panel__check">&#x2713;</span>
-        <span>Pipeline complete</span>
-      </div>`
+      body += `<div class="pipeline-panel__complete">\u2713 Pipeline complete</div>`
     }
 
-    this.innerHTML = `<div class="pipeline-panel">${content}</div>`
-    this.bindHandlers()
-  }
-
-  private stageLabel(stage: string): string {
-    const labels: Record<string, string> = {
+    const stageLabel = {
       criteria: 'Criteria',
       structure: 'Structure',
       sections: 'Sections',
       complete: 'Complete',
-    }
-    return labels[stage] ?? stage
+    }[stage]
+
+    this.innerHTML = `<div class="pipeline-panel">
+      <div class="pipeline-panel__header">
+        <span class="pipeline-panel__title">Pipeline</span>
+        <span class="pipeline-panel__badge" data-stage="${stage}">${stageLabel}</span>
+      </div>
+      <div class="pipeline-panel__body">${body}</div>
+    </div>`
+    this.bindHandlers()
   }
 
   private bindHandlers() {
@@ -143,8 +132,16 @@ class FlexPipelinePanel extends HTMLElement {
       `${this.state.editBase}/authoring/analyze-criteria`,
       { method: 'POST' },
     )
-    if (res.ok) await this.refreshState()
-    else this.setLoading(false)
+    if (res.ok) {
+      this.error = null
+      await this.refreshState()
+    } else {
+      const data = await res
+        .json()
+        .catch(() => ({ error: `HTTP ${res.status}` }))
+      this.error = data.error ?? `Request failed (${res.status})`
+      this.setLoading(false)
+    }
   }
 
   private async approveCriteria() {
@@ -159,7 +156,7 @@ class FlexPipelinePanel extends HTMLElement {
       },
     )
     if (res.ok) await this.refreshState()
-    else this.setLoading(false)
+    else this.showError(res)
   }
 
   private async approveSingleCriterion(id: string) {
@@ -203,8 +200,11 @@ class FlexPipelinePanel extends HTMLElement {
           composed: true,
         }),
       )
+      this.error = null
+      await this.refreshState()
+    } else {
+      await this.showError(res)
     }
-    await this.refreshState()
   }
 
   private async generateSection(groupId: string, groupTitle: string) {
@@ -231,8 +231,17 @@ class FlexPipelinePanel extends HTMLElement {
           composed: true,
         }),
       )
+      this.error = null
+      await this.refreshState()
+    } else {
+      await this.showError(res)
     }
-    await this.refreshState()
+  }
+
+  private async showError(res: Response) {
+    const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+    this.error = data.error ?? `Request failed (${res.status})`
+    this.setLoading(false)
   }
 
   private async refreshState() {
@@ -243,6 +252,7 @@ class FlexPipelinePanel extends HTMLElement {
       this.state = { ...this.state, ...data }
     }
     this.loading = false
+    this.error = null
     this.render()
   }
 
