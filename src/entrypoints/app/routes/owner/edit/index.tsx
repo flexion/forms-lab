@@ -15,8 +15,7 @@ import type {
 } from '../../../../../services/forms'
 import {
   commandSchema,
-  executeBatch,
-  humanize,
+  composeExplanation,
 } from '../../../../../services/forms'
 import type { ProjectService } from '../../../../../services/projects'
 import { loadPolicyCorpus } from '../../../../../services/rag'
@@ -367,23 +366,6 @@ export function createEditRoutes(
   })
 
   return app
-}
-
-function composeExplanation(
-  commands: Command[],
-  summary: string | undefined,
-  formSpec: ProjectState['formSpec'],
-  dataSpec: ProjectState['dataSpec'],
-): string {
-  let state: ProjectState = { formSpec, dataSpec }
-  const lines: string[] = []
-  for (const command of commands) {
-    lines.push(`- ${humanize(command, state)}`)
-    const next = executeBatch(state, [command])
-    if (next.ok) state = next.state
-  }
-  if (summary) return [summary, '', ...lines].join('\n')
-  return lines.join('\n')
 }
 
 function handleError(c: Context, err: unknown) {

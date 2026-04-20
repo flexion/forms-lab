@@ -1,4 +1,5 @@
 import type { Command, ProjectState } from './commands'
+import { executeBatch } from './executor'
 
 function pageTitle(state: ProjectState, id: string): string {
   return state.formSpec.pages.find((p) => p.id === id)?.title ?? id
@@ -71,4 +72,21 @@ export function humanize(command: Command, state: ProjectState): string {
     case 'removeField':
       return `Remove field "${fieldLabel(state, command.id)}"`
   }
+}
+
+export function composeExplanation(
+  commands: Command[],
+  summary: string | undefined,
+  formSpec: ProjectState['formSpec'],
+  dataSpec: ProjectState['dataSpec'],
+): string {
+  let state: ProjectState = { formSpec, dataSpec }
+  const lines: string[] = []
+  for (const command of commands) {
+    lines.push(`- ${humanize(command, state)}`)
+    const next = executeBatch(state, [command])
+    if (next.ok) state = next.state
+  }
+  if (summary) return [summary, '', ...lines].join('\n')
+  return lines.join('\n')
 }
