@@ -1,34 +1,20 @@
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
-import type { Command, ProjectState } from './commands'
-import { executeBatch } from './executor'
+import type { Command } from './commands'
 import { commandTools } from './tools'
 import type { FormShaper, ShapingRequest, ShapingResult } from './types'
 
 const DEFAULT_MODEL = 'us.anthropic.claude-sonnet-4-20250514-v1:0'
 
-export type ValidateResult =
-  | { ok: true }
-  | { ok: false; error: string; failedAt: number; command: Command }
-
-export function validateCommands(
-  commands: Command[],
-  state: ProjectState,
-): ValidateResult {
-  const result = executeBatch(state, commands)
-  if (result.ok) return { ok: true }
-  return {
-    ok: false,
-    error: result.error,
-    failedAt: result.failedAt,
-    command: result.command,
-  }
-}
+// Validation + retry moved to retry.ts so each shaper stays a pure
+// LLM → Commands mapping. Re-exported for back-compat with existing imports.
+export { validateCommands } from './retry'
+export type { ValidateResult } from './retry'
 
 function buildPrompt(request: ShapingRequest): string {
   const previous = request.previousAttempt
-    ? `\n\n## Previous attempt\nYou previously produced these commands:\n${JSON.stringify(request.previousAttempt.commands, null, 2)}\n\nThe user said: "${request.previousAttempt.feedback}"\n`
+    ? `\n\n## Previous attempt\nYou previously produced these commands:\n${JSON.stringify(request.previousAttempt.commands, null, 2)}\n\nValidation feedback: "${request.previousAttempt.feedback}"\n`
     : ''
 
   return `You are a form design assistant. A form creator wants to modify the structure of their form. Call the appropriate tools to express the edits as a sequence of commands.
@@ -56,8 +42,15 @@ ${JSON.stringify(
 ${previous}
 
 ## Guidance
-- Call tools that match the creator's intent. The tools correspond to domain operations like swapPages, moveGroup, addField, etc.
-- Preserve page/group/field identity: use real ids from the specs above. Invent new ids only for commands that create new entities.
+- Call tools that match the creator's intent (swapPages, moveGroup, addField, etc.). Prefer the smallest set of commands that achieves the request.
+- Use existing ids from the specs above. Do NOT invent ids that reference entities that don't exist yet.
+- When creating a new page, group, or field that you need to reference in a later command (e.g., adding a group to a page you just created), pass an explicit \`id\` to the creating tool and reuse that exact id in the subsequent commands. Example:
+    addPage    { id: "confirmation",       title: "Confirmation" }
+    addGroup   { id: "confirmation-group", pageId: "confirmation", title: "Confirmation" }
+    addField   { id: "confirm-accurate",   groupId: "confirmation-group", label: "I confirm the information is accurate", fieldType: "boolean", required: true }
+  Keep invented ids short, stable, and human-readable.
+- Respect control defaults — don't issue redundant commands. \`boolean\` fields already render as a checkbox; \`choice\` fields default to radio. Only call \`setFieldControl\` to override these defaults (e.g., boolean as toggle, choice as select).
+- \`addField\` accepts optional \`control\` and \`helpText\` in one shot. Use those instead of following \`addField\` with a separate \`setFieldControl\` or \`relabelField\`.
 - When reordering, only change position — don't rewrite content.
 - After calling tools, respond with a single short sentence summarizing what you did. This sentence will be shown to the user.`
 }
@@ -94,13 +87,6 @@ export function createBedrockFormShaper(
           kind: call.toolName,
           ...(call.input as object),
         } as Command)
-      }
-
-      const validation = validateCommands(commands, request.state)
-      if (!validation.ok) {
-        throw new Error(
-          `LLM produced invalid command sequence: ${validation.error} (command ${validation.failedAt})`,
-        )
       }
 
       const explanation =

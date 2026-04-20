@@ -5,7 +5,12 @@ import {
   SONNET_MODEL_ID,
 } from '../../extraction'
 import { createBedrockFormShaper } from './bedrock-shaper'
+import { withValidationRetry } from './retry'
 import type { FormShaper } from './types'
+
+function registeredShaper(model: string): FormShaper {
+  return withValidationRetry(createBedrockFormShaper({ model }))
+}
 
 export function createShapingRegistry(): StrategyRegistry<FormShaper> {
   const registry = new StrategyRegistry<FormShaper>()
@@ -21,7 +26,7 @@ export function createShapingRegistry(): StrategyRegistry<FormShaper> {
       catalogPath: '/catalog/experiments/shaping-model-comparison/sonnet',
       modelId: SONNET_MODEL_ID,
     },
-    create: () => createBedrockFormShaper({ model: SONNET_MODEL_ID }),
+    create: () => registeredShaper(SONNET_MODEL_ID),
   })
 
   registry.register({
@@ -35,7 +40,7 @@ export function createShapingRegistry(): StrategyRegistry<FormShaper> {
       catalogPath: '/catalog/experiments/shaping-model-comparison/haiku',
       modelId: HAIKU_MODEL_ID,
     },
-    create: () => createBedrockFormShaper({ model: HAIKU_MODEL_ID }),
+    create: () => registeredShaper(HAIKU_MODEL_ID),
   })
 
   registry.register({
@@ -49,7 +54,7 @@ export function createShapingRegistry(): StrategyRegistry<FormShaper> {
       catalogPath: '/catalog/experiments/shaping-model-comparison/opus',
       modelId: OPUS_MODEL_ID,
     },
-    create: () => createBedrockFormShaper({ model: OPUS_MODEL_ID }),
+    create: () => registeredShaper(OPUS_MODEL_ID),
   })
 
   registry.setDefault('bedrock-sonnet')
