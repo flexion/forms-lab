@@ -1,0 +1,77 @@
+/**
+ * flex-chat-panel — conversational message transcript + input form.
+ *
+ * Used by the conversational form delivery mode. Wraps a scrolling
+ * message stream with a persistent composer, and swaps the composer
+ * for a completion notice once the session ends.
+ */
+
+@layer block {
+  .flex-chat-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flex-space-md);
+    padding: var(--flex-space-md);
+    border: 1px solid var(--flex-color-border);
+    border-radius: var(--flex-radius-md);
+    background: var(--flex-color-surface);
+  }
+
+  .flex-chat-panel__messages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flex-space-sm);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .flex-chat-panel__message {
+    display: flex;
+    padding: var(--flex-space-sm) var(--flex-space-md);
+    border-radius: var(--flex-radius-md);
+    max-width: 85%;
+    line-height: 1.5;
+  }
+
+  .flex-chat-panel__message[data-role='user'] {
+    align-self: flex-end;
+    background: var(--flex-color-primary-lighter);
+    color: var(--flex-color-primary-darker);
+  }
+
+  .flex-chat-panel__message[data-role='assistant'] {
+    align-self: flex-start;
+    background: var(--flex-color-base-lightest);
+    color: var(--flex-color-base-darker);
+  }
+
+  .flex-chat-panel__message-content {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .flex-chat-panel__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flex-space-sm);
+    padding-block-start: var(--flex-space-sm);
+    border-block-start: 1px solid var(--flex-color-border);
+  }
+
+  .flex-chat-panel__input-group {
+    display: flex;
+  }
+
+  .flex-chat-panel__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .flex-chat-panel__finished {
+    padding: var(--flex-space-sm) var(--flex-space-md);
+    border-radius: var(--flex-radius-md);
+    background: var(--flex-color-success-lighter);
+    color: var(--flex-color-success-darker);
+    text-align: center;
+  }
+}
