@@ -72,6 +72,7 @@ export interface ProjectService {
     pdf: Buffer,
     user: SessionUser,
   ): Promise<ProjectIndex>
+  createEmptyProject(name: string, user: SessionUser): Promise<ProjectIndex>
   getProject(
     owner: string,
     slug: string,
@@ -377,6 +378,86 @@ export function createProjectService(
       }
 
       fireAndForgetExtraction(project.id, slug, pdf, user.login)
+
+      return project
+    },
+
+    async createEmptyProject(
+      name: string,
+      user: SessionUser,
+    ): Promise<ProjectIndex> {
+      requireAuth(user)
+
+      const slug = generateUniqueSlug(name)
+      const project = store.create({
+        name,
+        slug,
+        createdBy: user.login,
+      })
+
+      try {
+        await repo.init(slug)
+
+        // Create empty specs with minimal structure
+        const emptyDataSpec: DataCollectionSpec = {
+          id: `spec-${slug}`,
+          title: name,
+          description: '',
+          groups: [],
+        }
+
+        const emptyFormSpec: FormSpec = {
+          id: `form-${slug}`,
+          specId: `spec-${slug}`,
+          title: name,
+          pages: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+
+        // Commit project metadata to main branch
+        await repo.commit(
+          slug,
+          [
+            {
+              path: 'project.json',
+              content: Buffer.from(
+                JSON.stringify({ name, slug, createdBy: user.login }, null, 2),
+              ),
+            },
+          ],
+          `Initialize project: ${name}`,
+          user.login,
+        )
+
+        // Create import branch
+        await repo.createBranch(slug, 'import', 'main')
+
+        // Commit empty specs to import branch
+        await repo.commit(
+          slug,
+          [
+            {
+              path: 'forms/default/spec.json',
+              content: Buffer.from(JSON.stringify(emptyDataSpec, null, 2)),
+            },
+            {
+              path: 'forms/default/form.json',
+              content: Buffer.from(JSON.stringify(emptyFormSpec, null, 2)),
+            },
+          ],
+          'Initialize empty form specifications',
+          user.login,
+          { branch: 'import' },
+        )
+
+        // Mark project as ready (no extraction needed)
+        store.update(project.id, { status: 'ready' })
+      } catch (err) {
+        // Git init/commit failed; clean up the SQLite row
+        store.delete(project.id)
+        throw err
+      }
 
       return project
     },

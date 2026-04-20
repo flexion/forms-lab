@@ -334,10 +334,11 @@ app.post('/new', async (c) => {
   const extractionVariant = getExtractionVariantForCallout(user.login)
 
   try {
-    // Parse form body - fixture or file upload
+    // Parse form body - corpus, fixture, or file upload
     const contentType = c.req.header('content-type') ?? ''
     let pdf: Buffer
     let name: string
+    let isCorpusOnly = false
 
     if (contentType.includes('multipart/form-data')) {
       const body = await c.req.parseBody()
@@ -357,25 +358,37 @@ app.post('/new', async (c) => {
       name = file.name.replace(/\.pdf$/i, '')
     } else {
       const body = await c.req.parseBody()
-      const fixtureSlug = body.fixture as string
-      const fixture = getFixture(fixtureSlug)
-      if (!fixture) {
-        return c.html(
-          <Layout currentPath="/new" user={user}>
-            <NewProjectPage
-              fixtures={demoFixtures}
-              extractionVariant={extractionVariant}
-            />
-          </Layout>,
-          400,
-        )
+      const corpusId = String(body.corpus ?? '').trim()
+
+      if (corpusId) {
+        // Corpus-only project (no PDF extraction)
+        isCorpusOnly = true
+        name = 'Wisconsin FoodShare SNAP Application'
+      } else {
+        // Fixture-based project
+        const fixtureSlug = body.fixture as string
+        const fixture = getFixture(fixtureSlug)
+        if (!fixture) {
+          return c.html(
+            <Layout currentPath="/new" user={user}>
+              <NewProjectPage
+                fixtures={demoFixtures}
+                extractionVariant={extractionVariant}
+              />
+            </Layout>,
+            400,
+          )
+        }
+        pdf = loadFixturePdf(fixture)
+        name = fixture.name
       }
-      pdf = loadFixturePdf(fixture)
-      name = fixture.name
     }
 
-    const project = await projectService.createProject(name, pdf, user)
-    return c.redirect(resolveUrl(`/${user.login}/${project.slug}`))
+    const project = isCorpusOnly
+      ? await projectService.createEmptyProject(name, user)
+      : await projectService.createProject(name, pdf!, user)
+
+    return c.redirect(resolveUrl(`/${user.login}/${project.slug}/edit/import`))
   } catch (err) {
     console.error('Error creating project:', err)
     return c.html(

@@ -961,6 +961,22 @@ export const NewProjectPage: FC<{
     </section>
 
     <section class="l-stack">
+      <h2>Create from corpus (no PDF)</h2>
+      <form method="post" action={resolveUrl('/new')}>
+        <input type="hidden" name="corpus" value="snap-wisconsin" />
+        <button type="submit" class="flex-card fixture-card">
+          <div class="l-stack" style="gap: var(--flex-space-2xs);">
+            <strong>Build from SNAP Policy Corpus</strong>
+            <span class="text-muted text-sm">
+              Create a Wisconsin SNAP application form from scratch using the
+              policy corpus and RAG-powered authoring pipeline.
+            </span>
+          </div>
+        </button>
+      </form>
+    </section>
+
+    <section class="l-stack">
       <h2>Upload your own PDF</h2>
       <form
         method="post"
