@@ -10,12 +10,9 @@ describe('shaping intent fixtures', () => {
     expect(shapingIntentFixtures.length).toBe(9)
   })
 
-  it('every fixture\'s expectedCommands execute cleanly against the project state', () => {
+  it("every fixture's expectedCommands execute cleanly against the project state", () => {
     for (const fixture of shapingIntentFixtures) {
-      const result = executeBatch(
-        fixtureProjectState,
-        fixture.expectedCommands,
-      )
+      const result = executeBatch(fixtureProjectState, fixture.expectedCommands)
       if (!result.ok) {
         throw new Error(
           `fixture "${fixture.id}" failed at command ${result.failedAt}: ${result.error}`,

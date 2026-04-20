@@ -312,8 +312,10 @@ function execMergePages(
   const formSpec = cloneFormSpec(state.formSpec)
   const intoIdx = formSpec.pages.findIndex((p) => p.id === command.intoId)
   const fromIdx = formSpec.pages.findIndex((p) => p.id === command.fromId)
-  if (intoIdx < 0) return failUnknownPage(command, 'intoId', command.intoId, state)
-  if (fromIdx < 0) return failUnknownPage(command, 'fromId', command.fromId, state)
+  if (intoIdx < 0)
+    return failUnknownPage(command, 'intoId', command.intoId, state)
+  if (fromIdx < 0)
+    return failUnknownPage(command, 'fromId', command.fromId, state)
   formSpec.pages[intoIdx] = {
     ...formSpec.pages[intoIdx],
     groups: [
@@ -344,9 +346,11 @@ function execMoveGroup(
   const fromPage = formSpec.pages.find((p) =>
     p.groups.includes(command.groupId),
   )
-  if (!fromPage) return failUnknownGroup(command, 'groupId', command.groupId, state)
+  if (!fromPage)
+    return failUnknownGroup(command, 'groupId', command.groupId, state)
   const toPage = formSpec.pages.find((p) => p.id === command.toPageId)
-  if (!toPage) return failUnknownPage(command, 'toPageId', command.toPageId, state)
+  if (!toPage)
+    return failUnknownPage(command, 'toPageId', command.toPageId, state)
   fromPage.groups = fromPage.groups.filter((g) => g !== command.groupId)
   const atIndex = command.atIndex ?? toPage.groups.length
   toPage.groups.splice(atIndex, 0, command.groupId)
@@ -370,7 +374,8 @@ function execAddGroup(
 ): ExecutorResult {
   const formSpec = cloneFormSpec(state.formSpec)
   const pageIdx = formSpec.pages.findIndex((p) => p.id === command.pageId)
-  if (pageIdx < 0) return failUnknownPage(command, 'pageId', command.pageId, state)
+  if (pageIdx < 0)
+    return failUnknownPage(command, 'pageId', command.pageId, state)
   const dataSpec = cloneDataSpec(state.dataSpec)
   const newGroup: RequirementGroup = {
     id: command.id ?? generateGroupId(),
@@ -434,7 +439,8 @@ function execSplitGroup(
   command: Extract<Command, { kind: 'splitGroup' }>,
 ): ExecutorResult {
   const sourceIdx = state.dataSpec.groups.findIndex((g) => g.id === command.id)
-  if (sourceIdx < 0) return failUnknownGroup(command, 'group id', command.id, state)
+  if (sourceIdx < 0)
+    return failUnknownGroup(command, 'group id', command.id, state)
   const source = state.dataSpec.groups[sourceIdx]
   for (const fid of command.fieldsToMove) {
     if (!source.requirements.find((r) => r.id === fid)) {
@@ -474,8 +480,10 @@ function execMergeGroups(
   const dataSpec = cloneDataSpec(state.dataSpec)
   const intoIdx = dataSpec.groups.findIndex((g) => g.id === command.intoId)
   const fromIdx = dataSpec.groups.findIndex((g) => g.id === command.fromId)
-  if (intoIdx < 0) return failUnknownGroup(command, 'intoId', command.intoId, state)
-  if (fromIdx < 0) return failUnknownGroup(command, 'fromId', command.fromId, state)
+  if (intoIdx < 0)
+    return failUnknownGroup(command, 'intoId', command.intoId, state)
+  if (fromIdx < 0)
+    return failUnknownGroup(command, 'fromId', command.fromId, state)
 
   dataSpec.groups[intoIdx] = {
     ...dataSpec.groups[intoIdx],
@@ -498,11 +506,13 @@ function execMoveField(
   command: Extract<Command, { kind: 'moveField' }>,
 ): ExecutorResult {
   const fromIdx = findFieldGroupIdx(state, command.fieldId)
-  if (fromIdx < 0) return failUnknownField(command, 'fieldId', command.fieldId, state)
+  if (fromIdx < 0)
+    return failUnknownField(command, 'fieldId', command.fieldId, state)
   const toIdx = state.dataSpec.groups.findIndex(
     (g) => g.id === command.toGroupId,
   )
-  if (toIdx < 0) return failUnknownGroup(command, 'toGroupId', command.toGroupId, state)
+  if (toIdx < 0)
+    return failUnknownGroup(command, 'toGroupId', command.toGroupId, state)
   const dataSpec = cloneDataSpec(state.dataSpec)
   const field = dataSpec.groups[fromIdx].requirements.find(
     (r) => r.id === command.fieldId,
@@ -528,7 +538,8 @@ function execReorderFields(
   const groupIdx = state.dataSpec.groups.findIndex(
     (g) => g.id === command.groupId,
   )
-  if (groupIdx < 0) return failUnknownGroup(command, 'groupId', command.groupId, state)
+  if (groupIdx < 0)
+    return failUnknownGroup(command, 'groupId', command.groupId, state)
   const group = state.dataSpec.groups[groupIdx]
   const currentIds = group.requirements.map((r) => r.id)
   if (
@@ -558,7 +569,8 @@ function execRelabelField(
   command: Extract<Command, { kind: 'relabelField' }>,
 ): ExecutorResult {
   const groupIdx = findFieldGroupIdx(state, command.id)
-  if (groupIdx < 0) return failUnknownField(command, 'field id', command.id, state)
+  if (groupIdx < 0)
+    return failUnknownField(command, 'field id', command.id, state)
   const dataSpec = cloneDataSpec(state.dataSpec)
   dataSpec.groups[groupIdx].requirements = dataSpec.groups[
     groupIdx
@@ -579,7 +591,8 @@ function execSetRequired(
   command: Extract<Command, { kind: 'setRequired' }>,
 ): ExecutorResult {
   const groupIdx = findFieldGroupIdx(state, command.id)
-  if (groupIdx < 0) return failUnknownField(command, 'field id', command.id, state)
+  if (groupIdx < 0)
+    return failUnknownField(command, 'field id', command.id, state)
   const dataSpec = cloneDataSpec(state.dataSpec)
   dataSpec.groups[groupIdx].requirements = dataSpec.groups[
     groupIdx
@@ -594,7 +607,8 @@ function execSetFieldCondition(
   command: Extract<Command, { kind: 'setFieldCondition' }>,
 ): ExecutorResult {
   const groupIdx = findFieldGroupIdx(state, command.id)
-  if (groupIdx < 0) return failUnknownField(command, 'field id', command.id, state)
+  if (groupIdx < 0)
+    return failUnknownField(command, 'field id', command.id, state)
   const dataSpec = cloneDataSpec(state.dataSpec)
   dataSpec.groups[groupIdx].requirements = dataSpec.groups[
     groupIdx
@@ -611,7 +625,8 @@ function execSetFieldSensitivity(
   command: Extract<Command, { kind: 'setFieldSensitivity' }>,
 ): ExecutorResult {
   const groupIdx = findFieldGroupIdx(state, command.id)
-  if (groupIdx < 0) return failUnknownField(command, 'field id', command.id, state)
+  if (groupIdx < 0)
+    return failUnknownField(command, 'field id', command.id, state)
   const dataSpec = cloneDataSpec(state.dataSpec)
   dataSpec.groups[groupIdx].requirements = dataSpec.groups[
     groupIdx
@@ -626,7 +641,8 @@ function execChangeFieldType(
   command: Extract<Command, { kind: 'changeFieldType' }>,
 ): ExecutorResult {
   const groupIdx = findFieldGroupIdx(state, command.id)
-  if (groupIdx < 0) return failUnknownField(command, 'field id', command.id, state)
+  if (groupIdx < 0)
+    return failUnknownField(command, 'field id', command.id, state)
   const dataSpec = cloneDataSpec(state.dataSpec)
   dataSpec.groups[groupIdx].requirements = dataSpec.groups[
     groupIdx
@@ -647,7 +663,8 @@ function execSetFieldControl(
   command: Extract<Command, { kind: 'setFieldControl' }>,
 ): ExecutorResult {
   const groupIdx = findFieldGroupIdx(state, command.id)
-  if (groupIdx < 0) return failUnknownField(command, 'field id', command.id, state)
+  if (groupIdx < 0)
+    return failUnknownField(command, 'field id', command.id, state)
   const dataSpec = cloneDataSpec(state.dataSpec)
   dataSpec.groups[groupIdx].requirements = dataSpec.groups[
     groupIdx
@@ -664,7 +681,8 @@ function execAddField(
   const groupIdx = state.dataSpec.groups.findIndex(
     (g) => g.id === command.groupId,
   )
-  if (groupIdx < 0) return failUnknownGroup(command, 'groupId', command.groupId, state)
+  if (groupIdx < 0)
+    return failUnknownGroup(command, 'groupId', command.groupId, state)
   const dataSpec = cloneDataSpec(state.dataSpec)
   const newField: DataRequirement = {
     id: command.id ?? generateFieldId(),
@@ -687,7 +705,8 @@ function execRemoveField(
   command: Extract<Command, { kind: 'removeField' }>,
 ): ExecutorResult {
   const groupIdx = findFieldGroupIdx(state, command.id)
-  if (groupIdx < 0) return failUnknownField(command, 'field id', command.id, state)
+  if (groupIdx < 0)
+    return failUnknownField(command, 'field id', command.id, state)
   const dataSpec = cloneDataSpec(state.dataSpec)
   dataSpec.groups[groupIdx] = {
     ...dataSpec.groups[groupIdx],

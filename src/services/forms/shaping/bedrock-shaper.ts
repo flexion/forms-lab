@@ -7,10 +7,10 @@ import type { FormShaper, ShapingRequest, ShapingResult } from './types'
 
 const DEFAULT_MODEL = 'us.anthropic.claude-sonnet-4-20250514-v1:0'
 
+export type { ValidateResult } from './retry'
 // Validation + retry moved to retry.ts so each shaper stays a pure
 // LLM → Commands mapping. Re-exported for back-compat with existing imports.
 export { validateCommands } from './retry'
-export type { ValidateResult } from './retry'
 
 function buildPrompt(request: ShapingRequest): string {
   const previous = request.previousAttempt
