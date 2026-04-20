@@ -41,6 +41,13 @@ export const demoFixtures: DemoFixture[] = [
       'Tax identification request form. Short, simple fields covering name, address, TIN, and certification.',
     filename: 'w-9.pdf',
   },
+  {
+    slug: 'snap-wisconsin',
+    name: 'Wisconsin FoodShare (SNAP) Application',
+    description:
+      'Supplemental nutrition assistance application. 6 pages covering applicant info, household composition, income, resources, expenses, and certification per 7 CFR 273.',
+    filename: 'snap-wisconsin.pdf',
+  },
 ]
 
 export function getFixture(slug: string): DemoFixture | undefined {
