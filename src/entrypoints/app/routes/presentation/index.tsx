@@ -291,7 +291,7 @@ presentation.get('/', (c) => {
             <div class="grid-2x2">
               <div class="cell">
                 <h3>Extraction</h3>
-                <p>PDF &rarr; structured fields, 9 variants</p>
+                <p>PDF &rarr; structured fields, 11 variants</p>
               </div>
               <div class="cell">
                 <h3>Shaping</h3>
@@ -376,6 +376,12 @@ presentation.get('/', (c) => {
             <p class="table-footer">
               "One exemplar beats three. Prompt shape matters more than
               example count."
+            </p>
+            <p class="table-footer">
+              Non-Anthropic probes (Nova Pro, Nova Lite, Llama 3.2 Vision) stay
+              below the frontier on full-suite extraction &mdash; Nova Lite
+              surprises on W-9 smoke (56% recall, 12x cheaper than Nova Pro),
+              Llama gated by Bedrock legacy-access policy.
             </p>
           </section>
 

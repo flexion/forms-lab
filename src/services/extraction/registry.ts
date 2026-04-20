@@ -7,6 +7,8 @@ import {
 import { exemplars } from './exemplars'
 import {
   HAIKU_MODEL_ID,
+  LLAMA_3_2_VISION_MODEL_ID,
+  NOVA_LITE_MODEL_ID,
   NOVA_PRO_MODEL_ID,
   OPUS_MODEL_ID,
   SONNET_MODEL_ID,
@@ -173,6 +175,54 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       createBedrockPdfExtractor({
         model: NOVA_PRO_MODEL_ID,
         maxOutputTokens: 10000,
+      }),
+  })
+
+  registry.register({
+    id: 'nova-lite',
+    metadata: {
+      name: 'Amazon Nova Lite',
+      description:
+        'Amazon multimodal model at a fraction of Nova Pro cost. Supports PDF input natively. Probes the lower bound of non-Anthropic capability on document-understanding tasks — a capability-boundary probe rather than a production candidate.',
+      status: 'experimental',
+      courseTopics: [
+        'evaluation',
+        'model-selection',
+        'cost-optimization',
+        'capability-boundaries',
+      ],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/nova-lite',
+      modelId: NOVA_LITE_MODEL_ID,
+      pricing: { inputPer1k: 0.00006, outputPer1k: 0.00024 },
+    },
+    create: () =>
+      createBedrockPdfExtractor({
+        model: NOVA_LITE_MODEL_ID,
+        maxOutputTokens: 10000,
+      }),
+  })
+
+  registry.register({
+    id: 'llama-3-2-vision',
+    metadata: {
+      name: 'Meta Llama 3.2 90B Vision',
+      description:
+        'Meta Llama 3.2 90B Instruct (vision) via Bedrock. Non-Anthropic, non-Amazon multimodal option. Tests whether an open-weights vision model can decompose a government form into granular fields.',
+      status: 'experimental',
+      courseTopics: [
+        'evaluation',
+        'model-selection',
+        'cost-optimization',
+        'capability-boundaries',
+      ],
+      catalogPath: '/catalog/experiments/pdf-field-extraction/llama-3-2-vision',
+      modelId: LLAMA_3_2_VISION_MODEL_ID,
+      pricing: { inputPer1k: 0.002, outputPer1k: 0.002 },
+    },
+    create: () =>
+      createBedrockPdfExtractor({
+        model: LLAMA_3_2_VISION_MODEL_ID,
+        maxOutputTokens: 8000,
       }),
   })
 

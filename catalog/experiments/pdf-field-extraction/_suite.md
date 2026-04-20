@@ -54,8 +54,19 @@ Each variant listed above is user-selectable per account at
 selected variant runs on every new extraction; provenance is recorded in the
 project repo at `forms/default/provenance.json`.
 
+## Capability-boundary probes (non-Anthropic models)
+
+Three variants are registered specifically as capability-boundary probes — they are not production candidates, they exist to document how non-Anthropic multimodal models perform on the same extraction task:
+
+- **[Nova Pro](./nova-pro.md)** — Amazon multimodal, full-suite eval. 0.6% field recall. Fails at decomposing forms into granular fields.
+- **[Nova Lite](./nova-lite.md)** — Amazon multimodal, cheapest tier. Smoke-eval on W-9 only: 56% recall, 64% precision over 9 matched fields. Surprisingly outperforms Nova Pro on the same fixture, but group/sensitivity labels drift (44% each). Full-suite run deferred.
+- **[Llama 3.2 90B Vision](./llama-3-2-vision.md)** — Meta multimodal via Bedrock. Registered but invocation returns `ResourceNotFoundException` — model is marked Legacy and FlexionLLM account access is gated. Included in the registry so the infrastructure constraint is documented alongside the capability results.
+
+Collectively these three variants document the claim: **non-Anthropic small multimodal models on Bedrock do not yet match Anthropic for government-form extraction**, and model-catalog access is itself a real operational constraint.
+
 ## Course Topics
 
 - Evaluation and benchmarking (Chapter 3)
 - Model selection (Chapter 6)
 - LLM-as-judge evaluation methodology
+- Capability boundaries and cost optimization

@@ -5,7 +5,7 @@ describe('createExtractorRegistry', () => {
   it('returns a registry with strategies registered', () => {
     const registry = createExtractorRegistry()
     const strategies = registry.list()
-    expect(strategies.length).toBeGreaterThanOrEqual(8)
+    expect(strategies.length).toBeGreaterThanOrEqual(11)
   })
 
   it('registers opus as baseline', () => {
@@ -122,6 +122,40 @@ describe('createExtractorRegistry', () => {
     expect(hybrid!.metadata.courseTopics).toContain('few-shot')
     expect(hybrid!.metadata.catalogPath).toBe(
       '/catalog/experiments/pdf-field-extraction/sonnet-hybrid-v1',
+    )
+  })
+
+  it('registers nova-lite as experimental with capability-boundaries topic', () => {
+    const registry = createExtractorRegistry()
+    const strategies = registry.list()
+    const novaLite = strategies.find((s) => s.id === 'nova-lite')
+    expect(novaLite).toBeDefined()
+    expect(novaLite!.metadata.status).toBe('experimental')
+    expect(novaLite!.metadata.pricing).toEqual({
+      inputPer1k: 0.00006,
+      outputPer1k: 0.00024,
+    })
+    expect(novaLite!.metadata.courseTopics).toContain('capability-boundaries')
+    expect(novaLite!.metadata.courseTopics).toContain('cost-optimization')
+    expect(novaLite!.metadata.catalogPath).toBe(
+      '/catalog/experiments/pdf-field-extraction/nova-lite',
+    )
+  })
+
+  it('registers llama-3-2-vision as experimental with capability-boundaries topic', () => {
+    const registry = createExtractorRegistry()
+    const strategies = registry.list()
+    const llama = strategies.find((s) => s.id === 'llama-3-2-vision')
+    expect(llama).toBeDefined()
+    expect(llama!.metadata.status).toBe('experimental')
+    expect(llama!.metadata.pricing).toEqual({
+      inputPer1k: 0.002,
+      outputPer1k: 0.002,
+    })
+    expect(llama!.metadata.courseTopics).toContain('capability-boundaries')
+    expect(llama!.metadata.courseTopics).toContain('model-selection')
+    expect(llama!.metadata.catalogPath).toBe(
+      '/catalog/experiments/pdf-field-extraction/llama-3-2-vision',
     )
   })
 })

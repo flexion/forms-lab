@@ -7,6 +7,8 @@ export { exemplars } from './exemplars'
 
 export {
   HAIKU_MODEL_ID,
+  LLAMA_3_2_VISION_MODEL_ID,
+  NOVA_LITE_MODEL_ID,
   NOVA_PRO_MODEL_ID,
   OPUS_MODEL_ID,
   SONNET_MODEL_ID,
