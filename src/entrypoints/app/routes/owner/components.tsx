@@ -55,7 +55,7 @@ export const ProfilePage: FC<{
       <section class="l-stack">
         <div class="l-cluster justify-between" style="align-items: baseline;">
           <h2>Projects</h2>
-          {isOwnProfile && (
+          {isOwnProfile && projects.length > 0 && (
             <a href={resolveUrl('/new')} class="flex-button">
               New Project
             </a>
@@ -1036,9 +1036,11 @@ export const Dashboard: FC<{
       <section class="l-stack">
         <div class="l-cluster justify-between" style="align-items: baseline;">
           <h2>Recent projects</h2>
-          <a href={resolveUrl('/new')} class="flex-button">
-            New Project
-          </a>
+          {recentProjects.length > 0 && (
+            <a href={resolveUrl('/new')} class="flex-button">
+              New Project
+            </a>
+          )}
         </div>
         {recentProjects.length === 0 ? (
           <div class="l-stack">
