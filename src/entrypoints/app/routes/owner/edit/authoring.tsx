@@ -17,6 +17,8 @@ import type { ProjectService } from '../../../../../services/projects'
 import { loadPolicyCorpus } from '../../../../../services/rag'
 import { UnauthenticatedError } from '../../../../../shared/errors'
 
+const llmCache = new Map<string, unknown>()
+
 export function createAuthoringRoutes(service: ProjectService): Hono {
   const app = new Hono()
 
@@ -218,6 +220,11 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
             }
           : null
 
+      const cacheKey = `structure:${slug}:${branch}`
+      if (llmCache.has(cacheKey)) {
+        return c.json(llmCache.get(cacheKey))
+      }
+
       const pipeline = createAuthoringPipeline()
       const result = await pipeline.planStructure(
         criteria.criteria,
@@ -225,10 +232,12 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
         state,
       )
 
-      return c.json({
+      const response = {
         commands: result.commands,
         explanation: result.explanation,
-      })
+      }
+      llmCache.set(cacheKey, response)
+      return c.json(response)
     } catch (err) {
       console.error('[authoring/plan-structure]', err)
       return c.json(
@@ -266,6 +275,11 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
         const criteriaSet = await loadCriteria(owner, slug, branch)
         const corpus = await loadPolicyCorpus({ slug: 'snap-wisconsin' })
 
+        const cacheKey = `section:${slug}:${branch}:${body.groupId}`
+        if (llmCache.has(cacheKey)) {
+          return c.json(llmCache.get(cacheKey))
+        }
+
         const pipeline = createAuthoringPipeline()
         const result = await pipeline.generateSection(
           body.groupId,
@@ -274,10 +288,12 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
           corpus,
         )
 
-        return c.json({
+        const response = {
           commands: result.commands,
           explanation: result.explanation,
-        })
+        }
+        llmCache.set(cacheKey, response)
+        return c.json(response)
       } catch (err) {
         console.error('[authoring/generate-section]', err)
         return c.json(
