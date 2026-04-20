@@ -3,10 +3,26 @@ import {
   fixtureProjectState,
   shapingIntentFixtures,
 } from '../../src/services/evaluation/fixtures/shaping-intents'
+import { executeBatch } from '../../src/services/forms'
 
 describe('shaping intent fixtures', () => {
-  it('provides 6 scripted intents', () => {
-    expect(shapingIntentFixtures.length).toBe(6)
+  it('provides 9 scripted intents', () => {
+    expect(shapingIntentFixtures.length).toBe(9)
+  })
+
+  it('every fixture\'s expectedCommands execute cleanly against the project state', () => {
+    for (const fixture of shapingIntentFixtures) {
+      const result = executeBatch(
+        fixtureProjectState,
+        fixture.expectedCommands,
+      )
+      if (!result.ok) {
+        throw new Error(
+          `fixture "${fixture.id}" failed at command ${result.failedAt}: ${result.error}`,
+        )
+      }
+      expect(result.ok).toBe(true)
+    }
   })
 
   it('each fixture has a unique id', () => {
