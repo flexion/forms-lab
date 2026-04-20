@@ -19,9 +19,32 @@ import {
 } from '../../../../../services/form-authoring'
 import type { Command, ProjectState } from '../../../../../services/forms'
 import type { ProjectService } from '../../../../../services/projects'
-import { loadPolicyCorpus } from '../../../../../services/rag'
+import {
+  getCorpusMetadata,
+  retrieveOrFullCorpus,
+} from '../../../../../services/rag'
 import type { VariantPreferencesService } from '../../../../../services/variant-preferences'
 import { UnauthenticatedError } from '../../../../../shared/errors'
+
+/**
+ * Build a broad retrieval query for the planning stages (criteria
+ * analysis and structure generation). Uses the corpus's form name
+ * so the query is generic across corpora — for SNAP this becomes
+ * "Wisconsin FoodShare (SNAP) Application — eligibility, required
+ * information, application process, regulatory requirements."
+ */
+function planningQuery(corpusSlug: string): string {
+  const meta = getCorpusMetadata(corpusSlug)
+  const formName = meta?.formName ?? corpusSlug
+  return `${formName} — eligibility, required information, application process, regulatory requirements`
+}
+
+// Retrieval widths chosen to give the planning stages broad coverage
+// (criteria/structure need to see almost every policy topic to
+// produce a complete form) while narrowing section generation to
+// just the chunks closest to the group title.
+const PLANNING_K = 15
+const SECTION_K = 5
 
 const llmCache = new Map<string, unknown>()
 
@@ -146,8 +169,17 @@ export function createAuthoringRoutes(
 
       if (criteriaSet.criteria.length === 0) {
         log('Analyzing policy corpus...')
-        const corpus = loadPolicyCorpus({ slug: corpusSlug })
-        const criteriaList = await pipeline.analyzeCriteria(corpus)
+        const criteriaRetrieval = await retrieveOrFullCorpus(
+          corpusSlug,
+          planningQuery(corpusSlug),
+          PLANNING_K,
+        )
+        log(
+          `  criteria: ${criteriaRetrieval.source} (${criteriaRetrieval.chunks.length} chunks)`,
+        )
+        const criteriaList = await pipeline.analyzeCriteria(
+          criteriaRetrieval.chunks,
+        )
         criteriaSet = {
           criteria: criteriaList,
           approvedAt: null,
@@ -181,7 +213,15 @@ export function createAuthoringRoutes(
 
       // Step 3: Generate structure (pages only)
       log('Generating page structure (~20s)...')
-      const corpus = loadPolicyCorpus({ slug: corpusSlug })
+      const structureRetrieval = await retrieveOrFullCorpus(
+        corpusSlug,
+        planningQuery(corpusSlug),
+        PLANNING_K,
+      )
+      log(
+        `  structure: ${structureRetrieval.source} (${structureRetrieval.chunks.length} chunks)`,
+      )
+      const corpus = structureRetrieval.chunks
 
       const view = await service.getProject(owner, slug, user, branch)
       const state =
@@ -268,11 +308,23 @@ export function createAuthoringRoutes(
               explanation: string
             }
           } else {
+            // Per-section retrieval: the group title is the query;
+            // we expect a few nearest-neighbour chunks to cover the
+            // regulations relevant to the fields that section
+            // collects.
+            const sectionRetrieval = await retrieveOrFullCorpus(
+              corpusSlug,
+              group.title,
+              SECTION_K,
+            )
+            log(
+              `    [${group.title}] ${sectionRetrieval.source} (${sectionRetrieval.chunks.length} chunks)`,
+            )
             sectionResult = await pipeline.generateSection(
               group.id,
               group.title,
               criteriaSet.criteria,
-              corpus,
+              sectionRetrieval.chunks,
             )
             llmCache.set(cacheKey, sectionResult)
           }
@@ -397,7 +449,11 @@ export function createAuthoringRoutes(
           user,
           branch,
         )
-        const corpus = loadPolicyCorpus({ slug: corpusSlug })
+        const { chunks: corpus } = await retrieveOrFullCorpus(
+          corpusSlug,
+          planningQuery(corpusSlug),
+          PLANNING_K,
+        )
         const criteriaList = await pipeline.analyzeCriteria(corpus)
 
         const criteria: CriteriaSet = {
@@ -545,7 +601,11 @@ export function createAuthoringRoutes(
       if (!corpusSlug) {
         return c.json({ error: 'project has no associated policy corpus' }, 400)
       }
-      const corpus = loadPolicyCorpus({ slug: corpusSlug })
+      const { chunks: corpus } = await retrieveOrFullCorpus(
+        corpusSlug,
+        planningQuery(corpusSlug),
+        PLANNING_K,
+      )
 
       const state =
         view.formSpec && view.spec
@@ -617,7 +677,12 @@ export function createAuthoringRoutes(
             400,
           )
         }
-        const corpus = loadPolicyCorpus({ slug: view.project.corpusSlug })
+        // Per-section retrieval: the group title is the query.
+        const { chunks: corpus } = await retrieveOrFullCorpus(
+          view.project.corpusSlug,
+          body.groupTitle,
+          SECTION_K,
+        )
 
         const cacheKey = `section:${slug}:${branch}:${body.groupId}`
         if (llmCache.has(cacheKey)) {
@@ -684,7 +749,17 @@ export function createAuthoringRoutes(
             400,
           )
         }
-        const corpus = loadPolicyCorpus({ slug: view.project.corpusSlug })
+
+        // Resolve the group title so retrieval can use a natural-
+        // language query ("Household Composition") rather than the
+        // opaque group id.
+        const group = view.spec.groups.find((g) => g.id === body.groupId)
+        const query = group?.title ?? body.groupId
+        const { chunks: corpus } = await retrieveOrFullCorpus(
+          view.project.corpusSlug,
+          query,
+          SECTION_K,
+        )
 
         const state = {
           formSpec: view.formSpec as unknown as ProjectState['formSpec'],

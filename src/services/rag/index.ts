@@ -7,6 +7,11 @@ export {
   loadPolicyCorpus,
 } from './corpus'
 export {
+  getCorpusRetriever,
+  resetCorpusRetrieverForTests,
+  retrieveOrFullCorpus,
+} from './corpus-retriever'
+export {
   cosineSimilarity,
   createHashEmbedder,
   createInMemoryRetriever,
