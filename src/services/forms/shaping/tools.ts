@@ -183,7 +183,8 @@ export const commandTools = {
     inputSchema: z.object({ id: z.string(), control }),
   }),
   addField: tool({
-    description: 'Add a new field to a group.',
+    description:
+      'Add a new field to a group. Optionally specify an id to reference this field in subsequent commands.',
     inputSchema: z.object({
       id: z.string().optional(),
       groupId: z.string(),
