@@ -75,9 +75,21 @@ The RAG service (`src/services/rag/`) provides in-memory vector retrieval over p
 - **Embedder** — AWS Bedrock Titan Embed V2 (production) or deterministic hash fallback (offline/testing).
 - **Policy corpus** — 13 sections from 7 CFR 273 (SNAP Wisconsin) at `catalog/references/snap-wisconsin.md`.
 
+**Query flow (extraction):**
+1. Extraction variant registers a retriever via [`rag-corpus.ts`](src:src/services/extraction/rag-corpus.ts) — lazy-initializes embeddings on first use
+2. During extraction ([`extraction.ts:192-198`](src:src/services/form-documents/extraction.ts)), the retriever is queried with the fixture slug (or first 500 bytes of PDF as fallback)
+3. Top-k chunks (default: 2) are retrieved by cosine similarity over Titan embeddings
+4. Retrieved chunks are formatted via `buildPolicyContextSection()` and prepended to the extraction prompt
+
+**Corpus flow (authoring):**
+1. The authoring pipeline loads the FULL corpus via `loadPolicyCorpus({ slug: 'snap-wisconsin' })` — no vector retrieval needed since the corpus is small (~13 chunks)
+2. All chunks are passed directly into prompt builders ([`prompts.ts`](src:src/services/form-authoring/prompts.ts))
+3. Each prompt includes the complete regulatory text so the LLM can cite specific sections
+
 **Integration points:**
-- `src/services/extraction/` — RAG-grounded extraction variants prepend policy context to prompts.
-- `src/services/form-authoring/` — Full pipeline reads corpus for criteria, structure, and field generation.
+- `src/services/extraction/` — RAG-grounded extraction variants use vector retrieval for top-k lookup ([`rag-corpus.ts`](src:src/services/extraction/rag-corpus.ts))
+- `src/services/form-documents/extraction.ts` — Call site where retriever.retrieve() is awaited and chunks injected into prompts
+- `src/services/form-authoring/` — Full pipeline passes entire corpus to each stage (no retrieval query needed at current scale)
 
 **Variant settings:** Three independent tasks in the variant system:
 - Authoring: Criteria Analysis (Sonnet/Haiku/Opus)
