@@ -193,4 +193,19 @@ describe('executor — page commands', () => {
       expect(result.state.formSpec.pages[0].groups).toEqual(['g1', 'g2'])
     }
   })
+
+  it('unknown page id error lists known page ids', () => {
+    const result = executeCommand(fixture(), {
+      kind: 'renamePage',
+      id: 'missing-page',
+      title: 'X',
+    })
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(result.error).toContain('missing-page')
+      expect(result.error).toContain('p1')
+      expect(result.error).toContain('p2')
+      expect(result.error).toContain('p3')
+    }
+  })
 })

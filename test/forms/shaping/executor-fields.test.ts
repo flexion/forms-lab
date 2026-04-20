@@ -271,4 +271,35 @@ describe('executor — field commands', () => {
     })
     expect(result.ok).toBe(false)
   })
+
+  it('unknown field id error lists known field ids', () => {
+    const result = executeCommand(fixture(), {
+      kind: 'setRequired',
+      id: 'nope',
+      required: true,
+    })
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(result.error).toContain('nope')
+      expect(result.error).toContain('f1')
+      expect(result.error).toContain('f2')
+      expect(result.error).toContain('f3')
+    }
+  })
+
+  it('unknown groupId error lists known group ids', () => {
+    const result = executeCommand(fixture(), {
+      kind: 'addField',
+      groupId: 'missing-group',
+      label: 'X',
+      fieldType: 'text',
+      required: false,
+    })
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(result.error).toContain('missing-group')
+      expect(result.error).toContain('g1')
+      expect(result.error).toContain('g2')
+    }
+  })
 })
