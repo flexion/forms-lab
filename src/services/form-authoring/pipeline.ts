@@ -13,7 +13,7 @@ import {
 import type { AuthoringStage, AuthoringStageConfig, Criterion } from './types'
 
 const DEFAULT_CONFIG: AuthoringStageConfig = {
-  criteria: { modelId: HAIKU_MODEL_ID },
+  criteria: { modelId: SONNET_MODEL_ID },
   structure: { modelId: SONNET_MODEL_ID },
   generation: { modelId: SONNET_MODEL_ID },
   evaluation: { modelId: HAIKU_MODEL_ID },
