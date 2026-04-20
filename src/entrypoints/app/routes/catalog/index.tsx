@@ -3,7 +3,6 @@ import { Hono } from 'hono'
 import { ContentCard } from '../../../../design-system/components/flex-card'
 import { CatalogSidebar } from '../../../../design-system/components/flex-catalog-sidebar'
 import { Layout } from '../../../../design-system/components/flex-layout'
-import { SummaryBox } from '../../../../design-system/components/flex-summary-box'
 import { readMarkdownDir } from '../../../../services/content'
 import { resolveUrl } from '../../../../shared/base-path'
 import architecture from './architecture'
@@ -66,29 +65,6 @@ catalog.get('/', async (c) => {
       </p>
 
       <div class="l-stack" style="--stack-space: var(--flex-space-xl)">
-        <SummaryBox heading="Headline finding">
-          <p>
-            The{' '}
-            <a
-              href={resolveUrl(
-                '/catalog/experiments/pdf-field-extraction/sonnet-hybrid-v1',
-              )}
-            >
-              <strong>hybrid-v1</strong> extraction variant
-            </a>{' '}
-            (one instruction, one exemplar, temperature=0) Pareto-dominates
-            every other prompt-only variant on the PDF field extraction suite —
-            precision 99.2%, recall 72.6%, sensitivity +23.8pp over baseline —
-            and is the production default. Same prompt shape that topped the
-            Assignment 10 tool-calling leaderboard; the rank ordering reproduces
-            across model scale and task type. See the{' '}
-            <a href={resolveUrl('/catalog/experiments/pdf-field-extraction')}>
-              extraction suite
-            </a>{' '}
-            for the full comparison.
-          </p>
-        </SummaryBox>
-
         <section>
           <p class="catalog-group-label">Presentation</p>
           <div class="l-grid" style="--grid-min: 280px">
@@ -120,8 +96,8 @@ catalog.get('/', async (c) => {
             />
             <ContentCard
               title="Authoring pipeline"
-              href={resolveUrl('/catalog/experiments/authoring-pipeline/index')}
-              description="RAG-assisted spec authoring — corpus ingestion, grounded extraction, citation rendering."
+              href={resolveUrl('/catalog/experiments/authoring-pipeline')}
+              description="RAG-driven form generation from a Wisconsin SNAP policy corpus. Ablation confirms the corpus is load-bearing."
             />
           </div>
         </section>

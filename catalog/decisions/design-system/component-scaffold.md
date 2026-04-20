@@ -43,4 +43,4 @@ A hardcoded registry (`registry.ts`) provides type-safe component lookup. A sing
 ## Sources
 
 - [USWDS Components](https://designsystem.digital.gov/components/overview/)
-- [Spec 1 design](../../notes/2026-04-07-slice-0-skeleton/2026-04-07-uswds-spec1-design.md)
+- [Spec 1 design](../../../notes/2026-04-07-slice-0-skeleton/2026-04-07-uswds-spec1-design.md)

@@ -59,7 +59,7 @@ Full write-ups live in the catalog. Headlines:
 Suite indexes:
 [PDF extraction](catalog/experiments/pdf-field-extraction/_suite.md) ·
 [Shaping](catalog/experiments/shaping-model-comparison/_suite.md) ·
-[Authoring pipeline](catalog/experiments/authoring-pipeline/index.md) ·
+[Authoring pipeline](catalog/experiments/authoring-pipeline/_suite.md) ·
 [Roadmap](catalog/experiments/_roadmap.md)
 
 ## Quick start
