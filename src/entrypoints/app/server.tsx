@@ -390,7 +390,7 @@ app.post('/new', async (c) => {
     const pdf = loadFixturePdf(fixture)
     const name = fixture.name
     const project = await projectService.createProject(name, pdf, user)
-    return c.redirect(resolveUrl(`/${user.login}/${project.slug}/edit/import`))
+    return c.redirect(resolveUrl(`/${user.login}/${project.slug}`))
   } catch (err) {
     console.error('Error creating project:', err)
     return c.html(
