@@ -12,12 +12,21 @@ import {
   parseCriteriaSet,
   serializeCriteriaSet,
 } from '../../../../../services/form-authoring'
-import type { ProjectState } from '../../../../../services/forms'
+import type { Command, ProjectState } from '../../../../../services/forms'
 import type { ProjectService } from '../../../../../services/projects'
 import { loadPolicyCorpus } from '../../../../../services/rag'
 import { UnauthenticatedError } from '../../../../../shared/errors'
 
 const llmCache = new Map<string, unknown>()
+
+interface BuildProgress {
+  status: 'running' | 'done' | 'error'
+  log: string[]
+  error?: string
+  startedAt: string
+}
+
+const builds = new Map<string, BuildProgress>()
 
 export function createAuthoringRoutes(service: ProjectService): Hono {
   const app = new Hono()
@@ -36,6 +45,235 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
     if (!buf) return emptyCriteriaSet()
     return parseCriteriaSet(buf.toString())
   }
+
+  async function runBuild(
+    owner: string,
+    slug: string,
+    branch: string,
+    user: SessionUser,
+    progress: BuildProgress,
+  ): Promise<void> {
+    const log = (msg: string) => {
+      progress.log.push(msg)
+    }
+
+    try {
+      // Step 1: Analyze criteria if needed
+      const existingCriteria = await loadCriteria(owner, slug, branch)
+      let criteriaSet = existingCriteria
+
+      if (criteriaSet.criteria.length === 0) {
+        log('Analyzing policy corpus...')
+        const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
+        const pipeline = createAuthoringPipeline()
+        const criteriaList = await pipeline.analyzeCriteria(corpus)
+        criteriaSet = {
+          criteria: criteriaList,
+          approvedAt: null,
+          approvedBy: null,
+        }
+        await service.commitFile(
+          slug,
+          branch,
+          'forms/default/criteria.json',
+          serializeCriteriaSet(criteriaSet),
+          'Generate evaluation criteria',
+          user,
+        )
+        log(`${criteriaList.length} criteria generated.`)
+      }
+
+      // Step 2: Approve if needed
+      if (!criteriaSet.approvedAt) {
+        log('Approving criteria...')
+        criteriaSet = approveCriteriaSet(criteriaSet, user.login)
+        await service.commitFile(
+          slug,
+          branch,
+          'forms/default/criteria.json',
+          serializeCriteriaSet(criteriaSet),
+          'Approve criteria',
+          user,
+        )
+        log('Criteria approved.')
+      }
+
+      // Step 3: Generate structure (pages only)
+      log('Generating page structure (~20s)...')
+      const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
+      const pipeline = createAuthoringPipeline()
+
+      const view = await service.getProject(owner, slug, user, branch)
+      const state =
+        view.formSpec && view.spec
+          ? {
+              formSpec: view.formSpec as unknown as ProjectState['formSpec'],
+              dataSpec: view.spec as unknown as ProjectState['dataSpec'],
+            }
+          : null
+
+      const structResult = await pipeline.planStructure(
+        criteriaSet.criteria,
+        corpus,
+        state,
+      )
+      const pageCommands = structResult.commands.filter(
+        (c) => c.kind === 'addPage',
+      )
+
+      if (pageCommands.length > 0) {
+        const result = await service.executeCommands(
+          owner,
+          slug,
+          pageCommands,
+          'Add pages',
+          'llm',
+          user,
+          { branch },
+        )
+        if (!result.ok) {
+          throw new Error(`Structure save failed: ${result.error}`)
+        }
+        log(`${pageCommands.length} pages created.`)
+      }
+
+      // Step 4: Create one group per page
+      log('Creating groups...')
+      const view2 = await service.getProject(owner, slug, user, branch)
+      if (view2.formSpec) {
+        const emptyPages = view2.formSpec.pages.filter(
+          (p) => p.groups.length === 0,
+        )
+        if (emptyPages.length > 0) {
+          const groupCommands = emptyPages.map((p) => ({
+            kind: 'addGroup' as const,
+            pageId: p.id,
+            title: p.title,
+          }))
+          const result = await service.executeCommands(
+            owner,
+            slug,
+            groupCommands,
+            'Add groups',
+            'llm',
+            user,
+            { branch },
+          )
+          if (!result.ok) {
+            throw new Error(`Groups save failed: ${result.error}`)
+          }
+          log(`${groupCommands.length} groups created.`)
+        }
+      }
+
+      // Step 5: Generate fields for each group
+      log('Generating fields...')
+      const view3 = await service.getProject(owner, slug, user, branch)
+      if (view3.spec) {
+        const groups = view3.spec.groups.filter(
+          (g) => g.requirements.length === 0,
+        )
+        for (let i = 0; i < groups.length; i++) {
+          const group = groups[i]
+          log(`  ${group.title} (${i + 1}/${groups.length})...`)
+
+          const cacheKey = `section:${slug}:${branch}:${group.id}`
+          let sectionResult: {
+            commands: Command[]
+            explanation: string
+          }
+          if (llmCache.has(cacheKey)) {
+            sectionResult = llmCache.get(cacheKey) as {
+              commands: Command[]
+              explanation: string
+            }
+          } else {
+            sectionResult = await pipeline.generateSection(
+              group.id,
+              group.title,
+              criteriaSet.criteria,
+              corpus,
+            )
+            llmCache.set(cacheKey, sectionResult)
+          }
+
+          if (sectionResult.commands.length > 0) {
+            const fieldCount = sectionResult.commands.filter(
+              (c) => c.kind === 'addField',
+            ).length
+            const result = await service.executeCommands(
+              owner,
+              slug,
+              sectionResult.commands,
+              sectionResult.explanation,
+              'llm',
+              user,
+              { branch },
+            )
+            if (result.ok) {
+              log(`    ${fieldCount} fields added.`)
+            } else {
+              log(`    Save failed: ${result.error}`)
+            }
+          }
+        }
+      }
+
+      log('Done!')
+      progress.status = 'done'
+    } catch (err) {
+      progress.status = 'error'
+      progress.error = err instanceof Error ? err.message : String(err)
+      log(`Error: ${progress.error}`)
+    }
+  }
+
+  // POST /:owner/:slug/edit/:branch/authoring/build
+  // Kick off the full pipeline as a background task
+  app.post('/:owner/:slug/edit/:branch/authoring/build', async (c) => {
+    const owner = c.req.param('owner')
+    const slug = c.req.param('slug')
+    const branch = c.req.param('branch')
+    const user = c.get('user') as SessionUser | null
+
+    if (!user) throw new UnauthenticatedError()
+
+    const key = `${slug}:${branch}`
+
+    // Don't start if already running
+    const existing = builds.get(key)
+    if (existing?.status === 'running') {
+      return c.json({ status: 'already-running' })
+    }
+
+    const progress: BuildProgress = {
+      status: 'running',
+      log: [],
+      startedAt: new Date().toISOString(),
+    }
+    builds.set(key, progress)
+
+    // Run in background — don't await
+    runBuild(owner, slug, branch, user, progress).catch((err) => {
+      progress.status = 'error'
+      progress.error = err instanceof Error ? err.message : String(err)
+    })
+
+    return c.json({ status: 'started' })
+  })
+
+  // GET /:owner/:slug/edit/:branch/authoring/build-status
+  // Returns the current build progress
+  app.get('/:owner/:slug/edit/:branch/authoring/build-status', async (c) => {
+    const slug = c.req.param('slug')
+    const branch = c.req.param('branch')
+    const key = `${slug}:${branch}`
+    const progress = builds.get(key)
+    if (!progress) {
+      return c.json({ status: 'idle', log: [] })
+    }
+    return c.json(progress)
+  })
 
   // POST /:owner/:slug/edit/:branch/authoring/analyze-criteria
   // Stage 1: calls pipeline.analyzeCriteria, persists criteria.json to git

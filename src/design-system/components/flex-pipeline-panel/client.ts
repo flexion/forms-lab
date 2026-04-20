@@ -26,20 +26,25 @@ class FlexPipelinePanel extends HTMLElement {
       this.state = JSON.parse(script.textContent ?? '{}')
     }
     this.render()
+    // Check if a build is already running
+    this.checkExistingBuild()
+  }
+
+  private async checkExistingBuild() {
+    if (!this.state) return
+    const res = await fetch(`${this.editBase}/authoring/build-status`)
+    if (!res.ok) return
+    const data = await res.json()
+    if (data.status === 'running') {
+      this.running = true
+      this.progressLog = data.log ?? []
+      this.render()
+      await this.pollBuildStatus()
+    }
   }
 
   private get editBase(): string {
     return this.state?.editBase ?? ''
-  }
-
-  private get currentSha(): string {
-    return (
-      this.closest('flex-form-editor')?.getAttribute('data-current-sha') ?? ''
-    )
-  }
-
-  private set currentSha(sha: string) {
-    this.closest('flex-form-editor')?.setAttribute('data-current-sha', sha)
   }
 
   private render() {
@@ -133,130 +138,54 @@ class FlexPipelinePanel extends HTMLElement {
     if (!this.state) return
     this.running = true
     this.error = null
-    this.progressLog = []
+    this.progressLog = ['Starting build...']
     this.render()
     await new Promise((r) => setTimeout(r, 0))
 
-    // Step 1: Analyze if needed
-    if (this.state.criteria.criteria.length === 0) {
-      await this.log('Analyzing policy corpus (this takes ~15s)...')
-      const res = await this.post('/authoring/analyze-criteria')
-      if (!res.ok) return this.abort(res, 'Corpus analysis failed')
-      await this.log('Criteria generated.')
-      await this.refreshState()
+    // Kick off server-side build
+    const res = await this.post('/authoring/build')
+    if (!res.ok) {
+      return this.abort(res, 'Failed to start build')
     }
 
-    // Step 2: Approve if needed
-    if (!this.state!.criteria.approvedAt) {
-      await this.log('Approving criteria...')
-      const res = await this.post('/authoring/approve-criteria', {})
-      if (!res.ok) return this.abort(res, 'Criteria approval failed')
-      await this.log('Criteria approved.')
-      await this.refreshState()
-    }
+    // Poll for status
+    await this.pollBuildStatus()
+  }
 
-    // Step 3: Generate structure
-    await this.log('Generating page/group structure (~20s)...')
-    const structRes = await this.post('/authoring/plan-structure')
-    if (!structRes.ok)
-      return this.abort(structRes, 'Structure generation failed')
+  private async pollBuildStatus() {
+    while (true) {
+      await new Promise((r) => setTimeout(r, 2000))
 
-    const structData = await structRes.json()
-    if (structData.commands.length > 0) {
-      const pages = structData.commands.filter(
-        (c: { kind: string }) => c.kind === 'addPage',
-      ).length
-      const groups = structData.commands.filter(
-        (c: { kind: string }) => c.kind === 'addGroup',
-      ).length
-      await this.log(`Structure: ${pages} pages, ${groups} groups. Saving...`)
-      const saved = await this.saveCommands(
-        structData.commands,
-        structData.explanation,
-      )
-      if (!saved) {
+      const res = await fetch(`${this.editBase}/authoring/build-status`)
+      if (!res.ok) continue
+
+      const data = await res.json()
+      this.progressLog = data.log ?? []
+      this.render()
+      await new Promise((r) => setTimeout(r, 0))
+
+      if (data.status === 'done') {
+        this.running = false
+        this.innerHTML = `<div class="pipeline-panel">
+          <div class="pipeline-panel__header">
+            <span class="pipeline-panel__title">Pipeline</span>
+          </div>
+          <div class="pipeline-panel__body">
+            <p>Form generation complete.</p>
+            <ul class="pipeline-panel__log">${this.progressLog.map((m) => `<li>${m}</li>`).join('')}</ul>
+            <button type="button" class="flex-button" onclick="window.location.reload()">Reload to see form</button>
+          </div>
+        </div>`
+        return
+      }
+
+      if (data.status === 'error') {
+        this.error = data.error ?? 'Build failed'
         this.running = false
         this.render()
         return
       }
     }
-
-    // Step 3b: Create one group per page (pages were just saved, now we know real IDs)
-    // Use refreshState to get page IDs — the SHA was already updated by saveCommands above
-    await this.log('Creating groups for each page...')
-    const stageRes2 = await fetch(`${this.editBase}/authoring/stage`)
-    if (stageRes2.ok) {
-      const stageData = await stageRes2.json()
-      // Update SHA from this response (most recent server state)
-      if (stageData.currentSha) this.currentSha = stageData.currentSha
-      if (stageData.pages && stageData.pages.length > 0) {
-        const groupCommands = stageData.pages
-          .filter((p: { groups: string[] }) => p.groups.length === 0)
-          .map((p: { id: string; title: string }) => ({
-            kind: 'addGroup',
-            pageId: p.id,
-            title: p.title,
-          }))
-        if (groupCommands.length > 0) {
-          await this.log(`  Adding ${groupCommands.length} groups...`)
-          const saved = await this.saveCommands(
-            groupCommands,
-            'Add groups to pages',
-          )
-          if (!saved) {
-            this.running = false
-            this.render()
-            return
-          }
-        }
-      }
-    }
-
-    // Step 4: Generate fields for each uncovered section
-    await this.log('Generating fields for all sections...')
-    await this.refreshState()
-
-    const uncovered = (this.state?.groups ?? []).filter(
-      (g) => g.fieldCount === 0,
-    )
-    for (let i = 0; i < uncovered.length; i++) {
-      const group = uncovered[i]
-      await this.log(`  ${group.title} (${i + 1}/${uncovered.length})...`)
-
-      const res = await this.post('/authoring/generate-section', {
-        groupId: group.id,
-        groupTitle: group.title,
-      })
-
-      if (!res.ok) {
-        await this.log('    Failed, skipping.')
-        continue
-      }
-
-      const data = await res.json()
-      if (data.commands.length > 0) {
-        const fields = data.commands.filter(
-          (c: { kind: string }) => c.kind === 'addField',
-        ).length
-        await this.log(`    ${fields} fields. Saving...`)
-        const saved = await this.saveCommands(data.commands, data.explanation)
-        if (!saved) break
-      }
-    }
-
-    await this.log('Done! Reload page to see results.')
-    this.running = false
-    this.progressLog.push('')
-    this.innerHTML = `<div class="pipeline-panel">
-      <div class="pipeline-panel__header">
-        <span class="pipeline-panel__title">Pipeline</span>
-      </div>
-      <div class="pipeline-panel__body">
-        <p>Form generation complete.</p>
-        <ul class="pipeline-panel__log">${this.progressLog.map((m) => `<li>${m}</li>`).join('')}</ul>
-        <button type="button" class="flex-button" onclick="window.location.reload()">Reload to see form</button>
-      </div>
-    </div>`
   }
 
   private async post(path: string, body?: unknown): Promise<Response> {
@@ -266,56 +195,6 @@ class FlexPipelinePanel extends HTMLElement {
       opts.body = JSON.stringify(body)
     }
     return fetch(`${this.editBase}${path}`, opts)
-  }
-
-  private async saveCommands(
-    commands: unknown[],
-    explanation: string,
-  ): Promise<boolean> {
-    const parentSha = this.currentSha
-    const res = await fetch(`${this.editBase}/save`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        commands,
-        parentSha,
-        summary: explanation,
-        source: 'llm',
-      }),
-    })
-    if (res.ok) {
-      const data = await res.json()
-      if (data.sha) this.currentSha = data.sha
-      // Small delay to let git finalize the commit
-      await new Promise((r) => setTimeout(r, 100))
-      return true
-    }
-    const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
-    this.error = `Save failed: ${err.error ?? 'unknown'} (sha: ${parentSha.slice(0, 7)})`
-    await this.log(`    Save failed: ${err.error ?? 'unknown error'}`)
-    return false
-  }
-
-  private async refreshState() {
-    const res = await fetch(`${this.editBase}/authoring/stage`)
-    if (res.ok) {
-      const data = await res.json()
-      if (this.state) {
-        this.state = {
-          ...this.state,
-          stage: data.stage,
-          criteria: data.criteria,
-          groups: data.groups ?? this.state.groups,
-        }
-      }
-      if (data.currentSha) this.currentSha = data.currentSha
-    }
-  }
-
-  private async log(msg: string) {
-    this.progressLog.push(msg)
-    this.render()
-    await new Promise((r) => setTimeout(r, 0))
   }
 
   private async abort(res: Response, context: string) {
