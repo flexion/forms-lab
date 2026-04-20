@@ -134,28 +134,27 @@ class FlexPipelinePanel extends HTMLElement {
     this.running = true
     this.error = null
     this.progressLog = []
-    this.render()
 
     // Step 1: Analyze if needed
-    await this.refreshState()
-    if (this.state!.criteria.criteria.length === 0) {
-      await this.log('Analyzing policy corpus...')
+    if (this.state.criteria.criteria.length === 0) {
+      await this.log('Analyzing policy corpus (this takes ~15s)...')
       const res = await this.post('/authoring/analyze-criteria')
       if (!res.ok) return this.abort(res, 'Corpus analysis failed')
       await this.log('Criteria generated.')
+      await this.refreshState()
     }
 
     // Step 2: Approve if needed
-    await this.refreshState()
     if (!this.state!.criteria.approvedAt) {
       await this.log('Approving criteria...')
       const res = await this.post('/authoring/approve-criteria', {})
       if (!res.ok) return this.abort(res, 'Criteria approval failed')
       await this.log('Criteria approved.')
+      await this.refreshState()
     }
 
     // Step 3: Generate structure
-    await this.log('Generating page/group structure...')
+    await this.log('Generating page/group structure (~20s)...')
     const structRes = await this.post('/authoring/plan-structure')
     if (!structRes.ok)
       return this.abort(structRes, 'Structure generation failed')
