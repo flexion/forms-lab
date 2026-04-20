@@ -196,7 +196,7 @@ class FlexFormEditor extends HTMLElement {
     })
 
     // Event delegation for accept/reject buttons inside assistant messages
-    this.addEventListener('click', (e) => {
+    this.addEventListener('click', async (e) => {
       const target = e.target as HTMLElement
       const action = target.closest<HTMLElement>('[data-proposal-action]')
       if (action) {
@@ -214,6 +214,14 @@ class FlexFormEditor extends HTMLElement {
         return
       }
 
+      // Handle criterion clicks
+      const critBtn = target.closest<HTMLElement>('[data-criterion-index]')
+      if (critBtn) {
+        const index = Number(critBtn.dataset.criterionIndex)
+        this.showCriterion(index)
+        return
+      }
+
       const editorAction = target.closest<HTMLElement>('[data-action]')
       if (editorAction) {
         const a = editorAction.dataset.action
@@ -222,6 +230,67 @@ class FlexFormEditor extends HTMLElement {
         if (a === 'discard-staged') this.discardStaged()
         if (a === 'toggle-staged') this.toggleStagedPopover()
         if (a === 'back-to-form') this.hideReference()
+        if (a === 'save-criterion') {
+          const id = target.closest<HTMLElement>('[data-criterion-id]')?.dataset
+            .criterionId
+          if (!id) return
+          const textarea = this.querySelector<HTMLTextAreaElement>(
+            '.criterion-edit__textarea',
+          )
+          const input = this.querySelector<HTMLInputElement>(
+            '.criterion-edit__input',
+          )
+          if (!textarea || !input) return
+          const editBase = this.dataset.editBase ?? ''
+          await fetch(`${editBase}/authoring/update-criteria`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              approve: [],
+              reject: [],
+              add: [],
+              edit: [{ id, text: textarea.value, source: input.value }],
+            }),
+          })
+          window.location.reload()
+          return
+        }
+        if (a === 'delete-criterion') {
+          const id = target.closest<HTMLElement>('[data-criterion-id]')?.dataset
+            .criterionId
+          if (!id) return
+          const editBase = this.dataset.editBase ?? ''
+          await fetch(`${editBase}/authoring/update-criteria`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              approve: [],
+              reject: [id],
+              add: [],
+              edit: [],
+            }),
+          })
+          window.location.reload()
+          return
+        }
+        if (a === 'add-criterion') {
+          const text = prompt('Criterion text:')
+          if (!text) return
+          const source = prompt('Regulatory citation:') ?? ''
+          const editBase = this.dataset.editBase ?? ''
+          await fetch(`${editBase}/authoring/update-criteria`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              approve: [],
+              reject: [],
+              add: [{ text, source }],
+              edit: [],
+            }),
+          })
+          window.location.reload()
+          return
+        }
         return
       }
       // Background click: clear selection if target is not inside any editable element
@@ -577,6 +646,46 @@ class FlexFormEditor extends HTMLElement {
       <h2 class="reference-article__title">${escapeHtml(ref.source)}</h2>
       <p class="reference-article__meta">${escapeHtml(ref.title)}</p>
       <div class="reference-article__text">${escapeHtml(ref.text).replace(/\n/g, '<br>')}</div>
+    </article>`
+
+    editablePage.hidden = true
+    refView.hidden = false
+  }
+
+  private showCriterion(index: number) {
+    const script = this.querySelector<HTMLScriptElement>(
+      'script[data-criteria]',
+    )
+    if (!script) return
+    const criteria = JSON.parse(script.textContent ?? '[]') as Array<{
+      id: string
+      text: string
+      source: string
+      status: string
+    }>
+    const criterion = criteria[index]
+    if (!criterion) return
+
+    const editablePage = this.querySelector<HTMLElement>('flex-editable-page')
+    const refView = this.querySelector<HTMLElement>('.editor-reference-view')
+    const content = this.querySelector<HTMLElement>(
+      '.editor-reference-view__content',
+    )
+    if (!editablePage || !refView || !content) return
+
+    content.innerHTML = `<article class="reference-article">
+      <h2 class="reference-article__title">${escapeHtml(criterion.text)}</h2>
+      <p class="reference-article__meta">Source: ${escapeHtml(criterion.source)} &middot; Status: ${criterion.status}</p>
+      <div class="criterion-edit">
+        <label class="criterion-edit__label">Criterion text</label>
+        <textarea class="criterion-edit__textarea flex-textarea" rows="3" data-field="text">${escapeHtml(criterion.text)}</textarea>
+        <label class="criterion-edit__label">Regulatory citation</label>
+        <input class="criterion-edit__input flex-input" type="text" data-field="source" value="${escapeHtml(criterion.source)}" />
+        <div class="criterion-edit__actions">
+          <button type="button" class="flex-button" data-action="save-criterion" data-criterion-id="${criterion.id}">Save changes</button>
+          <button type="button" class="flex-button" data-variant="outline" data-action="delete-criterion" data-criterion-id="${criterion.id}">Delete</button>
+        </div>
+      </div>
     </article>`
 
     editablePage.hidden = true

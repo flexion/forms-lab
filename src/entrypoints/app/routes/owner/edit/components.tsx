@@ -147,6 +147,17 @@ const EditingShell: FC<{
         data-shaping-log
         dangerouslySetInnerHTML={{ __html: safeJsonForScript(log) }}
       />
+      {authoringCriteria && authoringCriteria.criteria.length > 0 ? (
+        <script
+          type="application/json"
+          data-criteria
+          dangerouslySetInnerHTML={{
+            __html: safeJsonForScript(
+              authoringCriteria.criteria.filter((c) => c.status !== 'rejected'),
+            ),
+          }}
+        />
+      ) : null}
       {authoringCorpus && authoringCorpus.length > 0 ? (
         <script
           type="application/json"
@@ -260,6 +271,44 @@ const EditingShell: FC<{
 
         <aside class="editor-structure">
           <flex-form-structure />
+          {authoringCriteria && authoringCriteria.criteria.length > 0 ? (
+            <div class="editor-criteria">
+              <details class="editor-criteria__details" open>
+                <summary class="editor-criteria__summary">
+                  Criteria (
+                  {
+                    authoringCriteria.criteria.filter(
+                      (c) => c.status !== 'rejected',
+                    ).length
+                  }
+                  )
+                </summary>
+                <ul class="editor-criteria__list">
+                  {authoringCriteria.criteria
+                    .filter((c) => c.status !== 'rejected')
+                    .map((c, i) => (
+                      <li class="editor-criteria__item" data-status={c.status}>
+                        <button
+                          type="button"
+                          class="editor-criteria__link"
+                          data-criterion-index={i}
+                          data-criterion-id={c.id}
+                        >
+                          {c.text}
+                        </button>
+                      </li>
+                    ))}
+                </ul>
+                <button
+                  type="button"
+                  class="editor-criteria__add"
+                  data-action="add-criterion"
+                >
+                  + Add criterion
+                </button>
+              </details>
+            </div>
+          ) : null}
           {authoringCorpus && authoringCorpus.length > 0 ? (
             <div class="editor-references">
               <details class="editor-references__details" open>

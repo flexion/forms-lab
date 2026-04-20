@@ -81,16 +81,7 @@ class FlexPipelinePanel extends HTMLElement {
         (c) => c.status === 'pending',
       ).length
       if (pending > 0) {
-        body += `<p>${criteria.criteria.length} criteria generated. Review below or continue building.</p>`
-        body += `<ul class="pipeline-panel__criteria-list">`
-        for (const c of criteria.criteria) {
-          if (c.status === 'rejected') continue
-          body += `<li class="pipeline-panel__criterion" data-status="${c.status}">
-            <span class="pipeline-panel__criterion-text">${c.text}</span>
-            <span class="pipeline-panel__criterion-source">${c.source}</span>
-          </li>`
-        }
-        body += `</ul>`
+        body += `<p>${criteria.criteria.length} criteria generated. Review in sidebar or continue.</p>`
         body += `<button type="button" class="flex-button" data-action="approve-and-build">Approve & Build Structure</button>`
       } else {
         body += `<p>Criteria approved. Ready to generate form structure.</p>`
