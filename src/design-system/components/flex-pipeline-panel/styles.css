@@ -46,7 +46,40 @@ flex-pipeline-panel {
 }
 
 .pipeline-panel__body {
+  font-size: var(--flex-text-sm);
+}
+
+.pipeline-panel__body p {
+  margin: 0 0 var(--flex-space-sm);
+  line-height: 1.4;
+}
+
+.pipeline-panel__progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-space-xs);
+}
+
+.pipeline-panel__log {
+  list-style: none;
+  padding: 0;
+  margin: var(--flex-space-xs) 0 0;
   font-size: var(--flex-text-xs);
+  color: var(--flex-color-text-muted);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.pipeline-panel__log li {
+  padding: 2px 0;
+}
+
+.pipeline-panel__dismiss {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-inline-start: var(--flex-space-xs);
+  font-size: var(--flex-text-sm);
 }
 
 .pipeline-panel__hint {

@@ -14,17 +14,11 @@ interface PipelineState {
   corpus: Array<{ source: string; title: string }>
 }
 
-interface PendingProposal {
-  commands: Array<{ kind: string; [key: string]: unknown }>
-  explanation: string
-  groupId?: string
-}
-
 class FlexPipelinePanel extends HTMLElement {
   private state: PipelineState | null = null
-  private loading = false
+  private running = false
+  private progressLog: string[] = []
   private error: string | null = null
-  private pendingProposal: PendingProposal | null = null
 
   connectedCallback() {
     const script = this.querySelector('script[data-pipeline-state]')
@@ -40,96 +34,78 @@ class FlexPipelinePanel extends HTMLElement {
       return
     }
 
-    const { stage, criteria, groups } = this.state
-
-    let body = ''
-
-    if (this.error) {
-      body += `<div class="pipeline-panel__error">${this.error}</div>`
-    }
-
-    if (this.pendingProposal) {
-      body += this.renderProposal(this.pendingProposal)
-    } else if (this.loading) {
-      body += `<div class="pipeline-panel__loading"><span class="pipeline-panel__spinner"></span> Analyzing corpus (this may take 15-30s)...</div>`
-    } else if (stage === 'criteria' && criteria.criteria.length === 0) {
-      const corpus = this.state.corpus ?? []
-      if (corpus.length > 0) {
-        body += `<details class="pipeline-panel__corpus" open>
-          <summary class="pipeline-panel__corpus-title">Policy Corpus (${corpus.length} sections)</summary>
-          <ul class="pipeline-panel__corpus-list">`
-        for (const c of corpus) {
-          body += `<li>${c.source}</li>`
-        }
-        body += `</ul></details>`
-      }
-      body += `<button type="button" class="flex-button" data-action="analyze-criteria">Analyze Corpus</button>
-        <p class="pipeline-panel__hint">Extract evaluation criteria from the policy sections above.</p>`
-    } else if (stage === 'criteria') {
-      const approvedCount = criteria.criteria.filter(
-        (c) => c.status === 'approved',
-      ).length
-      const totalCount = criteria.criteria.filter(
-        (c) => c.status !== 'rejected',
-      ).length
-      body += `<p class="pipeline-panel__hint">${approvedCount} of ${totalCount} criteria approved</p>`
-      body += `<ul class="pipeline-panel__criteria-list">`
-      for (const c of criteria.criteria) {
-        if (c.status === 'rejected') continue
-        body += `<li class="pipeline-panel__criterion" data-status="${c.status}">
-          <span class="pipeline-panel__criterion-text">${c.text}</span>
-          <span class="pipeline-panel__criterion-source">${c.source}</span>
-          ${
-            c.status === 'pending'
-              ? `<span class="pipeline-panel__criterion-actions">
-              <button type="button" data-action="approve-criterion" data-id="${c.id}" title="Approve">\u2713</button>
-              <button type="button" data-action="reject-criterion" data-id="${c.id}" title="Reject">\u2717</button>
-            </span>`
-              : ''
-          }
-        </li>`
-      }
-      body += `</ul>`
-      body += `<button type="button" class="flex-button" data-action="approve-all">Approve All & Continue</button>`
-    } else if (stage === 'structure') {
-      body += `<button type="button" class="flex-button" data-action="plan-structure">Generate Structure</button>
-        <p class="pipeline-panel__hint">Create pages and groups from approved criteria.</p>`
-    } else if (stage === 'sections') {
-      if (groups.length === 0) {
-        body += `<p class="pipeline-panel__hint">No groups yet. Generate structure first.</p>`
-      } else {
-        body += `<p class="pipeline-panel__hint">Generate fields per section:</p>`
-        body += `<ul class="pipeline-panel__section-list">`
-        for (const g of groups) {
-          const btnLabel =
-            g.fieldCount > 0
-              ? `Regenerate (${g.fieldCount} fields)`
-              : 'Generate fields'
-          body += `<li class="pipeline-panel__section-item">
-            <span>${g.title}</span>
-            <button type="button" class="flex-button" data-variant="outline" data-size="sm" data-action="generate-section" data-group-id="${g.id}" data-group-title="${g.title}">${btnLabel}</button>
-          </li>`
-        }
-        body += `</ul>`
-      }
-    }
-
-    const stageLabel = {
-      criteria: 'Criteria',
-      structure: 'Structure',
-      sections: 'Sections',
-      complete: 'Complete',
-    }[stage]
+    const { stage, criteria, corpus } = this.state
 
     const stages = ['criteria', 'structure', 'sections']
     const stageIndex = stages.indexOf(stage)
     const dots = stages
-      .map((_s, i) => {
-        const state =
-          i < stageIndex ? 'complete' : i === stageIndex ? 'current' : 'future'
-        return `<span class="pipeline-panel__dot" data-state="${state}"></span>`
-      })
+      .map(
+        (_, i) =>
+          `<span class="pipeline-panel__dot" data-state="${i < stageIndex ? 'complete' : i === stageIndex ? 'current' : 'future'}"></span>`,
+      )
       .join('')
+
+    const stageLabel =
+      {
+        criteria: 'Criteria',
+        structure: 'Structure',
+        sections: 'Sections',
+        complete: 'Complete',
+      }[stage] ?? stage
+
+    let body = ''
+
+    if (this.error) {
+      body += `<div class="pipeline-panel__error">${this.error}<button type="button" class="pipeline-panel__dismiss" data-action="dismiss-error">\u00d7</button></div>`
+    }
+
+    if (this.running) {
+      body += `<div class="pipeline-panel__progress">`
+      body += `<div class="pipeline-panel__loading"><span class="pipeline-panel__spinner"></span> Building form...</div>`
+      if (this.progressLog.length > 0) {
+        body += `<ul class="pipeline-panel__log">`
+        for (const msg of this.progressLog) {
+          body += `<li>${msg}</li>`
+        }
+        body += `</ul>`
+      }
+      body += `</div>`
+    } else if (stage === 'criteria' && criteria.criteria.length === 0) {
+      if (corpus.length > 0) {
+        body += `<p>Policy corpus loaded with <strong>${corpus.length} regulatory sections</strong> from 7 CFR 273 (SNAP).</p>`
+      }
+      body += `<button type="button" class="flex-button" data-action="build-form">Build Form from Corpus</button>
+        <p class="pipeline-panel__hint">Analyzes the policy corpus, generates evaluation criteria, and builds a complete form structure with fields.</p>`
+    } else if (stage === 'criteria' && criteria.criteria.length > 0) {
+      const pending = criteria.criteria.filter(
+        (c) => c.status === 'pending',
+      ).length
+      if (pending > 0) {
+        body += `<p>${criteria.criteria.length} criteria generated. Review below or continue building.</p>`
+        body += `<ul class="pipeline-panel__criteria-list">`
+        for (const c of criteria.criteria) {
+          if (c.status === 'rejected') continue
+          body += `<li class="pipeline-panel__criterion" data-status="${c.status}">
+            <span class="pipeline-panel__criterion-text">${c.text}</span>
+            <span class="pipeline-panel__criterion-source">${c.source}</span>
+          </li>`
+        }
+        body += `</ul>`
+        body += `<button type="button" class="flex-button" data-action="approve-and-build">Approve & Build Structure</button>`
+      } else {
+        body += `<p>Criteria approved. Ready to generate form structure.</p>`
+        body += `<button type="button" class="flex-button" data-action="build-structure">Build Structure & Fields</button>`
+      }
+    } else if (stage === 'structure' || stage === 'sections') {
+      const { groups } = this.state
+      const total = groups.length
+      const filled = groups.filter((g) => g.fieldCount > 0).length
+      if (total > 0) {
+        body += `<p>${filled} of ${total} sections have fields.</p>`
+      }
+      body += `<button type="button" class="flex-button" data-action="build-remaining">Generate Remaining Fields</button>
+        <p class="pipeline-panel__hint">Generates fields for all sections that don't have them yet.</p>`
+    }
 
     this.innerHTML = `<div class="pipeline-panel">
       <div class="pipeline-panel__header">
@@ -142,91 +118,46 @@ class FlexPipelinePanel extends HTMLElement {
     this.bindHandlers()
   }
 
-  private renderProposal(proposal: PendingProposal): string {
-    const commandsList = proposal.commands
-      .map((cmd) => `<li>${this.humanizeCommand(cmd)}</li>`)
-      .join('')
-    return `
-      <div class="pipeline-panel__proposal">
-        <p class="pipeline-panel__proposal-summary">${proposal.explanation}</p>
-        <ul class="pipeline-panel__proposal-commands">${commandsList}</ul>
-        <div class="pipeline-panel__proposal-actions">
-          <button type="button" class="flex-button" data-action="accept-proposal">Accept (${proposal.commands.length} changes)</button>
-          <button type="button" class="flex-button" data-variant="outline" data-action="discard-proposal">Discard</button>
-        </div>
-      </div>
-    `
-  }
-
-  private humanizeCommand(cmd: Record<string, unknown>): string {
-    switch (cmd.kind) {
-      case 'addPage':
-        return `Add page: "${cmd.title}"`
-      case 'addGroup':
-        return `Add group: "${cmd.title}"`
-      case 'addField':
-        return `Add field: "${cmd.label}" (${cmd.fieldType}${cmd.required ? ', required' : ''})`
-      case 'setFieldSensitivity':
-        return `Set sensitivity: ${cmd.level} on "${cmd.id}"`
-      case 'relabelField':
-        return `Relabel: "${cmd.label}"`
-      case 'setRequired':
-        return `Set ${cmd.required ? 'required' : 'optional'}: "${cmd.id}"`
-      case 'setFieldCondition':
-        return `Set condition on "${cmd.id}"`
-      default:
-        return `${cmd.kind}: ${JSON.stringify(cmd).slice(0, 60)}`
-    }
-  }
-
   private bindHandlers() {
     this.addEventListener('click', async (e) => {
       const target = e.target as HTMLElement
       const btn = target.closest<HTMLElement>('[data-action]')
-      if (!btn || this.loading) return
+      if (!btn || this.running) return
       const action = btn.dataset.action
 
-      if (action === 'analyze-criteria') await this.analyzeCriteria()
-      if (action === 'approve-all') await this.approveCriteria()
-      if (action === 'approve-criterion' && btn.dataset.id)
-        await this.approveSingleCriterion(btn.dataset.id)
-      if (action === 'reject-criterion' && btn.dataset.id)
-        await this.rejectSingleCriterion(btn.dataset.id)
-      if (action === 'plan-structure') await this.planStructure()
-      if (
-        action === 'generate-section' &&
-        btn.dataset.groupId &&
-        btn.dataset.groupTitle
-      )
-        await this.generateSection(btn.dataset.groupId, btn.dataset.groupTitle)
-      if (action === 'accept-proposal') this.acceptProposal()
-      if (action === 'discard-proposal') this.discardProposal()
+      if (action === 'build-form') await this.buildFullForm()
+      if (action === 'approve-and-build') await this.approveAndBuild()
+      if (action === 'build-structure') await this.buildStructureAndFields()
+      if (action === 'build-remaining') await this.buildRemainingFields()
+      if (action === 'dismiss-error') {
+        this.error = null
+        this.render()
+      }
     })
   }
 
-  private async analyzeCriteria() {
+  private async buildFullForm() {
     if (!this.state) return
-    this.setLoading(true)
-    const res = await fetch(
+    this.running = true
+    this.error = null
+    this.progressLog = ['Analyzing policy corpus...']
+    this.render()
+
+    // Stage 1: Analyze criteria
+    const analyzeRes = await fetch(
       `${this.state.editBase}/authoring/analyze-criteria`,
       { method: 'POST' },
     )
-    if (res.ok) {
-      this.error = null
-      await this.refreshState()
-    } else {
-      const data = await res
-        .json()
-        .catch(() => ({ error: `HTTP ${res.status}` }))
-      this.error = data.error ?? `Request failed (${res.status})`
-      this.setLoading(false)
+    if (!analyzeRes.ok) {
+      await this.handleError(analyzeRes, 'Corpus analysis failed')
+      return
     }
-  }
 
-  private async approveCriteria() {
-    if (!this.state) return
-    this.setLoading(true)
-    const res = await fetch(
+    this.progressLog.push('Criteria generated. Approving...')
+    this.render()
+
+    // Approve criteria
+    const approveRes = await fetch(
       `${this.state.editBase}/authoring/approve-criteria`,
       {
         method: 'POST',
@@ -234,120 +165,211 @@ class FlexPipelinePanel extends HTMLElement {
         body: '{}',
       },
     )
-    if (res.ok) await this.refreshState()
-    else this.showError(res)
-  }
-
-  private async approveSingleCriterion(id: string) {
-    if (!this.state) return
-    this.setLoading(true)
-    await fetch(`${this.state.editBase}/authoring/update-criteria`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ approve: [id], reject: [], add: [], edit: [] }),
-    })
-    await this.refreshState()
-  }
-
-  private async rejectSingleCriterion(id: string) {
-    if (!this.state) return
-    this.setLoading(true)
-    await fetch(`${this.state.editBase}/authoring/update-criteria`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ approve: [], reject: [id], add: [], edit: [] }),
-    })
-    await this.refreshState()
-  }
-
-  private async planStructure() {
-    if (!this.state) return
-    this.setLoading(true)
-    const res = await fetch(`${this.state.editBase}/authoring/plan-structure`, {
-      method: 'POST',
-    })
-    if (res.ok) {
-      const data = await res.json()
-      this.pendingProposal = {
-        commands: data.commands,
-        explanation: data.explanation,
-      }
-      this.loading = false
-      this.error = null
-      this.render()
-    } else {
-      await this.showError(res)
+    if (!approveRes.ok) {
+      await this.handleError(approveRes, 'Criteria approval failed')
+      return
     }
+
+    this.progressLog.push('Criteria approved. Generating structure...')
+    this.render()
+
+    await this.generateStructureAndSave()
   }
 
-  private async generateSection(groupId: string, groupTitle: string) {
+  private async approveAndBuild() {
     if (!this.state) return
-    this.setLoading(true)
-    const res = await fetch(
-      `${this.state.editBase}/authoring/generate-section`,
+    this.running = true
+    this.error = null
+    this.progressLog = ['Approving criteria...']
+    this.render()
+
+    const approveRes = await fetch(
+      `${this.state.editBase}/authoring/approve-criteria`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ groupId, groupTitle }),
+        body: '{}',
       },
     )
-    if (res.ok) {
-      const data = await res.json()
-      this.pendingProposal = {
-        commands: data.commands,
-        explanation: data.explanation,
-        groupId,
-      }
-      this.loading = false
-      this.error = null
-      this.render()
-    } else {
-      await this.showError(res)
+    if (!approveRes.ok) {
+      await this.handleError(approveRes, 'Criteria approval failed')
+      return
     }
+
+    this.progressLog.push('Generating structure...')
+    this.render()
+
+    await this.generateStructureAndSave()
   }
 
-  private acceptProposal() {
-    if (!this.pendingProposal) return
+  private async buildStructureAndFields() {
+    if (!this.state) return
+    this.running = true
+    this.error = null
+    this.progressLog = ['Generating structure...']
+    this.render()
+
+    await this.generateStructureAndSave()
+  }
+
+  private async buildRemainingFields() {
+    if (!this.state) return
+    this.running = true
+    this.error = null
+    this.progressLog = ['Generating fields for remaining sections...']
+    this.render()
+
+    await this.generateAllSections()
+  }
+
+  private async generateStructureAndSave() {
+    if (!this.state) return
+
+    const structRes = await fetch(
+      `${this.state.editBase}/authoring/plan-structure`,
+      { method: 'POST' },
+    )
+    if (!structRes.ok) {
+      await this.handleError(structRes, 'Structure generation failed')
+      return
+    }
+
+    const structData = await structRes.json()
+    const pageCount = structData.commands.filter(
+      (c: { kind: string }) => c.kind === 'addPage',
+    ).length
+    const groupCount = structData.commands.filter(
+      (c: { kind: string }) => c.kind === 'addGroup',
+    ).length
+
+    this.progressLog.push(
+      `Structure: ${pageCount} pages, ${groupCount} groups. Saving...`,
+    )
+    this.render()
+
+    // Auto-save structure commands
     this.dispatchEvent(
       new CustomEvent('formeditor:stage-batch', {
         detail: {
-          commands: this.pendingProposal.commands,
-          summary: this.pendingProposal.explanation,
+          commands: structData.commands,
+          summary: structData.explanation,
           source: 'llm',
         },
         bubbles: true,
         composed: true,
       }),
     )
-    this.pendingProposal = null
-    this.refreshState()
-  }
 
-  private discardProposal() {
-    this.pendingProposal = null
+    // Trigger save automatically
+    await this.autoSave()
+
+    this.progressLog.push('Structure saved. Generating fields...')
     this.render()
+
+    await this.generateAllSections()
   }
 
-  private async showError(res: Response) {
-    const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
-    this.error = data.error ?? `Request failed (${res.status})`
-    this.setLoading(false)
-  }
-
-  private async refreshState() {
+  private async generateAllSections() {
     if (!this.state) return
-    const res = await fetch(`${this.state.editBase}/authoring/stage`)
-    if (res.ok) {
-      const data = await res.json()
+
+    // Refresh state to get updated groups
+    const stageRes = await fetch(`${this.state.editBase}/authoring/stage`)
+    if (stageRes.ok) {
+      const data = await stageRes.json()
       this.state = { ...this.state, ...data }
     }
-    this.loading = false
-    this.error = null
+
+    const uncovered = this.state!.groups.filter((g) => g.fieldCount === 0)
+    if (uncovered.length === 0) {
+      this.progressLog.push('All sections already have fields.')
+      this.finish()
+      return
+    }
+
+    for (let i = 0; i < uncovered.length; i++) {
+      const group = uncovered[i]
+      this.progressLog.push(
+        `Generating fields for "${group.title}" (${i + 1}/${uncovered.length})...`,
+      )
+      this.render()
+
+      const res = await fetch(
+        `${this.state!.editBase}/authoring/generate-section`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            groupId: group.id,
+            groupTitle: group.title,
+          }),
+        },
+      )
+
+      if (!res.ok) {
+        const data = await res
+          .json()
+          .catch(() => ({ error: `HTTP ${res.status}` }))
+        this.progressLog.push(`Failed: ${data.error ?? 'Unknown error'}`)
+        continue
+      }
+
+      const sectionData = await res.json()
+      const fieldCount = sectionData.commands.filter(
+        (c: { kind: string }) => c.kind === 'addField',
+      ).length
+
+      this.progressLog.push(`  Added ${fieldCount} fields.`)
+      this.render()
+
+      // Stage and save each section's commands
+      this.dispatchEvent(
+        new CustomEvent('formeditor:stage-batch', {
+          detail: {
+            commands: sectionData.commands,
+            summary: sectionData.explanation,
+            source: 'llm',
+          },
+          bubbles: true,
+          composed: true,
+        }),
+      )
+
+      await this.autoSave()
+    }
+
+    this.finish()
+  }
+
+  private async autoSave() {
+    // Trigger the save button programmatically
+    const saveBtn = this.closest(
+      'flex-form-editor',
+    )?.querySelector<HTMLButtonElement>('[data-action="save-staged"]')
+    if (saveBtn && !saveBtn.hidden) {
+      saveBtn.click()
+      // Wait for save to complete
+      await new Promise((r) => setTimeout(r, 500))
+    }
+  }
+
+  private finish() {
+    this.progressLog.push('Done!')
+    this.running = false
+    this.render()
+    // Reload page to show final state
+    setTimeout(() => window.location.reload(), 1500)
+  }
+
+  private async handleError(res: Response, context: string) {
+    const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+    this.error = `${context}: ${data.error ?? 'Unknown error'}`
+    this.running = false
+    this.progressLog = []
     this.render()
   }
 
   private setLoading(loading: boolean) {
-    this.loading = loading
+    this.running = loading
     this.render()
   }
 }
