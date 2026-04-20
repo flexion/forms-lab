@@ -88,6 +88,18 @@ flex-pipeline-panel {
   font-size: var(--flex-text-sm);
 }
 
+.pipeline-panel__settings-link {
+  display: block;
+  margin-block-start: var(--flex-space-sm);
+  font-size: var(--flex-text-xs);
+  color: var(--flex-color-text-muted);
+  text-decoration: none;
+}
+
+.pipeline-panel__settings-link:hover {
+  color: var(--flex-color-accent);
+}
+
 .pipeline-panel__error {
   background: var(--flex-color-error-lighter, #f8d7da);
   color: var(--flex-color-error, #842029);
