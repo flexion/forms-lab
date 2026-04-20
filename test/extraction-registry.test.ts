@@ -16,9 +16,17 @@ describe('createExtractorRegistry', () => {
     expect(opus?.metadata.status).toBe('baseline')
   })
 
-  it('registers sonnet as production default', () => {
+  it('registers sonnet-hybrid-v1 as production default', () => {
     const registry = createExtractorRegistry()
-    expect(registry.getDefaultId()).toBe('sonnet')
+    expect(registry.getDefaultId()).toBe('sonnet-hybrid-v1')
+  })
+
+  it('sonnet remains registered but is no longer the default', () => {
+    const registry = createExtractorRegistry()
+    const strategies = registry.list()
+    const sonnet = strategies.find((s) => s.id === 'sonnet')
+    expect(sonnet).toBeDefined()
+    expect(sonnet?.metadata.status).toBe('experimental')
   })
 
   it('registers tool-use-sonnet as experimental', () => {
@@ -104,12 +112,12 @@ describe('createExtractorRegistry', () => {
     )
   })
 
-  it('registers sonnet-hybrid-v1 as experimental', () => {
+  it('registers sonnet-hybrid-v1 as production', () => {
     const registry = createExtractorRegistry()
     const strategies = registry.list()
     const hybrid = strategies.find((s) => s.id === 'sonnet-hybrid-v1')
     expect(hybrid).toBeDefined()
-    expect(hybrid!.metadata.status).toBe('experimental')
+    expect(hybrid!.metadata.status).toBe('production')
     expect(hybrid!.metadata.courseTopics).toContain('prompt-optimization')
     expect(hybrid!.metadata.courseTopics).toContain('few-shot')
     expect(hybrid!.metadata.catalogPath).toBe(
