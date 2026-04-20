@@ -3,6 +3,7 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { Layout } from '../../../../design-system/components/flex-layout'
 import type { UserStore } from '../../../../services/auth'
 import type { ProjectService } from '../../../../services/projects'
+import { resolveVariantBadge } from '../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../shared/base-path'
 import { AppError, UnauthenticatedError } from '../../../../shared/errors'
 import type { VariantRegistry } from '../../../../shared/strategy-registry'
@@ -34,14 +35,6 @@ export function createOwnerRoutes(
   extractionRegistry: VariantRegistry<unknown>,
 ): Hono {
   const app = new Hono()
-
-  function resolveExtractionBadge(variantId: string): {
-    variantId: string
-    variantName: string
-  } {
-    const meta = extractionRegistry.list().find((v) => v.id === variantId)
-    return { variantId, variantName: meta?.metadata.name ?? variantId }
-  }
 
   // -----------------------------------------------------------------------
   // 1. GET /:owner — Profile page
@@ -106,7 +99,10 @@ export function createOwnerRoutes(
         provenanceBranch,
       )
       const extractionBadge = extractionProvenance
-        ? resolveExtractionBadge(extractionProvenance.variantId)
+        ? resolveVariantBadge(
+            extractionRegistry,
+            extractionProvenance.variantId,
+          )
         : null
       return c.html(
         <Layout user={user}>
@@ -186,7 +182,10 @@ export function createOwnerRoutes(
         sha,
       )
       const extractionBadge = extractionProvenance
-        ? resolveExtractionBadge(extractionProvenance.variantId)
+        ? resolveVariantBadge(
+            extractionRegistry,
+            extractionProvenance.variantId,
+          )
         : null
       return c.html(
         <Layout user={user}>

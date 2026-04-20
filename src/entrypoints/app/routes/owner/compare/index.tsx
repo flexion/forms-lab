@@ -4,6 +4,7 @@ import { Layout } from '../../../../../design-system/components/flex-layout'
 import type { ReviewService } from '../../../../../services/forms'
 import { compareSpecs } from '../../../../../services/forms'
 import type { ProjectService } from '../../../../../services/projects'
+import { resolveShapingBadgeFromLog } from '../../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../../shared/base-path'
 import {
   AppError,
@@ -32,14 +33,6 @@ export function createCompareRoutes(
   shapingVariants?: StrategyListItem[],
 ): Hono {
   const app = new Hono()
-
-  function resolveShapingBadge(variantId: string): {
-    variantId: string
-    variantName: string
-  } {
-    const meta = shapingVariants?.find((v) => v.id === variantId)
-    return { variantId, variantName: meta?.metadata.name ?? variantId }
-  }
 
   app.get('/:owner/:slug/compare/:range', async (c) => {
     const { owner, slug, range } = c.req.param()
@@ -92,12 +85,9 @@ export function createCompareRoutes(
     )
 
     // Derive the shaping badge from the most recent LLM entry with provenance.
-    const lastLlmEntry = [...log]
-      .reverse()
-      .find((e) => e.source === 'llm' && e.variantId)
-    const shapingBadge = lastLlmEntry?.variantId
-      ? resolveShapingBadge(lastLlmEntry.variantId)
-      : null
+    const shapingBadge = resolveShapingBadgeFromLog(log, {
+      list: () => shapingVariants ?? [],
+    })
 
     return c.html(
       <Layout

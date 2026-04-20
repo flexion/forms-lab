@@ -2,6 +2,7 @@
 // External imports (other services, entrypoints, design-system) MUST come
 // through this file. Enforced by test/architecture/dependency-rule.test.ts.
 
+export { resolveShapingBadgeFromLog, resolveVariantBadge } from './badge'
 export {
   appendProvenance,
   type ProvenanceEntry,
