@@ -14,7 +14,8 @@
     "build:css": "bun run scripts/build-css.ts",
     "build:components": "bun run scripts/build-components.ts",
     "build": "bun run build:css && bun run build:components",
-    "check": "bunx @biomejs/biome check . && bun run --no-warnings tsc --noEmit && bun test",
+    "check": "bunx @biomejs/biome check . && bun run --no-warnings tsc --noEmit && bun test && bun run validate:catalog",
+    "validate:catalog": "bun run scripts/validate-catalog-links.ts",
     "lint:css": "bunx stylelint 'src/**/*.css'",
     "smoke": "bun run scripts/smoke-check.ts",
     "setup-hooks": "bash scripts/install-hooks.sh"
