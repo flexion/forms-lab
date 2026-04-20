@@ -118,8 +118,11 @@ export function createEditRoutes(
       // Detect authoring stage for RAG authoring pipeline projects
       let authoringStage: AuthoringStage | null = null
       let authoringCriteria: CriteriaSet | null = null
-      let authoringCorpus: Array<{ source: string; title: string }> | null =
-        null
+      let authoringCorpus: Array<{
+        source: string
+        title: string
+        text: string
+      }> | null = null
       try {
         const critBuf = await service.getFileContent(
           owner,
@@ -144,6 +147,7 @@ export function createEditRoutes(
         authoringCorpus = corpus.map((c) => ({
           source: c.source,
           title: c.title,
+          text: c.text,
         }))
       } catch {
         // Not an authoring project — no stage indicator shown

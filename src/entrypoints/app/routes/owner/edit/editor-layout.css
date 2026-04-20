@@ -132,6 +132,44 @@
   max-inline-size: var(--flex-content-max-width);
 }
 
+.editor-reference-view {
+  padding: var(--flex-space-lg);
+  max-width: 60rem;
+}
+
+.editor-reference-view__back {
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+  text-decoration: none;
+  margin-block-end: var(--flex-space-md);
+  display: inline-block;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.editor-reference-view__back:hover {
+  color: var(--flex-color-text);
+}
+
+.reference-article__title {
+  font-size: var(--flex-text-uswds);
+  margin: 0 0 var(--flex-space-xs);
+}
+
+.reference-article__meta {
+  font-size: var(--flex-text-sm);
+  color: var(--flex-color-text-muted);
+  margin: 0 0 var(--flex-space-md);
+}
+
+.reference-article__text {
+  font-size: var(--flex-text-sm);
+  line-height: 1.6;
+  color: var(--flex-color-text);
+}
+
 
 /* --- Assistant sidebar (sticky right) --- */
 

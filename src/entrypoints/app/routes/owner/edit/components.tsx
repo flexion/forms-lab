@@ -41,7 +41,11 @@ export type EditorPageProps =
       shapingBadge?: { variantId: string; variantName: string } | null
       authoringStage?: AuthoringStage | null
       authoringCriteria?: CriteriaSet | null
-      authoringCorpus?: Array<{ source: string; title: string }> | null
+      authoringCorpus?: Array<{
+        source: string
+        title: string
+        text: string
+      }> | null
     }
 
 export const EditorPage: FC<EditorPageProps> = (props) => {
@@ -91,7 +95,11 @@ const EditingShell: FC<{
   shapingBadge?: { variantId: string; variantName: string } | null
   authoringStage?: AuthoringStage | null
   authoringCriteria?: CriteriaSet | null
-  authoringCorpus?: Array<{ source: string; title: string }> | null
+  authoringCorpus?: Array<{
+    source: string
+    title: string
+    text: string
+  }> | null
 }> = ({
   view,
   owner,
@@ -139,6 +147,15 @@ const EditingShell: FC<{
         data-shaping-log
         dangerouslySetInnerHTML={{ __html: safeJsonForScript(log) }}
       />
+      {authoringCorpus && authoringCorpus.length > 0 ? (
+        <script
+          type="application/json"
+          data-corpus
+          dangerouslySetInnerHTML={{
+            __html: safeJsonForScript(authoringCorpus),
+          }}
+        />
+      ) : null}
 
       <div class="editor-layout">
         <div class="editor-breadcrumb">
@@ -269,6 +286,16 @@ const EditingShell: FC<{
 
         <div class="editor-preview">
           <flex-editable-page />
+          <div class="editor-reference-view" hidden>
+            <button
+              type="button"
+              class="editor-reference-view__back"
+              data-action="back-to-form"
+            >
+              &larr; Back to form
+            </button>
+            <div class="editor-reference-view__content"></div>
+          </div>
         </div>
 
         <aside class="editor-assistant">
