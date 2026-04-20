@@ -54,9 +54,13 @@ export function createAuthoringPipeline(
 
   return {
     async analyzeCriteria(corpus: PolicyChunk[]): Promise<Criterion[]> {
+      // 16k output covers a comprehensive corpus (~20 chunks) producing
+      // 30-50 criteria with citation + text. The original 4k limit
+      // truncated mid-criterion once the SNAP corpus grew past ~10
+      // chunks.
       const response = await generateObject({
         model: bedrock(config.criteria.modelId),
-        maxOutputTokens: 4096,
+        maxOutputTokens: 16384,
         prompt: buildCriteriaPrompt(corpus),
         schema: z.object({ criteria: z.array(criterionSchema) }),
       })
