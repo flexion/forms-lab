@@ -134,6 +134,8 @@ class FlexPipelinePanel extends HTMLElement {
     this.running = true
     this.error = null
     this.progressLog = []
+    this.render()
+    await new Promise((r) => setTimeout(r, 0))
 
     // Step 1: Analyze if needed
     if (this.state.criteria.criteria.length === 0) {
@@ -168,7 +170,16 @@ class FlexPipelinePanel extends HTMLElement {
         (c: { kind: string }) => c.kind === 'addGroup',
       ).length
       await this.log(`Structure: ${pages} pages, ${groups} groups. Saving...`)
-      await this.saveCommands(structData.commands, structData.explanation)
+      const saved = await this.saveCommands(
+        structData.commands,
+        structData.explanation,
+      )
+      if (!saved) {
+        this.error = 'Failed to save structure. Try reloading the page.'
+        this.running = false
+        this.render()
+        return
+      }
     }
 
     // Step 4: Generate fields for each uncovered section
@@ -198,12 +209,14 @@ class FlexPipelinePanel extends HTMLElement {
           (c: { kind: string }) => c.kind === 'addField',
         ).length
         await this.log(`    ${fields} fields. Saving...`)
-        await this.saveCommands(data.commands, data.explanation)
+        const saved = await this.saveCommands(data.commands, data.explanation)
+        if (!saved) break
       }
     }
 
-    await this.log('Done! Reloading...')
-    setTimeout(() => window.location.reload(), 800)
+    await this.log('Done! Reload page to see results.')
+    this.running = false
+    this.render()
   }
 
   private async post(path: string, body?: unknown): Promise<Response> {
@@ -218,7 +231,7 @@ class FlexPipelinePanel extends HTMLElement {
   private async saveCommands(
     commands: unknown[],
     explanation: string,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const res = await fetch(`${this.editBase}/save`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -232,7 +245,11 @@ class FlexPipelinePanel extends HTMLElement {
     if (res.ok) {
       const data = await res.json()
       this.currentSha = data.sha
+      return true
     }
+    const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+    await this.log(`    Save failed: ${err.error ?? 'unknown error'}`)
+    return false
   }
 
   private async refreshState() {
