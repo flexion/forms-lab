@@ -205,6 +205,15 @@ class FlexFormEditor extends HTMLElement {
         if (actionType === 'reject') this.handleReject()
         return
       }
+
+      // Handle reference clicks
+      const refBtn = target.closest<HTMLElement>('[data-reference-index]')
+      if (refBtn) {
+        const index = Number(refBtn.dataset.referenceIndex)
+        this.showReference(index)
+        return
+      }
+
       const editorAction = target.closest<HTMLElement>('[data-action]')
       if (editorAction) {
         const a = editorAction.dataset.action
@@ -212,6 +221,7 @@ class FlexFormEditor extends HTMLElement {
         if (a === 'save-staged') this.saveStaged()
         if (a === 'discard-staged') this.discardStaged()
         if (a === 'toggle-staged') this.toggleStagedPopover()
+        if (a === 'back-to-form') this.hideReference()
         return
       }
       // Background click: clear selection if target is not inside any editable element
@@ -543,6 +553,43 @@ class FlexFormEditor extends HTMLElement {
     const base = this.dataset.previewBase ?? ''
     const ts = Date.now()
     iframe.src = `${base}?page=${this.selectedPageIndex}&t=${ts}`
+  }
+
+  private showReference(index: number) {
+    const script = this.querySelector<HTMLScriptElement>('script[data-corpus]')
+    if (!script) return
+    const corpus = JSON.parse(script.textContent ?? '[]') as Array<{
+      source: string
+      title: string
+      text: string
+    }>
+    const ref = corpus[index]
+    if (!ref) return
+
+    const editablePage = this.querySelector<HTMLElement>('flex-editable-page')
+    const refView = this.querySelector<HTMLElement>('.editor-reference-view')
+    const content = this.querySelector<HTMLElement>(
+      '.editor-reference-view__content',
+    )
+    if (!editablePage || !refView || !content) return
+
+    content.innerHTML = `<article class="reference-article">
+      <h2 class="reference-article__title">${escapeHtml(ref.source)}</h2>
+      <p class="reference-article__meta">${escapeHtml(ref.title)}</p>
+      <div class="reference-article__text">${escapeHtml(ref.text).replace(/\n/g, '<br>')}</div>
+    </article>`
+
+    editablePage.hidden = true
+    refView.hidden = false
+  }
+
+  private hideReference() {
+    const editablePage = this.querySelector<HTMLElement>('flex-editable-page')
+    const refView = this.querySelector<HTMLElement>('.editor-reference-view')
+    if (!editablePage || !refView) return
+
+    editablePage.hidden = false
+    refView.hidden = true
   }
 }
 
