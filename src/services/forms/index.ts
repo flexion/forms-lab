@@ -36,6 +36,7 @@ export { commandSchema } from './shaping/commands'
 export { executeBatch } from './shaping/executor'
 export { composeExplanation, humanize } from './shaping/humanize'
 export { createShapingRegistry } from './shaping/registry'
+export { validateCommands, withValidationRetry } from './shaping/retry'
 export { commandTools } from './shaping/tools'
 export type { FormShaper } from './shaping/types'
 // Storage & Sessions
