@@ -1,0 +1,48 @@
+{
+  "kind": "pdf-field-extraction",
+  "implementation": "nova-lite",
+  "specVersion": "2026-04-18",
+  "status": "current",
+  "timestamp": "2026-04-20T16:29:57.598Z",
+  "model": "Amazon Nova Lite",
+  "summary": {
+    "fieldRecall": 0.5625,
+    "fieldPrecision": 0.6428571428571429,
+    "typeAccuracy": 1,
+    "groupAccuracy": 0.4444444444444444,
+    "sensitivityAccuracy": 0.4444444444444444
+  },
+  "cases": [
+    {
+      "fixture": "w-9",
+      "metrics": {
+        "fieldRecall": 0.5625,
+        "fieldPrecision": 0.6428571428571429,
+        "typeAccuracy": 1,
+        "groupAccuracy": 0.4444444444444444,
+        "sensitivityAccuracy": 0.4444444444444444
+      },
+      "details": {
+        "missed": [
+          "entityIndividualName",
+          "llcTaxClassification",
+          "otherClassification",
+          "hasForeignPartnersOwnersBeneficiaries",
+          "fatcaExemptionCode",
+          "requesterNameAddress",
+          "accountNumbers"
+        ],
+        "extra": [
+          "nameOfIndividualOrEntity",
+          "exemptionFromFATCA",
+          "listAccountNumber",
+          "taxpayerIdentificationNumber",
+          "certificationStatement"
+        ],
+        "totalGroundTruth": 16,
+        "totalExtracted": 14,
+        "totalMatched": 9
+      }
+    }
+  ]
+}
