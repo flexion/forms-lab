@@ -15,7 +15,6 @@ Forms Lab demonstrates the foundation. Here's where it goes from here:
 - **Conversational form filling** — Carlos completes complex sections through dialogue with an LLM agent (Story #9)
 - **LLM-assisted refinement** — Maya uses conversation to iteratively improve the data model (Story #8)
 - **Advanced evaluation** — LLM-as-Judge scoring for richer, semantic evaluation of extraction quality
-- **PDF generation** — Complete the round-trip: PDF in, web form, PDF out with filled data (Story #7)
 
 ## Open Questions
 
