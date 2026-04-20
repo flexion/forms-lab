@@ -119,7 +119,7 @@ export function createEditRoutes(
       let authoringCriteria: CriteriaSet | null = null
       try {
         const critBuf = await service.getFileContent(
-          '',
+          owner,
           slug,
           branch,
           'forms/default/criteria.json',
