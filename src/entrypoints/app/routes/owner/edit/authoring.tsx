@@ -21,12 +21,12 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
   const app = new Hono()
 
   async function loadCriteria(
-    service: ProjectService,
+    owner: string,
     slug: string,
     branch: string,
   ): Promise<CriteriaSet> {
     const buf = await service.getFileContent(
-      '',
+      owner,
       slug,
       branch,
       'forms/default/criteria.json',
@@ -114,7 +114,7 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
         }
 
         const body = (await c.req.json()) as { edits: CriteriaEdits }
-        const current = await loadCriteria(service, slug, branch)
+        const current = await loadCriteria(owner, slug, branch)
         const updated = mergeCriteriaEdits(current, body.edits)
 
         // Persist to git
@@ -160,7 +160,7 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
           return c.json({ error: 'not allowed' }, 403)
         }
 
-        const current = await loadCriteria(service, slug, branch)
+        const current = await loadCriteria(owner, slug, branch)
         const frozen = approveCriteriaSet(current, user.login)
 
         // Persist to git
@@ -204,7 +204,7 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
         return c.json({ error: 'not allowed' }, 403)
       }
 
-      const criteria = await loadCriteria(service, slug, branch)
+      const criteria = await loadCriteria(owner, slug, branch)
       const corpus = await loadPolicyCorpus({ slug: 'snap-wisconsin' })
 
       const state =
@@ -260,7 +260,7 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
           groupId: string
           groupTitle: string
         }
-        const criteriaSet = await loadCriteria(service, slug, branch)
+        const criteriaSet = await loadCriteria(owner, slug, branch)
         const corpus = await loadPolicyCorpus({ slug: 'snap-wisconsin' })
 
         const pipeline = createAuthoringPipeline()
@@ -307,7 +307,7 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
         }
 
         const body = (await c.req.json()) as { groupId: string }
-        const criteriaSet = await loadCriteria(service, slug, branch)
+        const criteriaSet = await loadCriteria(owner, slug, branch)
         const corpus = await loadPolicyCorpus({ slug: 'snap-wisconsin' })
 
         const state = {
@@ -362,7 +362,7 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
       }
 
       const criteriaBuf = await service.getFileContent(
-        '',
+        owner,
         slug,
         branch,
         'forms/default/criteria.json',
