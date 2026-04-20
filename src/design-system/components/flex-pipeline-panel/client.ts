@@ -175,7 +175,6 @@ class FlexPipelinePanel extends HTMLElement {
         structData.explanation,
       )
       if (!saved) {
-        this.error = 'Failed to save structure. Try reloading the page.'
         this.running = false
         this.render()
         return
@@ -242,12 +241,13 @@ class FlexPipelinePanel extends HTMLElement {
     commands: unknown[],
     explanation: string,
   ): Promise<boolean> {
+    const parentSha = this.currentSha
     const res = await fetch(`${this.editBase}/save`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         commands,
-        parentSha: this.currentSha,
+        parentSha,
         summary: explanation,
         source: 'llm',
       }),
@@ -258,6 +258,7 @@ class FlexPipelinePanel extends HTMLElement {
       return true
     }
     const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+    this.error = `Save failed: ${err.error ?? 'unknown'} (sha: ${parentSha.slice(0, 7)})`
     await this.log(`    Save failed: ${err.error ?? 'unknown error'}`)
     return false
   }
@@ -266,7 +267,14 @@ class FlexPipelinePanel extends HTMLElement {
     const res = await fetch(`${this.editBase}/authoring/stage`)
     if (res.ok) {
       const data = await res.json()
-      if (this.state) this.state = { ...this.state, ...data }
+      if (this.state) {
+        this.state = {
+          ...this.state,
+          stage: data.stage,
+          criteria: data.criteria,
+          groups: data.groups ?? this.state.groups,
+        }
+      }
       if (data.currentSha) this.currentSha = data.currentSha
     }
   }
