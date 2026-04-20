@@ -30,7 +30,6 @@ import {
 import {
   createFormProjectRepo,
   createProjectService,
-  type ProjectIndex,
 } from '../../services/projects'
 import { createCacheStore, createProjectStore } from '../../services/storage'
 import {
@@ -337,10 +336,8 @@ app.post('/new', async (c) => {
   try {
     // Parse form body - corpus, fixture, or file upload
     const contentType = c.req.header('content-type') ?? ''
-    let pdf: Buffer
-    let name: string
-    let isCorpusOnly = false
 
+    // Handle multipart/form-data (PDF upload)
     if (contentType.includes('multipart/form-data')) {
       const body = await c.req.parseBody()
       const file = body.pdf
@@ -355,46 +352,44 @@ app.post('/new', async (c) => {
           400,
         )
       }
-      pdf = Buffer.from(await file.arrayBuffer())
-      name = file.name.replace(/\.pdf$/i, '')
-    } else {
-      const body = await c.req.parseBody()
-      const corpusId = String(body.corpus ?? '').trim()
-
-      if (corpusId) {
-        // Corpus-only project (no PDF extraction)
-        isCorpusOnly = true
-        name = 'Wisconsin FoodShare SNAP Application'
-      } else {
-        // Fixture-based project
-        const fixtureSlug = body.fixture as string
-        const fixture = getFixture(fixtureSlug)
-        if (!fixture) {
-          return c.html(
-            <Layout currentPath="/new" user={user}>
-              <NewProjectPage
-                fixtures={demoFixtures}
-                extractionVariant={extractionVariant}
-              />
-            </Layout>,
-            400,
-          )
-        }
-        pdf = loadFixturePdf(fixture)
-        name = fixture.name
-      }
+      const pdf = Buffer.from(await file.arrayBuffer())
+      const name = file.name.replace(/\.pdf$/i, '')
+      const project = await projectService.createProject(name, pdf, user)
+      return c.redirect(
+        resolveUrl(`/${user.login}/${project.slug}/edit/import`),
+      )
     }
 
-    let project: ProjectIndex
-    if (isCorpusOnly) {
-      project = await projectService.createEmptyProject(name, user)
-    } else {
-      if (!pdf) {
-        throw new Error('PDF buffer is required for non-corpus projects')
-      }
-      project = await projectService.createProject(name, pdf, user)
+    // Handle application/x-www-form-urlencoded (corpus or fixture)
+    const body = await c.req.parseBody()
+    const corpusId = String(body.corpus ?? '').trim()
+
+    if (corpusId) {
+      // Corpus-only project (no PDF extraction)
+      const name = 'Wisconsin FoodShare SNAP Application'
+      const project = await projectService.createEmptyProject(name, user)
+      return c.redirect(
+        resolveUrl(`/${user.login}/${project.slug}/edit/import`),
+      )
     }
 
+    // Fixture-based project
+    const fixtureSlug = body.fixture as string
+    const fixture = getFixture(fixtureSlug)
+    if (!fixture) {
+      return c.html(
+        <Layout currentPath="/new" user={user}>
+          <NewProjectPage
+            fixtures={demoFixtures}
+            extractionVariant={extractionVariant}
+          />
+        </Layout>,
+        400,
+      )
+    }
+    const pdf = loadFixturePdf(fixture)
+    const name = fixture.name
+    const project = await projectService.createProject(name, pdf, user)
     return c.redirect(resolveUrl(`/${user.login}/${project.slug}/edit/import`))
   } catch (err) {
     console.error('Error creating project:', err)
