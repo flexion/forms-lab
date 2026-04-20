@@ -220,11 +220,6 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
             }
           : null
 
-      const cacheKey = `structure:${slug}:${branch}`
-      if (llmCache.has(cacheKey)) {
-        return c.json(llmCache.get(cacheKey))
-      }
-
       const pipeline = createAuthoringPipeline()
       const result = await pipeline.planStructure(
         criteria.criteria,
@@ -232,12 +227,10 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
         state,
       )
 
-      const response = {
+      return c.json({
         commands: result.commands,
         explanation: result.explanation,
-      }
-      llmCache.set(cacheKey, response)
-      return c.json(response)
+      })
     } catch (err) {
       console.error('[authoring/plan-structure]', err)
       return c.json(
