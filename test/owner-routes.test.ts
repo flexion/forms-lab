@@ -171,20 +171,39 @@ describe('GET /:owner (profile)', () => {
     expect(html).toContain('No projects yet')
   })
 
-  it('returns 404 for nonexistent user', async () => {
+  it('returns a friendly empty profile for unknown usernames', async () => {
+    // Profile records are per-deployment; showing 404 for a username
+    // that exists on another branch but not this one breaks shareable
+    // URLs. Fall back to a minimal profile view instead.
     const { app } = createTestApp()
     const res = await app.request('/nonexistent')
-    expect(res.status).toBe(404)
+    expect(res.status).toBe(200)
     const html = await res.text()
-    expect(html).toContain('User not found')
+    expect(html).toContain('nonexistent')
+    expect(html).toContain('No projects yet')
+    expect(html).not.toContain('User not found')
   })
 
-  it('shows New Project button when viewing own profile', async () => {
+  it('shows New Project button on own profile only when projects exist', async () => {
     const { app } = createTestApp(danielUser)
     const res = await app.request('/danielnaab')
     expect(res.status).toBe(200)
     const html = await res.text()
-    expect(html).toContain('New Project')
+    // Empty state: header button hidden, inline CTA shown instead.
+    expect(html).not.toMatch(
+      /<a[^>]*class="flex-button"[^>]*>\s*New Project\s*</,
+    )
+    expect(html).toContain('Create your first project')
+  })
+
+  it('shows header New Project button when own profile has projects', async () => {
+    const { app, service, projectStore } = createTestApp(danielUser)
+    await createReadyProject(service, projectStore)
+    const res = await app.request('/danielnaab')
+    expect(res.status).toBe(200)
+    const html = await res.text()
+    expect(html).toMatch(/<a[^>]*class="flex-button"[^>]*>\s*New Project\s*</)
+    expect(html).not.toContain('Create your first project')
   })
 
   it('hides New Project button when viewing another user profile', async () => {

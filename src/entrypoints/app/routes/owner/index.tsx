@@ -44,15 +44,11 @@ export function createOwnerRoutes(
     const projects = service.listUserProjects(owner)
     const profile = userStore.get(owner)
 
-    if (!profile && projects.length === 0) {
-      return c.html(
-        <Layout user={c.get('user')}>
-          <ErrorPage statusCode={404} message="User not found" />
-        </Layout>,
-        404,
-      )
-    }
-
+    // Profile records are stored per deployment (each branch app has its
+    // own SQLite), so a user who has only signed in on a different branch
+    // won't have a record here. Rather than 404 on a valid-looking
+    // username — which breaks shareable profile URLs across branches —
+    // fall back to a minimal profile using the login as the display name.
     const displayProfile = profile ?? {
       login: owner,
       name: owner,
