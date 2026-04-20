@@ -514,7 +514,6 @@ export function createAuthoringRoutes(
           : null
 
       // Resolve variant per-user preference
-      const variantId = SONNET_MODEL_ID
       const pipeline = resolveAuthoringPipeline(
         SONNET_MODEL_ID,
         SONNET_MODEL_ID,

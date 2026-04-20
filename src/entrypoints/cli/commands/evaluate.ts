@@ -420,6 +420,11 @@ export async function evaluate(
       return errors > 0 ? 1 : 0
     }
 
+    case 'authoring': {
+      const { evaluateAuthoring } = await import('./evaluate-authoring')
+      return evaluateAuthoring(args.slice(1))
+    }
+
     default:
       printUsage()
       return subcommand ? 1 : 0
