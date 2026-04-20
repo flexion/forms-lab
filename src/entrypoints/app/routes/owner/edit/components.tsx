@@ -41,6 +41,7 @@ export type EditorPageProps =
       shapingBadge?: { variantId: string; variantName: string } | null
       authoringStage?: AuthoringStage | null
       authoringCriteria?: CriteriaSet | null
+      authoringCorpus?: Array<{ source: string; title: string }> | null
     }
 
 export const EditorPage: FC<EditorPageProps> = (props) => {
@@ -90,6 +91,7 @@ const EditingShell: FC<{
   shapingBadge?: { variantId: string; variantName: string } | null
   authoringStage?: AuthoringStage | null
   authoringCriteria?: CriteriaSet | null
+  authoringCorpus?: Array<{ source: string; title: string }> | null
 }> = ({
   view,
   owner,
@@ -100,6 +102,7 @@ const EditingShell: FC<{
   shapingBadge,
   authoringStage,
   authoringCriteria,
+  authoringCorpus,
 }) => {
   const { project, formSpec, spec } = view
   const editBase = `/${owner}/${project.slug}/edit/${branch}`
@@ -267,6 +270,7 @@ const EditingShell: FC<{
                           fieldCount: g.requirements.length,
                         }))
                       : [],
+                    corpus: authoringCorpus ?? [],
                   }),
                 }}
               />
