@@ -452,14 +452,13 @@ export function createProjectService(
         )
 
         // Mark project as ready (no extraction needed)
-        store.update(project.id, { status: 'ready' })
+        const updatedProject = store.update(project.id, { status: 'ready' })
+        return updatedProject
       } catch (err) {
         // Git init/commit failed; clean up the SQLite row
         store.delete(project.id)
         throw err
       }
-
-      return project
     },
 
     async getProject(

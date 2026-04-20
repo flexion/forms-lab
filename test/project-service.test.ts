@@ -202,6 +202,101 @@ describe('ProjectService', () => {
     })
   })
 
+  describe('createEmptyProject', () => {
+    it('creates a project with empty specs on import branch', async () => {
+      const project = await service.createEmptyProject(
+        'Wisconsin SNAP Application',
+        alice,
+      )
+      expect(project.name).toBe('Wisconsin SNAP Application')
+      expect(project.slug).toBe('wisconsin-snap-application')
+      expect(project.createdBy).toBe('alice')
+      expect(project.status).toBe('ready')
+
+      // Verify project metadata was committed to main
+      const projectJson = await repo.readFile(
+        project.slug,
+        'main',
+        'project.json',
+      )
+      expect(projectJson).not.toBeNull()
+      // biome-ignore lint/style/noNonNullAssertion: guarded by expect above
+      const meta = JSON.parse(projectJson!.toString())
+      expect(meta.name).toBe('Wisconsin SNAP Application')
+      expect(meta.slug).toBe('wisconsin-snap-application')
+      expect(meta.createdBy).toBe('alice')
+
+      // Verify empty specs exist on import branch
+      const specBuf = await repo.readFile(
+        project.slug,
+        'import',
+        'forms/default/spec.json',
+      )
+      expect(specBuf).not.toBeNull()
+      // biome-ignore lint/style/noNonNullAssertion: guarded by expect above
+      const spec = JSON.parse(specBuf!.toString())
+      expect(spec.title).toBe('Wisconsin SNAP Application')
+      expect(spec.groups).toEqual([])
+
+      const formBuf = await repo.readFile(
+        project.slug,
+        'import',
+        'forms/default/form.json',
+      )
+      expect(formBuf).not.toBeNull()
+      // biome-ignore lint/style/noNonNullAssertion: guarded by expect above
+      const formSpec = JSON.parse(formBuf!.toString())
+      expect(formSpec.title).toBe('Wisconsin SNAP Application')
+      expect(formSpec.pages).toEqual([])
+      expect(formSpec.createdAt).toBeTruthy()
+      expect(formSpec.updatedAt).toBeTruthy()
+
+      // Verify main branch does NOT have specs yet
+      const mainSpecBuf = await repo.readFile(
+        project.slug,
+        'main',
+        'forms/default/spec.json',
+      )
+      expect(mainSpecBuf).toBeNull()
+    })
+
+    it('throws UnauthenticatedError when user is null', async () => {
+      expect(
+        service.createEmptyProject(
+          'Test',
+          null as unknown as SessionUser,
+        ),
+      ).rejects.toBeInstanceOf(UnauthenticatedError)
+    })
+
+    it('handles duplicate slugs', async () => {
+      await service.createEmptyProject('My SNAP Form', alice)
+      const second = await service.createEmptyProject('My SNAP Form', alice)
+      expect(second.slug).toBe('my-snap-form-2')
+    })
+
+    it('rolls back SQLite row when git operations fail', async () => {
+      const failingRepo = {
+        ...repo,
+        init: async () => {
+          throw new Error('simulated git failure')
+        },
+      }
+      const failingService = createProjectService(
+        store,
+        failingRepo,
+        stubExtraction(),
+      )
+
+      expect(
+        failingService.createEmptyProject('Broken Project', alice),
+      ).rejects.toThrow('simulated git failure')
+
+      expect(store.getBySlug('broken-project')).toBeNull()
+      expect(store.list('alice')).toHaveLength(0)
+    })
+  })
+
   describe('deleteProject', () => {
     it('allows owner to delete', async () => {
       const project = await service.createProject(
