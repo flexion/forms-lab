@@ -1,10 +1,6 @@
 // Storage service interface types.
 
-import type {
-  NewProjectIndex,
-  ProjectIndex,
-  ProjectStatus,
-} from '../../types/models'
+import type { NewProjectIndex, ProjectIndex } from '../../types/models'
 
 export interface CacheEntry {
   key: string
