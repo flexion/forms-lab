@@ -6,7 +6,10 @@ import type { FormFieldRequirement } from '../../../../../design-system/componen
 import { FormPageView } from '../../../../../design-system/components/flex-form-page'
 import { VariantBadge } from '../../../../../design-system/components/flex-variant-badge'
 import type { SessionUser } from '../../../../../services/auth'
-import type { AuthoringStage } from '../../../../../services/form-authoring'
+import type {
+  AuthoringStage,
+  CriteriaSet,
+} from '../../../../../services/form-authoring'
 import type {
   BranchEntry,
   ProjectView,
@@ -38,6 +41,7 @@ export type EditorPageProps =
       changed: { dataSpec: boolean; formSpec: boolean }
       shapingBadge?: { variantId: string; variantName: string } | null
       authoringStage?: AuthoringStage | null
+      authoringCriteria?: CriteriaSet | null
     }
 
 export const EditorPage: FC<EditorPageProps> = (props) => {
@@ -86,6 +90,7 @@ const EditingShell: FC<{
   changed: { dataSpec: boolean; formSpec: boolean }
   shapingBadge?: { variantId: string; variantName: string } | null
   authoringStage?: AuthoringStage | null
+  authoringCriteria?: CriteriaSet | null
 }> = ({
   view,
   owner,
@@ -95,6 +100,7 @@ const EditingShell: FC<{
   changed,
   shapingBadge,
   authoringStage,
+  authoringCriteria,
 }) => {
   const { project, formSpec, spec } = view
   const editBase = `/${owner}/${project.slug}/edit/${branch}`
@@ -247,6 +253,31 @@ const EditingShell: FC<{
         </div>
 
         <aside class="editor-assistant">
+          {authoringStage ? (
+            <flex-pipeline-panel>
+              <script
+                type="application/json"
+                data-pipeline-state
+                dangerouslySetInnerHTML={{
+                  __html: safeJsonForScript({
+                    stage: authoringStage,
+                    criteria: authoringCriteria ?? {
+                      criteria: [],
+                      approvedAt: null,
+                    },
+                    editBase: resolveUrl(editBase),
+                    groups: spec
+                      ? spec.groups.map((g) => ({
+                          id: g.id,
+                          title: g.title,
+                          fieldCount: g.requirements.length,
+                        }))
+                      : [],
+                  }),
+                }}
+              />
+            </flex-pipeline-panel>
+          ) : null}
           <flex-assistant />
         </aside>
       </div>
