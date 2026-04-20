@@ -136,10 +136,9 @@ class FlexPipelinePanel extends HTMLElement {
     this.progressLog = []
     this.render()
 
-    const { criteria } = this.state
-
     // Step 1: Analyze if needed
-    if (criteria.criteria.length === 0) {
+    await this.refreshState()
+    if (this.state!.criteria.criteria.length === 0) {
       this.log('Analyzing policy corpus...')
       const res = await this.post('/authoring/analyze-criteria')
       if (!res.ok) return this.abort(res, 'Corpus analysis failed')
@@ -147,7 +146,8 @@ class FlexPipelinePanel extends HTMLElement {
     }
 
     // Step 2: Approve if needed
-    if (!this.state.criteria.approvedAt) {
+    await this.refreshState()
+    if (!this.state!.criteria.approvedAt) {
       this.log('Approving criteria...')
       const res = await this.post('/authoring/approve-criteria', {})
       if (!res.ok) return this.abort(res, 'Criteria approval failed')
