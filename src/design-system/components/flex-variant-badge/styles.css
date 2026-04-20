@@ -1,0 +1,49 @@
+/**
+ * flex-variant-badge — inline provenance badge for LLM-produced content.
+ *
+ * Tells the viewer which variant produced what they're looking at
+ * (e.g. "Extracted by Claude Sonnet 4 (hybrid prompt)") with a link
+ * back to the variant picker.
+ */
+
+@layer block {
+  .variant-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--flex-space-2xs);
+    padding: var(--flex-space-2xs) var(--flex-space-sm);
+    font-size: var(--flex-text-sm);
+    line-height: 1.4;
+    color: var(--flex-color-base-darker);
+    background: var(--flex-color-base-lightest);
+    border: 1px solid var(--flex-color-border);
+    border-radius: var(--flex-radius-pill);
+  }
+
+  .variant-badge a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+  }
+
+  .variant-badge a:hover,
+  .variant-badge a:focus {
+    text-decoration-style: solid;
+  }
+
+  /* Per-task accent so viewers can visually distinguish which stage
+   * produced the content (extraction vs shaping vs filling, etc.).
+   * Falls through to the default surface tint when data-task is
+   * missing. */
+  .variant-badge[data-task='extraction'] {
+    background: var(--flex-color-primary-lighter);
+  }
+
+  .variant-badge[data-task='shaping'] {
+    background: var(--flex-color-accent-warm-lighter);
+  }
+
+  .variant-badge[data-task='filling'] {
+    background: var(--flex-color-accent-cool-lighter);
+  }
+}

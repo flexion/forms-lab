@@ -91,6 +91,8 @@
 @import "../../../design-system/components/flex-spec-diff-browser/styles.css" layer(block);
 @import "../../../design-system/components/flex-pipeline-panel/styles.css" layer(block);
 @import "../../../design-system/components/flex-sidebar-tabs/styles.css" layer(block);
+@import "../../../design-system/components/flex-chat-panel/styles.css" layer(block);
+@import "../../../design-system/components/flex-variant-badge/styles.css" layer(block);
 @import "../routes/projects/styles.css" layer(block);
 @import "../routes/owner/edit/styles.css" layer(block);
 @import "../routes/owner/edit/editor-layout.css" layer(block);
