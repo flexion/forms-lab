@@ -416,7 +416,10 @@ class FlexFormEditor extends HTMLElement {
         })
       | null
     if (popover && this.canonicalState) {
-      popover.update(this.buffer, this.canonicalState as unknown as any)
+      popover.update(
+        this.buffer,
+        this.canonicalState as unknown as ProjectStateClient,
+      )
       if (!has) popover.hidden = true
     }
   }

@@ -74,6 +74,7 @@ export const ComboBox: FC<ComboBoxProps> = ({
             <li
               key={opt.value}
               class="flex-combo-box__option"
+              role="option"
               tabindex={-1}
               data-value={opt.value}
               id={`${id}-opt-${opt.value}`}
