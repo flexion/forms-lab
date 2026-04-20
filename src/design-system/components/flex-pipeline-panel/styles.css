@@ -156,3 +156,39 @@ flex-pipeline-panel {
   font-weight: 600;
   font-size: var(--flex-text-sm);
 }
+
+.pipeline-panel__proposal {
+  border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-md);
+  padding: var(--flex-space-sm);
+  margin-block-start: var(--flex-space-xs);
+}
+
+.pipeline-panel__proposal-summary {
+  font-weight: 500;
+  margin: 0 0 var(--flex-space-xs);
+}
+
+.pipeline-panel__proposal-commands {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--flex-space-sm);
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: var(--flex-text-xs);
+  color: var(--flex-color-text-muted);
+}
+
+.pipeline-panel__proposal-commands li {
+  padding: 2px 0;
+  border-bottom: 1px solid var(--flex-gray-5);
+}
+
+.pipeline-panel__proposal-commands li:last-child {
+  border-bottom: none;
+}
+
+.pipeline-panel__proposal-actions {
+  display: flex;
+  gap: var(--flex-space-xs);
+}

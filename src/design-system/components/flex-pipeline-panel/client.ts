@@ -13,10 +13,17 @@ interface PipelineState {
   groups: Array<{ id: string; title: string; fieldCount: number }>
 }
 
+interface PendingProposal {
+  commands: Array<{ kind: string; [key: string]: unknown }>
+  explanation: string
+  groupId?: string
+}
+
 class FlexPipelinePanel extends HTMLElement {
   private state: PipelineState | null = null
   private loading = false
   private error: string | null = null
+  private pendingProposal: PendingProposal | null = null
 
   connectedCallback() {
     const script = this.querySelector('script[data-pipeline-state]')
@@ -40,12 +47,21 @@ class FlexPipelinePanel extends HTMLElement {
       body += `<div class="pipeline-panel__error">${this.error}</div>`
     }
 
-    if (this.loading) {
+    if (this.pendingProposal) {
+      body += this.renderProposal(this.pendingProposal)
+    } else if (this.loading) {
       body += `<div class="pipeline-panel__loading"><span class="pipeline-panel__spinner"></span> Working...</div>`
     } else if (stage === 'criteria' && criteria.criteria.length === 0) {
       body += `<button type="button" class="flex-button" data-action="analyze-criteria">Analyze Corpus</button>
         <p class="pipeline-panel__hint">Extract evaluation criteria from the SNAP policy corpus.</p>`
     } else if (stage === 'criteria') {
+      const approvedCount = criteria.criteria.filter(
+        (c) => c.status === 'approved',
+      ).length
+      const totalCount = criteria.criteria.filter(
+        (c) => c.status !== 'rejected',
+      ).length
+      body += `<p class="pipeline-panel__hint">${approvedCount} of ${totalCount} criteria approved</p>`
       body += `<ul class="pipeline-panel__criteria-list">`
       for (const c of criteria.criteria) {
         if (c.status === 'rejected') continue
@@ -74,11 +90,13 @@ class FlexPipelinePanel extends HTMLElement {
         body += `<p class="pipeline-panel__hint">Generate fields per section:</p>`
         body += `<ul class="pipeline-panel__section-list">`
         for (const g of groups) {
-          const label =
-            g.fieldCount > 0 ? `${g.title} (${g.fieldCount})` : g.title
+          const btnLabel =
+            g.fieldCount > 0
+              ? `Regenerate (${g.fieldCount} fields)`
+              : 'Generate fields'
           body += `<li class="pipeline-panel__section-item">
-            <span>${label}</span>
-            <button type="button" class="flex-button" data-variant="outline" data-size="sm" data-action="generate-section" data-group-id="${g.id}" data-group-title="${g.title}">${g.fieldCount > 0 ? 'Regenerate' : 'Generate'}</button>
+            <span>${g.title}</span>
+            <button type="button" class="flex-button" data-variant="outline" data-size="sm" data-action="generate-section" data-group-id="${g.id}" data-group-title="${g.title}">${btnLabel}</button>
           </li>`
         }
         body += `</ul>`
@@ -102,6 +120,43 @@ class FlexPipelinePanel extends HTMLElement {
     this.bindHandlers()
   }
 
+  private renderProposal(proposal: PendingProposal): string {
+    const commandsList = proposal.commands
+      .map((cmd) => `<li>${this.humanizeCommand(cmd)}</li>`)
+      .join('')
+    return `
+      <div class="pipeline-panel__proposal">
+        <p class="pipeline-panel__proposal-summary">${proposal.explanation}</p>
+        <ul class="pipeline-panel__proposal-commands">${commandsList}</ul>
+        <div class="pipeline-panel__proposal-actions">
+          <button type="button" class="flex-button" data-action="accept-proposal">Accept (${proposal.commands.length} changes)</button>
+          <button type="button" class="flex-button" data-variant="outline" data-action="discard-proposal">Discard</button>
+        </div>
+      </div>
+    `
+  }
+
+  private humanizeCommand(cmd: Record<string, unknown>): string {
+    switch (cmd.kind) {
+      case 'addPage':
+        return `Add page: "${cmd.title}"`
+      case 'addGroup':
+        return `Add group: "${cmd.title}"`
+      case 'addField':
+        return `Add field: "${cmd.label}" (${cmd.fieldType}${cmd.required ? ', required' : ''})`
+      case 'setFieldSensitivity':
+        return `Set sensitivity: ${cmd.level} on "${cmd.id}"`
+      case 'relabelField':
+        return `Relabel: "${cmd.label}"`
+      case 'setRequired':
+        return `Set ${cmd.required ? 'required' : 'optional'}: "${cmd.id}"`
+      case 'setFieldCondition':
+        return `Set condition on "${cmd.id}"`
+      default:
+        return `${cmd.kind}: ${JSON.stringify(cmd).slice(0, 60)}`
+    }
+  }
+
   private bindHandlers() {
     this.addEventListener('click', async (e) => {
       const target = e.target as HTMLElement
@@ -122,6 +177,8 @@ class FlexPipelinePanel extends HTMLElement {
         btn.dataset.groupTitle
       )
         await this.generateSection(btn.dataset.groupId, btn.dataset.groupTitle)
+      if (action === 'accept-proposal') this.acceptProposal()
+      if (action === 'discard-proposal') this.discardProposal()
     })
   }
 
@@ -189,19 +246,13 @@ class FlexPipelinePanel extends HTMLElement {
     })
     if (res.ok) {
       const data = await res.json()
-      this.dispatchEvent(
-        new CustomEvent('formeditor:stage-batch', {
-          detail: {
-            commands: data.commands,
-            summary: data.explanation,
-            source: 'llm',
-          },
-          bubbles: true,
-          composed: true,
-        }),
-      )
+      this.pendingProposal = {
+        commands: data.commands,
+        explanation: data.explanation,
+      }
+      this.loading = false
       this.error = null
-      await this.refreshState()
+      this.render()
     } else {
       await this.showError(res)
     }
@@ -220,22 +271,39 @@ class FlexPipelinePanel extends HTMLElement {
     )
     if (res.ok) {
       const data = await res.json()
-      this.dispatchEvent(
-        new CustomEvent('formeditor:stage-batch', {
-          detail: {
-            commands: data.commands,
-            summary: data.explanation,
-            source: 'llm',
-          },
-          bubbles: true,
-          composed: true,
-        }),
-      )
+      this.pendingProposal = {
+        commands: data.commands,
+        explanation: data.explanation,
+        groupId,
+      }
+      this.loading = false
       this.error = null
-      await this.refreshState()
+      this.render()
     } else {
       await this.showError(res)
     }
+  }
+
+  private acceptProposal() {
+    if (!this.pendingProposal) return
+    this.dispatchEvent(
+      new CustomEvent('formeditor:stage-batch', {
+        detail: {
+          commands: this.pendingProposal.commands,
+          summary: this.pendingProposal.explanation,
+          source: 'llm',
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    )
+    this.pendingProposal = null
+    this.refreshState()
+  }
+
+  private discardProposal() {
+    this.pendingProposal = null
+    this.render()
   }
 
   private async showError(res: Response) {
