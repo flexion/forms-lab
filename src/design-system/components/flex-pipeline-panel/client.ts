@@ -139,23 +139,23 @@ class FlexPipelinePanel extends HTMLElement {
     // Step 1: Analyze if needed
     await this.refreshState()
     if (this.state!.criteria.criteria.length === 0) {
-      this.log('Analyzing policy corpus...')
+      await this.log('Analyzing policy corpus...')
       const res = await this.post('/authoring/analyze-criteria')
       if (!res.ok) return this.abort(res, 'Corpus analysis failed')
-      this.log('Criteria generated.')
+      await this.log('Criteria generated.')
     }
 
     // Step 2: Approve if needed
     await this.refreshState()
     if (!this.state!.criteria.approvedAt) {
-      this.log('Approving criteria...')
+      await this.log('Approving criteria...')
       const res = await this.post('/authoring/approve-criteria', {})
       if (!res.ok) return this.abort(res, 'Criteria approval failed')
-      this.log('Criteria approved.')
+      await this.log('Criteria approved.')
     }
 
     // Step 3: Generate structure
-    this.log('Generating page/group structure...')
+    await this.log('Generating page/group structure...')
     const structRes = await this.post('/authoring/plan-structure')
     if (!structRes.ok)
       return this.abort(structRes, 'Structure generation failed')
@@ -168,12 +168,12 @@ class FlexPipelinePanel extends HTMLElement {
       const groups = structData.commands.filter(
         (c: { kind: string }) => c.kind === 'addGroup',
       ).length
-      this.log(`Structure: ${pages} pages, ${groups} groups. Saving...`)
+      await this.log(`Structure: ${pages} pages, ${groups} groups. Saving...`)
       await this.saveCommands(structData.commands, structData.explanation)
     }
 
     // Step 4: Generate fields for each uncovered section
-    this.log('Generating fields for all sections...')
+    await this.log('Generating fields for all sections...')
     await this.refreshState()
 
     const uncovered = (this.state?.groups ?? []).filter(
@@ -181,7 +181,7 @@ class FlexPipelinePanel extends HTMLElement {
     )
     for (let i = 0; i < uncovered.length; i++) {
       const group = uncovered[i]
-      this.log(`  ${group.title} (${i + 1}/${uncovered.length})...`)
+      await this.log(`  ${group.title} (${i + 1}/${uncovered.length})...`)
 
       const res = await this.post('/authoring/generate-section', {
         groupId: group.id,
@@ -189,7 +189,7 @@ class FlexPipelinePanel extends HTMLElement {
       })
 
       if (!res.ok) {
-        this.log('    Failed, skipping.')
+        await this.log('    Failed, skipping.')
         continue
       }
 
@@ -198,12 +198,12 @@ class FlexPipelinePanel extends HTMLElement {
         const fields = data.commands.filter(
           (c: { kind: string }) => c.kind === 'addField',
         ).length
-        this.log(`    ${fields} fields. Saving...`)
+        await this.log(`    ${fields} fields. Saving...`)
         await this.saveCommands(data.commands, data.explanation)
       }
     }
 
-    this.log('Done! Reloading...')
+    await this.log('Done! Reloading...')
     setTimeout(() => window.location.reload(), 800)
   }
 
@@ -244,9 +244,10 @@ class FlexPipelinePanel extends HTMLElement {
     }
   }
 
-  private log(msg: string) {
+  private async log(msg: string) {
     this.progressLog.push(msg)
     this.render()
+    await new Promise((r) => setTimeout(r, 0))
   }
 
   private async abort(res: Response, context: string) {
