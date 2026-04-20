@@ -38,18 +38,20 @@ describe('full pipeline round-trip', () => {
   test('stage 1 -> 2 -> 3 -> 4 produces commands and eval results', async () => {
     // Stage 1: criteria
     mockGenerateObject.mockResolvedValueOnce({
-      object: [
-        {
-          id: 'exp-screening',
-          text: 'Must screen for expedited processing',
-          source: '7 CFR 273.2(i)',
-        },
-        {
-          id: 'household-comp',
-          text: 'Must collect household composition',
-          source: '7 CFR 273.1(b)',
-        },
-      ],
+      object: {
+        criteria: [
+          {
+            id: 'exp-screening',
+            text: 'Must screen for expedited processing',
+            source: '7 CFR 273.2(i)',
+          },
+          {
+            id: 'household-comp',
+            text: 'Must collect household composition',
+            source: '7 CFR 273.1(b)',
+          },
+        ],
+      },
     })
 
     const pipeline = createAuthoringPipeline()
@@ -114,13 +116,15 @@ describe('full pipeline round-trip', () => {
 
     // Stage 4: evaluation
     mockGenerateObject.mockResolvedValueOnce({
-      object: [
-        {
-          criterionId: 'exp-screening',
-          pass: true,
-          explanation: 'Screening question addresses expedited criteria.',
-        },
-      ],
+      object: {
+        results: [
+          {
+            criterionId: 'exp-screening',
+            pass: true,
+            explanation: 'Screening question addresses expedited criteria.',
+          },
+        ],
+      },
     })
 
     const evaluator = createAuthoringEvaluator()

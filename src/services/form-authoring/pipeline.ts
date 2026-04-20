@@ -58,10 +58,10 @@ export function createAuthoringPipeline(
         model: bedrock(config.criteria.modelId),
         maxOutputTokens: 4096,
         prompt: buildCriteriaPrompt(corpus),
-        schema: z.array(criterionSchema),
+        schema: z.object({ criteria: z.array(criterionSchema) }),
       })
 
-      return response.object.map((c) => ({
+      return response.object.criteria.map((c) => ({
         ...c,
         status: 'pending' as const,
       }))

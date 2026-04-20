@@ -42,13 +42,15 @@ describe('analyzeCriteria', () => {
 
   test('returns criteria from LLM response', async () => {
     mockGenerateObject.mockResolvedValueOnce({
-      object: [
-        {
-          id: 'exp-screening',
-          text: 'Must screen for expedited processing',
-          source: '7 CFR 273.2(i)',
-        },
-      ],
+      object: {
+        criteria: [
+          {
+            id: 'exp-screening',
+            text: 'Must screen for expedited processing',
+            source: '7 CFR 273.2(i)',
+          },
+        ],
+      },
     })
 
     const pipeline = createAuthoringPipeline()
