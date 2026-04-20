@@ -216,7 +216,17 @@ class FlexPipelinePanel extends HTMLElement {
 
     await this.log('Done! Reload page to see results.')
     this.running = false
-    this.render()
+    this.progressLog.push('')
+    this.innerHTML = `<div class="pipeline-panel">
+      <div class="pipeline-panel__header">
+        <span class="pipeline-panel__title">Pipeline</span>
+      </div>
+      <div class="pipeline-panel__body">
+        <p>Form generation complete.</p>
+        <ul class="pipeline-panel__log">${this.progressLog.map((m) => `<li>${m}</li>`).join('')}</ul>
+        <button type="button" class="flex-button" onclick="window.location.reload()">Reload to see form</button>
+      </div>
+    </div>`
   }
 
   private async post(path: string, body?: unknown): Promise<Response> {
