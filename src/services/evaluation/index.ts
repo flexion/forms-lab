@@ -2,12 +2,16 @@
 // External imports (other services, entrypoints, design-system) MUST come
 // through this file. Enforced by test/architecture/dependency-rule.test.ts.
 
+// Fixtures
 export {
   fixtureProjectState,
   shapingIntentFixtures,
 } from './fixtures/shaping-intents'
+// Harness
 export { runEvaluation } from './harness'
+// Judges
 export { createBedrockFieldJudge } from './judge'
+// Kinds
 export {
   type ExtractionOutput,
   pdfFieldExtractionKind,
