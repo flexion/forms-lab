@@ -28,6 +28,7 @@ data/
 
 # Worktrees
 .worktrees/
+.claude/worktrees/
 
 # Nix
 .direnv/
