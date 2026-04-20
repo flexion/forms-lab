@@ -7,23 +7,20 @@ import { FormPageView } from '../../../../design-system/components/flex-form-pag
 import { FormReview } from '../../../../design-system/components/flex-form-review'
 import { Layout } from '../../../../design-system/components/flex-layout'
 import { PreviewBanner } from '../../../../design-system/components/flex-preview-banner'
-import type {
-  DataCollectionSpec,
-  RequirementGroup,
-} from '../../../../services/data-collection'
+import type { DataCollectionSpec } from '../../../../services/data-collection'
 import type { FieldMapping } from '../../../../services/form-documents'
 import { fillPdf } from '../../../../services/form-documents'
 import type {
   ConversationGateway,
-  FieldEntry,
   FillingAgent,
   FormSessionGateway,
   FormSpec,
   SubmissionGateway,
 } from '../../../../services/forms'
 import {
+  buildReviewPages,
   countVisiblePages,
-  evaluateCondition,
+  filterVisibleGroups,
   findNextPage,
   findPrevPage,
   resolveFormSpec,
@@ -84,39 +81,6 @@ interface FormRouterDeps {
 }
 
 const MAIN_BRANCH = 'main'
-
-function filterVisibleGroups(
-  groups: RequirementGroup[],
-  fields: Record<string, FieldEntry>,
-) {
-  return groups
-    .filter((g) => evaluateCondition(g.condition, fields))
-    .map((g) => ({
-      ...g,
-      requirements: g.requirements.filter((r) =>
-        evaluateCondition(r.condition, fields),
-      ),
-    }))
-}
-
-function buildReviewPages(
-  resolved: ReturnType<typeof resolveFormSpec>,
-  fields: Record<string, FieldEntry>,
-) {
-  return resolved.pages
-    .filter((rp) => evaluateCondition(rp.page.condition, fields))
-    .map((rp) => ({
-      id: rp.page.id,
-      title: rp.page.title,
-      groups: filterVisibleGroups(rp.groups, fields).map((g) => ({
-        id: g.id,
-        requirements: g.requirements.map((r) => ({
-          fieldName: r.fieldName,
-          label: r.label,
-        })),
-      })),
-    }))
-}
 
 /**
  * Produce the path prefix for form URLs on a given branch. Main uses the
