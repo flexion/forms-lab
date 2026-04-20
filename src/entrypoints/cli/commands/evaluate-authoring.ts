@@ -23,6 +23,13 @@ interface VariantConfig {
   id: string
   name: string
   config: AuthoringStageConfig
+  /**
+   * When false, the pipeline runs without the policy corpus — an
+   * empty PolicyChunk[] is passed to every stage. Use this to isolate
+   * the contribution of RAG for a given model configuration.
+   * Defaults to true.
+   */
+  useCorpus?: boolean
 }
 
 const VARIANTS: VariantConfig[] = [
@@ -35,6 +42,17 @@ const VARIANTS: VariantConfig[] = [
       generation: { modelId: SONNET_MODEL_ID },
       evaluation: { modelId: HAIKU_MODEL_ID },
     },
+  },
+  {
+    id: 'no-rag-sonnet',
+    name: 'All Sonnet 4, no corpus (RAG ablation)',
+    config: {
+      criteria: { modelId: SONNET_MODEL_ID },
+      structure: { modelId: SONNET_MODEL_ID },
+      generation: { modelId: SONNET_MODEL_ID },
+      evaluation: { modelId: HAIKU_MODEL_ID },
+    },
+    useCorpus: false,
   },
   {
     id: 'haiku-generation',
@@ -188,8 +206,15 @@ async function runSingleVariant(variant: VariantConfig): Promise<EvalResult> {
   const branch = 'import'
 
   // Run the pipeline
-  const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
+  const useCorpus = variant.useCorpus !== false
+  const corpus = useCorpus ? loadPolicyCorpus({ slug: 'snap-wisconsin' }) : []
   const pipeline = createAuthoringPipeline(variant.config)
+
+  console.log(
+    useCorpus
+      ? `  Corpus: ${corpus.length} chunks`
+      : '  Corpus: DISABLED (RAG ablation — empty PolicyChunk[])',
+  )
 
   // Step 1: Criteria
   console.log('  Analyzing criteria...')
