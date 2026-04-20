@@ -56,14 +56,17 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
           return c.json({ error: 'not allowed' }, 403)
         }
 
-        // Load corpus
-        const corpus = await loadPolicyCorpus({ slug: 'snap-wisconsin' })
+        // Return cached criteria if they already exist
+        const existing = await loadCriteria(owner, slug, branch)
+        if (existing.criteria.length > 0) {
+          return c.json({ criteria: existing })
+        }
 
-        // Create pipeline and analyze
+        // Load corpus and analyze
+        const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
         const pipeline = createAuthoringPipeline()
         const criteriaList = await pipeline.analyzeCriteria(corpus)
 
-        // Wrap in CriteriaSet structure
         const criteria: CriteriaSet = {
           criteria: criteriaList,
           approvedAt: null,
@@ -113,9 +116,9 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
           return c.json({ error: 'not allowed' }, 403)
         }
 
-        const body = (await c.req.json()) as { edits: CriteriaEdits }
+        const body = (await c.req.json()) as CriteriaEdits
         const current = await loadCriteria(owner, slug, branch)
-        const updated = mergeCriteriaEdits(current, body.edits)
+        const updated = mergeCriteriaEdits(current, body)
 
         // Persist to git
         const content = serializeCriteriaSet(updated)
