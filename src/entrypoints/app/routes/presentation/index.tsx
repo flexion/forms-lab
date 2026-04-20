@@ -393,13 +393,11 @@ presentation.get('/', (c) => {
             <h2>Key Findings</h2>
             <ol>
               <li>
-                <strong>
-                  A hybrid prompt wins PDF extraction.
-                </strong>{' '}
+                <strong>A hybrid prompt wins PDF extraction.</strong>
                 <em>
-                  Hybrid prompt = one short instruction + one inline
-                  exemplar + temperature=0.
-                </em>{' '}
+                  Hybrid prompt = one short instruction + one inline exemplar
+                  + temperature=0.
+                </em>
                 It Pareto-dominates verbose-guideline and 3-exemplar few-shot
                 variants: 73% recall, 99% precision, +24pp sensitivity over
                 baseline Sonnet at the same cost.
@@ -407,7 +405,7 @@ presentation.get('/', (c) => {
               <li>
                 <strong>
                   RAG is load-bearing for policy-grounded form authoring.
-                </strong>{' '}
+                </strong>
                 Given a 21-chunk SNAP regulatory corpus, the pipeline produces
                 a 14-page form tracking the ground truth's topical structure.
                 With an empty corpus it produces a single skeletal page. Recall
@@ -426,8 +424,7 @@ presentation.get('/', (c) => {
             <h2>Extraction Evaluation</h2>
             <p class="subtitle">
               Five Sonnet-based variants against three government-form
-              fixtures.{' '}
-              <em>
+              fixtures. <em>
                 Hybrid v1 = one short instruction + one inline exemplar +
                 temperature=0.
               </em>
