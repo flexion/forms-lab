@@ -18,8 +18,8 @@ Final project deployment for LLM Class 2026 Winter Cohort.
 - **Slide deck** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/presentation](https://ec2-34-197-222-16.compute-1.amazonaws.com/presentation)
 - **Catalog** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/catalog](https://ec2-34-197-222-16.compute-1.amazonaws.com/catalog)
   (architecture, decisions, experiments, personas, stories, design system)
-- **Application** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/main/](https://ec2-34-197-222-16.compute-1.amazonaws.com/main/)
-  (main branch)
+- **Application** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/](https://ec2-34-197-222-16.compute-1.amazonaws.com/) (browse branch deployments)
+- **"Production deployment"** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/main/](https://ec2-34-197-222-16.compute-1.amazonaws.com/main/) (main branch)
 
 Each active branch is deployed at `/<branch>/` alongside main.
 
