@@ -10,6 +10,7 @@ interface PipelineState {
     approvedAt: string | null
   }
   editBase: string
+  settingsUrl?: string
   groups: Array<{ id: string; title: string; fieldCount: number }>
   corpus: Array<{ source: string; title: string }>
 }
@@ -89,7 +90,8 @@ class FlexPipelinePanel extends HTMLElement {
       body += `</div>`
     } else if (criteria.criteria.length === 0) {
       body += `<button type="button" class="flex-button" data-action="build-form">Build Form from Corpus</button>
-        <p class="pipeline-panel__hint">Analyzes policy corpus, generates criteria, then builds complete form structure and fields automatically.</p>`
+        <p class="pipeline-panel__hint">Analyzes policy corpus, generates criteria, then builds complete form structure and fields automatically.</p>
+        <a href="${this.state.settingsUrl ?? '/settings/variants'}" class="pipeline-panel__settings-link">Configure models \u2192</a>`
     } else if (criteria.approvedAt === null) {
       body += `<p>${criteria.criteria.length} criteria ready for review (see sidebar).</p>
         <button type="button" class="flex-button" data-action="build-form">Approve & Build Form</button>

@@ -380,6 +380,7 @@ const EditingShell: FC<{
                           approvedAt: null,
                         },
                         editBase: resolveUrl(editBase),
+                        settingsUrl: resolveUrl('/settings/variants'),
                         groups: spec
                           ? spec.groups.map((g) => ({
                               id: g.id,
