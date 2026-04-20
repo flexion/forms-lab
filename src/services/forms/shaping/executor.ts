@@ -165,7 +165,7 @@ function execAddPage(
 ): ExecutorResult {
   const formSpec = cloneFormSpec(state.formSpec)
   const newPage: FormPage = {
-    id: `page-new-${crypto.randomUUID().slice(0, 8)}`,
+    id: command.id ?? `page-new-${crypto.randomUUID().slice(0, 8)}`,
     title: command.title,
     groups: [],
     deliveryMode: command.deliveryMode,
@@ -317,7 +317,7 @@ function execAddGroup(
   if (pageIdx < 0) return fail(command, `Unknown pageId: ${command.pageId}`)
   const dataSpec = cloneDataSpec(state.dataSpec)
   const newGroup: RequirementGroup = {
-    id: generateGroupId(),
+    id: command.id ?? generateGroupId(),
     title: command.title,
     requirements: [],
   }
@@ -609,7 +609,7 @@ function execAddField(
   if (groupIdx < 0) return fail(command, `Unknown groupId: ${command.groupId}`)
   const dataSpec = cloneDataSpec(state.dataSpec)
   const newField = {
-    id: generateFieldId(),
+    id: command.id ?? generateFieldId(),
     fieldName: command.label.toLowerCase().replace(/\s+/g, '_').slice(0, 40),
     label: command.label,
     fieldType: command.fieldType,

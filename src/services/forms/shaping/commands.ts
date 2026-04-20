@@ -45,6 +45,7 @@ const movePageSchema = z.object({
 })
 const addPageSchema = z.object({
   kind: z.literal('addPage'),
+  id: z.string().optional(),
   afterPageId: z.string().optional(),
   title: z.string(),
   deliveryMode: deliveryModeSchema.optional(),
@@ -90,6 +91,7 @@ const renameGroupSchema = z.object({
 })
 const addGroupSchema = z.object({
   kind: z.literal('addGroup'),
+  id: z.string().optional(),
   pageId: z.string(),
   title: z.string(),
 })
@@ -156,6 +158,7 @@ const setFieldControlSchema = z.object({
 })
 const addFieldSchema = z.object({
   kind: z.literal('addField'),
+  id: z.string().optional(),
   groupId: z.string(),
   label: z.string(),
   fieldType: fieldTypeSchema,

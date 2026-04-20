@@ -43,8 +43,9 @@ export const commandTools = {
   }),
   addPage: tool({
     description:
-      'Add a new empty page. Optionally specify afterPageId to insert in place.',
+      'Add a new empty page. Optionally specify afterPageId to insert in place. Provide id if you need to reference this page in subsequent commands.',
     inputSchema: z.object({
+      id: z.string().optional(),
       afterPageId: z.string().optional(),
       title: z.string(),
       deliveryMode: deliveryMode.optional(),
@@ -95,8 +96,13 @@ export const commandTools = {
     inputSchema: z.object({ id: z.string(), title: z.string() }),
   }),
   addGroup: tool({
-    description: 'Add a new empty group to a page.',
-    inputSchema: z.object({ pageId: z.string(), title: z.string() }),
+    description:
+      'Add a new empty group to a page. Provide id if you need to reference this group in subsequent commands (e.g., to add fields to it).',
+    inputSchema: z.object({
+      id: z.string().optional(),
+      pageId: z.string(),
+      title: z.string(),
+    }),
   }),
   removeGroup: tool({
     description:
@@ -179,6 +185,7 @@ export const commandTools = {
   addField: tool({
     description: 'Add a new field to a group.',
     inputSchema: z.object({
+      id: z.string().optional(),
       groupId: z.string(),
       label: z.string(),
       fieldType,
