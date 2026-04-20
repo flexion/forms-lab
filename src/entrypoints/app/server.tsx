@@ -55,6 +55,7 @@ import {
 } from './routes/owner/components'
 import { createEditRoutes } from './routes/owner/edit/index'
 import { createOwnerRoutes } from './routes/owner/index'
+import presentation from './routes/presentation/index'
 import { createSettingsRoutes } from './routes/settings/index'
 
 const basePath = getBasePath()
@@ -293,6 +294,9 @@ app.route(
 
 // Mount catalog routes
 app.route('/catalog', catalog)
+
+// Mount presentation routes
+app.route('/presentation', presentation)
 
 // Health check endpoint
 app.get('/health', (c) => {
