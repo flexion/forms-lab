@@ -1,9 +1,11 @@
 import { Hono } from 'hono'
 import { html, raw } from 'hono/html'
+import { resolveUrl } from '../../../../shared/base-path'
 
 const presentation = new Hono()
 
 presentation.get('/', (c) => {
+  const demoUrl = resolveUrl('/')
   return c.html(
     html`<!doctype html>
       <html lang="en">
@@ -187,6 +189,64 @@ presentation.get('/', (c) => {
               margin: 1rem 0;
               max-width: 48rem;
             }
+            .subtitle {
+              font-size: 1.3rem;
+              color: #8b949e;
+              margin-bottom: 0.5rem;
+            }
+            ol {
+              list-style: none;
+              counter-reset: finding;
+              text-align: left;
+              max-width: 64rem;
+              padding: 0;
+            }
+            ol li {
+              counter-increment: finding;
+              position: relative;
+              padding: 0.75rem 0 0.75rem 3rem;
+              font-size: 1.4rem;
+              line-height: 1.5;
+            }
+            ol li::before {
+              content: counter(finding);
+              position: absolute;
+              left: 0;
+              top: 0.75rem;
+              width: 2rem;
+              height: 2rem;
+              border-radius: 50%;
+              background: #58a6ff;
+              color: #0d1117;
+              font-weight: 700;
+              text-align: center;
+              line-height: 2rem;
+              font-size: 1rem;
+            }
+            ol li strong {
+              color: #e6edf3;
+            }
+            ol li em {
+              color: #8b949e;
+              font-style: italic;
+            }
+            .demo-link {
+              margin-top: 2rem;
+              font-size: 1.6rem;
+            }
+            .demo-link a {
+              color: #58a6ff;
+              text-decoration: none;
+              font-weight: 700;
+              padding: 0.75rem 2rem;
+              border: 2px solid #58a6ff;
+              border-radius: 6px;
+              display: inline-block;
+            }
+            .demo-link a:hover,
+            .demo-link a:focus {
+              background: rgba(88, 166, 255, 0.12);
+            }
             #slide-counter {
               position: fixed;
               bottom: 1.5rem;
@@ -331,6 +391,47 @@ presentation.get('/', (c) => {
 
           <section data-slide="7">
             <h2>Key Findings</h2>
+            <ol>
+              <li>
+                <strong>
+                  A hybrid prompt wins PDF extraction.
+                </strong>{' '}
+                <em>
+                  Hybrid prompt = one short instruction + one inline
+                  exemplar + temperature=0.
+                </em>{' '}
+                It Pareto-dominates verbose-guideline and 3-exemplar few-shot
+                variants: 73% recall, 99% precision, +24pp sensitivity over
+                baseline Sonnet at the same cost.
+              </li>
+              <li>
+                <strong>
+                  RAG is load-bearing for policy-grounded form authoring.
+                </strong>{' '}
+                Given a 21-chunk SNAP regulatory corpus, the pipeline produces
+                a 14-page form tracking the ground truth's topical structure.
+                With an empty corpus it produces a single skeletal page. Recall
+                doubles (4.7% &rarr; 10.6%); field coverage grows 20&times;.
+              </li>
+              <li>
+                <strong>Capability boundaries are real.</strong> Non-Anthropic
+                small multimodal models (Nova Pro, Nova Lite, Llama 3.2 Vision)
+                fail at field-level PDF extraction. Model selection beats
+                prompt engineering once you pass a model's capability line.
+              </li>
+            </ol>
+          </section>
+
+          <section data-slide="8">
+            <h2>Extraction Evaluation</h2>
+            <p class="subtitle">
+              Five Sonnet-based variants against three government-form
+              fixtures.{' '}
+              <em>
+                Hybrid v1 = one short instruction + one inline exemplar +
+                temperature=0.
+              </em>
+            </p>
             <table>
               <thead>
                 <tr>
@@ -360,7 +461,7 @@ presentation.get('/', (c) => {
                   <td>79%</td>
                 </tr>
                 <tr class="highlight">
-                  <td>Hybrid v1 (1 exemplar, temp=0)</td>
+                  <td>Hybrid v1</td>
                   <td>73%</td>
                   <td>99%</td>
                   <td>51%</td>
@@ -374,18 +475,12 @@ presentation.get('/', (c) => {
               </tbody>
             </table>
             <p class="table-footer">
-              "One exemplar beats three. Prompt shape matters more than
-              example count."
-            </p>
-            <p class="table-footer">
-              Non-Anthropic probes (Nova Pro, Nova Lite, Llama 3.2 Vision) stay
-              below the frontier on full-suite extraction &mdash; Nova Lite
-              surprises on W-9 smoke (56% recall, 12x cheaper than Nova Pro),
-              Llama gated by Bedrock legacy-access policy.
+              One exemplar beats three. Prompt shape matters more than example
+              count.
             </p>
           </section>
 
-          <section data-slide="8">
+          <section data-slide="9">
             <h2>RAG-Guided Form Authoring</h2>
             <p>Policy corpus in, evaluated form out</p>
             <div class="diagram">
@@ -406,7 +501,7 @@ presentation.get('/', (c) => {
             </ul>
           </section>
 
-          <section data-slide="9">
+          <section data-slide="10">
             <h2>What's Next</h2>
             <ul>
               <li>Conversational filling maturity</li>
@@ -418,9 +513,12 @@ presentation.get('/', (c) => {
                 The framework makes each step an experiment, not a rewrite
               </li>
             </ul>
+            <p class="demo-link">
+              <a href="${demoUrl}">Demo &rarr;</a>
+            </p>
           </section>
 
-          <div id="slide-counter">1 / 10</div>
+          <div id="slide-counter">1 / 11</div>
 
           ${raw(`<script>
 (function () {
