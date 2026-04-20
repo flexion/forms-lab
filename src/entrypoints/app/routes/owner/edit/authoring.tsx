@@ -408,9 +408,19 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
         uncoveredGroupCount,
       })
 
+      const groups = view.spec
+        ? view.spec.groups.map((g) => ({
+            id: g.id,
+            title: g.title,
+            fieldCount: g.requirements.length,
+          }))
+        : []
+
       return c.json({
         stage,
         criteria,
+        groups,
+        currentSha: view.currentSha,
       })
     } catch (err) {
       console.error('[authoring/stage]', err)

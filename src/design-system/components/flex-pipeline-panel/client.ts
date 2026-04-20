@@ -257,6 +257,7 @@ class FlexPipelinePanel extends HTMLElement {
     if (res.ok) {
       const data = await res.json()
       if (this.state) this.state = { ...this.state, ...data }
+      if (data.currentSha) this.currentSha = data.currentSha
     }
   }
 
