@@ -3,6 +3,7 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { Layout } from '../../../../../design-system/components/flex-layout'
 import {
   type AuthoringStage,
+  type CriteriaSet,
   detectAuthoringStage,
   emptyCriteriaSet,
   parseCriteriaSet,
@@ -115,6 +116,7 @@ export function createEditRoutes(
 
       // Detect authoring stage for RAG authoring pipeline projects
       let authoringStage: AuthoringStage | null = null
+      let authoringCriteria: CriteriaSet | null = null
       try {
         const critBuf = await service.getFileContent(
           '',
@@ -122,7 +124,7 @@ export function createEditRoutes(
           branch,
           'forms/default/criteria.json',
         )
-        const criteria = critBuf
+        authoringCriteria = critBuf
           ? parseCriteriaSet(critBuf.toString())
           : emptyCriteriaSet()
         const hasPages = (view.formSpec?.pages?.length ?? 0) > 0
@@ -130,8 +132,8 @@ export function createEditRoutes(
           ? view.spec.groups.filter((g) => g.requirements.length === 0).length
           : 0
         authoringStage = detectAuthoringStage({
-          hasCriteria: criteria.criteria.length > 0,
-          criteriaApproved: criteria.approvedAt !== null,
+          hasCriteria: authoringCriteria.criteria.length > 0,
+          criteriaApproved: authoringCriteria.approvedAt !== null,
           hasPages,
           uncoveredGroupCount,
         })
@@ -156,6 +158,7 @@ export function createEditRoutes(
             changed={changed}
             shapingBadge={shapingBadge}
             authoringStage={authoringStage}
+            authoringCriteria={authoringCriteria}
           />
         </Layout>,
       )
