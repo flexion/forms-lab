@@ -69,6 +69,11 @@ catalog.get('/', async (c) => {
           <p class="catalog-group-label">Presentation</p>
           <div class="l-grid" style="--grid-min: 280px">
             <ContentCard
+              title="Slide Deck"
+              href={resolveUrl('/presentation')}
+              description="15-minute live presentation — narrative arc, key findings, and demo"
+            />
+            <ContentCard
               title="Walkthrough"
               href={resolveUrl('/catalog/walkthrough')}
               description="Guided tour of the project — problem, approach, LLM integration, and demo"
