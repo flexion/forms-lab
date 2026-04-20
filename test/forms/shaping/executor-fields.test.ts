@@ -213,6 +213,44 @@ describe('executor — field commands', () => {
     }
   })
 
+  it('addField accepts optional control and helpText', () => {
+    const result = executeCommand(fixture(), {
+      kind: 'addField',
+      groupId: 'g2',
+      label: 'Agree to terms',
+      fieldType: 'boolean',
+      required: true,
+      control: 'checkbox',
+      helpText: 'Please read the terms first.',
+    })
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      const added = result.state.dataSpec.groups
+        .find((g) => g.id === 'g2')!
+        .requirements.find((r) => r.label === 'Agree to terms')
+      expect(added?.control).toBe('checkbox')
+      expect(added?.helpText).toBe('Please read the terms first.')
+    }
+  })
+
+  it('addField omits optional fields when not provided', () => {
+    const result = executeCommand(fixture(), {
+      kind: 'addField',
+      groupId: 'g2',
+      label: 'Plain field',
+      fieldType: 'text',
+      required: false,
+    })
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      const added = result.state.dataSpec.groups
+        .find((g) => g.id === 'g2')!
+        .requirements.find((r) => r.label === 'Plain field')
+      expect(added?.control).toBeUndefined()
+      expect(added?.helpText).toBeUndefined()
+    }
+  })
+
   it('removeField deletes a field from its group', () => {
     const result = executeCommand(fixture(), {
       kind: 'removeField',
