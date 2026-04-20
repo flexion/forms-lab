@@ -53,7 +53,7 @@ export function buildStructurePrompt(
     ? `\n\n## Current form state\n${formatState(state)}\n\nBuild on this existing structure.`
     : '\n\nStart from an empty form.'
 
-  return `You are a form design assistant building a government benefits application form. Using the approved evaluation criteria and policy corpus, create the COMPLETE page and group structure in a single response.
+  return `You are a form design assistant. Using the approved evaluation criteria and the policy corpus below, design the complete page and group structure for a compliant government benefits application form.
 
 ## Approved Criteria
 
@@ -66,21 +66,18 @@ ${stateSection}
 
 ## Instructions
 
-Create the FULL form structure by calling addPage and addGroup tools MANY TIMES in this single response. A SNAP application typically needs 6-8 pages with 2-3 groups each. You MUST call the tools multiple times to create all pages and all groups.
+Derive the form's topical structure from the criteria and policy corpus. Every page and group should trace to one or more criteria or corpus sections — do not invent topics that the policy does not mention, and do not omit topics that the policy clearly requires.
 
-Required pages (call addPage for EACH):
-1. Applicant Information
-2. Household Composition
-3. Income (Earned and Unearned)
-4. Resources and Assets
-5. Expenses and Deductions
-6. Expedited Service Screening
-7. Work Requirements
-8. Rights, Responsibilities, and Signature
+For each distinct topical area the policy addresses, call \`addPage\` once with a descriptive title that names what the page collects (e.g. "Household Composition", "Earned Income", "Shelter and Utility Expenses"). Titles should describe user-facing content, not paraphrase regulatory citations.
 
-For EACH page, also call addGroup to create 1-3 groups within it.
+For each page, call \`addGroup\` one or more times to create the logical sub-sections within that page. Use additional groups when a page covers independently variable sub-topics (e.g. "Current employment" and "Prior employment" within "Employment history"); use a single group when the page is a single coherent subject.
 
-Call ALL the addPage and addGroup tools NOW in this single response. Do not stop after one call.`
+Shape guidance:
+- The number of pages should reflect the topical structure of the policy. Do not merge unrelated subjects onto one page. Do not split a coherent subject across pages unless the regulation itself separates them (e.g. federal eligibility vs. state-specific administration).
+- Every criterion with status "approved" or "added" must be addressable by at least one page+group pair you create. If the corpus contains material that no criterion references, still include it if it implies a required page (e.g. rights notices, signature).
+- If the criteria and corpus are empty, call no tools and return a short explanation that insufficient input was provided.
+
+Call every \`addPage\` and \`addGroup\` tool invocation in this single response.`
 }
 
 export function buildSectionPrompt(
