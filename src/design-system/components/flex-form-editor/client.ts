@@ -499,14 +499,22 @@ class FlexFormEditor extends HTMLElement {
         this.buffer,
         this.canonicalState as unknown as ProjectStateClient,
       )
-      if (!has) popover.hidden = true
+      if (!has) {
+        popover.hidden = true
+        this.stagedPopoverManuallyHidden = false
+      } else if (this.stagedPopoverManuallyHidden) {
+        popover.hidden = true
+      }
     }
   }
+
+  private stagedPopoverManuallyHidden = false
 
   private toggleStagedPopover() {
     const popover = this.querySelector<HTMLElement>('flex-staged-changes')
     if (!popover) return
-    popover.hidden = !popover.hidden
+    this.stagedPopoverManuallyHidden = !this.stagedPopoverManuallyHidden
+    popover.hidden = this.stagedPopoverManuallyHidden
   }
 
   private removeFromBuffer(index: number) {

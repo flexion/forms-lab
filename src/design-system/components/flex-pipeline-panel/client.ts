@@ -28,6 +28,20 @@ class FlexPipelinePanel extends HTMLElement {
     this.render()
   }
 
+  private get editBase(): string {
+    return this.state?.editBase ?? ''
+  }
+
+  private get currentSha(): string {
+    return (
+      this.closest('flex-form-editor')?.getAttribute('data-current-sha') ?? ''
+    )
+  }
+
+  private set currentSha(sha: string) {
+    this.closest('flex-form-editor')?.setAttribute('data-current-sha', sha)
+  }
+
   private render() {
     if (!this.state) {
       this.innerHTML = ''
@@ -35,7 +49,6 @@ class FlexPipelinePanel extends HTMLElement {
     }
 
     const { stage, criteria } = this.state
-
     const stages = ['criteria', 'structure', 'sections']
     const stageIndex = stages.indexOf(stage)
     const dots = stages
@@ -44,7 +57,6 @@ class FlexPipelinePanel extends HTMLElement {
           `<span class="pipeline-panel__dot" data-state="${i < stageIndex ? 'complete' : i === stageIndex ? 'current' : 'future'}"></span>`,
       )
       .join('')
-
     const stageLabel =
       {
         criteria: 'Criteria',
@@ -84,7 +96,7 @@ class FlexPipelinePanel extends HTMLElement {
         body += `<p>${uncovered} of ${groups.length} sections need fields.</p>
           <button type="button" class="flex-button" data-action="build-form">Generate All Fields</button>`
       } else if (groups.length > 0) {
-        body += `<p>Form built: ${groups.length} sections with fields.</p>
+        body += `<p>Form complete: ${groups.length} sections with fields.</p>
           <button type="button" class="flex-button" data-variant="outline" data-action="build-form">Rebuild Form</button>
           <p class="pipeline-panel__hint">Re-generates structure and fields from criteria.</p>`
       } else {
@@ -109,7 +121,6 @@ class FlexPipelinePanel extends HTMLElement {
       const btn = target.closest<HTMLElement>('[data-action]')
       if (!btn || this.running) return
       const action = btn.dataset.action
-
       if (action === 'build-form') await this.buildForm()
       if (action === 'dismiss-error') {
         this.error = null
@@ -129,139 +140,116 @@ class FlexPipelinePanel extends HTMLElement {
 
     // Step 1: Analyze if needed
     if (criteria.criteria.length === 0) {
-      this.progressLog.push('Analyzing policy corpus...')
-      this.render()
-      const res = await fetch(
-        `${this.state.editBase}/authoring/analyze-criteria`,
-        { method: 'POST' },
-      )
-      if (!res.ok) {
-        await this.fail(res, 'Corpus analysis failed')
-        return
-      }
-      this.progressLog.push('Criteria generated.')
+      this.log('Analyzing policy corpus...')
+      const res = await this.post('/authoring/analyze-criteria')
+      if (!res.ok) return this.abort(res, 'Corpus analysis failed')
+      this.log('Criteria generated.')
     }
 
     // Step 2: Approve if needed
     if (!this.state.criteria.approvedAt) {
-      this.progressLog.push('Approving criteria...')
-      this.render()
-      const res = await fetch(
-        `${this.state.editBase}/authoring/approve-criteria`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: '{}',
-        },
-      )
-      if (!res.ok) {
-        await this.fail(res, 'Criteria approval failed')
-        return
-      }
-      this.progressLog.push('Criteria approved.')
+      this.log('Approving criteria...')
+      const res = await this.post('/authoring/approve-criteria', {})
+      if (!res.ok) return this.abort(res, 'Criteria approval failed')
+      this.log('Criteria approved.')
     }
 
     // Step 3: Generate structure
-    this.progressLog.push('Generating page/group structure...')
-    this.render()
-    const structRes = await fetch(
-      `${this.state.editBase}/authoring/plan-structure`,
-      { method: 'POST' },
-    )
-    if (!structRes.ok) {
-      await this.fail(structRes, 'Structure generation failed')
-      return
-    }
+    this.log('Generating page/group structure...')
+    const structRes = await this.post('/authoring/plan-structure')
+    if (!structRes.ok)
+      return this.abort(structRes, 'Structure generation failed')
 
     const structData = await structRes.json()
-    const pages = structData.commands.filter(
-      (c: { kind: string }) => c.kind === 'addPage',
-    ).length
-    const groups = structData.commands.filter(
-      (c: { kind: string }) => c.kind === 'addGroup',
-    ).length
-    this.progressLog.push(`Created ${pages} pages, ${groups} groups. Saving...`)
-    this.render()
+    if (structData.commands.length > 0) {
+      const pages = structData.commands.filter(
+        (c: { kind: string }) => c.kind === 'addPage',
+      ).length
+      const groups = structData.commands.filter(
+        (c: { kind: string }) => c.kind === 'addGroup',
+      ).length
+      this.log(`Structure: ${pages} pages, ${groups} groups. Saving...`)
+      await this.saveCommands(structData.commands, structData.explanation)
+    }
 
-    // Save structure
-    this.stageCommands(structData.commands, structData.explanation)
-    await this.save()
-
-    // Step 4: Generate fields for each section
-    this.progressLog.push('Generating fields...')
-    this.render()
-
-    // Refresh state to get updated groups
+    // Step 4: Generate fields for each uncovered section
+    this.log('Generating fields for all sections...')
     await this.refreshState()
-    const uncovered = this.state!.groups.filter((g) => g.fieldCount === 0)
 
+    const uncovered = (this.state?.groups ?? []).filter(
+      (g) => g.fieldCount === 0,
+    )
     for (let i = 0; i < uncovered.length; i++) {
       const group = uncovered[i]
-      this.progressLog.push(
-        `  ${group.title} (${i + 1}/${uncovered.length})...`,
-      )
-      this.render()
+      this.log(`  ${group.title} (${i + 1}/${uncovered.length})...`)
 
-      const res = await fetch(
-        `${this.state!.editBase}/authoring/generate-section`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ groupId: group.id, groupTitle: group.title }),
-        },
-      )
+      const res = await this.post('/authoring/generate-section', {
+        groupId: group.id,
+        groupTitle: group.title,
+      })
 
       if (!res.ok) {
-        this.progressLog.push(`    Failed, skipping.`)
+        this.log('    Failed, skipping.')
         continue
       }
 
       const data = await res.json()
-      const fields = data.commands.filter(
-        (c: { kind: string }) => c.kind === 'addField',
-      ).length
-      this.progressLog.push(`    ${fields} fields added.`)
-      this.render()
-
-      this.stageCommands(data.commands, data.explanation)
-      await this.save()
+      if (data.commands.length > 0) {
+        const fields = data.commands.filter(
+          (c: { kind: string }) => c.kind === 'addField',
+        ).length
+        this.log(`    ${fields} fields. Saving...`)
+        await this.saveCommands(data.commands, data.explanation)
+      }
     }
 
-    this.progressLog.push('Done! Reloading...')
-    this.render()
-    setTimeout(() => window.location.reload(), 1000)
+    this.log('Done! Reloading...')
+    setTimeout(() => window.location.reload(), 800)
   }
 
-  private stageCommands(commands: unknown[], explanation: string) {
-    this.dispatchEvent(
-      new CustomEvent('formeditor:stage-batch', {
-        detail: { commands, summary: explanation, source: 'llm' },
-        bubbles: true,
-        composed: true,
+  private async post(path: string, body?: unknown): Promise<Response> {
+    const opts: RequestInit = { method: 'POST' }
+    if (body !== undefined) {
+      opts.headers = { 'Content-Type': 'application/json' }
+      opts.body = JSON.stringify(body)
+    }
+    return fetch(`${this.editBase}${path}`, opts)
+  }
+
+  private async saveCommands(
+    commands: unknown[],
+    explanation: string,
+  ): Promise<void> {
+    const res = await fetch(`${this.editBase}/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        commands,
+        parentSha: this.currentSha,
+        summary: explanation,
+        source: 'llm',
       }),
-    )
-  }
-
-  private async save() {
-    const saveBtn = this.closest(
-      'flex-form-editor',
-    )?.querySelector<HTMLButtonElement>('[data-action="save-staged"]')
-    if (saveBtn && !saveBtn.hidden) {
-      saveBtn.click()
-      await new Promise((r) => setTimeout(r, 800))
+    })
+    if (res.ok) {
+      const data = await res.json()
+      this.currentSha = data.sha
     }
   }
 
   private async refreshState() {
-    if (!this.state) return
-    const res = await fetch(`${this.state.editBase}/authoring/stage`)
+    const res = await fetch(`${this.editBase}/authoring/stage`)
     if (res.ok) {
       const data = await res.json()
-      this.state = { ...this.state, ...data }
+      if (this.state) this.state = { ...this.state, ...data }
     }
   }
 
-  private async fail(res: Response, context: string) {
+  private log(msg: string) {
+    this.progressLog.push(msg)
+    this.render()
+  }
+
+  private async abort(res: Response, context: string) {
     const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
     this.error = `${context}: ${data.error ?? 'Unknown error'}`
     this.running = false
