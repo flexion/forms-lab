@@ -20,7 +20,10 @@ import {
 } from '../../../../../services/forms'
 import type { ProjectService } from '../../../../../services/projects'
 import { loadPolicyCorpus } from '../../../../../services/rag'
-import type { VariantPreferencesService } from '../../../../../services/variant-preferences'
+import {
+  resolveShapingBadgeFromLog,
+  type VariantPreferencesService,
+} from '../../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../../shared/base-path'
 import { AppError, UnauthenticatedError } from '../../../../../shared/errors'
 import type { StrategyRegistry } from '../../../../../shared/strategy-registry'
@@ -101,19 +104,7 @@ export function createEditRoutes(
       const changed = await service.getChangedResources(slug, branch)
 
       // Derive shaping badge from the most recent LLM entry with provenance.
-      const lastLlmEntry = [...log]
-        .reverse()
-        .find((e) => e.source === 'llm' && e.variantId)
-      let shapingBadge: { variantId: string; variantName: string } | null = null
-      if (lastLlmEntry?.variantId) {
-        const meta = shapingRegistry
-          .list()
-          .find((v) => v.id === lastLlmEntry.variantId)
-        shapingBadge = {
-          variantId: lastLlmEntry.variantId,
-          variantName: meta?.metadata.name ?? lastLlmEntry.variantId,
-        }
-      }
+      const shapingBadge = resolveShapingBadgeFromLog(log, shapingRegistry)
 
       // Detect authoring stage for RAG authoring pipeline projects
       let authoringStage: AuthoringStage | null = null
