@@ -1,8 +1,10 @@
 ---
 status: stable
 formSlug: snap-wisconsin
-title: Wisconsin SNAP Application (7 CFR 273)
+title: Wisconsin FoodShare (SNAP) Application
 source: 7 CFR 273 — Supplemental Nutrition Assistance Program
+formName: Wisconsin FoodShare (SNAP) Application
+formDescription: Wisconsin's FoodShare program is the state implementation of the federal Supplemental Nutrition Assistance Program (SNAP). Applicants provide household, income, resource, and expense information to determine eligibility for monthly food-purchase benefits delivered via a QUEST EBT card. Governed by 7 CFR 273 with Wisconsin-specific rules under Wis. Stat. 49.79 and Wis. Admin. Code DHS 1507.
 ---
 
 # Wisconsin SNAP Application — Policy Excerpts

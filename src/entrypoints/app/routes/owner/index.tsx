@@ -3,6 +3,7 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { Layout } from '../../../../design-system/components/flex-layout'
 import type { UserStore } from '../../../../services/auth'
 import type { ProjectService } from '../../../../services/projects'
+import { getCorpusMetadata } from '../../../../services/rag'
 import { resolveVariantBadge } from '../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../shared/base-path'
 import { AppError, UnauthenticatedError } from '../../../../shared/errors'
@@ -100,6 +101,17 @@ export function createOwnerRoutes(
             extractionProvenance.variantId,
           )
         : null
+      const corpusMetadata = view.project.corpusSlug
+        ? getCorpusMetadata(view.project.corpusSlug)
+        : null
+      const corpus = corpusMetadata
+        ? {
+            slug: corpusMetadata.slug,
+            formName: corpusMetadata.formName,
+            formDescription: corpusMetadata.formDescription ?? '',
+            source: corpusMetadata.source,
+          }
+        : null
       return c.html(
         <Layout user={user}>
           <ProjectOverview
@@ -110,6 +122,7 @@ export function createOwnerRoutes(
             branches={branches}
             branch={branch}
             extractionBadge={extractionBadge}
+            corpus={corpus}
           />
         </Layout>,
       )
@@ -183,6 +196,17 @@ export function createOwnerRoutes(
             extractionProvenance.variantId,
           )
         : null
+      const corpusMetadata = view.project.corpusSlug
+        ? getCorpusMetadata(view.project.corpusSlug)
+        : null
+      const corpus = corpusMetadata
+        ? {
+            slug: corpusMetadata.slug,
+            formName: corpusMetadata.formName,
+            formDescription: corpusMetadata.formDescription ?? '',
+            source: corpusMetadata.source,
+          }
+        : null
       return c.html(
         <Layout user={user}>
           <ProjectOverview
@@ -191,6 +215,7 @@ export function createOwnerRoutes(
             user={user}
             viewingSha={sha}
             extractionBadge={extractionBadge}
+            corpus={corpus}
           />
         </Layout>,
       )

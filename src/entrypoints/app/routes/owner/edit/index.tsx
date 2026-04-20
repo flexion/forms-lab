@@ -133,12 +133,18 @@ export function createEditRoutes(
           hasPages,
           uncoveredGroupCount,
         })
-        const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
-        authoringCorpus = corpus.map((c) => ({
-          source: c.source,
-          title: c.title,
-          text: c.text,
-        }))
+        // Preview panel only — if the project has no corpus
+        // association, the authoring pipeline can't run anyway, so
+        // leave the corpus preview empty rather than falling back to
+        // an arbitrary default.
+        if (view.project.corpusSlug) {
+          const corpus = loadPolicyCorpus({ slug: view.project.corpusSlug })
+          authoringCorpus = corpus.map((c) => ({
+            source: c.source,
+            title: c.title,
+            text: c.text,
+          }))
+        }
       } catch {
         // Not an authoring project — no stage indicator shown
       }

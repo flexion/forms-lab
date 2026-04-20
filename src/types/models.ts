@@ -210,6 +210,15 @@ export interface ProjectIndex {
   slug: string
   name: string
   forkedFrom: string | null
+  /**
+   * Slug of the policy corpus this project was created from, when
+   * applicable. `null` for projects imported from a PDF (the
+   * extraction path). A non-null value means this project uses the
+   * RAG-authoring flow and retrieval queries should be keyed on this
+   * slug. Resolves against `listCorpora()` / `getCorpusMetadata()`
+   * in the RAG service.
+   */
+  corpusSlug: string | null
   status: ProjectStatus
   error: string | null
   createdBy: string
@@ -222,6 +231,8 @@ export interface NewProjectIndex {
   slug: string
   createdBy: string
   forkedFrom?: string
+  /** See ProjectIndex.corpusSlug. Optional; absent means PDF-based project. */
+  corpusSlug?: string | null
 }
 
 /**

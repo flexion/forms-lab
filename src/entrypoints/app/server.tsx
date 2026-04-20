@@ -36,6 +36,7 @@ import {
   createFormProjectRepo,
   createProjectService,
 } from '../../services/projects'
+import { getCorpusMetadata, listCorpora } from '../../services/rag'
 import { createCacheStore, createProjectStore } from '../../services/storage'
 import {
   createVariantPreferencesGateway,
@@ -330,6 +331,24 @@ function getExtractionVariantForCallout(userLogin: string) {
   }
 }
 
+/**
+ * Build the list of corpus-based form choices the New Project page
+ * offers. Only corpora that declare a formDescription (i.e. have
+ * opted into authoring) appear — extraction-only corpora stay out of
+ * the picker.
+ */
+function getCorporaForPicker(): Array<{
+  slug: string
+  formName: string
+  formDescription: string
+}> {
+  return listCorpora({ formsOnly: true }).map((c) => ({
+    slug: c.slug,
+    formName: c.formName,
+    formDescription: c.formDescription ?? '',
+  }))
+}
+
 app.get('/new', (c) => {
   const user = c.get('user')
   if (!user) return c.redirect(resolveUrl('/auth/signin'))
@@ -338,6 +357,7 @@ app.get('/new', (c) => {
     <Layout currentPath="/new" user={user}>
       <NewProjectPage
         fixtures={demoFixtures}
+        corpora={getCorporaForPicker()}
         extractionVariant={extractionVariant}
       />
     </Layout>,
@@ -361,6 +381,7 @@ app.post('/new', async (c) => {
           <Layout currentPath="/new" user={user}>
             <NewProjectPage
               fixtures={demoFixtures}
+              corpora={getCorporaForPicker()}
               extractionVariant={extractionVariant}
             />
           </Layout>,
@@ -380,9 +401,27 @@ app.post('/new', async (c) => {
     const corpusId = String(body.corpus ?? '').trim()
 
     if (corpusId) {
-      // Corpus-only project (no PDF extraction)
-      const name = 'Wisconsin FoodShare SNAP Application'
-      const project = await projectService.createEmptyProject(name, user)
+      // Corpus-only project (no PDF extraction). Persist the corpus
+      // slug on the project so the authoring pipeline can retrieve
+      // from the right corpus downstream.
+      const corpusMetadata = getCorpusMetadata(corpusId)
+      if (!corpusMetadata || !corpusMetadata.formDescription) {
+        return c.html(
+          <Layout currentPath="/new" user={user}>
+            <NewProjectPage
+              fixtures={demoFixtures}
+              corpora={getCorporaForPicker()}
+              extractionVariant={extractionVariant}
+            />
+          </Layout>,
+          400,
+        )
+      }
+      const project = await projectService.createEmptyProject(
+        corpusMetadata.formName,
+        user,
+        { corpusSlug: corpusMetadata.slug },
+      )
       return c.redirect(
         resolveUrl(`/${user.login}/${project.slug}/edit/import`),
       )
@@ -396,6 +435,7 @@ app.post('/new', async (c) => {
         <Layout currentPath="/new" user={user}>
           <NewProjectPage
             fixtures={demoFixtures}
+            corpora={getCorporaForPicker()}
             extractionVariant={extractionVariant}
           />
         </Layout>,

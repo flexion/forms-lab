@@ -130,6 +130,20 @@ export const ProfilePage: FC<{
 // 2. ProjectOverview
 // ---------------------------------------------------------------------------
 
+/**
+ * Metadata about a project's policy corpus. When present on
+ * ProjectOverview the page renders a short callout identifying the
+ * source corpus and summarising the form being built. Routes should
+ * resolve this from the RAG service's `getCorpusMetadata(slug)` so
+ * the presentation layer stays stateless.
+ */
+export interface ProjectCorpusInfo {
+  slug: string
+  formName: string
+  formDescription: string
+  source: string
+}
+
 export const ProjectOverview: FC<{
   view: ProjectView
   owner: string
@@ -139,6 +153,7 @@ export const ProjectOverview: FC<{
   branches?: BranchEntry[]
   branch?: string
   extractionBadge?: { variantId: string; variantName: string } | null
+  corpus?: ProjectCorpusInfo | null
 }> = ({
   view,
   owner,
@@ -148,6 +163,7 @@ export const ProjectOverview: FC<{
   branches,
   branch = 'main',
   extractionBadge,
+  corpus,
 }) => {
   const {
     project,
@@ -259,6 +275,27 @@ export const ProjectOverview: FC<{
       </header>
 
       <RepoNav owner={owner} slug={project.slug} current="overview" />
+
+      {corpus && (
+        <aside
+          class="l-stack"
+          style="gap: var(--flex-space-xs); padding: var(--flex-space-md); border: 1px solid var(--flex-color-border); border-radius: var(--flex-radius-md); background: var(--flex-color-primary-lighter);"
+        >
+          <div
+            class="l-cluster"
+            style="gap: var(--flex-space-sm); align-items: baseline;"
+          >
+            <strong>Form:</strong>
+            <span>{corpus.formName}</span>
+            <span class="text-muted text-sm">&middot; built from corpus</span>
+            <code class="flex-mono text-sm">{corpus.slug}</code>
+            <span class="text-muted text-sm">&middot; {corpus.source}</span>
+          </div>
+          {corpus.formDescription && (
+            <p style="margin: 0;">{corpus.formDescription}</p>
+          )}
+        </aside>
+      )}
 
       {branches && branches.length > 1 && (
         <BranchSwitcher
@@ -922,15 +959,22 @@ export const ErrorPage: FC<{
 // 8. NewProjectPage (updated for /:owner URL structure)
 // ---------------------------------------------------------------------------
 
+export interface CorpusChoice {
+  slug: string
+  formName: string
+  formDescription: string
+}
+
 export const NewProjectPage: FC<{
   fixtures: DemoFixture[]
+  corpora: CorpusChoice[]
   extractionVariant: {
     name: string
     description: string
     evaluationSummary: string
     catalogHref: string
   }
-}> = ({ fixtures, extractionVariant }) => (
+}> = ({ fixtures, corpora, extractionVariant }) => (
   <div class="l-stack">
     <h1>New Project</h1>
 
@@ -960,21 +1004,28 @@ export const NewProjectPage: FC<{
       </div>
     </section>
 
-    <section class="l-stack">
-      <h2>Create from corpus (no PDF)</h2>
-      <form method="post" action={resolveUrl('/new')}>
-        <input type="hidden" name="corpus" value="snap-wisconsin" />
-        <button type="submit" class="flex-card fixture-card">
-          <div class="l-stack" style="gap: var(--flex-space-2xs);">
-            <strong>Build from SNAP Policy Corpus</strong>
-            <span class="text-muted text-sm">
-              Create a Wisconsin SNAP application form from scratch using the
-              policy corpus and RAG-powered authoring pipeline.
-            </span>
-          </div>
-        </button>
-      </form>
-    </section>
+    {corpora.length > 0 && (
+      <section class="l-stack">
+        <h2>Create from policy corpus (no PDF)</h2>
+        <p class="text-muted text-sm">
+          Build a form from a curated regulatory corpus using the RAG-driven
+          authoring pipeline. Each corpus covers a specific government form.
+        </p>
+        <div class="l-grid">
+          {corpora.map((c) => (
+            <form method="post" action={resolveUrl('/new')}>
+              <input type="hidden" name="corpus" value={c.slug} />
+              <button type="submit" class="flex-card fixture-card">
+                <div class="l-stack" style="gap: var(--flex-space-2xs);">
+                  <strong>{c.formName}</strong>
+                  <span class="text-muted text-sm">{c.formDescription}</span>
+                </div>
+              </button>
+            </form>
+          ))}
+        </div>
+      </section>
+    )}
 
     <section class="l-stack">
       <h2>Upload your own PDF</h2>
