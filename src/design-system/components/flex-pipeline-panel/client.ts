@@ -182,13 +182,13 @@ class FlexPipelinePanel extends HTMLElement {
     }
 
     // Step 3b: Create one group per page (pages were just saved, now we know real IDs)
+    // Use refreshState to get page IDs — the SHA was already updated by saveCommands above
     await this.log('Creating groups for each page...')
-    await this.refreshState()
-
-    // Read the actual pages from the saved state via the stage endpoint
     const stageRes2 = await fetch(`${this.editBase}/authoring/stage`)
     if (stageRes2.ok) {
       const stageData = await stageRes2.json()
+      // Update SHA from this response (most recent server state)
+      if (stageData.currentSha) this.currentSha = stageData.currentSha
       if (stageData.pages && stageData.pages.length > 0) {
         const groupCommands = stageData.pages
           .filter((p: { groups: string[] }) => p.groups.length === 0)
