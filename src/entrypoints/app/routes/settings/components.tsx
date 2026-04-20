@@ -37,6 +37,24 @@ const TASK_META: Record<Task, TaskMeta> = {
       "Matches extracted spec fields to the source PDF's AcroForm fields so completed forms can be written back to the original PDF. Runs automatically after extraction.",
     benchmarksPath: '/catalog/experiments/roadmap',
   },
+  'authoring-criteria': {
+    label: 'Authoring: Criteria Analysis',
+    description:
+      'Analyzes policy corpus to generate evaluation criteria the form must satisfy. Each criterion links to a specific regulatory citation.',
+    benchmarksPath: '/catalog/experiments/authoring-pipeline',
+  },
+  'authoring-structure': {
+    label: 'Authoring: Structure Generation',
+    description:
+      'Creates page and group structure from approved criteria. Determines form organization based on regulatory requirements.',
+    benchmarksPath: '/catalog/experiments/authoring-pipeline',
+  },
+  'authoring-generation': {
+    label: 'Authoring: Field Generation',
+    description:
+      'Generates form fields per section with appropriate types, labels, and sensitivity based on regulatory text.',
+    benchmarksPath: '/catalog/experiments/authoring-pipeline',
+  },
 }
 
 interface VariantLabelProps {

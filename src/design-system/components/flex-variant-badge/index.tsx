@@ -13,6 +13,9 @@ const VERB_BY_TASK: Record<Task, string> = {
   shaping: 'Shaped by',
   filling: 'Guided by',
   'field-mapping': 'Mapped by',
+  'authoring-criteria': 'Criteria by',
+  'authoring-structure': 'Structure by',
+  'authoring-generation': 'Fields by',
 }
 
 export const VariantBadge: FC<VariantBadgeProps> = ({ task, variantName }) => {

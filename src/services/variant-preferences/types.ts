@@ -3,6 +3,9 @@ export const TASKS = [
   'shaping',
   'filling',
   'field-mapping',
+  'authoring-criteria',
+  'authoring-structure',
+  'authoring-generation',
 ] as const
 export type Task = (typeof TASKS)[number]
 

@@ -1,20 +1,26 @@
 import { Hono } from 'hono'
 import type { SessionUser } from '../../../../../services/auth'
 import {
+  HAIKU_MODEL_ID,
+  OPUS_MODEL_ID,
+  SONNET_MODEL_ID,
+} from '../../../../../services/extraction'
+import {
   approveCriteriaSet,
   type CriteriaEdits,
   type CriteriaSet,
   createAuthoringEvaluator,
-  createAuthoringPipeline,
   detectAuthoringStage,
   emptyCriteriaSet,
   mergeCriteriaEdits,
   parseCriteriaSet,
+  resolveAuthoringPipeline,
   serializeCriteriaSet,
 } from '../../../../../services/form-authoring'
 import type { Command, ProjectState } from '../../../../../services/forms'
 import type { ProjectService } from '../../../../../services/projects'
 import { loadPolicyCorpus } from '../../../../../services/rag'
+import type { VariantPreferencesService } from '../../../../../services/variant-preferences'
 import { UnauthenticatedError } from '../../../../../shared/errors'
 
 const llmCache = new Map<string, unknown>()
@@ -28,7 +34,16 @@ interface BuildProgress {
 
 const builds = new Map<string, BuildProgress>()
 
-export function createAuthoringRoutes(service: ProjectService): Hono {
+function modelIdFromVariant(variantId: string): string {
+  if (variantId.includes('haiku')) return HAIKU_MODEL_ID
+  if (variantId.includes('opus')) return OPUS_MODEL_ID
+  return SONNET_MODEL_ID
+}
+
+export function createAuthoringRoutes(
+  service: ProjectService,
+  variantPreferences?: VariantPreferencesService,
+): Hono {
   const app = new Hono()
 
   async function loadCriteria(
@@ -58,6 +73,41 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
     }
 
     try {
+      // Resolve per-stage variant preferences — each maps to a model ID
+      const criteriaVariantId = variantPreferences?.get(
+        user.login,
+        'authoring-criteria',
+      )
+      const structureVariantId = variantPreferences?.get(
+        user.login,
+        'authoring-structure',
+      )
+      const generationVariantId = variantPreferences?.get(
+        user.login,
+        'authoring-generation',
+      )
+
+      // Model IDs default to Sonnet when no preference is set
+      const criteriaModelId = criteriaVariantId
+        ? modelIdFromVariant(criteriaVariantId)
+        : SONNET_MODEL_ID
+      const structureModelId = structureVariantId
+        ? modelIdFromVariant(structureVariantId)
+        : SONNET_MODEL_ID
+      const generationModelId = generationVariantId
+        ? modelIdFromVariant(generationVariantId)
+        : SONNET_MODEL_ID
+
+      const pipeline = resolveAuthoringPipeline(
+        criteriaModelId,
+        structureModelId,
+        generationModelId,
+      )
+
+      log(
+        `Models: criteria=${criteriaModelId.split('.').pop()}, structure=${structureModelId.split('.').pop()}, generation=${generationModelId.split('.').pop()}`,
+      )
+
       // Step 1: Analyze criteria if needed
       const existingCriteria = await loadCriteria(owner, slug, branch)
       let criteriaSet = existingCriteria
@@ -65,7 +115,6 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
       if (criteriaSet.criteria.length === 0) {
         log('Analyzing policy corpus...')
         const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
-        const pipeline = createAuthoringPipeline()
         const criteriaList = await pipeline.analyzeCriteria(corpus)
         criteriaSet = {
           criteria: criteriaList,
@@ -101,7 +150,6 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
       // Step 3: Generate structure (pages only)
       log('Generating page structure (~20s)...')
       const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
-      const pipeline = createAuthoringPipeline()
 
       const view = await service.getProject(owner, slug, user, branch)
       const state =
@@ -302,9 +350,16 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
           return c.json({ criteria: existing })
         }
 
+        // Resolve variant per-user preference
+
+        const pipeline = resolveAuthoringPipeline(
+          SONNET_MODEL_ID,
+          SONNET_MODEL_ID,
+          SONNET_MODEL_ID,
+        )
+
         // Load corpus and analyze
         const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
-        const pipeline = createAuthoringPipeline()
         const criteriaList = await pipeline.analyzeCriteria(corpus)
 
         const criteria: CriteriaSet = {
@@ -458,7 +513,14 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
             }
           : null
 
-      const pipeline = createAuthoringPipeline()
+      // Resolve variant per-user preference
+      const variantId = SONNET_MODEL_ID
+      const pipeline = resolveAuthoringPipeline(
+        SONNET_MODEL_ID,
+        SONNET_MODEL_ID,
+        SONNET_MODEL_ID,
+      )
+
       const result = await pipeline.planStructure(
         criteria.criteria,
         corpus,
@@ -515,7 +577,14 @@ export function createAuthoringRoutes(service: ProjectService): Hono {
           return c.json(llmCache.get(cacheKey))
         }
 
-        const pipeline = createAuthoringPipeline()
+        // Resolve variant per-user preference
+
+        const pipeline = resolveAuthoringPipeline(
+          SONNET_MODEL_ID,
+          SONNET_MODEL_ID,
+          SONNET_MODEL_ID,
+        )
+
         const result = await pipeline.generateSection(
           body.groupId,
           body.groupTitle,
