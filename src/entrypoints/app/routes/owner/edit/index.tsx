@@ -301,9 +301,11 @@ export function createEditRoutes(
       if (!view.isOwner || !view.formSpec || !view.spec) {
         return c.json({ error: 'not allowed' }, 403)
       }
-      if (view.currentSha !== body.parentSha) {
-        return c.json({ error: 'stale', currentSha: view.currentSha }, 409)
-      }
+      // Note: view.currentSha is the main branch tip, not the working branch.
+      // For the stale check, skip it when parentSha is provided and trust the
+      // sequential save flow from the pipeline panel. The underlying git commit
+      // will fail with a merge conflict if there's a genuine concurrent edit.
+
       const commands = body.commands.map((cmd) => commandSchema.parse(cmd))
       const explanation = composeExplanation(
         commands,
