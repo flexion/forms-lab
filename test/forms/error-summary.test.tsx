@@ -7,7 +7,7 @@ interface ErrorItem {
 }
 
 function render(errors: ErrorItem[]): string {
-  return ((<FormErrorSummary errors={errors} />) as any).toString()
+  return ((<FormErrorSummary errors={errors} />) as string).toString()
 }
 
 describe('FormErrorSummary', () => {

@@ -3,7 +3,7 @@ import { ErrorMessage } from '../../src/design-system/components/flex-error-mess
 
 function render(props: { id?: string; children: string }): string {
   return (
-    (<ErrorMessage id={props.id}>{props.children}</ErrorMessage>) as any
+    (<ErrorMessage id={props.id}>{props.children}</ErrorMessage>) as string
   ).toString()
 }
 

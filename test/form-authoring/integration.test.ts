@@ -1,5 +1,5 @@
 // test/form-authoring/integration.test.ts
-import { describe, expect, mock, test, beforeEach } from 'bun:test'
+import { beforeEach, describe, expect, mock, test } from 'bun:test'
 
 const mockGenerateObject = mock()
 const mockGenerateText = mock()
@@ -39,8 +39,16 @@ describe('full pipeline round-trip', () => {
     // Stage 1: criteria
     mockGenerateObject.mockResolvedValueOnce({
       object: [
-        { id: 'exp-screening', text: 'Must screen for expedited processing', source: '7 CFR 273.2(i)' },
-        { id: 'household-comp', text: 'Must collect household composition', source: '7 CFR 273.1(b)' },
+        {
+          id: 'exp-screening',
+          text: 'Must screen for expedited processing',
+          source: '7 CFR 273.2(i)',
+        },
+        {
+          id: 'household-comp',
+          text: 'Must collect household composition',
+          source: '7 CFR 273.1(b)',
+        },
       ],
     })
 
@@ -54,15 +62,28 @@ describe('full pipeline round-trip', () => {
     mockGenerateText.mockResolvedValueOnce({
       toolCalls: [
         { toolName: 'addPage', input: { title: 'Screening' } },
-        { toolName: 'addGroup', input: { pageId: 'page-new-1', title: 'Expedited Screening' } },
+        {
+          toolName: 'addGroup',
+          input: { pageId: 'page-new-1', title: 'Expedited Screening' },
+        },
         { toolName: 'addPage', input: { title: 'Household' } },
-        { toolName: 'addGroup', input: { pageId: 'page-new-2', title: 'Household Members' } },
+        {
+          toolName: 'addGroup',
+          input: { pageId: 'page-new-2', title: 'Household Members' },
+        },
       ],
       text: 'Created screening and household pages.',
     })
 
-    const approvedCriteria = criteria.map((c) => ({ ...c, status: 'approved' as const }))
-    const structure = await pipeline.planStructure(approvedCriteria, corpus, null)
+    const approvedCriteria = criteria.map((c) => ({
+      ...c,
+      status: 'approved' as const,
+    }))
+    const structure = await pipeline.planStructure(
+      approvedCriteria,
+      corpus,
+      null,
+    )
     expect(structure.commands).toHaveLength(4)
     expect(structure.commands[0].kind).toBe('addPage')
 
