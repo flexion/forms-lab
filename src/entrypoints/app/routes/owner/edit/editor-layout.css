@@ -84,10 +84,10 @@
 }
 
 .editor-references__summary {
-  font-size: var(--flex-text-xs);
+  font-size: var(--flex-text-sm);
   font-weight: 600;
   cursor: pointer;
-  color: var(--flex-color-text-muted);
+  color: var(--flex-color-text);
 }
 
 .editor-references__list {
@@ -106,8 +106,8 @@
   text-align: start;
   background: none;
   border: none;
-  padding: 2px 4px;
-  font-size: 0.65rem;
+  padding: 4px 6px;
+  font-size: var(--flex-text-xs);
   color: var(--flex-color-text-muted);
   cursor: pointer;
   border-radius: var(--flex-radius-md);
