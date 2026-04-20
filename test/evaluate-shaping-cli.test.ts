@@ -65,37 +65,12 @@ describe('evaluate shaping CLI subcommand', () => {
     expect(exitCode).toBe(1)
   })
 
-  it('writes JSON and markdown with six cases when all intents succeed', async () => {
-    const expectedCommandByIntentId: Record<string, Command[]> = {
-      'swap-pages': [{ kind: 'swapPages', a: 'page-2', b: 'page-3' }],
-      'merge-employment': [
-        { kind: 'mergePages', intoId: 'page-2', fromId: 'page-3' },
-      ],
-      'optional-middle-name': [
-        { kind: 'setRequired', id: 'middleName', required: false },
-      ],
-      'move-military': [
-        {
-          kind: 'moveGroup',
-          groupId: 'military-service',
-          toPageId: 'page-4',
-        },
-      ],
-      'rename-personal-info': [
-        { kind: 'renamePage', id: 'page-1', title: 'Applicant Information' },
-      ],
-      'suggest-delivery-modes': [
-        { kind: 'setDeliveryMode', pageId: 'page-1', mode: 'static' },
-        { kind: 'setDeliveryMode', pageId: 'page-2', mode: 'static' },
-        { kind: 'setDeliveryMode', pageId: 'page-3', mode: 'static' },
-        {
-          kind: 'setDeliveryMode',
-          pageId: 'page-4',
-          mode: 'conversational',
-        },
-        { kind: 'setDeliveryMode', pageId: 'page-5', mode: 'static' },
-      ],
-    }
+  it('writes JSON and markdown with all cases when all intents succeed', async () => {
+    const { shapingIntentFixtures: _probe } = await import(
+      '../src/services/evaluation/fixtures/shaping-intents'
+    )
+    const expectedCommandByIntentId: Record<string, Command[]> =
+      Object.fromEntries(_probe.map((f) => [f.id, f.expectedCommands]))
 
     const { shapingIntentFixtures } = await import(
       '../src/services/evaluation/fixtures/shaping-intents'
@@ -128,7 +103,7 @@ describe('evaluate shaping CLI subcommand', () => {
 
     expect(raw.kind).toBe('shaping-commands')
     expect(raw.implementation).toBe('bedrock-mock')
-    expect(raw.cases).toHaveLength(6)
+    expect(raw.cases).toHaveLength(_probe.length)
     expect(raw.summary.kindRecall).toBe(1)
     expect(raw.summary.kindPrecision).toBe(1)
     expect(raw.summary.argumentAccuracy).toBe(1)
@@ -174,7 +149,7 @@ describe('evaluate shaping CLI subcommand', () => {
     const raw = JSON.parse(
       readFileSync(join(tempDir, 'bedrock-mock.json'), 'utf-8'),
     )
-    expect(raw.cases).toHaveLength(6)
+    expect(raw.cases).toHaveLength(shapingIntentFixtures.length)
     const failedCase = raw.cases.find(
       (c: { fixture: string }) => c.fixture === 'swap-pages',
     )

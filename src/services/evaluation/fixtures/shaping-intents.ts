@@ -266,6 +266,70 @@ const intents: Array<Omit<ShapingIntentFixture, 'groundTruth'>> = [
       { kind: 'setDeliveryMode', pageId: 'page-5', mode: 'static' },
     ],
   },
+  {
+    id: 'add-phone-to-personal',
+    intent: 'Add a phone number field to personal info',
+    expectedCommands: [
+      {
+        kind: 'addField',
+        groupId: 'personal-info',
+        label: 'Phone number',
+        fieldType: 'phone',
+        required: false,
+      },
+    ],
+  },
+  {
+    id: 'add-confirmation-page',
+    intent: 'Add a confirmation page at the end with a checkbox',
+    expectedCommands: [
+      { kind: 'addPage', id: 'confirmation', title: 'Confirmation' },
+      {
+        kind: 'addGroup',
+        id: 'confirmation-group',
+        pageId: 'confirmation',
+        title: 'Confirmation',
+      },
+      {
+        kind: 'addField',
+        id: 'confirm-accurate',
+        groupId: 'confirmation-group',
+        label: 'I confirm the information above is accurate',
+        fieldType: 'boolean',
+        required: true,
+      },
+    ],
+  },
+  {
+    id: 'add-agreement-page',
+    intent:
+      'Add an agreements page with two checkboxes: accept terms, accept privacy policy',
+    expectedCommands: [
+      { kind: 'addPage', id: 'agreements', title: 'Agreements' },
+      {
+        kind: 'addGroup',
+        id: 'agreements-group',
+        pageId: 'agreements',
+        title: 'Agreements',
+      },
+      {
+        kind: 'addField',
+        id: 'accept-terms',
+        groupId: 'agreements-group',
+        label: 'I accept the terms of service',
+        fieldType: 'boolean',
+        required: true,
+      },
+      {
+        kind: 'addField',
+        id: 'accept-privacy',
+        groupId: 'agreements-group',
+        label: 'I accept the privacy policy',
+        fieldType: 'boolean',
+        required: true,
+      },
+    ],
+  },
 ]
 
 export const shapingIntentFixtures: ShapingIntentFixture[] = intents.map(
