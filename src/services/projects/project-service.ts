@@ -878,10 +878,14 @@ export function createProjectService(
       branch: string,
     ): Promise<{ dataSpec: boolean; formSpec: boolean }> {
       if (branch === 'main') return { dataSpec: false, formSpec: false }
-      const files = await repo.getBranchDiff(slug, 'main', branch)
-      return {
-        dataSpec: files.includes('forms/default/spec.json'),
-        formSpec: files.includes('forms/default/form.json'),
+      try {
+        const files = await repo.getBranchDiff(slug, 'main', branch)
+        return {
+          dataSpec: files.includes('forms/default/spec.json'),
+          formSpec: files.includes('forms/default/form.json'),
+        }
+      } catch {
+        return { dataSpec: false, formSpec: false }
       }
     },
 
