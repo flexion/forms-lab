@@ -34,7 +34,7 @@ class FlexPipelinePanel extends HTMLElement {
       return
     }
 
-    const { stage, criteria, corpus } = this.state
+    const { stage, criteria } = this.state
 
     const stages = ['criteria', 'structure', 'sections']
     const stageIndex = stages.indexOf(stage)
@@ -70,32 +70,26 @@ class FlexPipelinePanel extends HTMLElement {
         body += `</ul>`
       }
       body += `</div>`
-    } else if (stage === 'criteria' && criteria.criteria.length === 0) {
-      if (corpus.length > 0) {
-        body += `<p>Policy corpus loaded with <strong>${corpus.length} regulatory sections</strong> from 7 CFR 273 (SNAP).</p>`
-      }
+    } else if (criteria.criteria.length === 0) {
       body += `<button type="button" class="flex-button" data-action="build-form">Build Form from Corpus</button>
-        <p class="pipeline-panel__hint">Analyzes the policy corpus, generates evaluation criteria, and builds a complete form structure with fields.</p>`
-    } else if (stage === 'criteria' && criteria.criteria.length > 0) {
-      const pending = criteria.criteria.filter(
-        (c) => c.status === 'pending',
-      ).length
-      if (pending > 0) {
-        body += `<p>${criteria.criteria.length} criteria generated. Review in sidebar or continue.</p>`
-        body += `<button type="button" class="flex-button" data-action="approve-and-build">Approve & Build Structure</button>`
-      } else {
-        body += `<p>Criteria approved. Ready to generate form structure.</p>`
-        body += `<button type="button" class="flex-button" data-action="build-structure">Build Structure & Fields</button>`
-      }
-    } else if (stage === 'structure' || stage === 'sections') {
+        <p class="pipeline-panel__hint">Analyzes policy corpus, generates criteria, then builds complete form structure and fields automatically.</p>`
+    } else if (criteria.approvedAt === null) {
+      body += `<p>${criteria.criteria.length} criteria ready for review (see sidebar).</p>
+        <button type="button" class="flex-button" data-action="build-form">Approve & Build Form</button>
+        <p class="pipeline-panel__hint">Approves all criteria and generates the full form structure with fields.</p>`
+    } else {
       const { groups } = this.state
-      const total = groups.length
-      const filled = groups.filter((g) => g.fieldCount > 0).length
-      if (total > 0) {
-        body += `<p>${filled} of ${total} sections have fields.</p>`
+      const uncovered = groups.filter((g) => g.fieldCount === 0).length
+      if (uncovered > 0) {
+        body += `<p>${uncovered} of ${groups.length} sections need fields.</p>
+          <button type="button" class="flex-button" data-action="build-form">Generate All Fields</button>`
+      } else if (groups.length > 0) {
+        body += `<p>Form built: ${groups.length} sections with fields.</p>
+          <button type="button" class="flex-button" data-variant="outline" data-action="build-form">Rebuild Form</button>
+          <p class="pipeline-panel__hint">Re-generates structure and fields from criteria.</p>`
+      } else {
+        body += `<button type="button" class="flex-button" data-action="build-form">Build Structure & Fields</button>`
       }
-      body += `<button type="button" class="flex-button" data-action="build-remaining">Generate Remaining Fields</button>
-        <p class="pipeline-panel__hint">Generates fields for all sections that don't have them yet.</p>`
     }
 
     this.innerHTML = `<div class="pipeline-panel">
@@ -116,10 +110,7 @@ class FlexPipelinePanel extends HTMLElement {
       if (!btn || this.running) return
       const action = btn.dataset.action
 
-      if (action === 'build-form') await this.buildFullForm()
-      if (action === 'approve-and-build') await this.approveAndBuild()
-      if (action === 'build-structure') await this.buildStructureAndFields()
-      if (action === 'build-remaining') await this.buildRemainingFields()
+      if (action === 'build-form') await this.buildForm()
       if (action === 'dismiss-error') {
         this.error = null
         this.render()
@@ -127,160 +118,87 @@ class FlexPipelinePanel extends HTMLElement {
     })
   }
 
-  private async buildFullForm() {
+  private async buildForm() {
     if (!this.state) return
     this.running = true
     this.error = null
-    this.progressLog = ['Analyzing policy corpus...']
+    this.progressLog = []
     this.render()
 
-    // Stage 1: Analyze criteria
-    const analyzeRes = await fetch(
-      `${this.state.editBase}/authoring/analyze-criteria`,
-      { method: 'POST' },
-    )
-    if (!analyzeRes.ok) {
-      await this.handleError(analyzeRes, 'Corpus analysis failed')
-      return
+    const { criteria } = this.state
+
+    // Step 1: Analyze if needed
+    if (criteria.criteria.length === 0) {
+      this.progressLog.push('Analyzing policy corpus...')
+      this.render()
+      const res = await fetch(
+        `${this.state.editBase}/authoring/analyze-criteria`,
+        { method: 'POST' },
+      )
+      if (!res.ok) {
+        await this.fail(res, 'Corpus analysis failed')
+        return
+      }
+      this.progressLog.push('Criteria generated.')
     }
 
-    this.progressLog.push('Criteria generated. Approving...')
-    this.render()
-
-    // Approve criteria
-    const approveRes = await fetch(
-      `${this.state.editBase}/authoring/approve-criteria`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: '{}',
-      },
-    )
-    if (!approveRes.ok) {
-      await this.handleError(approveRes, 'Criteria approval failed')
-      return
+    // Step 2: Approve if needed
+    if (!this.state.criteria.approvedAt) {
+      this.progressLog.push('Approving criteria...')
+      this.render()
+      const res = await fetch(
+        `${this.state.editBase}/authoring/approve-criteria`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: '{}',
+        },
+      )
+      if (!res.ok) {
+        await this.fail(res, 'Criteria approval failed')
+        return
+      }
+      this.progressLog.push('Criteria approved.')
     }
 
-    this.progressLog.push('Criteria approved. Generating structure...')
+    // Step 3: Generate structure
+    this.progressLog.push('Generating page/group structure...')
     this.render()
-
-    await this.generateStructureAndSave()
-  }
-
-  private async approveAndBuild() {
-    if (!this.state) return
-    this.running = true
-    this.error = null
-    this.progressLog = ['Approving criteria...']
-    this.render()
-
-    const approveRes = await fetch(
-      `${this.state.editBase}/authoring/approve-criteria`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: '{}',
-      },
-    )
-    if (!approveRes.ok) {
-      await this.handleError(approveRes, 'Criteria approval failed')
-      return
-    }
-
-    this.progressLog.push('Generating structure...')
-    this.render()
-
-    await this.generateStructureAndSave()
-  }
-
-  private async buildStructureAndFields() {
-    if (!this.state) return
-    this.running = true
-    this.error = null
-    this.progressLog = ['Generating structure...']
-    this.render()
-
-    await this.generateStructureAndSave()
-  }
-
-  private async buildRemainingFields() {
-    if (!this.state) return
-    this.running = true
-    this.error = null
-    this.progressLog = ['Generating fields for remaining sections...']
-    this.render()
-
-    await this.generateAllSections()
-  }
-
-  private async generateStructureAndSave() {
-    if (!this.state) return
-
     const structRes = await fetch(
       `${this.state.editBase}/authoring/plan-structure`,
       { method: 'POST' },
     )
     if (!structRes.ok) {
-      await this.handleError(structRes, 'Structure generation failed')
+      await this.fail(structRes, 'Structure generation failed')
       return
     }
 
     const structData = await structRes.json()
-    const pageCount = structData.commands.filter(
+    const pages = structData.commands.filter(
       (c: { kind: string }) => c.kind === 'addPage',
     ).length
-    const groupCount = structData.commands.filter(
+    const groups = structData.commands.filter(
       (c: { kind: string }) => c.kind === 'addGroup',
     ).length
-
-    this.progressLog.push(
-      `Structure: ${pageCount} pages, ${groupCount} groups. Saving...`,
-    )
+    this.progressLog.push(`Created ${pages} pages, ${groups} groups. Saving...`)
     this.render()
 
-    // Auto-save structure commands
-    this.dispatchEvent(
-      new CustomEvent('formeditor:stage-batch', {
-        detail: {
-          commands: structData.commands,
-          summary: structData.explanation,
-          source: 'llm',
-        },
-        bubbles: true,
-        composed: true,
-      }),
-    )
+    // Save structure
+    this.stageCommands(structData.commands, structData.explanation)
+    await this.save()
 
-    // Trigger save automatically
-    await this.autoSave()
-
-    this.progressLog.push('Structure saved. Generating fields...')
+    // Step 4: Generate fields for each section
+    this.progressLog.push('Generating fields...')
     this.render()
-
-    await this.generateAllSections()
-  }
-
-  private async generateAllSections() {
-    if (!this.state) return
 
     // Refresh state to get updated groups
-    const stageRes = await fetch(`${this.state.editBase}/authoring/stage`)
-    if (stageRes.ok) {
-      const data = await stageRes.json()
-      this.state = { ...this.state, ...data }
-    }
-
+    await this.refreshState()
     const uncovered = this.state!.groups.filter((g) => g.fieldCount === 0)
-    if (uncovered.length === 0) {
-      this.progressLog.push('All sections already have fields.')
-      this.finish()
-      return
-    }
 
     for (let i = 0; i < uncovered.length; i++) {
       const group = uncovered[i]
       this.progressLog.push(
-        `Generating fields for "${group.title}" (${i + 1}/${uncovered.length})...`,
+        `  ${group.title} (${i + 1}/${uncovered.length})...`,
       )
       this.render()
 
@@ -289,78 +207,64 @@ class FlexPipelinePanel extends HTMLElement {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            groupId: group.id,
-            groupTitle: group.title,
-          }),
+          body: JSON.stringify({ groupId: group.id, groupTitle: group.title }),
         },
       )
 
       if (!res.ok) {
-        const data = await res
-          .json()
-          .catch(() => ({ error: `HTTP ${res.status}` }))
-        this.progressLog.push(`Failed: ${data.error ?? 'Unknown error'}`)
+        this.progressLog.push(`    Failed, skipping.`)
         continue
       }
 
-      const sectionData = await res.json()
-      const fieldCount = sectionData.commands.filter(
+      const data = await res.json()
+      const fields = data.commands.filter(
         (c: { kind: string }) => c.kind === 'addField',
       ).length
-
-      this.progressLog.push(`  Added ${fieldCount} fields.`)
+      this.progressLog.push(`    ${fields} fields added.`)
       this.render()
 
-      // Stage and save each section's commands
-      this.dispatchEvent(
-        new CustomEvent('formeditor:stage-batch', {
-          detail: {
-            commands: sectionData.commands,
-            summary: sectionData.explanation,
-            source: 'llm',
-          },
-          bubbles: true,
-          composed: true,
-        }),
-      )
-
-      await this.autoSave()
+      this.stageCommands(data.commands, data.explanation)
+      await this.save()
     }
 
-    this.finish()
+    this.progressLog.push('Done! Reloading...')
+    this.render()
+    setTimeout(() => window.location.reload(), 1000)
   }
 
-  private async autoSave() {
-    // Trigger the save button programmatically
+  private stageCommands(commands: unknown[], explanation: string) {
+    this.dispatchEvent(
+      new CustomEvent('formeditor:stage-batch', {
+        detail: { commands, summary: explanation, source: 'llm' },
+        bubbles: true,
+        composed: true,
+      }),
+    )
+  }
+
+  private async save() {
     const saveBtn = this.closest(
       'flex-form-editor',
     )?.querySelector<HTMLButtonElement>('[data-action="save-staged"]')
     if (saveBtn && !saveBtn.hidden) {
       saveBtn.click()
-      // Wait for save to complete
-      await new Promise((r) => setTimeout(r, 500))
+      await new Promise((r) => setTimeout(r, 800))
     }
   }
 
-  private finish() {
-    this.progressLog.push('Done!')
-    this.running = false
-    this.render()
-    // Reload page to show final state
-    setTimeout(() => window.location.reload(), 1500)
+  private async refreshState() {
+    if (!this.state) return
+    const res = await fetch(`${this.state.editBase}/authoring/stage`)
+    if (res.ok) {
+      const data = await res.json()
+      this.state = { ...this.state, ...data }
+    }
   }
 
-  private async handleError(res: Response, context: string) {
+  private async fail(res: Response, context: string) {
     const data = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
     this.error = `${context}: ${data.error ?? 'Unknown error'}`
     this.running = false
-    this.progressLog = []
-    this.render()
-  }
-
-  private setLoading(loading: boolean) {
-    this.running = loading
     this.render()
   }
 }
