@@ -11,6 +11,7 @@ interface PipelineState {
   }
   editBase: string
   groups: Array<{ id: string; title: string; fieldCount: number }>
+  corpus: Array<{ source: string; title: string }>
 }
 
 interface PendingProposal {
@@ -50,10 +51,20 @@ class FlexPipelinePanel extends HTMLElement {
     if (this.pendingProposal) {
       body += this.renderProposal(this.pendingProposal)
     } else if (this.loading) {
-      body += `<div class="pipeline-panel__loading"><span class="pipeline-panel__spinner"></span> Working...</div>`
+      body += `<div class="pipeline-panel__loading"><span class="pipeline-panel__spinner"></span> Analyzing corpus (this may take 15-30s)...</div>`
     } else if (stage === 'criteria' && criteria.criteria.length === 0) {
+      const corpus = this.state.corpus ?? []
+      if (corpus.length > 0) {
+        body += `<details class="pipeline-panel__corpus" open>
+          <summary class="pipeline-panel__corpus-title">Policy Corpus (${corpus.length} sections)</summary>
+          <ul class="pipeline-panel__corpus-list">`
+        for (const c of corpus) {
+          body += `<li>${c.source}</li>`
+        }
+        body += `</ul></details>`
+      }
       body += `<button type="button" class="flex-button" data-action="analyze-criteria">Analyze Corpus</button>
-        <p class="pipeline-panel__hint">Extract evaluation criteria from the SNAP policy corpus.</p>`
+        <p class="pipeline-panel__hint">Extract evaluation criteria from the policy sections above.</p>`
     } else if (stage === 'criteria') {
       const approvedCount = criteria.criteria.filter(
         (c) => c.status === 'approved',

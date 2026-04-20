@@ -157,6 +157,31 @@ flex-pipeline-panel {
   font-size: var(--flex-text-sm);
 }
 
+.pipeline-panel__corpus {
+  margin-block-end: var(--flex-space-sm);
+}
+
+.pipeline-panel__corpus-title {
+  font-size: var(--flex-text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--flex-color-text);
+}
+
+.pipeline-panel__corpus-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--flex-space-xs) 0 0;
+  font-size: 0.65rem;
+  color: var(--flex-color-text-muted);
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.pipeline-panel__corpus-list li {
+  padding: 1px 0;
+}
+
 .pipeline-panel__proposal {
   border: 1px solid var(--flex-color-border);
   border-radius: var(--flex-radius-md);

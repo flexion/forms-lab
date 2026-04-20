@@ -19,6 +19,7 @@ import {
   humanize,
 } from '../../../../../services/forms'
 import type { ProjectService } from '../../../../../services/projects'
+import { loadPolicyCorpus } from '../../../../../services/rag'
 import type { VariantPreferencesService } from '../../../../../services/variant-preferences'
 import { resolveUrl } from '../../../../../shared/base-path'
 import { AppError, UnauthenticatedError } from '../../../../../shared/errors'
@@ -117,6 +118,8 @@ export function createEditRoutes(
       // Detect authoring stage for RAG authoring pipeline projects
       let authoringStage: AuthoringStage | null = null
       let authoringCriteria: CriteriaSet | null = null
+      let authoringCorpus: Array<{ source: string; title: string }> | null =
+        null
       try {
         const critBuf = await service.getFileContent(
           owner,
@@ -137,6 +140,11 @@ export function createEditRoutes(
           hasPages,
           uncoveredGroupCount,
         })
+        const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
+        authoringCorpus = corpus.map((c) => ({
+          source: c.source,
+          title: c.title,
+        }))
       } catch {
         // Not an authoring project — no stage indicator shown
       }
@@ -159,6 +167,7 @@ export function createEditRoutes(
             shapingBadge={shapingBadge}
             authoringStage={authoringStage}
             authoringCriteria={authoringCriteria}
+            authoringCorpus={authoringCorpus}
           />
         </Layout>,
       )
