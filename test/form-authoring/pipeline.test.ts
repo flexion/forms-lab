@@ -161,23 +161,23 @@ describe('detectAuthoringStage', () => {
     expect(stage).toBe('structure')
   })
 
-  test('returns "sections" when pages exist with uncovered groups', () => {
+  test('returns "structure" when pages exist with uncovered groups', () => {
     const stage = detectAuthoringStage({
       hasCriteria: true,
       criteriaApproved: true,
       hasPages: true,
       uncoveredGroupCount: 3,
     })
-    expect(stage).toBe('sections')
+    expect(stage).toBe('structure')
   })
 
-  test('returns "complete" when all groups are covered', () => {
+  test('returns "sections" when all groups are covered', () => {
     const stage = detectAuthoringStage({
       hasCriteria: true,
       criteriaApproved: true,
       hasPages: true,
       uncoveredGroupCount: 0,
     })
-    expect(stage).toBe('complete')
+    expect(stage).toBe('sections')
   })
 })

@@ -144,7 +144,6 @@ export function detectAuthoringStage(
   input: StageDetectionInput,
 ): AuthoringStage {
   if (!input.hasCriteria || !input.criteriaApproved) return 'criteria'
-  if (!input.hasPages) return 'structure'
-  if (input.uncoveredGroupCount > 0) return 'sections'
-  return 'complete'
+  if (!input.hasPages || input.uncoveredGroupCount > 0) return 'structure'
+  return 'sections'
 }

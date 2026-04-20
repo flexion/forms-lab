@@ -68,21 +68,21 @@ class FlexPipelinePanel extends HTMLElement {
       body += `<button type="button" class="flex-button" data-action="plan-structure">Generate Structure</button>
         <p class="pipeline-panel__hint">Create pages and groups from approved criteria.</p>`
     } else if (stage === 'sections') {
-      const uncovered = groups.filter((g) => g.fieldCount === 0)
-      if (uncovered.length === 0) {
-        body += `<p class="pipeline-panel__hint">All sections populated. Save to advance.</p>`
+      if (groups.length === 0) {
+        body += `<p class="pipeline-panel__hint">No groups yet. Generate structure first.</p>`
       } else {
+        body += `<p class="pipeline-panel__hint">Generate fields per section:</p>`
         body += `<ul class="pipeline-panel__section-list">`
-        for (const g of uncovered) {
+        for (const g of groups) {
+          const label =
+            g.fieldCount > 0 ? `${g.title} (${g.fieldCount})` : g.title
           body += `<li class="pipeline-panel__section-item">
-            <span>${g.title}</span>
-            <button type="button" class="flex-button" data-variant="outline" data-size="sm" data-action="generate-section" data-group-id="${g.id}" data-group-title="${g.title}">Generate</button>
+            <span>${label}</span>
+            <button type="button" class="flex-button" data-variant="outline" data-size="sm" data-action="generate-section" data-group-id="${g.id}" data-group-title="${g.title}">${g.fieldCount > 0 ? 'Regenerate' : 'Generate'}</button>
           </li>`
         }
         body += `</ul>`
       }
-    } else if (stage === 'complete') {
-      body += `<div class="pipeline-panel__complete">\u2713 Pipeline complete</div>`
     }
 
     const stageLabel = {
