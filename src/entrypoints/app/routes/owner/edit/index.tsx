@@ -36,7 +36,7 @@ export function createEditRoutes(
   const app = new Hono()
 
   // Mount authoring routes
-  const authoringRoutes = createAuthoringRoutes(service)
+  const authoringRoutes = createAuthoringRoutes(service, variantPreferences)
   app.route('/', authoringRoutes)
 
   // GET /:owner/:slug/edit — redirect to a working branch, or show the

@@ -12,6 +12,11 @@ import { createUserStore } from '../../services/auth'
 import type { DataCollectionSpec } from '../../services/data-collection'
 import { createExtractorRegistry } from '../../services/extraction'
 import {
+  createAuthoringCriteriaRegistry,
+  createAuthoringGenerationRegistry,
+  createAuthoringStructureRegistry,
+} from '../../services/form-authoring'
+import {
   createCachedPdfExtractor,
   createMappingRegistry,
 } from '../../services/form-documents'
@@ -74,11 +79,17 @@ const extractionRegistry = createExtractorRegistry()
 const shapingRegistry = createShapingRegistry()
 const fillingRegistry = createFillingRegistry()
 const mappingRegistry = createMappingRegistry()
+const authoringCriteriaRegistry = createAuthoringCriteriaRegistry()
+const authoringStructureRegistry = createAuthoringStructureRegistry()
+const authoringGenerationRegistry = createAuthoringGenerationRegistry()
 const registries: TaskRegistries = {
   extraction: extractionRegistry,
   shaping: shapingRegistry,
   filling: fillingRegistry,
   'field-mapping': mappingRegistry,
+  'authoring-criteria': authoringCriteriaRegistry,
+  'authoring-structure': authoringStructureRegistry,
+  'authoring-generation': authoringGenerationRegistry,
 }
 
 const variantPrefsGateway = createVariantPreferencesGateway(projectDbPath)

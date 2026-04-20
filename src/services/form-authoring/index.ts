@@ -13,6 +13,12 @@ export {
   detectAuthoringStage,
   type StageDetectionInput,
 } from './pipeline'
+export {
+  createAuthoringCriteriaRegistry,
+  createAuthoringGenerationRegistry,
+  createAuthoringStructureRegistry,
+  resolveAuthoringPipeline,
+} from './registry'
 export type {
   AuthoringStage,
   AuthoringStageConfig,

@@ -58,6 +58,9 @@ function registriesWithExtraction() {
     shaping: new StrategyRegistry<unknown>(),
     filling: new StrategyRegistry<unknown>(),
     'field-mapping': new StrategyRegistry<unknown>(),
+    'authoring-criteria': new StrategyRegistry<unknown>(),
+    'authoring-structure': new StrategyRegistry<unknown>(),
+    'authoring-generation': new StrategyRegistry<unknown>(),
   }
 }
 

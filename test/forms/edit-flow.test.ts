@@ -59,7 +59,7 @@ describe('edit flow: mixed inline + chat batch produces one commit', () => {
     })
     app.route(
       '/',
-      // biome-ignore lint/suspicious/noExplicitAny: registry not used by save
+      // biome-ignore lint/suspicious/noExplicitAny: registries not used by save
       createEditRoutes(service, new StrategyRegistry<any>()),
     )
   })
