@@ -21,6 +21,35 @@ interface Frontmatter {
   source: string
 }
 
+/**
+ * Metadata about an available policy corpus, surfaced to UI code
+ * that needs to let the user choose a corpus or display information
+ * about the corpus that grounds a project.
+ */
+export interface CorpusMetadata {
+  /** Stable slug used in URLs, project records, and retrieval queries. */
+  slug: string
+  /** Corpus display name (taken from `title` in frontmatter). */
+  title: string
+  /** Regulatory source citation (e.g. "7 CFR 273"). */
+  source: string
+  /**
+   * User-facing name of the form this corpus builds. May differ from
+   * `title` — `title` names the corpus ("Wisconsin SNAP Application
+   * Policy Excerpts"), `formName` names the resulting form
+   * ("Wisconsin FoodShare (SNAP) Application"). Falls back to `title`
+   * when absent.
+   */
+  formName: string
+  /**
+   * Plain-English description of the form this corpus supports.
+   * Surfaced on the project overview page and the new-project
+   * picker. Absent on corpora that have not yet opted into the
+   * authoring flow — those are extraction-only references.
+   */
+  formDescription: string | null
+}
+
 const CORPUS_FILES: Array<{ path: string }> = [
   { path: 'pardon-application.md' },
   { path: 'i-9.md' },
@@ -96,6 +125,63 @@ export interface LoadPolicyCorpusOptions {
   baseDir?: string
   /** Load corpus from project directory instead of catalog. */
   projectDir?: string
+}
+
+export interface ListCorporaOptions {
+  /** Override the base directory (tests, alternate layouts). */
+  baseDir?: string
+  /**
+   * When true, only return corpora that declare a `formDescription`
+   * in their frontmatter — i.e. corpora that have opted into the
+   * authoring flow. Extraction-only corpora (pardon, I-9, W-9) are
+   * omitted. Defaults to false so callers that need the full list
+   * (e.g. evaluation) still see every corpus.
+   */
+  formsOnly?: boolean
+}
+
+/**
+ * List every available policy corpus under catalog/references. Used
+ * by the new-project picker to render the "build from corpus" button
+ * set and by the project overview page to resolve a stored
+ * `corpusSlug` back to display metadata.
+ */
+export function listCorpora(
+  options: ListCorporaOptions = {},
+): CorpusMetadata[] {
+  const baseDir =
+    options.baseDir ?? join(process.cwd(), 'catalog', 'references')
+  const corpora: CorpusMetadata[] = []
+
+  for (const { path } of CORPUS_FILES) {
+    const fullPath = join(baseDir, path)
+    if (!existsSync(fullPath)) continue
+    const raw = readFileSync(fullPath, 'utf-8')
+    const { data } = parseFrontmatter(raw)
+    if (!data.formSlug) continue
+    const formDescription = data.formDescription ?? null
+    if (options.formsOnly && !formDescription) continue
+    corpora.push({
+      slug: data.formSlug,
+      title: data.title ?? data.formSlug,
+      source: data.source ?? '',
+      formName: data.formName ?? data.title ?? data.formSlug,
+      formDescription,
+    })
+  }
+
+  return corpora
+}
+
+/**
+ * Look up a single corpus by slug. Returns null when the slug does
+ * not match any known corpus.
+ */
+export function getCorpusMetadata(
+  slug: string,
+  options: ListCorporaOptions = {},
+): CorpusMetadata | null {
+  return listCorpora(options).find((c) => c.slug === slug) ?? null
 }
 
 export function loadPolicyCorpus(

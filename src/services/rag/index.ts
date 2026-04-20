@@ -1,4 +1,11 @@
-export { type LoadPolicyCorpusOptions, loadPolicyCorpus } from './corpus'
+export {
+  type CorpusMetadata,
+  getCorpusMetadata,
+  type ListCorporaOptions,
+  type LoadPolicyCorpusOptions,
+  listCorpora,
+  loadPolicyCorpus,
+} from './corpus'
 export {
   cosineSimilarity,
   createHashEmbedder,

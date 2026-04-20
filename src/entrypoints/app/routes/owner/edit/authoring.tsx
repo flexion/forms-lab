@@ -61,6 +61,28 @@ export function createAuthoringRoutes(
     return parseCriteriaSet(buf.toString())
   }
 
+  /**
+   * Resolve the policy corpus slug for a project. Authoring routes
+   * should fail fast when the project has no corpus association
+   * rather than silently defaulting to SNAP — every other outcome
+   * hides a data-model bug.
+   */
+  async function requireProjectCorpusSlug(
+    owner: string,
+    slug: string,
+    user: SessionUser,
+    branch: string,
+  ): Promise<string> {
+    const view = await service.getProject(owner, slug, user, branch)
+    const corpusSlug = view.project.corpusSlug
+    if (!corpusSlug) {
+      throw new Error(
+        `Project "${slug}" has no associated policy corpus. Authoring requires a corpus-based project — create one from /new using a "Build from corpus" button.`,
+      )
+    }
+    return corpusSlug
+  }
+
   async function runBuild(
     owner: string,
     slug: string,
@@ -108,13 +130,23 @@ export function createAuthoringRoutes(
         `Models: criteria=${criteriaModelId.split('.').pop()}, structure=${structureModelId.split('.').pop()}, generation=${generationModelId.split('.').pop()}`,
       )
 
+      // Every stage in this build uses the same corpus; resolve the
+      // slug once from the project.
+      const corpusSlug = await requireProjectCorpusSlug(
+        owner,
+        slug,
+        user,
+        branch,
+      )
+      log(`Corpus: ${corpusSlug}`)
+
       // Step 1: Analyze criteria if needed
       const existingCriteria = await loadCriteria(owner, slug, branch)
       let criteriaSet = existingCriteria
 
       if (criteriaSet.criteria.length === 0) {
         log('Analyzing policy corpus...')
-        const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
+        const corpus = loadPolicyCorpus({ slug: corpusSlug })
         const criteriaList = await pipeline.analyzeCriteria(corpus)
         criteriaSet = {
           criteria: criteriaList,
@@ -149,7 +181,7 @@ export function createAuthoringRoutes(
 
       // Step 3: Generate structure (pages only)
       log('Generating page structure (~20s)...')
-      const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
+      const corpus = loadPolicyCorpus({ slug: corpusSlug })
 
       const view = await service.getProject(owner, slug, user, branch)
       const state =
@@ -358,8 +390,14 @@ export function createAuthoringRoutes(
           SONNET_MODEL_ID,
         )
 
-        // Load corpus and analyze
-        const corpus = loadPolicyCorpus({ slug: 'snap-wisconsin' })
+        // Load corpus for this project and analyze
+        const corpusSlug = await requireProjectCorpusSlug(
+          owner,
+          slug,
+          user,
+          branch,
+        )
+        const corpus = loadPolicyCorpus({ slug: corpusSlug })
         const criteriaList = await pipeline.analyzeCriteria(corpus)
 
         const criteria: CriteriaSet = {
@@ -503,7 +541,11 @@ export function createAuthoringRoutes(
       }
 
       const criteria = await loadCriteria(owner, slug, branch)
-      const corpus = await loadPolicyCorpus({ slug: 'snap-wisconsin' })
+      const corpusSlug = view.project.corpusSlug
+      if (!corpusSlug) {
+        return c.json({ error: 'project has no associated policy corpus' }, 400)
+      }
+      const corpus = loadPolicyCorpus({ slug: corpusSlug })
 
       const state =
         view.formSpec && view.spec
@@ -569,7 +611,13 @@ export function createAuthoringRoutes(
           groupTitle: string
         }
         const criteriaSet = await loadCriteria(owner, slug, branch)
-        const corpus = await loadPolicyCorpus({ slug: 'snap-wisconsin' })
+        if (!view.project.corpusSlug) {
+          return c.json(
+            { error: 'project has no associated policy corpus' },
+            400,
+          )
+        }
+        const corpus = loadPolicyCorpus({ slug: view.project.corpusSlug })
 
         const cacheKey = `section:${slug}:${branch}:${body.groupId}`
         if (llmCache.has(cacheKey)) {
@@ -630,7 +678,13 @@ export function createAuthoringRoutes(
 
         const body = (await c.req.json()) as { groupId: string }
         const criteriaSet = await loadCriteria(owner, slug, branch)
-        const corpus = await loadPolicyCorpus({ slug: 'snap-wisconsin' })
+        if (!view.project.corpusSlug) {
+          return c.json(
+            { error: 'project has no associated policy corpus' },
+            400,
+          )
+        }
+        const corpus = loadPolicyCorpus({ slug: view.project.corpusSlug })
 
         const state = {
           formSpec: view.formSpec as unknown as ProjectState['formSpec'],

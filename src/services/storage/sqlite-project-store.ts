@@ -17,6 +17,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
       slug TEXT NOT NULL UNIQUE,
       name TEXT NOT NULL,
       forked_from TEXT,
+      corpus_slug TEXT,
       status TEXT NOT NULL DEFAULT 'extracting',
       error TEXT,
       created_by TEXT NOT NULL,
@@ -46,6 +47,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
         slug TEXT NOT NULL UNIQUE,
         name TEXT NOT NULL,
         forked_from TEXT,
+        corpus_slug TEXT,
         status TEXT NOT NULL DEFAULT 'extracting',
         error TEXT,
         created_by TEXT NOT NULL,
@@ -54,6 +56,11 @@ export function createProjectStore(dbPath: string): ProjectStore {
       )
     `)
     console.log('Projects table recreated with current schema')
+  } else if (!columns.includes('corpus_slug')) {
+    // Forward-compatible migration: add corpus_slug to existing
+    // projects tables. Nullable so historical PDF-based rows stay
+    // valid.
+    db.run('ALTER TABLE projects ADD COLUMN corpus_slug TEXT')
   }
 
   function rowToProject(row: Record<string, unknown>): ProjectIndex {
@@ -62,6 +69,7 @@ export function createProjectStore(dbPath: string): ProjectStore {
       slug: row.slug as string,
       name: row.name as string,
       forkedFrom: (row.forked_from as string | null) ?? null,
+      corpusSlug: (row.corpus_slug as string | null) ?? null,
       status: row.status as ProjectStatus,
       error: (row.error as string | null) ?? null,
       createdBy: row.created_by as string,
@@ -75,13 +83,14 @@ export function createProjectStore(dbPath: string): ProjectStore {
       const id = crypto.randomUUID()
       const now = Math.floor(Date.now() / 1000)
       db.run(
-        `INSERT INTO projects (id, slug, name, forked_from, created_by, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO projects (id, slug, name, forked_from, corpus_slug, created_by, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
           project.slug,
           project.name,
           project.forkedFrom ?? null,
+          project.corpusSlug ?? null,
           project.createdBy,
           now,
           now,

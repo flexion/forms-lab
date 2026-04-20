@@ -72,7 +72,11 @@ export interface ProjectService {
     pdf: Buffer,
     user: SessionUser,
   ): Promise<ProjectIndex>
-  createEmptyProject(name: string, user: SessionUser): Promise<ProjectIndex>
+  createEmptyProject(
+    name: string,
+    user: SessionUser,
+    options?: { corpusSlug?: string | null },
+  ): Promise<ProjectIndex>
   getProject(
     owner: string,
     slug: string,
@@ -385,6 +389,7 @@ export function createProjectService(
     async createEmptyProject(
       name: string,
       user: SessionUser,
+      options: { corpusSlug?: string | null } = {},
     ): Promise<ProjectIndex> {
       requireAuth(user)
 
@@ -393,6 +398,7 @@ export function createProjectService(
         name,
         slug,
         createdBy: user.login,
+        corpusSlug: options.corpusSlug ?? null,
       })
 
       try {
