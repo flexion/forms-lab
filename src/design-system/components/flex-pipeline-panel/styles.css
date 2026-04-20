@@ -46,7 +46,7 @@ flex-pipeline-panel {
 }
 
 .pipeline-panel__body {
-  font-size: var(--flex-text-sm);
+  font-size: var(--flex-text-base);
 }
 
 .pipeline-panel__body p {
@@ -85,7 +85,7 @@ flex-pipeline-panel {
 .pipeline-panel__hint {
   margin: var(--flex-space-xs) 0 0;
   color: var(--flex-color-text-muted);
-  font-size: var(--flex-text-xs);
+  font-size: var(--flex-text-sm);
 }
 
 .pipeline-panel__error {
