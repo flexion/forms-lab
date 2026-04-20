@@ -285,7 +285,9 @@ class FlexPipelinePanel extends HTMLElement {
     })
     if (res.ok) {
       const data = await res.json()
-      this.currentSha = data.sha
+      if (data.sha) this.currentSha = data.sha
+      // Small delay to let git finalize the commit
+      await new Promise((r) => setTimeout(r, 100))
       return true
     }
     const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
