@@ -216,8 +216,10 @@ presentation.get('/', (c) => {
               </li>
               <li>That combination is expensive and scarce</li>
               <li>
-                PDF is the source of truth &mdash; but it encodes
-                layout, not structure
+                Sources of truth: <span class="accent">policy</span>
+                (regulations, rules) and
+                <span class="accent">existing PDFs</span> (layout, not
+                structure)
               </li>
             </ul>
           </section>
@@ -377,12 +379,29 @@ presentation.get('/', (c) => {
           </section>
 
           <section data-slide="8">
+            <h2>RAG-Guided Form Authoring</h2>
+            <p>Policy corpus in, evaluated form out</p>
+            <div class="diagram">
+              <div class="box">Policy Corpus</div>
+              <span class="arrow">&rarr;</span>
+              <div class="box">Criteria</div>
+              <span class="arrow">&rarr;</span>
+              <div class="box">Structure</div>
+              <span class="arrow">&rarr;</span>
+              <div class="box">Fields</div>
+              <span class="arrow">&rarr;</span>
+              <div class="box">Evaluation</div>
+            </div>
+            <ul>
+              <li>Same command language as manual shaping</li>
+              <li>LLM-as-judge scores sections against regulatory criteria</li>
+              <li>User approves criteria before generation begins</li>
+            </ul>
+          </section>
+
+          <section data-slide="9">
             <h2>What's Next</h2>
             <ul>
-              <li>
-                <span class="accent">RAG authoring pipeline:</span> forms
-                generated from policy corpus
-              </li>
               <li>Conversational filling maturity</li>
               <li>
                 <span class="accent">Cost optimization:</span> flagship &rarr;
@@ -394,7 +413,7 @@ presentation.get('/', (c) => {
             </ul>
           </section>
 
-          <div id="slide-counter">1 / 9</div>
+          <div id="slide-counter">1 / 10</div>
 
           ${raw(`<script>
 (function () {
