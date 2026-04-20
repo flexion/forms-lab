@@ -262,10 +262,7 @@ describe('ProjectService', () => {
 
     it('throws UnauthenticatedError when user is null', async () => {
       expect(
-        service.createEmptyProject(
-          'Test',
-          null as unknown as SessionUser,
-        ),
+        service.createEmptyProject('Test', null as unknown as SessionUser),
       ).rejects.toBeInstanceOf(UnauthenticatedError)
     })
 

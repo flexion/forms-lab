@@ -30,6 +30,7 @@ import {
 import {
   createFormProjectRepo,
   createProjectService,
+  type ProjectIndex,
 } from '../../services/projects'
 import { createCacheStore, createProjectStore } from '../../services/storage'
 import {
@@ -384,9 +385,15 @@ app.post('/new', async (c) => {
       }
     }
 
-    const project = isCorpusOnly
-      ? await projectService.createEmptyProject(name, user)
-      : await projectService.createProject(name, pdf!, user)
+    let project: ProjectIndex
+    if (isCorpusOnly) {
+      project = await projectService.createEmptyProject(name, user)
+    } else {
+      if (!pdf) {
+        throw new Error('PDF buffer is required for non-corpus projects')
+      }
+      project = await projectService.createProject(name, pdf, user)
+    }
 
     return c.redirect(resolveUrl(`/${user.login}/${project.slug}/edit/import`))
   } catch (err) {
