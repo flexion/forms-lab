@@ -18,13 +18,15 @@ export interface AuthoringEvaluator {
   ): Promise<SectionEvalResult[]>
 }
 
-const evalResultSchema = z.array(
-  z.object({
-    criterionId: z.string(),
-    pass: z.boolean(),
-    explanation: z.string(),
-  }),
-)
+const evalResultSchema = z.object({
+  results: z.array(
+    z.object({
+      criterionId: z.string(),
+      pass: z.boolean(),
+      explanation: z.string(),
+    }),
+  ),
+})
 
 export function createAuthoringEvaluator(modelId?: string): AuthoringEvaluator {
   const model = modelId ?? HAIKU_MODEL_ID
@@ -52,7 +54,7 @@ export function createAuthoringEvaluator(modelId?: string): AuthoringEvaluator {
           },
         ],
       })
-      return response.object
+      return response.object.results
     },
   }
 }

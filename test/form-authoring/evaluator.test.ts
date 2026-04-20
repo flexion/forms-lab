@@ -72,13 +72,15 @@ describe('evaluateSection', () => {
 
   test('returns pass/fail results per criterion', async () => {
     mockGenerateObject.mockResolvedValueOnce({
-      object: [
-        {
-          criterionId: 'income-types',
-          pass: false,
-          explanation: 'Missing unearned income distinction',
-        },
-      ],
+      object: {
+        results: [
+          {
+            criterionId: 'income-types',
+            pass: false,
+            explanation: 'Missing unearned income distinction',
+          },
+        ],
+      },
     })
 
     const evaluator = createAuthoringEvaluator()
@@ -95,7 +97,7 @@ describe('evaluateSection', () => {
 
   test('returns empty array when no criteria are relevant', async () => {
     mockGenerateObject.mockResolvedValueOnce({
-      object: [],
+      object: { results: [] },
     })
 
     const evaluator = createAuthoringEvaluator()
