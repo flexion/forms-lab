@@ -209,14 +209,15 @@ presentation.get('/', (c) => {
             <h2>The Problem</h2>
             <ul>
               <li>
-                Government forms: hundreds of fields, conditional logic,
-                sensitivity rules
+                Good forms require
+                <span class="accent">engineering</span>,
+                <span class="accent">domain expertise</span>, and
+                <span class="accent">UX focus</span>
               </li>
-              <li>Manual digitization is expensive and error-prone</li>
+              <li>That combination is expensive and scarce</li>
               <li>
                 PDF is the source of truth &mdash; but it encodes
-                <span class="accent">layout</span>, not
-                <span class="accent">structure</span>
+                layout, not structure
               </li>
             </ul>
           </section>
