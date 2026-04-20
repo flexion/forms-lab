@@ -243,6 +243,28 @@ const EditingShell: FC<{
 
         <aside class="editor-structure">
           <flex-form-structure />
+          {authoringCorpus && authoringCorpus.length > 0 ? (
+            <div class="editor-references">
+              <details class="editor-references__details" open>
+                <summary class="editor-references__summary">
+                  References ({authoringCorpus.length})
+                </summary>
+                <ul class="editor-references__list">
+                  {authoringCorpus.map((c, i) => (
+                    <li class="editor-references__item">
+                      <button
+                        type="button"
+                        class="editor-references__link"
+                        data-reference-index={i}
+                      >
+                        {c.source}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </div>
+          ) : null}
         </aside>
 
         <div class="editor-preview">
@@ -251,32 +273,61 @@ const EditingShell: FC<{
 
         <aside class="editor-assistant">
           {authoringStage ? (
-            <flex-pipeline-panel>
-              <script
-                type="application/json"
-                data-pipeline-state
-                dangerouslySetInnerHTML={{
-                  __html: safeJsonForScript({
-                    stage: authoringStage,
-                    criteria: authoringCriteria ?? {
-                      criteria: [],
-                      approvedAt: null,
-                    },
-                    editBase: resolveUrl(editBase),
-                    groups: spec
-                      ? spec.groups.map((g) => ({
-                          id: g.id,
-                          title: g.title,
-                          fieldCount: g.requirements.length,
-                        }))
-                      : [],
-                    corpus: authoringCorpus ?? [],
-                  }),
-                }}
-              />
-            </flex-pipeline-panel>
-          ) : null}
-          <flex-assistant />
+            <flex-sidebar-tabs data-default-tab="pipeline">
+              <div class="sidebar-tabs__header">
+                <button
+                  type="button"
+                  class="sidebar-tabs__tab"
+                  data-tab="pipeline"
+                  data-active
+                >
+                  Pipeline
+                </button>
+                <button
+                  type="button"
+                  class="sidebar-tabs__tab"
+                  data-tab="assistant"
+                >
+                  Assistant
+                </button>
+              </div>
+              <div class="sidebar-tabs__panel" data-tab-panel="pipeline">
+                <flex-pipeline-panel>
+                  <script
+                    type="application/json"
+                    data-pipeline-state
+                    dangerouslySetInnerHTML={{
+                      __html: safeJsonForScript({
+                        stage: authoringStage,
+                        criteria: authoringCriteria ?? {
+                          criteria: [],
+                          approvedAt: null,
+                        },
+                        editBase: resolveUrl(editBase),
+                        groups: spec
+                          ? spec.groups.map((g) => ({
+                              id: g.id,
+                              title: g.title,
+                              fieldCount: g.requirements.length,
+                            }))
+                          : [],
+                        corpus: authoringCorpus ?? [],
+                      }),
+                    }}
+                  />
+                </flex-pipeline-panel>
+              </div>
+              <div
+                class="sidebar-tabs__panel"
+                data-tab-panel="assistant"
+                hidden
+              >
+                <flex-assistant />
+              </div>
+            </flex-sidebar-tabs>
+          ) : (
+            <flex-assistant />
+          )}
         </aside>
       </div>
     </flex-form-editor>

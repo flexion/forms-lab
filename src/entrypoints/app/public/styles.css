@@ -89,6 +89,10 @@
 @import "../../../design-system/components/flex-variant-callout/styles.css" layer(block);
 @import "../../../design-system/components/flex-spec-browser/styles.css" layer(block);
 @import "../../../design-system/components/flex-spec-diff-browser/styles.css" layer(block);
+@import "../../../design-system/components/flex-criteria-editor/styles.css" layer(block);
+@import "../../../design-system/components/flex-eval-scorecard/styles.css" layer(block);
+@import "../../../design-system/components/flex-pipeline-panel/styles.css" layer(block);
+@import "../../../design-system/components/flex-sidebar-tabs/styles.css" layer(block);
 @import "../routes/projects/styles.css" layer(block);
 @import "../routes/owner/edit/styles.css" layer(block);
 @import "../routes/owner/edit/editor-layout.css" layer(block);
