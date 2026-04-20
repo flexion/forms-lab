@@ -291,7 +291,7 @@ presentation.get('/', (c) => {
             <div class="grid-2x2">
               <div class="cell">
                 <h3>Extraction</h3>
-                <p>PDF &rarr; structured fields, 10 variants</p>
+                <p>PDF &rarr; structured fields, 9 variants</p>
               </div>
               <div class="cell">
                 <h3>Shaping</h3>
@@ -343,38 +343,39 @@ presentation.get('/', (c) => {
               <tbody>
                 <tr>
                   <td>Sonnet baseline</td>
-                  <td>55%</td>
-                  <td>87%</td>
-                  <td>45%</td>
+                  <td>62%</td>
+                  <td>79%</td>
+                  <td>27%</td>
                 </tr>
                 <tr>
-                  <td>Few-shot</td>
+                  <td>Few-shot (3 exemplars)</td>
                   <td>55%</td>
                   <td>87%</td>
-                  <td>51%</td>
+                  <td>21%</td>
                 </tr>
                 <tr>
                   <td>Tool-use</td>
-                  <td>44%</td>
+                  <td>35%</td>
                   <td>96%</td>
-                  <td>96%</td>
+                  <td>79%</td>
                 </tr>
                 <tr class="highlight">
-                  <td>Hybrid v1</td>
+                  <td>Hybrid v1 (1 exemplar, temp=0)</td>
                   <td>73%</td>
                   <td>99%</td>
-                  <td>96%</td>
+                  <td>51%</td>
                 </tr>
                 <tr>
                   <td>RAG-grounded</td>
-                  <td>55%</td>
-                  <td>87%</td>
-                  <td>70%</td>
+                  <td>56%</td>
+                  <td>93%</td>
+                  <td>53%</td>
                 </tr>
               </tbody>
             </table>
             <p class="table-footer">
-              "Prompt shape matters more than few-shot examples"
+              "One exemplar beats three. Prompt shape matters more than
+              example count."
             </p>
           </section>
 
