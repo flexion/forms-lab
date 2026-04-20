@@ -56,6 +56,64 @@ export async function fetchUserProfile(token: string): Promise<GitHubUser> {
   return await response.json()
 }
 
+export interface GitHubEmail {
+  email: string
+  primary: boolean
+  verified: boolean
+  visibility: string | null
+}
+
+/**
+ * Fetch the authenticated user's email addresses. Requires the
+ * `user:email` OAuth scope. Returns all emails GitHub has on file
+ * for the user, including verified-ness and primary-ness.
+ *
+ * Note on trust: we only ever treat `verified: true` emails as
+ * identity signals. GitHub verifies by sending a confirmation email,
+ * which is a low bar but enough to prevent a user from claiming an
+ * arbitrary domain they don't control.
+ */
+export async function fetchUserEmails(token: string): Promise<GitHubEmail[]> {
+  const response = await fetch('https://api.github.com/user/emails', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github.v3+json',
+    },
+  })
+
+  if (!response.ok) {
+    // 404 here means the token lacks user:email scope. Return empty
+    // so the caller can decide whether that is fatal (strict email
+    // policy) or tolerable (login-allowlist fallback).
+    console.warn(`Email fetch failed: HTTP ${response.status}`)
+    return []
+  }
+
+  return await response.json()
+}
+
+/**
+ * Returns true when the user has a verified email whose domain
+ * matches one of the allowed domains (case-insensitive exact match).
+ * Returns false if `allowedDomains` is empty — callers should treat
+ * an empty list as "no domain policy" rather than "everyone denied".
+ */
+export function hasAllowedEmailDomain(
+  emails: GitHubEmail[],
+  allowedDomains: string[],
+): boolean {
+  if (allowedDomains.length === 0) return false
+  const normalised = allowedDomains.map((d) => d.toLowerCase().trim())
+  for (const email of emails) {
+    if (!email.verified) continue
+    const at = email.email.lastIndexOf('@')
+    if (at === -1) continue
+    const domain = email.email.slice(at + 1).toLowerCase()
+    if (normalised.includes(domain)) return true
+  }
+  return false
+}
+
 export async function checkOrgMembership(
   token: string,
   org: string,

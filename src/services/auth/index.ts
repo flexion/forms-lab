@@ -6,8 +6,11 @@ export {
   checkOrgMembership,
   checkRepoPermission,
   exchangeCodeForToken,
+  fetchUserEmails,
   fetchUserProfile,
+  type GitHubEmail,
   type GitHubUser,
+  hasAllowedEmailDomain,
 } from './github-oauth'
 
 export {

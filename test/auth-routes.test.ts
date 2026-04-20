@@ -54,7 +54,9 @@ describe('Auth Routes', () => {
       expect(url.origin).toBe('https://github.com')
       expect(url.pathname).toBe('/login/oauth/authorize')
       expect(url.searchParams.get('client_id')).toBe('test_client_id')
-      expect(url.searchParams.get('scope')).toBe('read:user read:org')
+      expect(url.searchParams.get('scope')).toBe(
+        'read:user read:org user:email',
+      )
       expect(url.searchParams.get('state')).toBeTruthy()
     })
 
