@@ -1,50 +1,49 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  services.caddy = {
-    enable = true;
-    # Global config — disable automatic HTTP→HTTPS redirects to use manual redirect below
-    # Caddy will still provision TLS certs using the EC2 public hostname
-    globalConfig = ''
-      auto_https disable_redirects
-    '';
-
-    # Base Caddyfile — webhook route is always present
-    # Branch routes are imported from /srv/forms-lab/caddy.d/*.caddy
-    extraConfig = ''
-      ec2-34-197-222-16.compute-1.amazonaws.com {
-        # Use self-signed certificate (Let's Encrypt won't issue for .compute.amazonaws.com)
-        tls internal
-
-        # Webhook listener on port 9000
-        handle /.webhook* {
-          uri strip_prefix /.webhook
-          reverse_proxy localhost:9000
-        }
-
-        # Read-only git HTTP (dumb transport — serves bare repo files)
-        handle /git/* {
-          root * /srv/forms-lab/repos
-          uri strip_prefix /git
-          file_server browse
-        }
-
-        # Import branch-specific routes first (more specific)
-        import /srv/forms-lab/caddy.d/branch-*.caddy
-
-        # Import root route last (catch-all)
-        import /srv/forms-lab/caddy.d/root.caddy
-
-        # Fallback for unmatched paths (if no routes defined)
-        respond "Forms Lab — no branch deployed at this path" 404
-      }
-
-      :80 {
-        redir https://{host}{uri} permanent
-      }
-    '';
+  options.flexion.hostname = lib.mkOption {
+    type = lib.types.str;
+    description = "Public hostname for the Forms Lab instance";
   };
 
-  # Ensure Caddy admin API is enabled (default: localhost:2019)
-  # The deploy script uses it to update routes atomically
+  options.flexion.tlsMode = lib.mkOption {
+    type = lib.types.enum [ "internal" "acme" ];
+    default = "internal";
+    description = "TLS mode: 'internal' for self-signed, 'acme' for Let's Encrypt";
+  };
+
+  config = {
+    services.caddy = {
+      enable = true;
+      globalConfig = ''
+        auto_https disable_redirects
+      '';
+
+      extraConfig = ''
+        ${config.flexion.hostname} {
+          ${if config.flexion.tlsMode == "internal" then "tls internal" else ""}
+
+          handle /.webhook* {
+            uri strip_prefix /.webhook
+            reverse_proxy localhost:9000
+          }
+
+          handle /git/* {
+            root * /srv/forms-lab/repos
+            uri strip_prefix /git
+            file_server browse
+          }
+
+          import /srv/forms-lab/caddy.d/branch-*.caddy
+          import /srv/forms-lab/caddy.d/root.caddy
+
+          respond "Forms Lab — no branch deployed at this path" 404
+        }
+
+        :80 {
+          redir https://{host}{uri} permanent
+        }
+      '';
+    };
+  };
 }
