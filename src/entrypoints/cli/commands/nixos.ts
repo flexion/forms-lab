@@ -3,7 +3,9 @@ import { resolve } from 'node:path'
 const pulumiDir = resolve(import.meta.dir, '../../../../infrastructure/pulumi')
 
 function printUsage(): void {
-  console.log('Usage: bun run cli nixos <subcommand> [--stack <name>] [options]\n')
+  console.log(
+    'Usage: bun run cli nixos <subcommand> [--stack <name>] [options]\n',
+  )
   console.log('Subcommands:')
   console.log(
     '  apply [--from-branch <name>] [--arm]  Apply NixOS config via SSH',
@@ -27,10 +29,13 @@ function getStackArgs(args: string[]): string[] {
 }
 
 async function getHostname(stackArgs: string[]): Promise<string | null> {
-  const proc = Bun.spawn(['pulumi', 'stack', 'output', 'hostname', ...stackArgs], {
-    cwd: pulumiDir,
-    stdout: 'pipe',
-  })
+  const proc = Bun.spawn(
+    ['pulumi', 'stack', 'output', 'hostname', ...stackArgs],
+    {
+      cwd: pulumiDir,
+      stdout: 'pipe',
+    },
+  )
   const text = await new Response(proc.stdout).text()
   const code = await proc.exited
   return code === 0 ? text.trim() : null
@@ -136,7 +141,9 @@ export async function nixos(args: string[]): Promise<number> {
       const isArm = args.includes('--arm')
       const flakeTarget = isArm ? 'forms-lab-arm' : 'forms-lab'
 
-      console.log(`Applying NixOS config (${flakeTarget}) from ${worktree} on ${hostname}...`)
+      console.log(
+        `Applying NixOS config (${flakeTarget}) from ${worktree} on ${hostname}...`,
+      )
 
       const rebuildCode = await sshExec(
         hostname,
