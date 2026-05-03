@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 const pulumiDir = resolve(import.meta.dir, '../../../../infrastructure/pulumi')
 
 function printUsage(): void {
-  console.log('Usage: bun run cli nixos <subcommand> [options]\n')
+  console.log('Usage: bun run cli nixos <subcommand> [--stack <name>] [options]\n')
   console.log('Subcommands:')
   console.log(
     '  apply [--from-branch <name>]  Apply NixOS config via SSH (default: main)',
@@ -14,13 +14,22 @@ function printUsage(): void {
   console.log(
     '  logs <service> [--follow]     Show logs for a service (e.g., app@story-3-pdf-upload)',
   )
+  console.log('\nOptions:')
+  console.log('  --stack <name>  Pulumi stack (default: current stack)')
 }
 
-async function getHostname(): Promise<string | null> {
-  const proc = Bun.spawn(['pulumi', 'stack', 'output', 'hostname'], {
+function getStackArgs(args: string[]): string[] {
+  const stackIdx = args.indexOf('--stack')
+  if (stackIdx !== -1 && args[stackIdx + 1]) {
+    return ['--stack', args[stackIdx + 1]]
+  }
+  return []
+}
+
+async function getHostname(stackArgs: string[]): Promise<string | null> {
+  const proc = Bun.spawn(['pulumi', 'stack', 'output', 'hostname', ...stackArgs], {
     cwd: pulumiDir,
     stdout: 'pipe',
-    env: { ...process.env, AWS_PROFILE: 'llm-class' },
   })
   const text = await new Response(proc.stdout).text()
   const code = await proc.exited
@@ -105,10 +114,11 @@ async function smokeTestServices(hostname: string): Promise<boolean> {
 
 export async function nixos(args: string[]): Promise<number> {
   const subcommand = args[0]
+  const stackArgs = getStackArgs(args)
 
   switch (subcommand) {
     case 'apply': {
-      const hostname = await getHostname()
+      const hostname = await getHostname(stackArgs)
       if (!hostname) {
         console.error('Could not get hostname from Pulumi outputs')
         return 1
@@ -146,7 +156,7 @@ export async function nixos(args: string[]): Promise<number> {
     }
 
     case 'status': {
-      const hostname = await getHostname()
+      const hostname = await getHostname(stackArgs)
       if (!hostname) {
         console.error('Could not get hostname from Pulumi outputs')
         return 1
@@ -168,7 +178,7 @@ export async function nixos(args: string[]): Promise<number> {
     }
 
     case 'logs': {
-      const hostname = await getHostname()
+      const hostname = await getHostname(stackArgs)
       if (!hostname) {
         console.error('Could not get hostname from Pulumi outputs')
         return 1
