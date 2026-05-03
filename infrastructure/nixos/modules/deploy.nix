@@ -20,9 +20,13 @@ let
 
     # Check if nixos config changed since last deployment
     if ! ${pkgs.diffutils}/bin/diff -qr infrastructure/nixos /etc/nixos >/dev/null 2>&1; then
-      echo "NixOS config changed, rebuilding..."
-      /run/wrappers/bin/sudo ${pkgs.rsync}/bin/rsync -av --delete infrastructure/nixos/ /etc/nixos/
-      /run/wrappers/bin/sudo ${pkgs.nixos-rebuild}/bin/nixos-rebuild switch --flake /etc/nixos#forms-lab
+      echo "NixOS config changes detected — skipping auto-rebuild"
+      echo "Manual apply required: bun run cli nixos apply"
+      # Notify via the notification service
+      ${pkgs.curl}/bin/curl -s -X POST http://localhost:9001/event \
+        -H "Content-Type: application/json" \
+        -d "{\"type\":\"deploy.nixos-changed\",\"title\":\"NixOS config changed in $SHA\",\"status\":\"warning\",\"details\":\"Manual apply required: bun run cli nixos apply\"}" \
+        || true
     else
       echo "No NixOS config changes"
     fi
@@ -183,20 +187,25 @@ let
 BUILD_GIT_SHA=$BUILD_GIT_SHA
 BUILDEOF
 
+    # Fetch secrets for .env file generation
+    GITHUB_CLIENT_ID=$(${pkgs.awscli2}/bin/aws secretsmanager get-secret-value \
+      --secret-id "forms-lab/github-client-id" --query 'SecretString' --output text --region us-east-1)
+    GITHUB_CLIENT_SECRET=$(${pkgs.awscli2}/bin/aws secretsmanager get-secret-value \
+      --secret-id "forms-lab/github-client-secret" --query 'SecretString' --output text --region us-east-1)
+    SESSION_SECRET=$(${pkgs.awscli2}/bin/aws secretsmanager get-secret-value \
+      --secret-id "forms-lab/session-secret" --query 'SecretString' --output text --region us-east-1)
+
     # Write per-branch env file
-    # All branches serve at /<branch>/
-    # OAuth secrets are read from sops-nix managed files in /run/secrets/
     cat > "$BRANCH_DIR/.env" <<ENVEOF
 PORT=$PORT
 BASE_PATH=/$UNIT_NAME/
-GITHUB_CLIENT_ID=$(cat /run/secrets/github-client-id 2>/dev/null || echo "")
-GITHUB_CLIENT_SECRET=$(cat /run/secrets/github-client-secret 2>/dev/null || echo "")
-SESSION_SECRET=$(cat /run/secrets/session-secret 2>/dev/null || echo "")
+GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID
+GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET
+SESSION_SECRET=$SESSION_SECRET
 GITHUB_AUTHZ_ORG=flexion
 ALLOWED_USERS=danielnaab,FlexionCodeReview
 ALLOWED_EMAIL_DOMAINS=flexion.us
 AWS_REGION=us-east-1
-AWS_BEDROCK_REGION=us-west-2
 CACHE_DB_PATH=/srv/forms-lab/cache.sqlite
 REPOS_PATH=/srv/forms-lab/repos
 ENVEOF
