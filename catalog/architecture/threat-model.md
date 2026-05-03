@@ -119,7 +119,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 - **Response manipulation** -- a compromised or spoofed API response could inject malicious content into generated specs.
 
 **Mitigations:**
-- API key stored as environment variable, not hardcoded. Managed via sops-nix on the server.
+- API key stored as environment variable, not hardcoded. Managed via AWS Secrets Manager, fetched by IAM instance role at service start.
 - Claude API uses HTTPS; data encrypted in transit.
 - PDF extraction uses a structured prompt with output schema validation; extracted specs are validated against TypeScript types before persistence.
 - LLM service uses strategy pattern (`PdfExtractor` interface) allowing implementation swaps without changing calling code.
@@ -136,7 +136,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 - **Information disclosure** -- webhook payloads contain repository metadata; the listener endpoint reveals that the deploy system exists.
 
 **Mitigations:**
-- HMAC-SHA256 signature validation using `X-Hub-Signature-256` header with constant-time comparison (`timingSafeEqual`). Webhook secret managed via sops-nix.
+- HMAC-SHA256 signature validation using `X-Hub-Signature-256` header with constant-time comparison (`timingSafeEqual`). Webhook secret managed via AWS Secrets Manager.
 - The webhook listener validates the signature before processing any payload.
 - Listener binds to localhost:9000 and is accessed via Caddy's `/.webhook` reverse proxy path, not as a separate public endpoint. This means webhook traffic also benefits from Caddy's TLS termination and HTTP parsing.
 - Only ports 22, 80, and 443 are open in the firewall; port 9000 is not directly accessible.
@@ -205,7 +205,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 - `POST /:owner/:slug/edit/save` enforces optimistic concurrency via a `parentSha` guard and returns `409` on stale parent — two tabs cannot silently clobber each other.
 - Every FormSpec change is committed to git with the user's intent as the commit message and the authenticated user as the author, providing an immutable audit trail.
 - LLM strategies are registered at server startup via the `FormShapingStrategyRegistry`; strategies are not user-configurable at runtime.
-- Communication with external LLM APIs uses HTTPS; credentials managed via environment variables and sops-nix.
+- Communication with external LLM APIs uses HTTPS; credentials managed via environment variables and AWS Secrets Manager.
 
 **Residual risk:** Prompt injection via form field labels is partially mitigated by output validation but cannot be fully prevented -- a carefully crafted label could influence the LLM to produce valid but unexpected suggestions. The risk is limited because the LLM cannot produce invalid FormSpec output (schema validation rejects it) and cannot directly modify the filesystem (mutations are applied by authenticated application code). FormSpec metadata sent to the LLM could reveal domain-specific information about government forms, acceptable per the LLM provider's data handling policies but a consideration for production deployments with sensitive form domains.
 
@@ -249,9 +249,9 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 
 **Threat:** API keys, webhook secrets, or OAuth credentials exposed in code, logs, or error messages.
 
-**Mitigations:** Secrets managed via sops-nix (encrypted in repo, decrypted only on host). Environment variables used at runtime, never hardcoded. Error messages and logs must not include secret values (aligned with Flexion security-compliance practices).
+**Mitigations:** Secrets managed via AWS Secrets Manager, fetched at service start by the EC2 instance's IAM role. No secrets stored on disk or in the repository. Environment variables used at runtime, never hardcoded. Error messages and logs must not include secret values (aligned with Flexion security-compliance practices).
 
-**Residual risk:** Secrets are decrypted on the host filesystem. A server compromise exposes all secrets. Acceptable for single-instance deployment.
+**Residual risk:** Secrets are held in process memory at runtime. A server compromise or memory dump could expose them. The deploy script writes OAuth secrets to per-branch `.env` files on disk for branch app services. The IAM role grants access to all `forms-lab/*` secrets; a compromised service can read secrets intended for other services. Acceptable for single-instance deployment.
 
 ## Risk summary
 
@@ -260,7 +260,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | Self-signed TLS | Browser-Caddy | Certain | Medium | TLS encryption in transit, but no CA chain | Accepted |
 | DDoS against public endpoint | Browser-Caddy | Medium | High | None | Accepted |
 | Path traversal via user input | Hono-Filesystem | Low | High | Slug generation, path validation | Mitigated |
-| API key exposure in logs | Hono-Claude API | Low | High | Env vars, sops-nix | Mitigated |
+| API key exposure in logs | Hono-Claude API | Low | High | Env vars, AWS Secrets Manager | Mitigated |
 | PDF data sent to external API | Hono-Claude API | Certain | Medium | Anthropic data policies, HTTPS | Accepted |
 | Prompt injection via PDF content | Hono-Claude API | Medium | Medium | Output validation, type checking | Partially mitigated |
 | Webhook forgery | GitHub-Webhook | Low | High | HMAC-SHA256 validation | Mitigated |
@@ -278,7 +278,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | Refinement-feedback prompt injection | Hono-LLM (form shaping) | Low | Low | Output validation, Zod schema enforcement | Partially mitigated |
 | Dependency supply chain | N/A | Low | High | Lock file, small dependency tree | Partially mitigated |
 | SSH open to all IPs | Infrastructure | Medium | Critical | Key-based auth only, no password | Partially mitigated |
-| Secrets exposure on host | Infrastructure | Low | Critical | sops-nix encryption | Partially mitigated |
+| Secrets exposure on host | Infrastructure | Low | Critical | AWS Secrets Manager, IAM role | Partially mitigated |
 | Path traversal via slug | Hono-Form project repos | Low | High | Server-side slug generation, argv-based git invocation | Mitigated |
 | Orphaned project rows on git failure | Hono-Form project repos | Low | Low | Atomic createProject with rollback | Mitigated |
 | Server crash during project creation | Hono-Form project repos | Low | Low | None — may require manual cleanup | Accepted |
@@ -301,6 +301,7 @@ See [system overview](system-overview.md) and [data model](data-model.md) for fu
 | 2026-04-15 | Story 4 v2 | Replaced full-spec rewrite with command-based shaping. LLM uses AI SDK tool-use mode to emit validated domain commands. Each command is individually executable and auditable. Command schemas replace free-form JSON validation as the primary integrity boundary for LLM output. |
 | 2026-04-17 | Story 4 review + PR #54 | Updated shaping route references for unified `/edit/save` (single commit endpoint, `parentSha` optimistic-concurrency guard). Added refinement-loop abuse and refinement-feedback prompt-injection threats surfaced in story-4 code review. |
 | 2026-04-18 | Story 7 | Added PDF output trust boundary for completed PDF download. Threats: unauthorized access, field mapping tampering. Both mitigated. |
+| 2026-05-02 | PR #122 | Updated secrets management references from sops-nix to AWS Secrets Manager. Updated residual risk for secrets to reflect IAM role fetch pattern and .env files on disk. |
 
 ## Sources
 
