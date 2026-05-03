@@ -18,9 +18,10 @@
     };
 
     script = ''
-      export SLACK_WEBHOOK_URL=$(cat ${config.sops.secrets.slack-webhook-url.path})
       export PORT=9001
-      exec ${config.flexion.entrypointWrapper}/bin/forms-lab-entrypoint notify /srv/forms-lab/main
+      exec ${config.flexion.fetchSecrets}/bin/forms-lab-fetch-secrets \
+        slack-webhook-url \
+        -- ${config.flexion.entrypointWrapper}/bin/forms-lab-entrypoint notify /srv/forms-lab/main
     '';
   };
 }
