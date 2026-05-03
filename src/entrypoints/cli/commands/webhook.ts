@@ -3,17 +3,11 @@ import { resolve } from 'node:path'
 const pulumiDir = resolve(import.meta.dir, '../../../../infrastructure/pulumi')
 
 function printUsage(): void {
-  console.log(
-    'Usage: bun run cli webhook <subcommand> [--stack <name>]\n',
-  )
+  console.log('Usage: bun run cli webhook <subcommand> [--stack <name>]\n')
   console.log('Subcommands:')
-  console.log(
-    '  setup        Show GitHub webhook configuration guide',
-  )
+  console.log('  setup        Show GitHub webhook configuration guide')
   console.log('\nOptions:')
-  console.log(
-    '  --stack <name>  Pulumi stack (default: current stack)',
-  )
+  console.log('  --stack <name>  Pulumi stack (default: current stack)')
 }
 
 function getStackArgs(args: string[]): string[] {
@@ -33,13 +27,7 @@ export async function webhook(args: string[]): Promise<number> {
       let hostname = '<hostname>'
       try {
         const proc = Bun.spawn(
-          [
-            'pulumi',
-            'stack',
-            'output',
-            'hostname',
-            ...stackArgs,
-          ],
+          ['pulumi', 'stack', 'output', 'hostname', ...stackArgs],
           {
             cwd: pulumiDir,
             stdout: 'pipe',
@@ -60,9 +48,7 @@ export async function webhook(args: string[]): Promise<number> {
       )
       console.log(`  Payload URL:    https://${hostname}/.webhook`)
       console.log('  Content type:   application/json')
-      console.log(
-        '  Secret:         (from AWS Secrets Manager: forms-lab/github-webhook-secret)',
-      )
+      console.log('  Secret:         (from Secrets Manager)')
       console.log('  Events:         Just the push event')
       console.log('  Active:         ✓\n')
       console.log(

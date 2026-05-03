@@ -3,15 +3,11 @@ import { resolve } from 'node:path'
 const pulumiDir = resolve(import.meta.dir, '../../../../infrastructure/pulumi')
 
 function printUsage(): void {
-  console.log(
-    'Usage: bun run cli deploy <subcommand> [--stack <name>]\n',
-  )
+  console.log('Usage: bun run cli deploy <subcommand> [--stack <name>]\n')
   console.log('Subcommands:')
   console.log('  homepage     Update and restart the homepage service')
   console.log('\nOptions:')
-  console.log(
-    '  --stack <name>  Pulumi stack (default: current stack)',
-  )
+  console.log('  --stack <name>  Pulumi stack (default: current stack)')
 }
 
 function getStackArgs(args: string[]): string[] {
@@ -22,9 +18,7 @@ function getStackArgs(args: string[]): string[] {
   return []
 }
 
-async function getHostname(
-  stackArgs: string[],
-): Promise<string | null> {
+async function getHostname(stackArgs: string[]): Promise<string | null> {
   const proc = Bun.spawn(
     ['pulumi', 'stack', 'output', 'hostname', ...stackArgs],
     {

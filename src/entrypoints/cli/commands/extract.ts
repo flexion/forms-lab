@@ -35,9 +35,7 @@ function getStackArgs(args: string[]): string[] {
   return []
 }
 
-async function getHostname(
-  stackArgs: string[],
-): Promise<string | null> {
+async function getHostname(stackArgs: string[]): Promise<string | null> {
   const proc = Bun.spawn(
     ['pulumi', 'stack', 'output', 'hostname', ...stackArgs],
     {
