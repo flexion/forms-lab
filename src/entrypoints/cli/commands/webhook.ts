@@ -3,23 +3,48 @@ import { resolve } from 'node:path'
 const pulumiDir = resolve(import.meta.dir, '../../../../infrastructure/pulumi')
 
 function printUsage(): void {
-  console.log('Usage: bun run cli webhook <subcommand>\n')
+  console.log(
+    'Usage: bun run cli webhook <subcommand> [--stack <name>]\n',
+  )
   console.log('Subcommands:')
-  console.log('  setup        Show GitHub webhook configuration guide')
+  console.log(
+    '  setup        Show GitHub webhook configuration guide',
+  )
+  console.log('\nOptions:')
+  console.log(
+    '  --stack <name>  Pulumi stack (default: current stack)',
+  )
+}
+
+function getStackArgs(args: string[]): string[] {
+  const stackIdx = args.indexOf('--stack')
+  if (stackIdx !== -1 && args[stackIdx + 1]) {
+    return ['--stack', args[stackIdx + 1]]
+  }
+  return []
 }
 
 export async function webhook(args: string[]): Promise<number> {
   const subcommand = args[0]
+  const stackArgs = getStackArgs(args)
 
   switch (subcommand) {
     case 'setup': {
       let hostname = '<hostname>'
       try {
-        const proc = Bun.spawn(['pulumi', 'stack', 'output', 'hostname'], {
-          cwd: pulumiDir,
-          stdout: 'pipe',
-          env: { ...process.env, AWS_PROFILE: 'llm-class' },
-        })
+        const proc = Bun.spawn(
+          [
+            'pulumi',
+            'stack',
+            'output',
+            'hostname',
+            ...stackArgs,
+          ],
+          {
+            cwd: pulumiDir,
+            stdout: 'pipe',
+          },
+        )
         const text = await new Response(proc.stdout).text()
         if ((await proc.exited) === 0 && text.trim()) {
           hostname = text.trim()
@@ -35,7 +60,9 @@ export async function webhook(args: string[]): Promise<number> {
       )
       console.log(`  Payload URL:    https://${hostname}/.webhook`)
       console.log('  Content type:   application/json')
-      console.log('  Secret:         (use the value from sops-nix secret)')
+      console.log(
+        '  Secret:         (from AWS Secrets Manager: forms-lab/github-webhook-secret)',
+      )
       console.log('  Events:         Just the push event')
       console.log('  Active:         ✓\n')
       console.log(

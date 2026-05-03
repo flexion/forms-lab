@@ -27,12 +27,24 @@ function printUsage(): void {
   )
 }
 
-async function getHostname(): Promise<string | null> {
-  const proc = Bun.spawn(['pulumi', 'stack', 'output', 'hostname'], {
-    cwd: pulumiDir,
-    stdout: 'pipe',
-    env: { ...process.env, AWS_PROFILE: 'llm-class' },
-  })
+function getStackArgs(args: string[]): string[] {
+  const stackIdx = args.indexOf('--stack')
+  if (stackIdx !== -1 && args[stackIdx + 1]) {
+    return ['--stack', args[stackIdx + 1]]
+  }
+  return []
+}
+
+async function getHostname(
+  stackArgs: string[],
+): Promise<string | null> {
+  const proc = Bun.spawn(
+    ['pulumi', 'stack', 'output', 'hostname', ...stackArgs],
+    {
+      cwd: pulumiDir,
+      stdout: 'pipe',
+    },
+  )
   const text = await new Response(proc.stdout).text()
   const code = await proc.exited
   return code === 0 ? text.trim() : null
@@ -40,6 +52,7 @@ async function getHostname(): Promise<string | null> {
 
 export async function extract(args: string[]): Promise<number> {
   const subcommand = args[0]
+  const stackArgs = getStackArgs(args)
 
   switch (subcommand) {
     case 'fixture': {
@@ -180,7 +193,7 @@ export async function extract(args: string[]): Promise<number> {
     }
 
     case 'sync': {
-      const hostname = await getHostname()
+      const hostname = await getHostname(stackArgs)
       if (!hostname) {
         console.error('Could not get hostname from Pulumi outputs')
         return 1
