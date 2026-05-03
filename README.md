@@ -13,13 +13,11 @@ step is a pluggable _variant_ that can be selected per user at runtime.
 
 ## Live demo
 
-Final project deployment for LLM Class 2026 Winter Cohort.
-
-- **Slide deck** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/main/presentation](https://ec2-34-197-222-16.compute-1.amazonaws.com/main/presentation)
-- **Catalog** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/main/catalog](https://ec2-34-197-222-16.compute-1.amazonaws.com/main/catalog)
+- **Dashboard** — [https://ec2-54-198-178-196.compute-1.amazonaws.com/](https://ec2-54-198-178-196.compute-1.amazonaws.com/) (deployment overview, branch list)
+- **Application** — [https://ec2-54-198-178-196.compute-1.amazonaws.com/main/](https://ec2-54-198-178-196.compute-1.amazonaws.com/main/) (main branch)
+- **Catalog** — [https://ec2-54-198-178-196.compute-1.amazonaws.com/main/catalog](https://ec2-54-198-178-196.compute-1.amazonaws.com/main/catalog)
   (architecture, decisions, experiments, personas, stories, design system)
-- **Application** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/](https://ec2-34-197-222-16.compute-1.amazonaws.com/) (browse branch deployments)
-- **"Production deployment"** — [https://ec2-34-197-222-16.compute-1.amazonaws.com/main/](https://ec2-34-197-222-16.compute-1.amazonaws.com/main/) (main branch)
+- **Slide deck** — [https://ec2-54-198-178-196.compute-1.amazonaws.com/main/presentation](https://ec2-54-198-178-196.compute-1.amazonaws.com/main/presentation)
 
 Each active branch is deployed at `/<branch>/` alongside main.
 

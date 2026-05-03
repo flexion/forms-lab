@@ -177,7 +177,7 @@ Use [conventional commits](https://www.conventionalcommits.org/) with scope:
 
 - `infra(nixos):` — NixOS configuration changes
 - `infra(webhook):` — Webhook or deployment logic
-- `infra(secrets):` — Secrets management (sops-nix)
+- `infra(secrets):` — Secrets management (AWS Secrets Manager)
 - `feat(component):` — New feature in a component
 - `fix(bug):` — Bug fix
 - `docs(arch):` — Documentation updates
