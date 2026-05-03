@@ -6,7 +6,7 @@ function printUsage(): void {
   console.log('Usage: bun run cli nixos <subcommand> [--stack <name>] [options]\n')
   console.log('Subcommands:')
   console.log(
-    '  apply [--from-branch <name>]  Apply NixOS config via SSH (default: main)',
+    '  apply [--from-branch <name>] [--arm]  Apply NixOS config via SSH',
   )
   console.log(
     '  status                        Show running services and health',
@@ -133,14 +133,17 @@ export async function nixos(args: string[]): Promise<number> {
       const safeBranch = branch.replace(/\//g, '-')
       const worktree = `/srv/forms-lab/${safeBranch}`
 
-      console.log(`Applying NixOS config from ${worktree} on ${hostname}...`)
+      const isArm = args.includes('--arm')
+      const flakeTarget = isArm ? 'forms-lab-arm' : 'forms-lab'
+
+      console.log(`Applying NixOS config (${flakeTarget}) from ${worktree} on ${hostname}...`)
 
       const rebuildCode = await sshExec(
         hostname,
         [
           `git config --global --add safe.directory ${worktree} 2>/dev/null || true`,
           `cd ${worktree}`,
-          `nixos-rebuild switch --flake ./infrastructure/nixos#forms-lab`,
+          `nixos-rebuild switch --flake ./infrastructure/nixos#${flakeTarget}`,
         ].join(' && '),
       )
 
