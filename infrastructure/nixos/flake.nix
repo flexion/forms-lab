@@ -3,21 +3,14 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, sops-nix }:
+  outputs = { self, nixpkgs }:
   let
-    system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-  in {
-    nixosConfigurations.forms-lab = nixpkgs.lib.nixosSystem {
+    # Support both x86_64 (existing prod) and aarch64 (prod-marketing)
+    mkSystem = system: nixpkgs.lib.nixosSystem {
       inherit system;
       modules = [
-        sops-nix.nixosModules.sops
         ./hardware-configuration.nix
         ./configuration.nix
         ./modules/users.nix
@@ -29,11 +22,11 @@
         ./modules/homepage.nix
         ./modules/notify.nix
         ./modules/notify-failure.nix
+        ./modules/secrets.nix
       ];
     };
-
-    devShells.${system}.default = pkgs.mkShell {
-      packages = [ pkgs.sops ];
-    };
+  in {
+    nixosConfigurations.forms-lab = mkSystem "x86_64-linux";
+    nixosConfigurations.forms-lab-arm = mkSystem "aarch64-linux";
   };
 }
