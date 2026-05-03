@@ -3,17 +3,35 @@ import { resolve } from 'node:path'
 const pulumiDir = resolve(import.meta.dir, '../../../../infrastructure/pulumi')
 
 function printUsage(): void {
-  console.log('Usage: bun run cli deploy <subcommand>\n')
+  console.log(
+    'Usage: bun run cli deploy <subcommand> [--stack <name>]\n',
+  )
   console.log('Subcommands:')
   console.log('  homepage     Update and restart the homepage service')
+  console.log('\nOptions:')
+  console.log(
+    '  --stack <name>  Pulumi stack (default: current stack)',
+  )
 }
 
-async function getHostname(): Promise<string | null> {
-  const proc = Bun.spawn(['pulumi', 'stack', 'output', 'hostname'], {
-    cwd: pulumiDir,
-    stdout: 'pipe',
-    env: { ...process.env, AWS_PROFILE: 'llm-class' },
-  })
+function getStackArgs(args: string[]): string[] {
+  const stackIdx = args.indexOf('--stack')
+  if (stackIdx !== -1 && args[stackIdx + 1]) {
+    return ['--stack', args[stackIdx + 1]]
+  }
+  return []
+}
+
+async function getHostname(
+  stackArgs: string[],
+): Promise<string | null> {
+  const proc = Bun.spawn(
+    ['pulumi', 'stack', 'output', 'hostname', ...stackArgs],
+    {
+      cwd: pulumiDir,
+      stdout: 'pipe',
+    },
+  )
   const text = await new Response(proc.stdout).text()
   const code = await proc.exited
   return code === 0 ? text.trim() : null
@@ -21,10 +39,11 @@ async function getHostname(): Promise<string | null> {
 
 export async function deploy(args: string[]): Promise<number> {
   const subcommand = args[0]
+  const stackArgs = getStackArgs(args)
 
   switch (subcommand) {
     case 'homepage': {
-      const hostname = await getHostname()
+      const hostname = await getHostname(stackArgs)
       if (!hostname) {
         console.error('Could not get hostname from Pulumi outputs')
         console.error(
