@@ -49,7 +49,7 @@
   users.groups.forms-lab = {};
 
   # Hostname — update after pulumi up provides the EC2 public DNS
-  flexion.hostname = "PLACEHOLDER-UPDATE-AFTER-PULUMI-UP";
+  flexion.hostname = "ec2-54-198-178-196.compute-1.amazonaws.com";
 
   # Allow forms-lab user to manage its own services, reload Caddy, and
   # apply NixOS config changes that arrive via the webhook-driven main deploy.
