@@ -10,7 +10,7 @@
     bun
     curl
     jq
-    sops
+    awscli2
   ];
 
   # Firewall
@@ -48,29 +48,8 @@
   };
   users.groups.forms-lab = {};
 
-  # sops-nix for secrets
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    age.keyFile = "/var/lib/sops-nix/key.txt";
-    secrets.github-webhook-secret = {
-      owner = "forms-lab";
-    };
-    secrets.github-token = {
-      owner = "forms-lab";
-    };
-    secrets.github-client-id = {
-      owner = "forms-lab";
-    };
-    secrets.github-client-secret = {
-      owner = "forms-lab";
-    };
-    secrets.session-secret = {
-      owner = "forms-lab";
-    };
-    secrets.slack-webhook-url = {
-      owner = "forms-lab";
-    };
-  };
+  # Hostname — update after pulumi up provides the EC2 public DNS
+  flexion.hostname = "PLACEHOLDER-UPDATE-AFTER-PULUMI-UP";
 
   # Allow forms-lab user to manage its own services, reload Caddy, and
   # apply NixOS config changes that arrive via the webhook-driven main deploy.
