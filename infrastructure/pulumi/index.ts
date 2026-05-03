@@ -7,11 +7,9 @@ const config = new pulumi.Config()
 const sshKeyPath = config.require('sshPublicKeyPath')
 const sshPublicKey = readFileSync(resolve(sshKeyPath), 'utf-8').trim()
 
-// Use NixOS 25.11 AMI for us-east-1
-// AMI ID from https://nixos.github.io/amis/ (updates weekly)
-// Note: Can't use getAmi() due to missing ec2:DescribeImages IAM permission
-const nixosAmiId = 'ami-0d1f1bc132c528d59' // NixOS 25.11.8107 x86_64 (2026-03-29)
-const nixosAmi = Promise.resolve({ id: nixosAmiId })
+const instanceType = config.get('instanceType') || 't3.medium'
+const amiId = config.require('amiId')
+const nixosAmi = Promise.resolve({ id: amiId })
 
 // SSH key pair
 const keyPair = new aws.ec2.KeyPair('forms-lab-key', {
@@ -103,10 +101,7 @@ const instanceProfile = new aws.iam.InstanceProfile('forms-lab-profile', {
 // EC2 instance
 const instance = new aws.ec2.Instance('forms-lab', {
   ami: nixosAmi.then((ami) => ami.id),
-  // Upgraded 2026-04-19: t3.small's 2 GB RAM OOM'd under ~48 branch
-  // app processes during the tier-2 experiment push. t3.medium (4 GB)
-  // accommodates the peak load. See project memory for the incident.
-  instanceType: 't3.medium',
+  instanceType: instanceType,
   keyName: keyPair.keyName,
   vpcSecurityGroupIds: [sg.id],
   iamInstanceProfile: instanceProfile.name,

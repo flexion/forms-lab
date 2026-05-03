@@ -2,3 +2,4 @@ config:
   aws:region: us-east-1
   aws:profile: llm-class
   forms-lab:sshPublicKeyPath: /home/daniel/.ssh/id_ed25519.pub
+  forms-lab:amiId: ami-0d1f1bc132c528d59
