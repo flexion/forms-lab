@@ -3,28 +3,35 @@ import { resolve } from 'node:path'
 const pulumiDir = resolve(import.meta.dir, '../../../../infrastructure/pulumi')
 
 function printUsage(): void {
-  console.log('Usage: bun run cli infra <subcommand>\n')
+  console.log('Usage: bun run cli infra <subcommand> [--stack <name>]\n')
   console.log('Subcommands:')
-  console.log('  bootstrap    Create S3 bucket for Pulumi state')
   console.log('  up           Provision/update EC2 via Pulumi')
   console.log('  outputs      Show hostname, IP, SSH command')
   console.log('  ssh          SSH into the EC2 instance')
+  console.log('\nOptions:')
+  console.log('  --stack <name>  Pulumi stack (default: current stack)')
+}
+
+function getStackArgs(args: string[]): string[] {
+  const stackIdx = args.indexOf('--stack')
+  if (stackIdx !== -1 && args[stackIdx + 1]) {
+    return ['--stack', args[stackIdx + 1]]
+  }
+  return []
 }
 
 async function runPulumi(args: string[]): Promise<number> {
   const proc = Bun.spawn(['pulumi', ...args], {
     cwd: pulumiDir,
     stdio: ['inherit', 'inherit', 'inherit'],
-    env: { ...process.env, AWS_PROFILE: 'llm-class' },
   })
   return await proc.exited
 }
 
-async function getOutput(name: string): Promise<string> {
-  const proc = Bun.spawn(['pulumi', 'stack', 'output', name], {
+async function getOutput(name: string, stackArgs: string[]): Promise<string> {
+  const proc = Bun.spawn(['pulumi', 'stack', 'output', name, ...stackArgs], {
     cwd: pulumiDir,
     stdout: 'pipe',
-    env: { ...process.env, AWS_PROFILE: 'llm-class' },
   })
   const text = await new Response(proc.stdout).text()
   await proc.exited
@@ -33,56 +40,16 @@ async function getOutput(name: string): Promise<string> {
 
 export async function infra(args: string[]): Promise<number> {
   const subcommand = args[0]
+  const stackArgs = getStackArgs(args)
 
   switch (subcommand) {
-    case 'bootstrap': {
-      console.log('Creating S3 bucket for Pulumi state...')
-      const proc = Bun.spawn(
-        [
-          'aws',
-          's3api',
-          'create-bucket',
-          '--bucket',
-          'forms-lab-pulumi-state',
-          '--region',
-          'us-east-1',
-        ],
-        {
-          stdio: ['inherit', 'inherit', 'inherit'],
-          env: { ...process.env, AWS_PROFILE: 'llm-class' },
-        },
-      )
-      const code = await proc.exited
-      if (code === 0) {
-        // Enable versioning
-        const ver = Bun.spawn(
-          [
-            'aws',
-            's3api',
-            'put-bucket-versioning',
-            '--bucket',
-            'forms-lab-pulumi-state',
-            '--versioning-configuration',
-            'Status=Enabled',
-          ],
-          {
-            stdio: ['inherit', 'inherit', 'inherit'],
-            env: { ...process.env, AWS_PROFILE: 'llm-class' },
-          },
-        )
-        await ver.exited
-        console.log('S3 bucket created with versioning enabled.')
-      }
-      return code
-    }
-
     case 'up':
-      return runPulumi(['up', '--yes'])
+      return runPulumi(['up', '--yes', ...stackArgs])
 
     case 'outputs': {
-      const exitCode = await runPulumi(['stack', 'output'])
+      const exitCode = await runPulumi(['stack', 'output', ...stackArgs])
       if (exitCode === 0) {
-        const hostname = await getOutput('hostname')
+        const hostname = await getOutput('hostname', stackArgs)
         if (hostname) {
           console.log(`\nSSH: ssh root@${hostname}`)
         }
@@ -91,7 +58,7 @@ export async function infra(args: string[]): Promise<number> {
     }
 
     case 'ssh': {
-      const hostname = await getOutput('hostname')
+      const hostname = await getOutput('hostname', stackArgs)
       if (!hostname) {
         console.error('Could not get hostname from Pulumi outputs')
         return 1
