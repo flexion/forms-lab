@@ -94,6 +94,39 @@ new aws.iam.RolePolicy('forms-lab-bedrock', {
   }),
 })
 
+new aws.iam.RolePolicy('forms-lab-secrets', {
+  role: role.id,
+  policy: JSON.stringify({
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Action: ['secretsmanager:GetSecretValue'],
+        Resource: [
+          'arn:aws:secretsmanager:us-east-1:*:secret:forms-lab/*',
+        ],
+      },
+    ],
+  }),
+})
+
+const secretNames = [
+  'github-webhook-secret',
+  'github-token',
+  'github-client-id',
+  'github-client-secret',
+  'session-secret',
+  'slack-webhook-url',
+]
+
+for (const name of secretNames) {
+  new aws.secretsmanager.Secret(`forms-lab-secret-${name}`, {
+    name: `forms-lab/${name}`,
+    description: `Forms Lab: ${name}`,
+    tags: { Project: 'forms-lab' },
+  })
+}
+
 const instanceProfile = new aws.iam.InstanceProfile('forms-lab-profile', {
   role: role.name,
 })
