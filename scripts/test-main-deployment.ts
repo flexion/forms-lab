@@ -17,7 +17,7 @@
  * the checklist at the end.
  *
  * Usage:
- *   BASE_URL=https://ec2-34-197-222-16.compute-1.amazonaws.com bun run scripts/test-main-deployment.ts
+ *   BASE_URL=https://forms.labs.flexion.us bun run scripts/test-main-deployment.ts
  *
  * Exit 0 on success, 1 on any failure.
  */
@@ -28,7 +28,7 @@ const baseUrl = (process.env.BASE_URL ?? '').replace(/\/$/, '')
 if (!baseUrl) {
   console.error('ERROR: BASE_URL env var required')
   console.error(
-    '  Example: BASE_URL=https://ec2-34-197-222-16.compute-1.amazonaws.com bun run scripts/test-main-deployment.ts',
+    '  Example: BASE_URL=https://forms.labs.flexion.us bun run scripts/test-main-deployment.ts',
   )
   process.exit(1)
 }

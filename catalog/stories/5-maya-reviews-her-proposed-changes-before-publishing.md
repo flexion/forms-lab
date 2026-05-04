@@ -58,4 +58,4 @@ As a **form creator (Maya)**, in order to **understand the impact of my changes 
 - [x] Comparison and diff infrastructure works for DataCollectionSpec and FormSpec
 - [x] Tests pass (707 tests, 0 failures)
 - [x] Type checking passes
-- [x] Deployed and demoable at https://ec2-34-197-222-16.compute-1.amazonaws.com/story-5-review-changes/
+- [x] Deployed and demoable at https://forms.labs.flexion.us/story-5-review-changes/
