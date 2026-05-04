@@ -7,7 +7,7 @@
 
   outputs = { self, nixpkgs }:
   let
-    # Support both x86_64 (existing prod) and aarch64 (prod-marketing)
+    # Default is aarch64 (prod-marketing Graviton); x86 variant available
     mkSystem = system: nixpkgs.lib.nixosSystem {
       inherit system;
       modules = [
@@ -26,7 +26,7 @@
       ];
     };
   in {
-    nixosConfigurations.forms-lab = mkSystem "x86_64-linux";
-    nixosConfigurations.forms-lab-arm = mkSystem "aarch64-linux";
+    nixosConfigurations.forms-lab = mkSystem "aarch64-linux";
+    nixosConfigurations.forms-lab-x86 = mkSystem "x86_64-linux";
   };
 }

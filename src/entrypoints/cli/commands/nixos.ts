@@ -8,7 +8,7 @@ function printUsage(): void {
   )
   console.log('Subcommands:')
   console.log(
-    '  apply [--from-branch <name>] [--arm]  Apply NixOS config via SSH',
+    '  apply [--from-branch <name>] [--x86]  Apply NixOS config via SSH',
   )
   console.log(
     '  status                        Show running services and health',
@@ -138,8 +138,8 @@ export async function nixos(args: string[]): Promise<number> {
       const safeBranch = branch.replace(/\//g, '-')
       const worktree = `/srv/forms-lab/${safeBranch}`
 
-      const isArm = args.includes('--arm')
-      const flakeTarget = isArm ? 'forms-lab-arm' : 'forms-lab'
+      const isX86 = args.includes('--x86')
+      const flakeTarget = isX86 ? 'forms-lab-x86' : 'forms-lab'
 
       console.log(
         `Applying NixOS config (${flakeTarget}) from ${worktree} on ${hostname}...`,
