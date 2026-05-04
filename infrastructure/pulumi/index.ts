@@ -9,6 +9,7 @@ const sshPublicKey = readFileSync(resolve(sshKeyPath), 'utf-8').trim()
 
 const instanceType = config.get('instanceType') || 't3.medium'
 const amiId = config.require('amiId')
+const domain = config.get('domain')
 const nixosAmi = Promise.resolve({ id: amiId })
 
 // SSH key pair
@@ -155,8 +156,27 @@ const eip = new aws.ec2.Eip('forms-lab-eip', {
   },
 })
 
+// Route53 hosted zone (only when domain is configured)
+let zone: aws.route53.Zone | undefined
+if (domain) {
+	zone = new aws.route53.Zone('forms-lab-zone', {
+		name: domain,
+		tags: { Name: 'forms-lab' },
+	})
+
+	new aws.route53.Record('forms-lab-a', {
+		zoneId: zone.zoneId,
+		name: domain,
+		type: 'A',
+		ttl: 300,
+		records: [eip.publicIp],
+	})
+}
+
 // Outputs
 export const instanceId = instance.id
 export const publicIp = eip.publicIp
 export const hostname = eip.publicDns
 export const sshCommand = pulumi.interpolate`ssh root@${eip.publicDns}`
+export const nameServers = zone?.nameServers
+export const domainName = domain
