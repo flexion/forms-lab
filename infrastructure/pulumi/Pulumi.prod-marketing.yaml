@@ -4,3 +4,4 @@ config:
   forms-lab:sshPublicKeyPath: /home/daniel/.ssh/id_ed25519.pub
   forms-lab:instanceType: t4g.medium
   forms-lab:amiId: ami-0b15df24682da2cd3
+  forms-lab:domain: forms.labs.flexion.us
