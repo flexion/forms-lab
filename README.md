@@ -13,11 +13,11 @@ step is a pluggable _variant_ that can be selected per user at runtime.
 
 ## Live demo
 
-- **Dashboard** — [https://ec2-54-198-178-196.compute-1.amazonaws.com/](https://ec2-54-198-178-196.compute-1.amazonaws.com/) (deployment overview, branch list)
-- **Application** — [https://ec2-54-198-178-196.compute-1.amazonaws.com/main/](https://ec2-54-198-178-196.compute-1.amazonaws.com/main/) (main branch)
-- **Catalog** — [https://ec2-54-198-178-196.compute-1.amazonaws.com/main/catalog](https://ec2-54-198-178-196.compute-1.amazonaws.com/main/catalog)
+- **Dashboard** — [https://forms.labs.flexion.us/](https://forms.labs.flexion.us/) (deployment overview, branch list)
+- **Application** — [https://forms.labs.flexion.us/main/](https://forms.labs.flexion.us/main/) (main branch)
+- **Catalog** — [https://forms.labs.flexion.us/main/catalog](https://forms.labs.flexion.us/main/catalog)
   (architecture, decisions, experiments, personas, stories, design system)
-- **Slide deck** — [https://ec2-54-198-178-196.compute-1.amazonaws.com/main/presentation](https://ec2-54-198-178-196.compute-1.amazonaws.com/main/presentation)
+- **Slide deck** — [https://forms.labs.flexion.us/main/presentation](https://forms.labs.flexion.us/main/presentation)
 
 Each active branch is deployed at `/<branch>/` alongside main.
 
