@@ -195,7 +195,7 @@ BUILDEOF
     SESSION_SECRET=$(${pkgs.awscli2}/bin/aws secretsmanager get-secret-value \
       --secret-id "forms-lab/session-secret" --query 'SecretString' --output text --region us-east-1)
 
-    # Write per-branch env file
+    # Write per-branch env file (owner-only permissions to protect secrets)
     cat > "$BRANCH_DIR/.env" <<ENVEOF
 PORT=$PORT
 BASE_PATH=/$UNIT_NAME/
@@ -209,6 +209,7 @@ AWS_REGION=us-east-1
 CACHE_DB_PATH=/srv/forms-lab/cache.sqlite
 REPOS_PATH=/srv/forms-lab/repos
 ENVEOF
+    ${pkgs.coreutils}/bin/chmod 600 "$BRANCH_DIR/.env"
 
     # Start or restart the service (use full path to sudo wrapper with setuid bit)
     /run/wrappers/bin/sudo ${pkgs.systemd}/bin/systemctl restart "forms-lab-app@$UNIT_NAME.service" || \

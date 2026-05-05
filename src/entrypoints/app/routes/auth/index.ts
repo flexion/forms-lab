@@ -142,8 +142,11 @@ export function createAuthRoutes(userStore: UserStore): Hono {
       }
 
       if (emailMatchDomain) {
+        const domain = emailMatchDomain.slice(
+          emailMatchDomain.lastIndexOf('@') + 1,
+        )
         console.log(
-          `Authorized ${ghUser.login} via email domain match: ${emailMatchDomain}`,
+          `Authorized ${ghUser.login} via email domain match: @${domain}`,
         )
       }
 
@@ -165,6 +168,7 @@ export function createAuthRoutes(userStore: UserStore): Hono {
 
       setCookie(c, COOKIE_NAME, encryptedSession, {
         httpOnly: true,
+        secure: true,
         sameSite: 'Lax',
         maxAge: COOKIE_MAX_AGE,
         path: '/',
