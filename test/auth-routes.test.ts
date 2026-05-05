@@ -121,6 +121,7 @@ describe('Auth Routes', () => {
       const cookie = res.headers.get('Set-Cookie')
       expect(cookie).toContain(COOKIE_NAME)
       expect(cookie).toContain('HttpOnly')
+      expect(cookie).toContain('Secure')
       expect(cookie).toContain('SameSite=Lax')
 
       // Verify user was persisted
