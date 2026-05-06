@@ -11,6 +11,7 @@ export {
 export { runEvaluation } from './harness'
 // Judges
 export { createBedrockFieldJudge } from './judge'
+export { createBedrockLayoutJudge } from './layout-judge'
 // Kinds
 export {
   layoutQualityKind,
