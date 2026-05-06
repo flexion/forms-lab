@@ -8,7 +8,7 @@ import {
   loadFixturePdf,
 } from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
-import { createUserStore } from '../../services/auth'
+import { createAccessStore, createUserStore } from '../../services/auth'
 import type { DataCollectionSpec } from '../../services/data-collection'
 import { createExtractorRegistry } from '../../services/extraction'
 import {
@@ -73,6 +73,7 @@ mkdirSync(reposPath, { recursive: true })
 const projectStore = createProjectStore(projectDbPath)
 const cacheStore = createCacheStore(cacheDbPath)
 const userStore = createUserStore(projectDbPath)
+const accessStore = createAccessStore(projectDbPath)
 const formProjectRepo = createFormProjectRepo(reposPath)
 
 // Variant registries: one per task. Each user's preferred variant is
@@ -286,7 +287,7 @@ app.use(
 )
 
 // Mount auth routes
-app.route('/auth', createAuthRoutes(userStore))
+app.route('/auth', createAuthRoutes(userStore, accessStore))
 
 // Mount settings routes (variant picker)
 app.route(
