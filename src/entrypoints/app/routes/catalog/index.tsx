@@ -66,12 +66,12 @@ catalog.get('/', async (c) => {
 
       <div class="l-stack" style="--stack-space: var(--flex-space-xl)">
         <section>
-          <p class="catalog-group-label">Presentation</p>
+          <p class="catalog-group-label">Presentations &amp; walkthroughs</p>
           <div class="l-grid" style="--grid-min: 280px">
             <ContentCard
               title="Slide Deck"
               href={resolveUrl('/presentation')}
-              description="15-minute live presentation — narrative arc, key findings, and demo"
+              description="Final project presentation for Flexion's LLMs In Production class — narrative arc, key findings, and live demo"
             />
             <ContentCard
               title="Walkthrough"

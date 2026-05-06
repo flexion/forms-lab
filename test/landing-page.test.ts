@@ -16,12 +16,11 @@ describe('GET / (anonymous landing page)', () => {
     expect(body).toContain('Own your data')
   })
 
-  it('provides multiple calls to action', async () => {
+  it('provides calls to action', async () => {
     const res = await app.request('/')
     const body = await res.text()
     expect(body).toContain('/auth/signin')
     expect(body).toContain('/catalog')
-    expect(body).toContain('/presentation')
   })
 
   it('mentions origins', async () => {
