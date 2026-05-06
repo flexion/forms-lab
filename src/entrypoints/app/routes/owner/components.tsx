@@ -1214,7 +1214,7 @@ export const LandingPage: FC<{ error?: string | null }> = ({ error }) => {
       )}
 
       <section class="l-stack">
-        <h1>Government forms shouldn't be this hard.</h1>
+        <h1>Forms shouldn't be this hard.</h1>
         <p>
           Forms Lab is an experiment in making high-quality digital forms
           achievable for any public sector organization. It combines practical
@@ -1231,7 +1231,7 @@ export const LandingPage: FC<{ error?: string | null }> = ({ error }) => {
 
       <section class="l-stack">
         <h2>What it does</h2>
-        <dl class="l-stack">
+        <dl class="l-grid" style="--grid-min: 300px">
           <div>
             <dt>
               <strong>Upload a PDF, get a structured specification</strong>
@@ -1283,29 +1283,25 @@ export const LandingPage: FC<{ error?: string | null }> = ({ error }) => {
             Try it — sign in with GitHub
           </a>
         </p>
-        <p>
-          <a href={resolveUrl('/catalog')}>Learn more</a> — browse architecture
-          decisions, experiments, and design rationale.
-        </p>
-        <p>
-          <a href={resolveUrl('/presentation')}>Watch the presentation</a> — a
-          guided overview you can share with colleagues.
+        <p class="l-cluster">
+          <a href={resolveUrl('/catalog')}>Learn more</a>
+          <span aria-hidden="true">•</span>
+          <a href={resolveUrl('/presentation')}>Watch the presentation</a>
         </p>
       </section>
 
-      <section class="l-stack">
-        <p>
-          <small>
-            Forms Lab grew out of{' '}
-            <a href="https://github.com/flexion/llm-class-2026-winter-cohort">
-              Flexion's LLMs In Production class
-            </a>
-            , building on experience from the{' '}
-            <a href="https://github.com/gsa-tts/forms">10x Form Platform</a> (
-            <a href="https://github.com/flexion/forms">Flexion fork</a>).
-          </small>
-        </p>
-      </section>
+      <hr style="border: 0; border-top: 1px solid var(--flex-color-border); margin-block: var(--flex-space-lg) var(--flex-space-md);" />
+      <p style="text-align: center;">
+        <small>
+          Forms Lab grew out of{' '}
+          <a href="https://github.com/flexion/llm-class-2026-winter-cohort">
+            Flexion's LLMs In Production class
+          </a>
+          , building on experience from the{' '}
+          <a href="https://github.com/gsa-tts/forms">10x Form Platform</a> (
+          <a href="https://github.com/flexion/forms">Flexion fork</a>).
+        </small>
+      </p>
     </div>
   )
 }
