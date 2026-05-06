@@ -166,7 +166,7 @@ flex-pipeline-panel {
 .pipeline-panel__criterion-source {
   color: var(--flex-color-text-muted);
   white-space: nowrap;
-  font-size: 0.65rem;
+  font-size: var(--flex-text-3xs);
 }
 
 .pipeline-panel__criterion-actions {
@@ -227,7 +227,7 @@ flex-pipeline-panel {
   list-style: none;
   padding: 0;
   margin: var(--flex-space-xs) 0 0;
-  font-size: 0.65rem;
+  font-size: var(--flex-text-3xs);
   color: var(--flex-color-text-muted);
   max-height: 150px;
   overflow-y: auto;

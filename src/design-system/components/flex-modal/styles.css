@@ -63,7 +63,7 @@ flex-modal {
 }
 
 .flex-modal__body {
-  font-size: 1.06rem;
+  font-size: var(--flex-text-md);
   line-height: 1.5;
   color: var(--flex-color-text);
 }
@@ -80,7 +80,7 @@ flex-modal {
   background-color: transparent;
   border: 0;
   color: var(--flex-color-text-muted);
-  font-size: 0.93rem;
+  font-size: var(--flex-text-xs);
   margin: -2rem 0 0 auto;
   padding: 0.25rem;
   inline-size: auto;

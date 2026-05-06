@@ -3,7 +3,7 @@
 
 .flex-pagination {
   margin-block: 1rem;
-  font-size: 1.06rem;
+  font-size: var(--flex-text-md);
   line-height: 1.5;
   color: var(--flex-color-text);
   background-color: var(--flex-color-bg);

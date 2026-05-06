@@ -2,7 +2,7 @@
    Agency identification with logos, required links, and disclaimers */
 
 .flex-identifier {
-  font-size: 1.06rem;
+  font-size: var(--flex-text-md);
   line-height: 1.3;
   color: var(--flex-white);
   background-color: var(--flex-gray-90);

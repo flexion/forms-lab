@@ -47,7 +47,7 @@
 }
 
 .prose h4 {
-  font-size: 0.98rem;
+  font-size: var(--flex-text-xs);
   line-height: 1.2;
   font-weight: 700;
   margin-block-start: var(--flex-space-lg);
@@ -55,7 +55,7 @@
 }
 
 .prose h5 {
-  font-size: 0.91rem;
+  font-size: var(--flex-text-xs);
   line-height: 1.2;
   font-weight: 700;
   margin-block-start: var(--flex-space-md);
@@ -63,7 +63,7 @@
 }
 
 .prose h6 {
-  font-size: 0.87rem;
+  font-size: var(--flex-text-2xs);
   line-height: 1.1;
   font-weight: 400;
   letter-spacing: 0.025em;

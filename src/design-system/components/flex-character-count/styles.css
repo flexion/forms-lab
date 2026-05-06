@@ -8,7 +8,7 @@ flex-character-count {
 .flex-character-count__message {
   display: inline-block;
   padding-block-start: 0.25rem;
-  font-size: 1rem;
+  font-size: var(--flex-text-sm);
   color: var(--flex-color-text);
   line-height: 1.3;
 
