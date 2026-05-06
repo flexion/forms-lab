@@ -81,6 +81,19 @@ interface FormRouterDeps {
     specVersion: string,
   ) => Promise<FieldMapping | null>
   accessStore?: AccessStore
+  /** Resolves owner/slug from route context. When provided, routes use
+   *  project-scoped URL shapes (/:owner/:slug/forms/...). */
+  resolveOwnerSlug?: (c: Context) => { owner: string; slug: string }
+  /** Resolves specs for a project by owner/slug. Used in project-scoped mode. */
+  getSpecsByProject?: (
+    owner: string,
+    slug: string,
+    ref?: string,
+  ) => Promise<ResolvedSpecs | null>
+  /** Resolves project info for a specId. Used by My Sessions to build project-scoped URLs. */
+  resolveProjectForSpec?: (
+    specId: string,
+  ) => Promise<{ owner: string; slug: string } | null>
 }
 
 const MAIN_BRANCH = 'main'
@@ -94,6 +107,15 @@ function formPathPrefix(specId: string, branch: string): string {
   return branch === MAIN_BRANCH
     ? `/forms/${specId}`
     : `/forms/${specId}/branches/${branch}`
+}
+
+function projectFormPathPrefix(
+  owner: string,
+  slug: string,
+  branch: string,
+): string {
+  const base = `/${owner}/${slug}/forms`
+  return branch === MAIN_BRANCH ? base : `${base}/branches/${branch}`
 }
 
 function isPreview(branch: string): boolean {
@@ -132,157 +154,195 @@ export function createFormRouter(deps: FormRouterDeps) {
     getEditHref,
     getSourcePdf,
     getFieldMapping,
+    resolveOwnerSlug,
+    getSpecsByProject,
   } = deps
   const forms = new Hono()
+
+  /**
+   * Resolve specs and URL prefix from the request context. In project-scoped
+   * mode (resolveOwnerSlug + getSpecsByProject provided), owner/slug come from
+   * route params and URLs use the `/:owner/:slug/forms` shape. In legacy mode,
+   * specId is read from the `:specId` route param.
+   */
+  async function resolveFormContext(c: Context): Promise<{
+    specs: ResolvedSpecs
+    prefix: string
+    branch: string
+    owner?: string
+    slug?: string
+  } | null> {
+    const branch = readBranch(c)
+    if (resolveOwnerSlug && getSpecsByProject) {
+      const { owner, slug } = resolveOwnerSlug(c)
+      const specs = await getSpecsByProject(owner, slug, branch)
+      if (!specs) return null
+      return {
+        specs,
+        prefix: projectFormPathPrefix(owner, slug, branch),
+        branch,
+        owner,
+        slug,
+      }
+    }
+    const specId = c.req.param('specId')
+    if (!specId) return null
+    const specs = await getSpecs(specId, branch)
+    if (!specs) return null
+    return { specs, prefix: formPathPrefix(specs.dataSpec.id, branch), branch }
+  }
 
   // All form routes require authentication
   forms.use('*', requireAuth(deps.accessStore))
 
-  // Forms index
-  forms.get('/', async (c) => {
-    const allSpecs = await listSpecs()
-    return c.html(
-      <Layout user={c.get('user')} title="Forms" currentPath="/forms">
-        <div class="flex-form" data-size="large">
-          <div
-            class="l-cluster"
-            style="justify-content: space-between; align-items: baseline;"
-          >
-            <h1>Available Forms</h1>
-            <a href={resolveUrl('/forms/sessions')}>My sessions</a>
-          </div>
-          {allSpecs.length === 0 ? (
-            <p>No forms available.</p>
-          ) : (
-            <table class="flex-table" data-variant="borderless">
-              <thead>
-                <tr>
-                  <th scope="col">Form</th>
-                  <th scope="col">Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                {allSpecs.map(({ dataSpec, formSpec }) => (
-                  <tr key={dataSpec.id}>
-                    <th scope="row">
-                      <a href={resolveUrl(`/forms/${dataSpec.id}`)}>
-                        {formSpec.title}
-                      </a>
-                    </th>
-                    <td>{formSpec.description ?? ''}</td>
+  // Forms index — only in legacy (non-project-scoped) mode.
+  // In project-scoped mode, '/' is the form landing page.
+  if (!resolveOwnerSlug) {
+    forms.get('/', async (c) => {
+      const allSpecs = await listSpecs()
+      return c.html(
+        <Layout user={c.get('user')} title="Forms" currentPath="/forms">
+          <div class="flex-form" data-size="large">
+            <div
+              class="l-cluster"
+              style="justify-content: space-between; align-items: baseline;"
+            >
+              <h1>Available Forms</h1>
+              <a href={resolveUrl('/forms/sessions')}>My sessions</a>
+            </div>
+            {allSpecs.length === 0 ? (
+              <p>No forms available.</p>
+            ) : (
+              <table class="flex-table" data-variant="borderless">
+                <thead>
+                  <tr>
+                    <th scope="col">Form</th>
+                    <th scope="col">Description</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </Layout>,
-    )
-  })
+                </thead>
+                <tbody>
+                  {allSpecs.map(({ dataSpec, formSpec }) => (
+                    <tr key={dataSpec.id}>
+                      <th scope="row">
+                        <a href={resolveUrl(`/forms/${dataSpec.id}`)}>
+                          {formSpec.title}
+                        </a>
+                      </th>
+                      <td>{formSpec.description ?? ''}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </Layout>,
+      )
+    })
+  }
 
-  // My sessions
-  forms.get('/sessions', async (c) => {
-    const user = c.get('user')
-    if (!user) return c.text('Unauthorized', 401)
-    const sessions = sessionGateway.listByOwner(user.login)
-    const active = sessions.filter((s) => s.status === 'active')
-    const submitted = sessions.filter((s) => s.status === 'submitted')
-    // Resolve titles up front so the JSX below can stay synchronous.
-    const uniqueSpecIds = [...new Set(sessions.map((s) => s.specId))]
-    const titlesEntries = await Promise.all(
-      uniqueSpecIds.map(async (specId) => {
-        const specs = await getSpecs(specId)
-        return [specId, specs?.formSpec.title ?? specId] as const
-      }),
-    )
-    const titles = new Map<string, string>(titlesEntries)
-    return c.html(
-      <Layout user={user} title="My Sessions" currentPath="/forms">
-        <div class="flex-form" data-size="large">
-          <h1>My Sessions</h1>
-          {sessions.length === 0 ? (
-            <p>
-              You have no form sessions.{' '}
-              <a href={resolveUrl('/forms')}>Browse available forms</a> to get
-              started.
-            </p>
-          ) : (
-            <>
-              {active.length > 0 && (
-                <>
-                  <h2>In Progress</h2>
-                  <ul class="l-stack">
-                    {active.map((s) => {
-                      const title = titles.get(s.specId) ?? s.specId
-                      return (
-                        <li key={s.id}>
-                          <a
-                            href={resolveUrl(
-                              `/forms/${s.specId}/sessions/${s.id}/pages/0`,
-                            )}
-                          >
-                            <strong>{title}</strong>
-                          </a>
-                          <span class="u-text-muted">
-                            {' '}
-                            — started{' '}
-                            {new Date(s.createdAt).toLocaleDateString()}
-                          </span>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </>
-              )}
-              {submitted.length > 0 && (
-                <>
-                  <h2>Completed</h2>
-                  <ul class="l-stack">
-                    {submitted.map((s) => {
-                      const title = titles.get(s.specId) ?? s.specId
-                      return (
-                        <li key={s.id}>
-                          <a
-                            href={resolveUrl(
-                              `/forms/sessions/${s.id}/submission`,
-                            )}
-                          >
-                            <strong>{title}</strong>
-                          </a>
-                          <span class="u-text-muted">
-                            {' '}
-                            — submitted{' '}
-                            {new Date(s.createdAt).toLocaleDateString()}
-                          </span>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </>
-              )}
-            </>
-          )}
-        </div>
-      </Layout>,
-    )
-  })
+  // My sessions — only in legacy mode; project-scoped mode
+  // will be updated in Task 5.
+  if (!resolveOwnerSlug) {
+    forms.get('/sessions', async (c) => {
+      const user = c.get('user')
+      if (!user) return c.text('Unauthorized', 401)
+      const sessions = sessionGateway.listByOwner(user.login)
+      const active = sessions.filter((s) => s.status === 'active')
+      const submitted = sessions.filter((s) => s.status === 'submitted')
+      // Resolve titles up front so the JSX below can stay synchronous.
+      const uniqueSpecIds = [...new Set(sessions.map((s) => s.specId))]
+      const titlesEntries = await Promise.all(
+        uniqueSpecIds.map(async (specId) => {
+          const specs = await getSpecs(specId)
+          return [specId, specs?.formSpec.title ?? specId] as const
+        }),
+      )
+      const titles = new Map<string, string>(titlesEntries)
+      return c.html(
+        <Layout user={user} title="My Sessions" currentPath="/forms">
+          <div class="flex-form" data-size="large">
+            <h1>My Sessions</h1>
+            {sessions.length === 0 ? (
+              <p>
+                You have no form sessions.{' '}
+                <a href={resolveUrl('/forms')}>Browse available forms</a> to get
+                started.
+              </p>
+            ) : (
+              <>
+                {active.length > 0 && (
+                  <>
+                    <h2>In Progress</h2>
+                    <ul class="l-stack">
+                      {active.map((s) => {
+                        const title = titles.get(s.specId) ?? s.specId
+                        return (
+                          <li key={s.id}>
+                            <a
+                              href={resolveUrl(
+                                `/forms/${s.specId}/sessions/${s.id}/pages/0`,
+                              )}
+                            >
+                              <strong>{title}</strong>
+                            </a>
+                            <span class="u-text-muted">
+                              {' '}
+                              — started{' '}
+                              {new Date(s.createdAt).toLocaleDateString()}
+                            </span>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </>
+                )}
+                {submitted.length > 0 && (
+                  <>
+                    <h2>Completed</h2>
+                    <ul class="l-stack">
+                      {submitted.map((s) => {
+                        const title = titles.get(s.specId) ?? s.specId
+                        return (
+                          <li key={s.id}>
+                            <a
+                              href={resolveUrl(
+                                `/forms/sessions/${s.id}/submission`,
+                              )}
+                            >
+                              <strong>{title}</strong>
+                            </a>
+                            <span class="u-text-muted">
+                              {' '}
+                              — submitted{' '}
+                              {new Date(s.createdAt).toLocaleDateString()}
+                            </span>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </Layout>,
+      )
+    })
+  }
 
   // -----------------------------------------------------------------
-  // Handlers — parameterized on branch. Two sub-paths mount each one:
-  //   1. /:specId/...            (main branch — the legacy URL shape)
-  //   2. /:specId/branches/:branch/...
+  // Handlers — parameterized on branch. In project-scoped mode
+  // (resolveOwnerSlug provided), routes use /:owner/:slug/forms/...;
+  // in legacy mode, routes use /:specId/...
   // Both call into these handlers with `readBranch(c)` returning the
   // resolved branch name. The preview banner is rendered whenever the
   // branch is non-main.
   // -----------------------------------------------------------------
 
   async function handleLanding(c: Context) {
-    const branch = readBranch(c)
-    const specId = c.req.param('specId')
-    if (!specId) return c.notFound()
-    const specs = await getSpecs(specId, branch)
-    if (!specs) return c.notFound()
-    const prefix = formPathPrefix(specs.dataSpec.id, branch)
+    const ctx = await resolveFormContext(c)
+    if (!ctx) return c.notFound()
+    const { specs, prefix, branch } = ctx
     return c.html(
       <Layout
         user={c.get('user')}
@@ -299,11 +359,9 @@ export function createFormRouter(deps: FormRouterDeps) {
   }
 
   async function handleCreateSession(c: Context) {
-    const branch = readBranch(c)
-    const specId = c.req.param('specId')
-    if (!specId) return c.notFound()
-    const specs = await getSpecs(specId, branch)
-    if (!specs) return c.notFound()
+    const ctx = await resolveFormContext(c)
+    if (!ctx) return c.notFound()
+    const { specs, prefix } = ctx
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.createSession(
@@ -312,17 +370,14 @@ export function createFormRouter(deps: FormRouterDeps) {
       user.login,
       specs.sha,
     )
-    const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.redirect(resolveUrl(`${prefix}/sessions/${session.id}/pages/0`))
   }
 
   async function handleRenderPage(c: Context) {
-    const branch = readBranch(c)
-    const specId = c.req.param('specId')
+    const ctx = await resolveFormContext(c)
     const sessionId = c.req.param('sessionId')
-    if (!specId || !sessionId) return c.notFound()
-    const specs = await getSpecs(specId, branch)
-    if (!specs) return c.notFound()
+    if (!ctx || !sessionId) return c.notFound()
+    const { specs, prefix, branch } = ctx
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.getSession(sessionId)
@@ -331,7 +386,6 @@ export function createFormRouter(deps: FormRouterDeps) {
     const pageIndex = Number(c.req.param('pageIndex'))
     const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
     if (pageIndex < 0 || pageIndex >= resolved.pages.length) return c.notFound()
-    const prefix = formPathPrefix(specs.dataSpec.id, branch)
     const prev = findPrevPage(resolved, pageIndex, session.fields)
     const prevUrl =
       prev !== null
@@ -380,12 +434,10 @@ export function createFormRouter(deps: FormRouterDeps) {
   }
 
   async function handleSubmitPage(c: Context) {
-    const branch = readBranch(c)
-    const specId = c.req.param('specId')
+    const ctx = await resolveFormContext(c)
     const sessionId = c.req.param('sessionId')
-    if (!specId || !sessionId) return c.notFound()
-    const specs = await getSpecs(specId, branch)
-    if (!specs) return c.notFound()
+    if (!ctx || !sessionId) return c.notFound()
+    const { specs, prefix, branch } = ctx
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.getSession(sessionId)
@@ -408,8 +460,6 @@ export function createFormRouter(deps: FormRouterDeps) {
     const hasErrors = Object.values(validated).some(
       (e) => e.errors && e.errors.length > 0,
     )
-
-    const prefix = formPathPrefix(specs.dataSpec.id, branch)
 
     if (hasErrors) {
       const mergedFields = { ...session.fields, ...validated }
@@ -463,19 +513,16 @@ export function createFormRouter(deps: FormRouterDeps) {
   }
 
   async function handleReview(c: Context) {
-    const branch = readBranch(c)
-    const specId = c.req.param('specId')
+    const ctx = await resolveFormContext(c)
     const sessionId = c.req.param('sessionId')
-    if (!specId || !sessionId) return c.notFound()
-    const specs = await getSpecs(specId, branch)
-    if (!specs) return c.notFound()
+    if (!ctx || !sessionId) return c.notFound()
+    const { specs, prefix, branch } = ctx
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.getSession(sessionId)
     if (!session) return c.notFound()
     if (session.ownerId !== user.login) return c.notFound()
     const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
-    const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.html(
       <Layout user={user} title="Review" currentPath="/forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
@@ -490,12 +537,10 @@ export function createFormRouter(deps: FormRouterDeps) {
   }
 
   async function handleSubmit(c: Context) {
-    const branch = readBranch(c)
-    const specId = c.req.param('specId')
+    const ctx = await resolveFormContext(c)
     const sessionId = c.req.param('sessionId')
-    if (!specId || !sessionId) return c.notFound()
-    const specs = await getSpecs(specId, branch)
-    if (!specs) return c.notFound()
+    if (!ctx || !sessionId) return c.notFound()
+    const { specs, prefix } = ctx
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.getSession(sessionId)
@@ -512,7 +557,6 @@ export function createFormRouter(deps: FormRouterDeps) {
       specs.dataSpec,
       specs.formSpec,
     )
-    const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.redirect(
       resolveUrl(
         `${prefix}/sessions/${session.id}/confirmation?submissionId=${submission.id}`,
@@ -521,7 +565,6 @@ export function createFormRouter(deps: FormRouterDeps) {
   }
 
   async function handleConfirmation(c: Context) {
-    const branch = readBranch(c)
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const submissionId = c.req.query('submissionId')
@@ -529,11 +572,17 @@ export function createFormRouter(deps: FormRouterDeps) {
     const submission = submissionGateway.getSubmission(submissionId)
     if (!submission) return c.notFound()
     if (submission.ownerId !== user.login) return c.notFound()
-    const specs = await getSpecs(submission.specId, branch)
+    const ctx = await resolveFormContext(c)
+    const branch = readBranch(c)
     return c.html(
       <Layout user={user} title="Confirmation" currentPath="/forms">
-        {specs
-          ? previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)
+        {ctx
+          ? previewBannerFor(
+              branch,
+              ctx.specs.sha,
+              getEditHref,
+              ctx.specs.dataSpec.id,
+            )
           : null}
         <FormConfirmation
           submission={submission}
@@ -636,19 +685,18 @@ export function createFormRouter(deps: FormRouterDeps) {
   }
 
   async function handleChatView(c: Context) {
-    const branch = readBranch(c)
-    const specId = c.req.param('specId')
     const sessionId = c.req.param('sessionId')
     const pageIndex = Number(c.req.param('pageIndex'))
-    if (!specId || !sessionId || Number.isNaN(pageIndex)) return c.notFound()
+    if (!sessionId || Number.isNaN(pageIndex)) return c.notFound()
 
     // Check if conversational mode is enabled
     if (!conversationGateway || !fillingAgent) {
       return c.text('Conversational mode not available', 503)
     }
 
-    const specs = await getSpecs(specId, branch)
-    if (!specs) return c.notFound()
+    const ctx = await resolveFormContext(c)
+    if (!ctx) return c.notFound()
+    const { specs, prefix, branch } = ctx
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.getSession(sessionId)
@@ -704,8 +752,6 @@ export function createFormRouter(deps: FormRouterDeps) {
     })
 
     const visibleGroups = filterVisibleGroups(page.groups, session.fields)
-
-    const prefix = formPathPrefix(specs.dataSpec.id, branch)
 
     // Prepare initial messages for flex-assistant (strip internal annotations)
     const initialMessages = messages.map((m) => ({
@@ -789,19 +835,18 @@ export function createFormRouter(deps: FormRouterDeps) {
   }
 
   async function handleChatMessage(c: Context) {
-    const branch = readBranch(c)
-    const specId = c.req.param('specId')
     const sessionId = c.req.param('sessionId')
     const pageIndex = Number(c.req.param('pageIndex'))
-    if (!specId || !sessionId || Number.isNaN(pageIndex)) return c.notFound()
+    if (!sessionId || Number.isNaN(pageIndex)) return c.notFound()
 
     // Check if conversational mode is enabled
     if (!conversationGateway || !fillingAgent) {
       return c.text('Conversational mode not available', 503)
     }
 
-    const specs = await getSpecs(specId, branch)
-    if (!specs) return c.notFound()
+    const ctx = await resolveFormContext(c)
+    if (!ctx) return c.notFound()
+    const { specs, prefix } = ctx
     const user = c.get('user')
     if (!user) return c.text('Unauthorized', 401)
     const session = sessionGateway.getSession(sessionId)
@@ -901,7 +946,6 @@ export function createFormRouter(deps: FormRouterDeps) {
     }
 
     // Otherwise redirect back to chat view (for non-JS fallback)
-    const prefix = formPathPrefix(specs.dataSpec.id, branch)
     return c.redirect(
       resolveUrl(`${prefix}/sessions/${sessionId}/pages/${pageIndex}/chat`),
     )
@@ -910,71 +954,114 @@ export function createFormRouter(deps: FormRouterDeps) {
   // Submission detail (read-only review of completed form)
   forms.get('/sessions/:sessionId/submission', handleSubmissionDetail)
 
-  // PDF download
-  forms.get('/:specId/submissions/:submissionId/pdf', handlePdfDownload)
+  if (resolveOwnerSlug) {
+    // Project-scoped routes: no :specId param needed
+    forms.get('/', handleLanding)
+    forms.get('/branches/:branch', handleLanding)
+    forms.post('/sessions', handleCreateSession)
+    forms.post('/branches/:branch/sessions', handleCreateSession)
+    forms.get('/sessions/:sessionId/pages/:pageIndex', handleRenderPage)
+    forms.get(
+      '/branches/:branch/sessions/:sessionId/pages/:pageIndex',
+      handleRenderPage,
+    )
+    forms.post('/sessions/:sessionId/pages/:pageIndex', handleSubmitPage)
+    forms.post(
+      '/branches/:branch/sessions/:sessionId/pages/:pageIndex',
+      handleSubmitPage,
+    )
+    forms.get('/sessions/:sessionId/review', handleReview)
+    forms.get('/branches/:branch/sessions/:sessionId/review', handleReview)
+    forms.post('/sessions/:sessionId/submit', handleSubmit)
+    forms.post('/branches/:branch/sessions/:sessionId/submit', handleSubmit)
+    forms.get('/sessions/:sessionId/confirmation', handleConfirmation)
+    forms.get(
+      '/branches/:branch/sessions/:sessionId/confirmation',
+      handleConfirmation,
+    )
+    forms.get('/submissions/:submissionId/pdf', handlePdfDownload)
+    // Chat routes
+    forms.get('/sessions/:sessionId/pages/:pageIndex/chat', handleChatView)
+    forms.get(
+      '/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
+      handleChatView,
+    )
+    forms.post('/sessions/:sessionId/pages/:pageIndex/chat', handleChatMessage)
+    forms.post(
+      '/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
+      handleChatMessage,
+    )
+  } else {
+    // Legacy specId-based routes
+    // PDF download
+    forms.get('/:specId/submissions/:submissionId/pdf', handlePdfDownload)
 
-  // Form landing page
-  forms.get('/:specId', handleLanding)
-  forms.get('/:specId/branches/:branch', handleLanding)
+    // Form landing page
+    forms.get('/:specId', handleLanding)
+    forms.get('/:specId/branches/:branch', handleLanding)
 
-  // Create session
-  forms.post('/:specId/sessions', handleCreateSession)
-  forms.post('/:specId/branches/:branch/sessions', handleCreateSession)
+    // Create session
+    forms.post('/:specId/sessions', handleCreateSession)
+    forms.post('/:specId/branches/:branch/sessions', handleCreateSession)
 
-  // Render page
-  forms.get('/:specId/sessions/:sessionId/pages/:pageIndex', handleRenderPage)
-  forms.get(
-    '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex',
-    handleRenderPage,
-  )
+    // Render page
+    forms.get('/:specId/sessions/:sessionId/pages/:pageIndex', handleRenderPage)
+    forms.get(
+      '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex',
+      handleRenderPage,
+    )
 
-  // Submit page (validate and advance)
-  forms.post('/:specId/sessions/:sessionId/pages/:pageIndex', handleSubmitPage)
-  forms.post(
-    '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex',
-    handleSubmitPage,
-  )
+    // Submit page (validate and advance)
+    forms.post(
+      '/:specId/sessions/:sessionId/pages/:pageIndex',
+      handleSubmitPage,
+    )
+    forms.post(
+      '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex',
+      handleSubmitPage,
+    )
 
-  // Review page
-  forms.get('/:specId/sessions/:sessionId/review', handleReview)
-  forms.get(
-    '/:specId/branches/:branch/sessions/:sessionId/review',
-    handleReview,
-  )
+    // Review page
+    forms.get('/:specId/sessions/:sessionId/review', handleReview)
+    forms.get(
+      '/:specId/branches/:branch/sessions/:sessionId/review',
+      handleReview,
+    )
 
-  // Submit
-  forms.post('/:specId/sessions/:sessionId/submit', handleSubmit)
-  forms.post(
-    '/:specId/branches/:branch/sessions/:sessionId/submit',
-    handleSubmit,
-  )
+    // Submit
+    forms.post('/:specId/sessions/:sessionId/submit', handleSubmit)
+    forms.post(
+      '/:specId/branches/:branch/sessions/:sessionId/submit',
+      handleSubmit,
+    )
 
-  // Confirmation
-  forms.get('/:specId/sessions/:sessionId/confirmation', handleConfirmation)
-  forms.get(
-    '/:specId/branches/:branch/sessions/:sessionId/confirmation',
-    handleConfirmation,
-  )
+    // Confirmation
+    forms.get('/:specId/sessions/:sessionId/confirmation', handleConfirmation)
+    forms.get(
+      '/:specId/branches/:branch/sessions/:sessionId/confirmation',
+      handleConfirmation,
+    )
 
-  // Chat view (conversational mode)
-  forms.get(
-    '/:specId/sessions/:sessionId/pages/:pageIndex/chat',
-    handleChatView,
-  )
-  forms.get(
-    '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
-    handleChatView,
-  )
+    // Chat view (conversational mode)
+    forms.get(
+      '/:specId/sessions/:sessionId/pages/:pageIndex/chat',
+      handleChatView,
+    )
+    forms.get(
+      '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
+      handleChatView,
+    )
 
-  // Chat message (conversational mode)
-  forms.post(
-    '/:specId/sessions/:sessionId/pages/:pageIndex/chat',
-    handleChatMessage,
-  )
-  forms.post(
-    '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
-    handleChatMessage,
-  )
+    // Chat message (conversational mode)
+    forms.post(
+      '/:specId/sessions/:sessionId/pages/:pageIndex/chat',
+      handleChatMessage,
+    )
+    forms.post(
+      '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
+      handleChatMessage,
+    )
+  }
 
   return forms
 }
