@@ -582,8 +582,86 @@ app.route(
       return JSON.parse(buf.toString())
     },
     accessStore,
+    resolveProjectForSpec: findProjectBySpecId,
   }),
 )
+
+// Mount project-scoped form routes BEFORE owner catch-all
+const projectFormApp = new Hono()
+projectFormApp.route(
+  '/:owner/:slug/forms',
+  createFormRouter({
+    sessionGateway,
+    submissionGateway,
+    conversationGateway,
+    fillingAgent,
+    specSnapshotStore,
+    resolveOwnerSlug: (c) => ({
+      owner: c.req.param('owner') as string,
+      slug: c.req.param('slug') as string,
+    }),
+    async getSpecsByProject(owner, slug, ref) {
+      const project = projectStore.getBySlug(slug)
+      if (!project || project.createdBy !== owner || project.status !== 'ready')
+        return null
+      return readProjectSpecs(project.slug, ref ?? 'main')
+    },
+    async getSpecs(specId, ref) {
+      const project = await findProjectBySpecId(specId)
+      if (!project) return null
+      return readProjectSpecs(project.slug, ref ?? 'main')
+    },
+    async listSpecs() {
+      const result: {
+        dataSpec: DataCollectionSpec
+        formSpec: FormSpec
+        sha: string
+      }[] = []
+      for (const project of projectStore.list()) {
+        if (project.status !== 'ready') continue
+        try {
+          const resolved = await readProjectSpecs(project.slug, 'main')
+          if (resolved) {
+            specIdIndex.set(resolved.dataSpec.id, {
+              owner: project.createdBy,
+              slug: project.slug,
+            })
+            result.push(resolved)
+          }
+        } catch {
+          /* skip unreadable */
+        }
+      }
+      return result
+    },
+    getEditHref(specId, branch) {
+      const entry = specIdIndex.get(specId)
+      if (!entry) return null
+      return resolveUrl(`/${entry.owner}/${entry.slug}/edit/${branch}`)
+    },
+    async getSourcePdf(specId) {
+      const project = await findProjectBySpecId(specId)
+      if (!project) return null
+      return formProjectRepo.readFile(
+        project.slug,
+        'main',
+        `source/${project.slug}.pdf`,
+      )
+    },
+    async getFieldMapping(specId, specVersion) {
+      const project = await findProjectBySpecId(specId)
+      if (!project) return null
+      const buf = await formProjectRepo.readFile(
+        project.slug,
+        specVersion,
+        'forms/default/field-mapping.json',
+      )
+      if (!buf) return null
+      return JSON.parse(buf.toString())
+    },
+  }),
+)
+app.route('/', projectFormApp)
 
 // Mount owner routes LAST (catch-all pattern /:owner)
 app.route('/', createOwnerRoutes(projectService, userStore, extractionRegistry))
