@@ -23,6 +23,15 @@
         ${config.flexion.hostname} {
           ${if config.flexion.tlsMode == "internal" then "tls internal" else ""}
 
+          # Security headers
+          header {
+            Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+            X-Content-Type-Options "nosniff"
+            X-Frame-Options "DENY"
+            Referrer-Policy "strict-origin-when-cross-origin"
+            Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://avatars.githubusercontent.com data:; font-src 'self'; connect-src 'self'; form-action 'self' https://github.com; base-uri 'self'; frame-ancestors 'none'"
+          }
+
           handle /.webhook* {
             uri strip_prefix /.webhook
             reverse_proxy localhost:9000

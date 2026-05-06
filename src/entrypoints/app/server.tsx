@@ -453,7 +453,9 @@ app.post('/new', async (c) => {
       <Layout currentPath="/new" user={user}>
         <div class="flex-alert flex-alert--error" role="alert">
           <h2>Error creating project</h2>
-          <p>{err instanceof Error ? err.message : 'Unknown error occurred'}</p>
+          <p>
+            Something went wrong while creating the project. Please try again.
+          </p>
           <p>
             <a href={resolveUrl('/new')}>Try again</a>
           </p>
