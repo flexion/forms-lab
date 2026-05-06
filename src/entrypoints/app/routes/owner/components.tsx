@@ -1293,7 +1293,7 @@ export const LandingPage: FC<{ error?: string | null }> = ({ error }) => {
         </p>
       </section>
 
-      <section class="l-stack" data-space="sm">
+      <section class="l-stack">
         <p>
           <small>
             Forms Lab grew out of{' '}
