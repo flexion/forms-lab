@@ -106,8 +106,9 @@ See the [architecture principles](catalog/decisions/architecture/architecture-pr
 ## Origins
 
 This work began as a final project for Flexion's
-[LLMs In Production class](https://github.com/flexion/llm-class-2026-winter-cohort)
-(class outcome preserved on the
+[LLMs In Production](https://www.manning.com/books/llms-in-production) class
+([cohort repo](https://github.com/flexion/llm-class-2026-winter-cohort);
+class outcome preserved on the
 [`final-project`](https://github.com/flexion/forms-lab/tree/final-project)
 branch). Development continues on `main`, building toward a scalable platform
 for public sector forms.

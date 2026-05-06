@@ -1300,9 +1300,12 @@ export const LandingPage: FC<{
       <hr style="border: 0; border-top: 1px solid var(--flex-color-border); margin-block: var(--flex-space-lg) var(--flex-space-md);" />
       <p style="text-align: center;">
         <small>
-          Forms Lab grew out of{' '}
+          Forms Lab grew out of Flexion's{' '}
+          <a href="https://www.manning.com/books/llms-in-production">
+            LLMs In Production
+          </a>{' '}
           <a href="https://github.com/flexion/llm-class-2026-winter-cohort">
-            Flexion's LLMs In Production class
+            class
           </a>
           , building on experience from the{' '}
           <a href="https://github.com/gsa-tts/forms">10x Form Platform</a> (
