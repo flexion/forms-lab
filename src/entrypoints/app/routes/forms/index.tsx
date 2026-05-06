@@ -32,6 +32,7 @@ import {
 } from '../../../../services/forms'
 import { resolveUrl } from '../../../../shared/base-path'
 import { requireAuth } from '../../middleware/auth'
+import { RepoNav } from '../owner/components'
 
 /**
  * Specs resolved for a given spec id and optional git ref.
@@ -415,6 +416,9 @@ export function createFormRouter(deps: FormRouterDeps) {
             ]}
           />
         )}
+        {ctx.owner && ctx.slug && (
+          <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
+        )}
         <FormLanding
           formSpec={specs.formSpec}
           startUrl={resolveUrl(`${prefix}/sessions`)}
@@ -482,6 +486,9 @@ export function createFormRouter(deps: FormRouterDeps) {
               },
             ]}
           />
+        )}
+        {ctx.owner && ctx.slug && (
+          <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
         )}
         {showChatToggle && (
           <div class="flex-form" data-size="large">
@@ -643,6 +650,9 @@ export function createFormRouter(deps: FormRouterDeps) {
             ]}
           />
         )}
+        {ctx.owner && ctx.slug && (
+          <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
+        )}
         <FormReview
           pages={buildReviewPages(resolved, session.fields)}
           fields={session.fields}
@@ -716,6 +726,9 @@ export function createFormRouter(deps: FormRouterDeps) {
               { label: 'Confirmation' },
             ]}
           />
+        )}
+        {ctx?.owner && ctx?.slug && (
+          <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
         )}
         <FormConfirmation
           submission={submission}
@@ -903,6 +916,9 @@ export function createFormRouter(deps: FormRouterDeps) {
         contentWidth="full"
       >
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
+        {ctx.owner && ctx.slug && (
+          <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
+        )}
         <div class="conversational-form-layout">
           <div class="conversational-form-layout__form">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-block-end: var(--flex-space-md);">

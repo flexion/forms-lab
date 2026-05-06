@@ -370,9 +370,9 @@ export const ProjectOverview: FC<{
   )
 }
 
-type RepoTab = 'overview' | 'forms' | 'pulls' | 'history' | 'files'
+export type RepoTab = 'overview' | 'forms' | 'pulls' | 'history' | 'files'
 
-const RepoNav: FC<{
+export const RepoNav: FC<{
   owner: string
   slug: string
   current: RepoTab
