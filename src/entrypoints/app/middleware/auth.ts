@@ -14,6 +14,13 @@ declare module 'hono' {
   }
 }
 
+function parseAdminUsers(): string[] {
+  return (process.env.ADMIN_USERS ?? 'danielnaab')
+    .split(',')
+    .map((u) => u.trim())
+    .filter(Boolean)
+}
+
 export function sessionReader() {
   return createMiddleware(async (c, next) => {
     const secret = process.env.SESSION_SECRET
@@ -67,12 +74,7 @@ export function requireAdmin() {
       return c.text('Forbidden', 403)
     }
 
-    const adminUsers = (process.env.ADMIN_USERS ?? 'danielnaab')
-      .split(',')
-      .map((u) => u.trim())
-      .filter(Boolean)
-
-    if (!adminUsers.includes(user.login)) {
+    if (!parseAdminUsers().includes(user.login)) {
       return c.text('Forbidden', 403)
     }
 
