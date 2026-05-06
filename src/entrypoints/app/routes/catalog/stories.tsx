@@ -60,7 +60,7 @@ stories.get('/', async (c) => {
     <Layout
       title="Stories"
       sidebar={sidebar}
-      currentPath="/catalog"
+      currentSection="catalog"
       user={c.get('user')}
     >
       <h1>User Stories</h1>
@@ -118,7 +118,7 @@ stories.get('/:slug', async (c) => {
       <Layout
         title={story.title}
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <Breadcrumb
@@ -155,7 +155,7 @@ stories.get('/:slug', async (c) => {
       <Layout
         title="Not Found"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <Breadcrumb

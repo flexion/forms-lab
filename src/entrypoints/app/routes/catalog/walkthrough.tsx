@@ -110,7 +110,7 @@ walkthrough.get('/', async (c) => {
     <Layout
       title="Walkthrough"
       sidebar={sidebar}
-      currentPath="/catalog"
+      currentSection="catalog"
       user={c.get('user')}
     >
       <h1>Project Walkthrough</h1>
@@ -180,7 +180,7 @@ walkthrough.get('/:slug', async (c) => {
       <Layout
         title="Not Found"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <h1>Page Not Found</h1>
@@ -247,7 +247,7 @@ walkthrough.get('/:slug', async (c) => {
     <Layout
       title={page.title}
       sidebar={sidebar}
-      currentPath="/catalog"
+      currentSection="catalog"
       user={c.get('user')}
     >
       <Breadcrumb

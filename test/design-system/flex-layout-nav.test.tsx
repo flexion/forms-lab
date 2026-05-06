@@ -56,30 +56,9 @@ test('currentSection="catalog" highlights Catalog nav item', async () => {
   expect(catalogLinkMatch?.[0]).toContain('aria-current="page"')
 })
 
-test('currentSection takes precedence over currentPath', async () => {
+test('no section set means no nav item is highlighted', async () => {
   const html = await render(
-    Layout({
-      currentSection: 'forms',
-      currentPath: '/',
-      user: testUser,
-      children: 'content',
-    }),
+    Layout({ user: testUser, children: 'content' }),
   )
-  // Forms should be highlighted, not Home
-  const formsLinkMatch = html.match(/<a[^>]*href="[^"]*\/forms"[^>]*>/)
-  expect(formsLinkMatch?.[0]).toContain('aria-current="page"')
-
-  const homeLinkMatch = html.match(
-    /<a[^>]*href="\/"[^>]*class="flex-header__nav-link[^"]*"[^>]*>/,
-  )
-  expect(homeLinkMatch?.[0]).not.toContain('aria-current="page"')
-})
-
-test('currentPath fallback still works when currentSection is not set', async () => {
-  const html = await render(
-    Layout({ currentPath: '/forms', user: testUser, children: 'content' }),
-  )
-  const formsLinkMatch = html.match(/<a[^>]*href="[^"]*\/forms"[^>]*>/)
-  expect(formsLinkMatch).not.toBeNull()
-  expect(formsLinkMatch?.[0]).toContain('aria-current="page"')
+  expect(html).not.toContain('aria-current="page"')
 })

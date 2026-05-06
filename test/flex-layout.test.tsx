@@ -11,7 +11,7 @@ describe('Layout with auth', () => {
     }
 
     const result = Layout({
-      currentPath: '/',
+      currentSection: 'home',
       user,
       children: <p>Content</p>,
     })
@@ -44,7 +44,7 @@ describe('Layout with auth', () => {
 
   it('renders inline theme toggle when signed out', () => {
     const result = Layout({
-      currentPath: '/',
+      currentSection: 'home',
       children: <p>Content</p>,
     })
     const html = result?.toString() ?? ''
@@ -60,7 +60,7 @@ describe('Layout with auth', () => {
 describe('Layout sidebar', () => {
   it('wraps sidebar in a details/summary toggle', () => {
     const result = Layout({
-      currentPath: '/catalog',
+      currentSection: 'catalog',
       sidebar: <nav>sidebar content</nav>,
       children: <p>Main</p>,
     })
@@ -73,7 +73,7 @@ describe('Layout sidebar', () => {
 
   it('includes resize script for sidebar toggle', () => {
     const result = Layout({
-      currentPath: '/catalog',
+      currentSection: 'catalog',
       sidebar: <nav>sidebar content</nav>,
       children: <p>Main</p>,
     })
@@ -90,7 +90,7 @@ describe('Layout — catalog shell uses l-page-sidebar-start', () => {
     const result = Layout({
       title: 'Test',
       sidebar: <nav data-testid="nav">nav</nav>,
-      currentPath: '/catalog',
+      currentSection: 'catalog',
       children: <p>Body</p>,
     })
     const html = result?.toString() ?? ''
@@ -106,7 +106,7 @@ describe('Layout — catalog shell uses l-page-sidebar-start', () => {
 describe('Layout — non-sidebar shell uses l-page-content', () => {
   it('emits l-page-content on the main element when no sidebar is provided', () => {
     const html = (
-      <Layout title="Test" currentPath="/">
+      <Layout title="Test" currentSection="home">
         <p>Body</p>
       </Layout>
     ).toString()

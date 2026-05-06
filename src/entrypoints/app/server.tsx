@@ -366,7 +366,7 @@ app.get('/new', (c) => {
   if (!user) return c.redirect(resolveUrl('/auth/signin'))
   const extractionVariant = getExtractionVariantForCallout(user.login)
   return c.html(
-    <Layout currentPath="/new" user={user}>
+    <Layout currentSection="projects" user={user}>
       <NewProjectPage
         fixtures={demoFixtures}
         corpora={getCorporaForPicker()}
@@ -390,7 +390,7 @@ app.post('/new', async (c) => {
       const file = body.pdf
       if (!(file instanceof File) || file.size === 0) {
         return c.html(
-          <Layout currentPath="/new" user={user}>
+          <Layout currentSection="projects" user={user}>
             <NewProjectPage
               fixtures={demoFixtures}
               corpora={getCorporaForPicker()}
@@ -419,7 +419,7 @@ app.post('/new', async (c) => {
       const corpusMetadata = getCorpusMetadata(corpusId)
       if (!corpusMetadata || !corpusMetadata.formDescription) {
         return c.html(
-          <Layout currentPath="/new" user={user}>
+          <Layout currentSection="projects" user={user}>
             <NewProjectPage
               fixtures={demoFixtures}
               corpora={getCorporaForPicker()}
@@ -444,7 +444,7 @@ app.post('/new', async (c) => {
     const fixture = getFixture(fixtureSlug)
     if (!fixture) {
       return c.html(
-        <Layout currentPath="/new" user={user}>
+        <Layout currentSection="projects" user={user}>
           <NewProjectPage
             fixtures={demoFixtures}
             corpora={getCorporaForPicker()}
@@ -461,7 +461,7 @@ app.post('/new', async (c) => {
   } catch (err) {
     console.error('Error creating project:', err)
     return c.html(
-      <Layout currentPath="/new" user={user}>
+      <Layout currentSection="projects" user={user}>
         <div class="flex-alert flex-alert--error" role="alert">
           <h2>Error creating project</h2>
           <p>
@@ -491,7 +491,7 @@ app.get('/', (c) => {
     <GetInvolved />
   )
   return c.html(
-    <Layout currentPath="/" user={user}>
+    <Layout currentSection="home" user={user}>
       <div style="display: flex; flex-wrap: wrap; gap: var(--flex-space-lg); align-items: start;">
         <div style="flex: 3 1 0; min-width: min(100%, 30rem);">
           <LandingPage error={error} />

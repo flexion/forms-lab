@@ -66,7 +66,7 @@ decisions.get('/', async (c) => {
     <Layout
       title="Decisions"
       sidebar={sidebar}
-      currentPath="/catalog"
+      currentSection="catalog"
       user={c.get('user')}
     >
       <h1>Architectural Decisions</h1>
@@ -136,7 +136,7 @@ decisions.get('/:group/:slug', async (c) => {
       <Layout
         title={title}
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <Breadcrumb
@@ -159,7 +159,7 @@ decisions.get('/:group/:slug', async (c) => {
       <Layout
         title="Not Found"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <Breadcrumb

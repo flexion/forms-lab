@@ -27,7 +27,7 @@ export function createSettingsRoutes(deps: SettingsRoutesDeps): Hono {
     const saved = c.req.query('saved') === '1'
     const selections = deps.preferences.list(user.login)
     return c.html(
-      <Layout currentPath="/settings/variants" user={user}>
+      <Layout currentSection="projects" user={user}>
         <VariantPickerPage
           registries={deps.registries}
           selections={selections}
