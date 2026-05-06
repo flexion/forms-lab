@@ -117,7 +117,7 @@ export function createActivityStore(dbPath: string): ActivityStore {
         userEntry.events++
 
         const projEntry = event.projectId
-          ? byProjectMap.get(event.projectId) ?? { events: 0, cost: 0 }
+          ? (byProjectMap.get(event.projectId) ?? { events: 0, cost: 0 })
           : null
         if (projEntry) {
           projEntry.events++
