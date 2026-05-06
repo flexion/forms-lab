@@ -51,6 +51,7 @@ import { createFormRouter } from './routes/forms/index'
 import { createCompareRoutes } from './routes/owner/compare/index'
 import {
   Dashboard,
+  GetInvolved,
   LandingPage,
   NewProjectPage,
 } from './routes/owner/components'
@@ -465,28 +466,27 @@ app.post('/new', async (c) => {
   }
 })
 
-// Root page - landing page for everyone, plus dashboard for authenticated users
+// Root page - landing page for everyone, plus sidebar (dashboard or get-involved)
 app.get('/', (c) => {
   const user = c.get('user')
   const error = c.req.query('error') ?? null
-  if (user) {
-    const projects = projectService.listUserProjects(user.login)
-    return c.html(
-      <Layout currentPath="/" user={user}>
-        <div style="display: flex; flex-wrap: wrap; gap: var(--flex-space-lg); align-items: start;">
-          <div style="flex: 3 1 0; min-width: min(100%, 30rem);">
-            <LandingPage error={error} user={user} />
-          </div>
-          <div style="flex: 2 1 0; min-width: min(100%, 20rem);">
-            <Dashboard projects={projects} user={user} compact={true} />
-          </div>
-        </div>
-      </Layout>,
-    )
-  }
+  const sidebar = user ? (
+    <Dashboard
+      projects={projectService.listUserProjects(user.login)}
+      user={user}
+      compact={true}
+    />
+  ) : (
+    <GetInvolved />
+  )
   return c.html(
     <Layout currentPath="/" user={user}>
-      <LandingPage error={error} user={user} />
+      <div style="display: flex; flex-wrap: wrap; gap: var(--flex-space-lg); align-items: start;">
+        <div style="flex: 3 1 0; min-width: min(100%, 30rem);">
+          <LandingPage error={error} />
+        </div>
+        <div style="flex: 2 1 0; min-width: min(100%, 20rem);">{sidebar}</div>
+      </div>
     </Layout>,
   )
 })
