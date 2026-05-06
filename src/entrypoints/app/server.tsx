@@ -59,6 +59,7 @@ import {
 import { createEditRoutes } from './routes/owner/edit/index'
 import { createOwnerRoutes } from './routes/owner/index'
 import presentation from './routes/presentation/index'
+import { projectsDirectoryHandler } from './routes/projects'
 import { createSettingsRoutes } from './routes/settings/index'
 
 const basePath = getBasePath()
@@ -512,6 +513,9 @@ app.route(
   '/',
   createCompareRoutes(projectService, reviewService, shapingRegistry.list()),
 )
+
+// Projects directory
+app.get('/projects', projectsDirectoryHandler(projectService))
 
 // Mount form delivery routes under /forms. Fills and submissions are
 // git-backed; preview banner links back to the editor on non-main
