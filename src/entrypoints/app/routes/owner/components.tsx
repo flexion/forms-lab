@@ -1076,13 +1076,14 @@ export const NewProjectPage: FC<{
 export const Dashboard: FC<{
   projects: ProjectIndex[]
   user: SessionUser
-}> = ({ projects, user }) => {
+  compact?: boolean
+}> = ({ projects, user, compact }) => {
   const recentProjects = projects.slice(0, 5)
   const hasMore = projects.length > 5
 
   return (
     <div class="l-stack" data-space="lg">
-      <h1>Welcome back, {user.name.split(' ')[0]}</h1>
+      {!compact && <h1>Welcome back, {user.name.split(' ')[0]}</h1>}
 
       <section class="l-stack">
         <div class="l-cluster justify-between" style="align-items: baseline;">
@@ -1279,25 +1280,21 @@ export const LandingPage: FC<{
         </dl>
       </section>
 
-      <section class="l-stack">
-        <h2>Get involved</h2>
-        <p>
-          {user ? (
-            <a href={resolveUrl('/new')} class="flex-button">
-              Create a project
-            </a>
-          ) : (
+      {!user && (
+        <section class="l-stack">
+          <h2>Get involved</h2>
+          <p>
             <a href={resolveUrl('/auth/signin')} class="flex-button">
               Try it — sign in with GitHub
             </a>
-          )}
-        </p>
-        <p class="l-cluster">
-          <a href={resolveUrl('/catalog')}>Learn more</a>
-          <span aria-hidden="true">•</span>
-          <a href={resolveUrl('/presentation')}>Watch the presentation</a>
-        </p>
-      </section>
+          </p>
+          <p class="l-cluster">
+            <a href={resolveUrl('/catalog')}>Learn more</a>
+            <span aria-hidden="true">•</span>
+            <a href={resolveUrl('/presentation')}>Watch the presentation</a>
+          </p>
+        </section>
+      )}
 
       <hr style="border: 0; border-top: 1px solid var(--flex-color-border); margin-block: var(--flex-space-lg) var(--flex-space-md);" />
       <p style="text-align: center;">

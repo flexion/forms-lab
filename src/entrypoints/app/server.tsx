@@ -471,8 +471,14 @@ app.get('/', (c) => {
     const projects = projectService.listUserProjects(user.login)
     return c.html(
       <Layout currentPath="/" user={user}>
-        <LandingPage error={error} user={user} />
-        <Dashboard projects={projects} user={user} />
+        <div style="display: flex; flex-wrap: wrap; gap: var(--flex-space-lg); align-items: start;">
+          <div style="flex: 3 1 0; min-width: min(100%, 30rem);">
+            <LandingPage error={error} user={user} />
+          </div>
+          <div style="flex: 2 1 0; min-width: min(100%, 20rem);">
+            <Dashboard projects={projects} user={user} compact={true} />
+          </div>
+        </div>
       </Layout>,
     )
   }
