@@ -39,8 +39,10 @@ extended to form content that non-developers manage through the UI.
 
 **Modern CSS with conformance testing.** The design system uses USWDS 3.x
 design tokens exclusively, enforced by automated stylelint rules. Cascade
-layers (`@layer`) provide predictable specificity. A component conformance
-registry ensures the UI stays consistent as it grows.
+layers (`@layer`) provide predictable specificity. Conformance tests verify
+that our modern CSS implementation looks and behaves like USWDS — maintaining
+its well-tested patterns and accessibility guarantees even as the underlying
+approach evolves.
 
 **Evaluation-driven development.** LLM outputs are non-deterministic, so the
 platform includes structured evaluation harnesses that score extraction and
