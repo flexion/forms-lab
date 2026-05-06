@@ -16,12 +16,12 @@
 
 .flex-diagram__node text {
   fill: var(--flex-color-text);
-  font-size: 14px;
+  font-size: var(--flex-text-2xs);
 }
 
 .flex-diagram__node-sublabel {
   fill: var(--flex-color-text-muted);
-  font-size: 11px;
+  font-size: var(--flex-text-3xs);
 }
 
 /* Linked nodes */
@@ -51,7 +51,7 @@
 
 .flex-diagram__edge-label {
   fill: var(--flex-color-text-muted);
-  font-size: 12px;
+  font-size: var(--flex-text-3xs);
 }
 
 /* Arrowhead */
@@ -69,6 +69,6 @@
 
 .flex-diagram__group-label {
   fill: var(--flex-color-text-muted);
-  font-size: 12px;
+  font-size: var(--flex-text-3xs);
   font-style: italic;
 }

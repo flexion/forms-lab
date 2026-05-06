@@ -16,7 +16,7 @@
 .flex-card__container {
   color: var(--flex-color-text);
   background-color: var(--flex-color-surface);
-  font-size: 1.06rem;
+  font-size: var(--flex-text-md);
   line-height: 1.5;
   border-width: 2px;
   border-color: var(--flex-gray-cool-10);

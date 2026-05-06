@@ -147,7 +147,7 @@ flex-date-picker {
 }
 
 .flex-date-picker__table th {
-  font-size: 0.87rem;
+  font-size: var(--flex-text-2xs);
   font-weight: 400;
   color: var(--flex-color-text-muted);
   padding: 0.375rem 0;
@@ -165,7 +165,7 @@ flex-date-picker {
   inline-size: 100%;
   aspect-ratio: 1;
   padding: 0;
-  font-size: 0.93rem;
+  font-size: var(--flex-text-xs);
   line-height: 1;
   color: var(--flex-color-text);
   background-color: var(--flex-gray-5);

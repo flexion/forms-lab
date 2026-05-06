@@ -148,7 +148,7 @@ flex-branch-switcher {
 }
 
 .flex-branch-switcher__badge {
-  font-size: 0.75rem;
+  font-size: var(--flex-text-3xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -159,7 +159,7 @@ flex-branch-switcher {
 }
 
 .flex-branch-switcher__trigger-meta {
-  font-size: 0.82rem;
+  font-size: var(--flex-text-3xs);
   color: var(--flex-color-text-muted);
   font-weight: 400;
 }

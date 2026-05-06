@@ -2,7 +2,7 @@
    Variants: slim (default), medium, big */
 
 .flex-footer {
-  font-size: 1.06rem;
+  font-size: var(--flex-text-md);
   line-height: 1.5;
 }
 
@@ -122,7 +122,7 @@
 
 .flex-footer__logo-heading {
   margin: 0;
-  font-size: 1.06rem;
+  font-size: var(--flex-text-md);
   line-height: 1.1;
 }
 

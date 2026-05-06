@@ -13,7 +13,7 @@ flex-language-selector {
     & .flex-language-selector__link {
       padding: 0.25rem 0.5rem;
       font-weight: 700;
-      font-size: 0.87rem;
+      font-size: var(--flex-text-2xs);
     }
   }
 }
@@ -27,7 +27,7 @@ flex-language-selector {
   background-color: transparent;
   border: 0;
   color: var(--flex-blue-vivid-60);
-  font-size: 0.87rem;
+  font-size: var(--flex-text-2xs);
   font-weight: 700;
   cursor: pointer;
   padding: 0.5rem 0.75rem;
@@ -91,7 +91,7 @@ flex-language-selector {
   padding: 0.5rem 1rem;
   color: var(--flex-blue-vivid-60);
   text-decoration: none;
-  font-size: 0.93rem;
+  font-size: var(--flex-text-xs);
   white-space: nowrap;
 
   &:hover {

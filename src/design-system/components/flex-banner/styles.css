@@ -6,7 +6,7 @@ flex-banner {
 }
 
 .flex-banner {
-  font-size: 0.87rem;
+  font-size: var(--flex-text-2xs);
   line-height: 1.5;
   background-color: var(--flex-color-bg-subtle);
   padding-block-end: 0;
@@ -17,7 +17,7 @@ flex-banner {
 .flex-banner__header {
   color: var(--flex-color-text);
   padding-block: 0.5rem;
-  font-size: 0.8rem;
+  font-size: var(--flex-text-3xs);
   min-block-size: 0;
 }
 
@@ -39,7 +39,7 @@ flex-banner {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.8rem;
+    font-size: var(--flex-text-3xs);
     line-height: 1.1;
   }
 }
@@ -65,7 +65,7 @@ flex-banner {
   margin: 0;
   color: var(--flex-color-link);
   display: block;
-  font-size: 0.8rem;
+  font-size: var(--flex-text-3xs);
   block-size: auto;
   line-height: 1.1;
   padding: 0;
@@ -112,7 +112,7 @@ flex-banner {
   padding-inline: var(--flex-space-md);
   padding-block: 0.25rem 1rem;
   background-color: transparent;
-  font-size: 0.87rem;
+  font-size: var(--flex-text-2xs);
   overflow: hidden;
   color: var(--flex-color-text);
 }
@@ -135,7 +135,7 @@ flex-banner {
 
   & p {
     margin-block: 0 0.25rem;
-    font-size: 0.87rem;
+    font-size: var(--flex-text-2xs);
     line-height: 1.5;
 
     &:last-child {
@@ -160,7 +160,7 @@ flex-banner {
 
 .flex-banner__guidance-text p {
   margin-block: 0 0.25rem;
-  font-size: 0.87rem;
+  font-size: var(--flex-text-2xs);
   line-height: 1.5;
 
   &:last-child {

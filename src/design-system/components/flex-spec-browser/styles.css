@@ -13,7 +13,7 @@ flex-spec-browser {
   grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
   gap: var(--flex-space-xl);
   align-items: start;
-  font-size: 1rem;
+  font-size: var(--flex-text-sm);
   line-height: 1.4;
 }
 
@@ -30,7 +30,7 @@ flex-spec-browser {
 }
 
 .flex-spec-browser__nav-heading {
-  font-size: 0.95rem;
+  font-size: var(--flex-text-xs);
   font-weight: 700;
   line-height: 1.3;
   color: var(--flex-color-text);
@@ -45,7 +45,7 @@ flex-spec-browser {
 }
 
 .flex-spec-browser__nav-subheading {
-  font-size: 0.82rem;
+  font-size: var(--flex-text-3xs);
   font-weight: 600;
   color: var(--flex-color-text-muted);
   margin: 0;
@@ -67,7 +67,7 @@ flex-spec-browser {
 .flex-spec-browser__nav-link {
   display: block;
   padding: 0.5rem 1rem;
-  font-size: 1rem;
+  font-size: var(--flex-text-sm);
   line-height: 1.3;
   color: var(--flex-color-accent);
   text-decoration: none;
@@ -104,7 +104,7 @@ flex-spec-browser {
 
 .flex-spec-browser__nav-link--sub {
   padding-inline-start: 2rem;
-  font-size: 0.9rem;
+  font-size: var(--flex-text-2xs);
   color: var(--flex-color-text-muted);
 }
 
@@ -159,7 +159,7 @@ flex-spec-browser {
   gap: var(--flex-space-sm);
   flex-wrap: wrap;
   font-weight: 600;
-  font-size: 1.06rem;
+  font-size: var(--flex-text-md);
 
   &::-webkit-details-marker {
     display: none;
@@ -169,7 +169,7 @@ flex-spec-browser {
     content: "\25B8"; /* right-pointing triangle */
     display: inline-block;
     color: var(--flex-color-text-muted);
-    font-size: 0.85em;
+    font-size: var(--flex-text-2xs);
     transition: transform 0.15s ease;
     flex-shrink: 0;
   }
@@ -203,7 +203,7 @@ flex-spec-browser {
   gap: var(--flex-space-sm);
   font-weight: 400;
   color: var(--flex-color-text-muted);
-  font-size: 0.95rem;
+  font-size: var(--flex-text-xs);
 }
 
 .flex-spec-browser__panel-count {
@@ -296,7 +296,7 @@ flex-spec-browser {
 
 .flex-spec-browser__condition {
   font-family: var(--flex-font-mono, monospace);
-  font-size: 0.9rem;
+  font-size: var(--flex-text-2xs);
   background: var(--flex-color-surface);
   border: 1px solid var(--flex-color-border);
   padding: 0.05rem 0.4rem;

@@ -74,6 +74,6 @@
 
   a[href]::after {
     content: " (" attr(href) ")";
-    font-size: 0.85em;
+    font-size: var(--flex-text-2xs);
   }
 }

@@ -2,7 +2,7 @@
    Variants: default, condensed */
 
 .flex-collection {
-  font-size: 1.06rem;
+  font-size: var(--flex-text-md);
   margin-block: 1em;
   line-height: 1.5;
   padding-inline-start: 0;
@@ -94,7 +94,7 @@
 
 .flex-collection__meta-item {
   margin-block-start: 0.25rem;
-  font-size: 0.93rem;
+  font-size: var(--flex-text-xs);
   line-height: 1.3;
   display: block;
   margin-inline-end: 0.5rem;

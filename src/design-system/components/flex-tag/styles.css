@@ -2,7 +2,7 @@
    Sizes: default, big */
 
 .flex-tag {
-  font-size: 0.93rem;
+  font-size: var(--flex-text-xs);
   color: var(--flex-white);
   text-transform: uppercase;
   background-color: var(--flex-gray-cool-60);

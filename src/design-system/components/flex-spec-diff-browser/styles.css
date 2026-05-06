@@ -14,7 +14,7 @@ flex-spec-diff-browser {
   flex-direction: column;
   gap: var(--flex-space-md);
   min-inline-size: 0;
-  font-size: 1rem;
+  font-size: var(--flex-text-sm);
   line-height: 1.4;
 }
 
@@ -39,7 +39,7 @@ flex-spec-diff-browser {
   margin: 0;
   font-weight: 600;
   color: var(--flex-color-text);
-  font-size: 1rem;
+  font-size: var(--flex-text-sm);
 }
 
 .flex-spec-diff-browser__overview-jumps {
@@ -94,7 +94,7 @@ flex-spec-diff-browser {
   gap: var(--flex-space-sm);
   flex-wrap: wrap;
   font-weight: 600;
-  font-size: 1.06rem;
+  font-size: var(--flex-text-md);
 
   &::-webkit-details-marker {
     display: none;
@@ -104,7 +104,7 @@ flex-spec-diff-browser {
     content: "\25B8"; /* right-pointing triangle */
     display: inline-block;
     color: var(--flex-color-text-muted);
-    font-size: 0.85em;
+    font-size: var(--flex-text-2xs);
     transition: transform 0.15s ease;
     flex-shrink: 0;
   }
@@ -206,7 +206,7 @@ flex-spec-diff-browser {
   gap: var(--flex-space-sm);
   flex-wrap: wrap;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--flex-text-sm);
 
   &::-webkit-details-marker {
     display: none;
@@ -216,7 +216,7 @@ flex-spec-diff-browser {
     content: "\25B8";
     display: inline-block;
     color: var(--flex-color-text-muted);
-    font-size: 0.8em;
+    font-size: var(--flex-text-2xs);
     transition: transform 0.15s ease;
     flex-shrink: 0;
   }
@@ -267,12 +267,12 @@ flex-spec-diff-browser {
   flex-wrap: wrap;
   align-items: baseline;
   gap: var(--flex-space-xs);
-  font-size: 1rem;
+  font-size: var(--flex-text-sm);
 }
 
 .flex-spec-diff-browser__field-row--was {
   color: var(--flex-color-text-muted);
-  font-size: 0.9rem;
+  font-size: var(--flex-text-2xs);
   text-decoration: line-through;
 }
 
@@ -288,12 +288,12 @@ flex-spec-diff-browser {
 .flex-spec-diff-browser__field-type {
   color: var(--flex-color-text-muted);
   font-family: var(--flex-font-mono);
-  font-size: 0.85rem;
+  font-size: var(--flex-text-2xs);
 }
 
 .flex-spec-diff-browser__field-required {
   color: var(--flex-color-text-muted);
-  font-size: 0.75rem;
+  font-size: var(--flex-text-3xs);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
