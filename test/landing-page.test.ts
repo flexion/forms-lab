@@ -7,7 +7,8 @@ describe('GET / (anonymous landing page)', () => {
     expect(res.status).toBe(200)
     const body = await res.text()
     // Problem framing
-    expect(body).toContain('Government forms')
+    expect(body).toContain('Forms shouldn')
+    expect(body).toContain('be this hard')
     // Capability blocks
     expect(body).toContain('Upload a PDF')
     expect(body).toContain('Shape the experience')

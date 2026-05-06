@@ -1,6 +1,6 @@
 # Forms Lab
 
-**Government forms shouldn't be this hard.**
+**Forms shouldn't be this hard.**
 
 Forms Lab is an experiment in making high-quality digital forms achievable for
 any public sector organization. It combines practical experience from federal
