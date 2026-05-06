@@ -56,7 +56,7 @@ describe('Authentication', () => {
 
     expect(res.status).toBe(200)
     const html = await res.text()
-    expect(html).toContain('Welcome back')
+    expect(html).toContain('Recent projects')
   })
 
   it('shows Projects link in nav for authenticated users', async () => {
