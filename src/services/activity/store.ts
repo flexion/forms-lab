@@ -74,8 +74,10 @@ export function createActivityStore(dbPath: string): ActivityStore {
 
       const where =
         conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
-      const limit = filters.limit ? `LIMIT ${filters.limit}` : ''
-      const sql = `SELECT * FROM activity_events ${where} ORDER BY timestamp DESC ${limit}`
+      if (filters.limit) {
+        params.push(filters.limit)
+      }
+      const sql = `SELECT * FROM activity_events ${where} ORDER BY timestamp DESC${filters.limit ? ' LIMIT ?' : ''}`
 
       const rows = db.query(sql).all(...params) as Array<
         Record<string, unknown>
@@ -114,13 +116,11 @@ export function createActivityStore(dbPath: string): ActivityStore {
         }
         userEntry.events++
 
-        if (event.projectId) {
-          const projEntry = byProjectMap.get(event.projectId) ?? {
-            events: 0,
-            cost: 0,
-          }
+        const projEntry = event.projectId
+          ? byProjectMap.get(event.projectId) ?? { events: 0, cost: 0 }
+          : null
+        if (projEntry) {
           projEntry.events++
-          byProjectMap.set(event.projectId, projEntry)
         }
 
         if (event.eventType === 'llm_call' && event.metadata) {
@@ -143,11 +143,13 @@ export function createActivityStore(dbPath: string): ActivityStore {
           opEntry.cost += cost
           byOpMap.set(op, opEntry)
 
-          if (event.projectId) {
-            // biome-ignore lint/style/noNonNullAssertion: project was just set above
-            const projEntry = byProjectMap.get(event.projectId)!
+          if (projEntry) {
             projEntry.cost += cost
           }
+        }
+
+        if (event.projectId && projEntry) {
+          byProjectMap.set(event.projectId, projEntry)
         }
 
         byUserMap.set(userId, userEntry)
