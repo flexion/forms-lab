@@ -138,6 +138,14 @@ describe('Project-scoped form routes', () => {
     expect(html).toContain('/acme/my-form/forms/branches/feature-x/sessions')
   })
 
+  it('renders RepoNav on project-scoped form pages', async () => {
+    const { app } = createProjectScopedApp()
+    const res = await app.request('/alice/test-project/forms')
+    const html = await res.text()
+    expect(html).toContain('repo-nav')
+    expect(html).toContain('repo-nav__link--current')
+  })
+
   it('full flow: create, fill, review, submit, confirm', async () => {
     const { app } = createProjectScopedApp()
 
