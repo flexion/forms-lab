@@ -12,8 +12,6 @@ import { Header, HeaderNavItem, type HeaderUser } from '../flex-header'
 interface LayoutProps {
   title?: string
   sidebar?: Child
-  /** @deprecated Use `currentSection` instead for URL-independent nav highlighting. */
-  currentPath?: string
   currentSection?: 'home' | 'forms' | 'projects' | 'catalog'
   user?: HeaderUser | null
   contentWidth?: 'centered' | 'full'
@@ -30,18 +28,10 @@ function isAdminUser(login: string): boolean {
 export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
   const title = props.title ? `${props.title} | Forms Lab` : 'Forms Lab'
 
-  const isHome = props.currentSection
-    ? props.currentSection === 'home'
-    : props.currentPath === '/'
-  const isForms = props.currentSection
-    ? props.currentSection === 'forms'
-    : (props.currentPath?.startsWith('/forms') ?? false)
-  const isProjects = props.currentSection
-    ? props.currentSection === 'projects'
-    : props.currentPath === `/${props.user?.login}`
-  const isCatalog = props.currentSection
-    ? props.currentSection === 'catalog'
-    : (props.currentPath?.startsWith('/catalog') ?? false)
+  const isHome = props.currentSection === 'home'
+  const isForms = props.currentSection === 'forms'
+  const isProjects = props.currentSection === 'projects'
+  const isCatalog = props.currentSection === 'catalog'
 
   return (
     <html lang="en" data-theme="auto">

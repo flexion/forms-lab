@@ -62,7 +62,7 @@ architecture.get('/', async (c) => {
     <Layout
       title="Architecture"
       sidebar={sidebar}
-      currentPath="/catalog"
+      currentSection="catalog"
       user={c.get('user')}
     >
       <h1>Architecture</h1>
@@ -112,7 +112,7 @@ architecture.get('/:slug', async (c) => {
       <Layout
         title={title}
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <Breadcrumb
@@ -134,7 +134,7 @@ architecture.get('/:slug', async (c) => {
       <Layout
         title="Not Found"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <Breadcrumb

@@ -27,7 +27,7 @@ personas.get('/', async (c) => {
     <Layout
       title="Personas"
       sidebar={sidebar}
-      currentPath="/catalog"
+      currentSection="catalog"
       user={c.get('user')}
     >
       <h1>Personas</h1>
@@ -66,7 +66,7 @@ personas.get('/:id', async (c) => {
       <Layout
         title={name}
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <Breadcrumb
@@ -84,7 +84,7 @@ personas.get('/:id', async (c) => {
       <Layout
         title="Not Found"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <Breadcrumb

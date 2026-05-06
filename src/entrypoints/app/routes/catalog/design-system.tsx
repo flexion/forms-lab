@@ -123,7 +123,7 @@ designSystem.get('/', (c) => {
   ]
 
   return c.html(
-    <Layout title="Design System" sidebar={sidebar} currentPath="/catalog">
+    <Layout title="Design System" sidebar={sidebar} currentSection="catalog">
       <h1>Design System</h1>
       <p>
         A USWDS-aligned design system built with CUBE CSS methodology. Semantic
@@ -212,7 +212,7 @@ designSystem.get('/:slug', async (c) => {
       <Layout
         title="Typography — Design System"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <h1>Typography</h1>
@@ -409,7 +409,7 @@ designSystem.get('/:slug', async (c) => {
       <Layout
         title="Tokens — Design System"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <h1>Tokens</h1>
@@ -485,7 +485,7 @@ designSystem.get('/:slug', async (c) => {
       <Layout
         title="Compositions — Design System"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <h1>Compositions</h1>
@@ -534,7 +534,7 @@ designSystem.get('/:slug', async (c) => {
       <Layout
         title="Rules — Design System"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <h1>Rules</h1>
@@ -561,7 +561,7 @@ designSystem.get('/:slug', async (c) => {
       <Layout
         title="Base Classes — Design System"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <h1>Base Classes</h1>
@@ -798,7 +798,7 @@ designSystem.get('/:slug', async (c) => {
       <Layout
         title="Data Visualizations — Design System"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <h1>Data Visualizations</h1>
@@ -907,7 +907,7 @@ designSystem.get('/:slug', async (c) => {
       <Layout
         title="Layout — Design System"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <h1>Layout</h1>
@@ -1255,7 +1255,7 @@ designSystem.get('/:slug', async (c) => {
     <Layout
       title={`${meta.name} — Design System`}
       sidebar={sidebar}
-      currentPath="/catalog"
+      currentSection="catalog"
     >
       <style dangerouslySetInnerHTML={{ __html: hljsStyles }} />
       <h1>{meta.name}</h1>

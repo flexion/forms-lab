@@ -55,7 +55,7 @@ app.get('/', async (c) => {
     const summary = await getDeploymentSummary()
 
     return c.html(
-      <Layout currentPath="/">
+      <Layout currentSection="home">
         <h1>Forms Lab — Deployment Dashboard</h1>
         <p>
           Automated branch deployments for the Forms Lab platform. Each push
@@ -159,7 +159,7 @@ app.get('/', async (c) => {
     // If deployment metadata can't be read, show error page
     console.error('Failed to load deployment summary:', error)
     return c.html(
-      <Layout currentPath="/">
+      <Layout currentSection="home">
         <h1>Deployment Dashboard Unavailable</h1>
         <p>
           Unable to load deployment information. This is normal in development

@@ -159,7 +159,7 @@ experiments.get('/', async (c) => {
     <Layout
       title="Experiments"
       sidebar={sidebar}
-      currentPath="/catalog"
+      currentSection="catalog"
       user={c.get('user')}
     >
       <h1>Experiments</h1>
@@ -241,7 +241,7 @@ experiments.get('/:kind', async (c) => {
         <Layout
           title={title}
           sidebar={sidebar}
-          currentPath="/catalog"
+          currentSection="catalog"
           user={c.get('user')}
         >
           <Prose
@@ -301,7 +301,7 @@ experiments.get('/:kind', async (c) => {
       <Layout
         title={title}
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <Prose
@@ -393,7 +393,7 @@ experiments.get('/:kind', async (c) => {
           <Layout
             title={title}
             sidebar={sidebar}
-            currentPath="/catalog"
+            currentSection="catalog"
             user={c.get('user')}
           >
             <Prose
@@ -422,7 +422,7 @@ experiments.get('/:kind', async (c) => {
       <Layout
         title="Not Found"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <h1>Experiment Not Found</h1>
@@ -463,7 +463,7 @@ experiments.get('/:kind/:slug', async (c) => {
       <Layout
         title={title}
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <Prose html={renderMarkdown(file.content, { build: getBuildInfo() })} />
@@ -479,7 +479,7 @@ experiments.get('/:kind/:slug', async (c) => {
       <Layout
         title="Not Found"
         sidebar={sidebar}
-        currentPath="/catalog"
+        currentSection="catalog"
         user={c.get('user')}
       >
         <h1>Run Not Found</h1>

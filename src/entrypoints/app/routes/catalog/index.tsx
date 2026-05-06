@@ -55,7 +55,7 @@ catalog.get('/', async (c) => {
     <Layout
       title="Catalog"
       sidebar={sidebar}
-      currentPath="/catalog"
+      currentSection="catalog"
       user={c.get('user')}
     >
       <h1>Catalog</h1>

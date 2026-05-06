@@ -215,7 +215,7 @@ export function createFormRouter(deps: FormRouterDeps) {
             project: null as { owner: string; slug: string } | null,
           }))
       return c.html(
-        <Layout user={c.get('user')} title="Forms" currentPath="/forms">
+        <Layout user={c.get('user')} title="Forms" currentSection="forms">
           <div class="flex-form" data-size="large">
             <Breadcrumb items={[{ label: 'Forms' }]} />
             <div
@@ -302,7 +302,7 @@ export function createFormRouter(deps: FormRouterDeps) {
         : []
       const projectMap = new Map(projectEntries)
       return c.html(
-        <Layout user={user} title="My Sessions" currentPath="/forms">
+        <Layout user={user} title="My Sessions" currentSection="forms">
           <div class="flex-form" data-size="large">
             <Breadcrumb
               items={[
@@ -400,7 +400,7 @@ export function createFormRouter(deps: FormRouterDeps) {
       <Layout
         user={c.get('user')}
         title={specs.formSpec.title}
-        currentPath="/forms"
+        currentSection="forms"
       >
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         {ctx.owner && ctx.slug && (
@@ -463,7 +463,7 @@ export function createFormRouter(deps: FormRouterDeps) {
       conversationGateway &&
       fillingAgent
     return c.html(
-      <Layout user={user} title={page.page.title} currentPath="/forms">
+      <Layout user={user} title={page.page.title} currentSection="forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         {ctx.owner && ctx.slug && (
           <Breadcrumb
@@ -561,7 +561,7 @@ export function createFormRouter(deps: FormRouterDeps) {
         <Layout
           user={user}
           title={`Error: ${resolvedPage.page.title}`}
-          currentPath="/forms"
+          currentSection="forms"
         >
           {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
           {ctx.owner && ctx.slug && (
@@ -625,7 +625,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     if (session.ownerId !== user.login) return c.notFound()
     const resolved = resolveFormSpec(specs.formSpec, specs.dataSpec)
     return c.html(
-      <Layout user={user} title="Review" currentPath="/forms">
+      <Layout user={user} title="Review" currentSection="forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         {ctx.owner && ctx.slug && (
           <Breadcrumb
@@ -692,7 +692,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const ctx = await resolveFormContext(c)
     const branch = readBranch(c)
     return c.html(
-      <Layout user={user} title="Confirmation" currentPath="/forms">
+      <Layout user={user} title="Confirmation" currentSection="forms">
         {ctx
           ? previewBannerFor(
               branch,
@@ -759,7 +759,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     const submission = submissions.find((s) => s.sessionId === sessionId)
 
     return c.html(
-      <Layout user={user} title="Submission Details" currentPath="/forms">
+      <Layout user={user} title="Submission Details" currentSection="forms">
         <FormReview pages={reviewPages} fields={session.fields} readOnly />
         {submission && (
           <div class="flex-form" data-size="large">
@@ -899,7 +899,7 @@ export function createFormRouter(deps: FormRouterDeps) {
       <Layout
         user={user}
         title={page.page.title}
-        currentPath="/forms"
+        currentSection="forms"
         contentWidth="full"
       >
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
