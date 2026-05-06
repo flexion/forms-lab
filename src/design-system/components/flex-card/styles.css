@@ -280,7 +280,7 @@
 }
 
 .content-card p {
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
   color: var(--flex-color-text-muted);
   line-height: 1.5;
 }
@@ -293,7 +293,7 @@
 }
 
 .catalog-group-label {
-  font-size: var(--flex-font-size-xs);
+  font-size: var(--flex-text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;

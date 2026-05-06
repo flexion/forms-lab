@@ -27,7 +27,7 @@ flex-input-mask {
   /* Match the input's padding so mask characters align with typed text */
   padding: var(--flex-control-padding);
   margin-block-start: var(--flex-control-margin-top);
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.3;
   block-size: var(--flex-control-height);
   display: flex;

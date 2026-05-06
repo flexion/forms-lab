@@ -32,7 +32,7 @@
 
 .flex-variant-callout__variant-name {
   display: block;
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   font-weight: 600;
   color: var(--flex-color-text);
   line-height: 1.3;

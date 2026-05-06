@@ -4,7 +4,7 @@
    States: hover, active, focus-visible, disabled */
 
 .flex-button {
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   font-weight: 700;
   line-height: 0.9;
   color: var(--flex-color-on-accent);

@@ -203,7 +203,7 @@
   padding: var(--flex-space-sm) var(--flex-space-md);
   color: var(--flex-color-text-muted);
   text-decoration: none;
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   font-weight: 700;
   border: 1px solid transparent;
   border-block-end: none;
@@ -241,7 +241,7 @@
 .clone-bar__url {
   flex: 1;
   padding: var(--flex-space-sm) var(--flex-space-md);
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   word-break: break-all;
   user-select: all;
 }
@@ -253,7 +253,7 @@
   background: var(--flex-color-surface);
   color: var(--flex-color-link);
   font: inherit;
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;

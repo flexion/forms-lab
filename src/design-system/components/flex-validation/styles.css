@@ -6,7 +6,7 @@
 /* --- Inline validation message --- */
 
 .flex-validation {
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
   margin-block-start: var(--flex-space-xs);
 
@@ -24,7 +24,7 @@
 /* --- Validation summary --- */
 
 .flex-validation-summary {
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
   border-inline-start: 0.25rem solid var(--flex-color-error);
   padding: 1rem 1.25rem;
@@ -63,7 +63,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
 }
 

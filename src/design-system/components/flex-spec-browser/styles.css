@@ -212,7 +212,7 @@ flex-spec-browser {
 
 .flex-spec-browser__delivery {
   display: inline-block;
-  font-size: var(--flex-text-tag);
+  font-size: var(--flex-text-2xs);
   font-weight: 600;
   padding: 0.125rem 0.5rem;
   border-radius: var(--flex-radius-bubble);

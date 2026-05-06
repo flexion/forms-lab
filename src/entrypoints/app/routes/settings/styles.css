@@ -77,7 +77,7 @@
 }
 
 .variant-settings__group-heading {
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
   font-weight: 600;
   margin: var(--flex-space-lg) 0 var(--flex-space-sm);
   padding-block-end: var(--flex-space-xs);

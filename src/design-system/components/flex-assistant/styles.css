@@ -56,7 +56,7 @@ flex-assistant[data-closed] {
 .assistant__message {
   padding: var(--flex-space-sm) var(--flex-space-md);
   border-radius: var(--flex-radius-md, 0.5rem);
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
   line-height: 1.5;
   max-width: 90%;
   color: var(--flex-color-text);

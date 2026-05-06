@@ -24,7 +24,7 @@
 }
 
 .editor-breadcrumb h1 {
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
   font-weight: 400;
   margin: 0;
 }
@@ -242,7 +242,7 @@
 }
 
 .reference-article__title {
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   margin: 0 0 var(--flex-space-xs);
 }
 

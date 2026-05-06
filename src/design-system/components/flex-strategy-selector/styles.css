@@ -77,7 +77,7 @@
 
 .flex-strategy-selector__name {
   font-family: var(--flex-font-sans);
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
   font-weight: 600;
   line-height: var(--flex-line-height-heading);
   color: var(--flex-color-text);

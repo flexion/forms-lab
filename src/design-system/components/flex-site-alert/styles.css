@@ -4,7 +4,7 @@
    Modifiers: slim, no-icon, no-heading */
 
 .flex-site-alert {
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
   color: var(--flex-color-text);
 
@@ -95,6 +95,6 @@
 .flex-site-alert__text {
   font-weight: 400;
   margin: 0;
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
 }
