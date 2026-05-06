@@ -2,6 +2,7 @@ import type { FC } from 'hono/jsx'
 import type { DemoFixture } from '../../../../../fixtures/index'
 import { Alert } from '../../../../design-system/components/flex-alert'
 import { BranchSwitcher } from '../../../../design-system/components/flex-branch-switcher'
+import { Breadcrumb } from '../../../../design-system/components/flex-breadcrumb'
 import { SpecBrowser } from '../../../../design-system/components/flex-spec-browser'
 import { VariantBadge } from '../../../../design-system/components/flex-variant-badge'
 import { VariantCallout } from '../../../../design-system/components/flex-variant-callout'
@@ -31,6 +32,7 @@ export const ProfilePage: FC<{
   const isOwnProfile = currentUser?.login === user.login
   return (
     <div class="l-stack" data-space="lg">
+      <Breadcrumb items={[{ label: user.login }]} />
       <div
         class="l-cluster"
         style="gap: var(--flex-space-xl); align-items: center;"
@@ -211,21 +213,20 @@ export const ProjectOverview: FC<{
   return (
     <div class="l-stack">
       <header class="repo-header">
-        <nav class="repo-header__path" aria-label="Repository path">
-          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
-          <span class="repo-header__path-sep" aria-hidden="true">
-            /
+        <Breadcrumb
+          items={[
+            { label: owner, href: resolveUrl(`/${owner}`) },
+            { label: project.slug },
+          ]}
+        />
+        {forkedFrom && (
+          <span class="repo-header__fork-badge">
+            forked from{' '}
+            <a href={resolveUrl(`/${forkedFrom.owner}/${forkedFrom.slug}`)}>
+              {forkedFrom.owner}/{forkedFrom.slug}
+            </a>
           </span>
-          <span class="repo-header__path-slug">{project.slug}</span>
-          {forkedFrom && (
-            <span class="repo-header__fork-badge">
-              forked from{' '}
-              <a href={resolveUrl(`/${forkedFrom.owner}/${forkedFrom.slug}`)}>
-                {forkedFrom.owner}/{forkedFrom.slug}
-              </a>
-            </span>
-          )}
-        </nav>
+        )}
         <div class="repo-header__title-row">
           <h1 class="repo-header__title">{project.name}</h1>
           <div class="repo-header__actions">
@@ -419,21 +420,20 @@ export const PullRequestsPage: FC<{
   return (
     <div class="l-stack">
       <header class="repo-header">
-        <nav class="repo-header__path" aria-label="Repository path">
-          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
-          <span class="repo-header__path-sep" aria-hidden="true">
-            /
+        <Breadcrumb
+          items={[
+            { label: owner, href: resolveUrl(`/${owner}`) },
+            { label: project.slug },
+          ]}
+        />
+        {forkedFrom && (
+          <span class="repo-header__fork-badge">
+            forked from{' '}
+            <a href={resolveUrl(`/${forkedFrom.owner}/${forkedFrom.slug}`)}>
+              {forkedFrom.owner}/{forkedFrom.slug}
+            </a>
           </span>
-          <span class="repo-header__path-slug">{project.slug}</span>
-          {forkedFrom && (
-            <span class="repo-header__fork-badge">
-              forked from{' '}
-              <a href={resolveUrl(`/${forkedFrom.owner}/${forkedFrom.slug}`)}>
-                {forkedFrom.owner}/{forkedFrom.slug}
-              </a>
-            </span>
-          )}
-        </nav>
+        )}
         <div class="repo-header__title-row">
           <h1 class="repo-header__title">{project.name}</h1>
           <div class="repo-header__actions">
@@ -511,13 +511,12 @@ const ExtractingBanner: FC<{
     <div class="l-stack">
       {!stuck && <meta http-equiv="refresh" content="3" />}
       <header class="repo-header">
-        <nav class="repo-header__path" aria-label="Repository path">
-          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
-          <span class="repo-header__path-sep" aria-hidden="true">
-            /
-          </span>
-          <span class="repo-header__path-slug">{project.slug}</span>
-        </nav>
+        <Breadcrumb
+          items={[
+            { label: owner, href: resolveUrl(`/${owner}`) },
+            { label: project.slug },
+          ]}
+        />
         <div class="repo-header__title-row">
           <h1 class="repo-header__title">{project.name}</h1>
           {isOwner && (
@@ -583,13 +582,12 @@ const PendingReviewBanner: FC<{
   return (
     <div class="l-stack">
       <header class="repo-header">
-        <nav class="repo-header__path" aria-label="Repository path">
-          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
-          <span class="repo-header__path-sep" aria-hidden="true">
-            /
-          </span>
-          <span class="repo-header__path-slug">{project.slug}</span>
-        </nav>
+        <Breadcrumb
+          items={[
+            { label: owner, href: resolveUrl(`/${owner}`) },
+            { label: project.slug },
+          ]}
+        />
         <div class="repo-header__title-row">
           <h1 class="repo-header__title">{project.name}</h1>
         </div>
@@ -633,12 +631,13 @@ const ErrorBanner: FC<{
   isOwner: boolean
 }> = ({ project, owner, isOwner }) => (
   <div class="l-stack">
-    <h1>
-      <a href={resolveUrl(`/${owner}`)} class="text-muted">
-        {owner}
-      </a>{' '}
-      / {project.name}
-    </h1>
+    <Breadcrumb
+      items={[
+        { label: owner, href: resolveUrl(`/${owner}`) },
+        { label: project.slug },
+      ]}
+    />
+    <h1>{project.name}</h1>
     <div class="flex-alert flex-alert--error" role="alert">
       <p>
         <strong>Extraction failed</strong>
@@ -671,13 +670,16 @@ export const SettingsPage: FC<{
 }> = ({ project, owner }) => (
   <div class="l-stack">
     <header class="repo-header">
-      <nav class="repo-header__path" aria-label="Repository path">
-        <a href={resolveUrl(`/${owner}`)}>{owner}</a>
-        <span class="repo-header__path-sep" aria-hidden="true">
-          /
-        </span>
-        <a href={resolveUrl(`/${owner}/${project.slug}`)}>{project.slug}</a>
-      </nav>
+      <Breadcrumb
+        items={[
+          { label: owner, href: resolveUrl(`/${owner}`) },
+          {
+            label: project.slug,
+            href: resolveUrl(`/${owner}/${project.slug}`),
+          },
+          { label: 'Settings' },
+        ]}
+      />
       <div class="repo-header__title-row">
         <h1 class="repo-header__title">Settings</h1>
       </div>
@@ -723,39 +725,35 @@ export const TreePage: FC<{
   ref: string
   path: string
 }> = ({ entries, owner, slug, ref, path }) => {
-  const breadcrumbs = buildBreadcrumbs(owner, slug, ref, path)
+  const pathSegments = path ? path.split('/') : []
 
   return (
     <div class="l-stack">
       <header class="repo-header">
-        <nav class="repo-header__path" aria-label="Repository path">
-          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
-          <span class="repo-header__path-sep" aria-hidden="true">
-            /
-          </span>
-          <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
-        </nav>
+        <Breadcrumb
+          variant="wrap"
+          items={[
+            { label: owner, href: resolveUrl(`/${owner}`) },
+            { label: slug, href: resolveUrl(`/${owner}/${slug}`) },
+            { label: 'tree' },
+            { label: ref },
+            ...pathSegments.map((seg, i) => ({
+              label: seg,
+              href:
+                i < pathSegments.length - 1
+                  ? resolveUrl(
+                      `/${owner}/${slug}/tree/${ref}/${pathSegments.slice(0, i + 1).join('/')}`,
+                    )
+                  : undefined,
+            })),
+          ]}
+        />
         <div class="repo-header__title-row">
           <h1 class="repo-header__title">Files</h1>
         </div>
       </header>
 
       <RepoNav owner={owner} slug={slug} current="files" />
-
-      <nav aria-label="Breadcrumb">
-        <ol class="l-cluster" style="list-style: none; padding: 0;">
-          {breadcrumbs.map((crumb, i) => (
-            <li key={crumb.label}>
-              {i > 0 && <span class="text-muted"> / </span>}
-              {crumb.href ? (
-                <a href={resolveUrl(crumb.href)}>{crumb.label}</a>
-              ) : (
-                <strong>{crumb.label}</strong>
-              )}
-            </li>
-          ))}
-        </ol>
-      </nav>
 
       <table class="flex-table" data-variant="borderless">
         <thead>
@@ -806,7 +804,7 @@ export const BlobPage: FC<{
   ref: string
   path: string
 }> = ({ content, owner, slug, ref, path }) => {
-  const breadcrumbs = buildBreadcrumbs(owner, slug, ref, path)
+  const pathSegments = path ? path.split('/') : []
   const fileName = path.split('/').pop() ?? path
   const isJson = fileName.endsWith('.json')
   const isPdf = fileName.endsWith('.pdf')
@@ -828,32 +826,28 @@ export const BlobPage: FC<{
   return (
     <div class="l-stack">
       <header class="repo-header">
-        <nav class="repo-header__path" aria-label="Repository path">
-          <a href={resolveUrl(`/${owner}`)}>{owner}</a>
-          <span class="repo-header__path-sep" aria-hidden="true">
-            /
-          </span>
-          <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
-        </nav>
+        <Breadcrumb
+          variant="wrap"
+          items={[
+            { label: owner, href: resolveUrl(`/${owner}`) },
+            { label: slug, href: resolveUrl(`/${owner}/${slug}`) },
+            { label: 'blob' },
+            { label: ref },
+            ...pathSegments.map((seg, i) => ({
+              label: seg,
+              href:
+                i < pathSegments.length - 1
+                  ? resolveUrl(
+                      `/${owner}/${slug}/tree/${ref}/${pathSegments.slice(0, i + 1).join('/')}`,
+                    )
+                  : undefined,
+            })),
+          ]}
+        />
         <div class="repo-header__title-row">
           <h1 class="repo-header__title">{fileName}</h1>
         </div>
       </header>
-
-      <nav aria-label="Breadcrumb">
-        <ol class="l-cluster" style="list-style: none; padding: 0;">
-          {breadcrumbs.map((crumb, i) => (
-            <li key={crumb.label}>
-              {i > 0 && <span class="text-muted"> / </span>}
-              {crumb.href ? (
-                <a href={resolveUrl(crumb.href)}>{crumb.label}</a>
-              ) : (
-                <strong>{crumb.label}</strong>
-              )}
-            </li>
-          ))}
-        </ol>
-      </nav>
 
       {isSpecJson && (
         <p>
@@ -893,13 +887,13 @@ export const CommitListPage: FC<{
 }> = ({ history, owner, slug }) => (
   <div class="l-stack">
     <header class="repo-header">
-      <nav class="repo-header__path" aria-label="Repository path">
-        <a href={resolveUrl(`/${owner}`)}>{owner}</a>
-        <span class="repo-header__path-sep" aria-hidden="true">
-          /
-        </span>
-        <a href={resolveUrl(`/${owner}/${slug}`)}>{slug}</a>
-      </nav>
+      <Breadcrumb
+        items={[
+          { label: owner, href: resolveUrl(`/${owner}`) },
+          { label: slug, href: resolveUrl(`/${owner}/${slug}`) },
+          { label: 'History' },
+        ]}
+      />
       <div class="repo-header__title-row">
         <h1 class="repo-header__title">History</h1>
       </div>
@@ -1331,36 +1325,4 @@ function parseForkedFrom(
     owner: forkedFrom.slice(0, slashIndex),
     slug: forkedFrom.slice(slashIndex + 1),
   }
-}
-
-interface Breadcrumb {
-  label: string
-  href: string | null
-}
-
-function buildBreadcrumbs(
-  owner: string,
-  slug: string,
-  ref: string,
-  path: string,
-): Breadcrumb[] {
-  const crumbs: Breadcrumb[] = [
-    { label: owner, href: `/${owner}` },
-    { label: slug, href: `/${owner}/${slug}` },
-    { label: ref, href: `/${owner}/${slug}/tree/${ref}` },
-  ]
-
-  if (path) {
-    const parts = path.split('/')
-    for (let i = 0; i < parts.length; i++) {
-      const partialPath = parts.slice(0, i + 1).join('/')
-      const isLast = i === parts.length - 1
-      crumbs.push({
-        label: parts[i],
-        href: isLast ? null : `/${owner}/${slug}/tree/${ref}/${partialPath}`,
-      })
-    }
-  }
-
-  return crumbs
 }

@@ -1,4 +1,5 @@
 import { type Context, Hono } from 'hono'
+import { Breadcrumb } from '../../../../design-system/components/flex-breadcrumb'
 import { FormConfirmation } from '../../../../design-system/components/flex-form-confirmation'
 import type { FormError } from '../../../../design-system/components/flex-form-error-summary'
 import { FormField } from '../../../../design-system/components/flex-form-field'
@@ -216,6 +217,7 @@ export function createFormRouter(deps: FormRouterDeps) {
       return c.html(
         <Layout user={c.get('user')} title="Forms" currentPath="/forms">
           <div class="flex-form" data-size="large">
+            <Breadcrumb items={[{ label: 'Forms' }]} />
             <div
               class="l-cluster"
               style="justify-content: space-between; align-items: baseline;"
@@ -302,6 +304,12 @@ export function createFormRouter(deps: FormRouterDeps) {
       return c.html(
         <Layout user={user} title="My Sessions" currentPath="/forms">
           <div class="flex-form" data-size="large">
+            <Breadcrumb
+              items={[
+                { label: 'Forms', href: resolveUrl('/forms') },
+                { label: 'My Sessions' },
+              ]}
+            />
             <h1>My Sessions</h1>
             {sessions.length === 0 ? (
               <p>
@@ -395,6 +403,18 @@ export function createFormRouter(deps: FormRouterDeps) {
         currentPath="/forms"
       >
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
+        {ctx.owner && ctx.slug && (
+          <Breadcrumb
+            items={[
+              { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+              {
+                label: ctx.slug,
+                href: resolveUrl(`/${ctx.owner}/${ctx.slug}`),
+              },
+              { label: 'Forms' },
+            ]}
+          />
+        )}
         <FormLanding
           formSpec={specs.formSpec}
           startUrl={resolveUrl(`${prefix}/sessions`)}
@@ -445,6 +465,24 @@ export function createFormRouter(deps: FormRouterDeps) {
     return c.html(
       <Layout user={user} title={page.page.title} currentPath="/forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
+        {ctx.owner && ctx.slug && (
+          <Breadcrumb
+            items={[
+              { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+              {
+                label: ctx.slug,
+                href: resolveUrl(`/${ctx.owner}/${ctx.slug}`),
+              },
+              {
+                label: 'Forms',
+                href: resolveUrl(`/${ctx.owner}/${ctx.slug}/forms`),
+              },
+              {
+                label: `Page ${Number(pageIndex) + 1} of ${specs.formSpec.pages.length}`,
+              },
+            ]}
+          />
+        )}
         {showChatToggle && (
           <div class="flex-form" data-size="large">
             <p>
@@ -526,6 +564,24 @@ export function createFormRouter(deps: FormRouterDeps) {
           currentPath="/forms"
         >
           {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
+          {ctx.owner && ctx.slug && (
+            <Breadcrumb
+              items={[
+                { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+                {
+                  label: ctx.slug,
+                  href: resolveUrl(`/${ctx.owner}/${ctx.slug}`),
+                },
+                {
+                  label: 'Forms',
+                  href: resolveUrl(`/${ctx.owner}/${ctx.slug}/forms`),
+                },
+                {
+                  label: `Page ${Number(pageIndex) + 1} of ${specs.formSpec.pages.length}`,
+                },
+              ]}
+            />
+          )}
           <FormPageView
             page={{
               title: resolvedPage.page.title,
@@ -571,6 +627,22 @@ export function createFormRouter(deps: FormRouterDeps) {
     return c.html(
       <Layout user={user} title="Review" currentPath="/forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
+        {ctx.owner && ctx.slug && (
+          <Breadcrumb
+            items={[
+              { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+              {
+                label: ctx.slug,
+                href: resolveUrl(`/${ctx.owner}/${ctx.slug}`),
+              },
+              {
+                label: 'Forms',
+                href: resolveUrl(`/${ctx.owner}/${ctx.slug}/forms`),
+              },
+              { label: 'Review' },
+            ]}
+          />
+        )}
         <FormReview
           pages={buildReviewPages(resolved, session.fields)}
           fields={session.fields}
@@ -629,6 +701,22 @@ export function createFormRouter(deps: FormRouterDeps) {
               ctx.specs.dataSpec.id,
             )
           : null}
+        {ctx?.owner && ctx?.slug && (
+          <Breadcrumb
+            items={[
+              { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+              {
+                label: ctx.slug,
+                href: resolveUrl(`/${ctx.owner}/${ctx.slug}`),
+              },
+              {
+                label: 'Forms',
+                href: resolveUrl(`/${ctx.owner}/${ctx.slug}/forms`),
+              },
+              { label: 'Confirmation' },
+            ]}
+          />
+        )}
         <FormConfirmation
           submission={submission}
           pdfDownloadUrl={resolveUrl(
