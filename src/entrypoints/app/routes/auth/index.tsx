@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { deleteCookie, setCookie } from 'hono/cookie'
+import { Layout } from '../../../../design-system/components/flex-layout'
 import type { AccessStore, UserStore } from '../../../../services/auth'
 import {
   COOKIE_MAX_AGE,
@@ -11,6 +12,11 @@ import {
   hasAllowedEmailDomain,
 } from '../../../../services/auth'
 import { resolveUrl } from '../../../../shared/base-path'
+import {
+  AccessDeniedPage,
+  AccessPendingPage,
+  RequestAccessPage,
+} from './components'
 
 export function createAuthRoutes(
   userStore: UserStore,
@@ -226,15 +232,9 @@ export function createAuthRoutes(
   auth.get('/request-access', (c) => {
     const user = c.get('user')
     return c.html(
-      `<!DOCTYPE html>
-      <html><head><title>Request Access</title></head>
-      <body>
-        <h1>Request Access to Forms Lab</h1>
-        ${user ? `<p>Signed in as <strong>@${user.login}</strong></p>` : ''}
-        <form method="POST" action="${resolveUrl('/auth/request-access')}">
-          <button type="submit">Request Access</button>
-        </form>
-      </body></html>`,
+      <Layout currentPath="/auth/request-access" user={user}>
+        <RequestAccessPage user={user} />
+      </Layout>,
     )
   })
 
@@ -268,26 +268,18 @@ export function createAuthRoutes(
   // GET /auth/access-pending
   auth.get('/access-pending', (c) => {
     return c.html(
-      `<!DOCTYPE html>
-      <html><head><title>Access Pending</title></head>
-      <body>
-        <h1>Access Request Pending</h1>
-        <p>Your request is being reviewed. You'll be notified when approved.</p>
-        <p><a href="${resolveUrl('/')}">Back to home</a></p>
-      </body></html>`,
+      <Layout currentPath="/auth/access-pending" user={null}>
+        <AccessPendingPage />
+      </Layout>,
     )
   })
 
   // GET /auth/access-denied
   auth.get('/access-denied', (c) => {
     return c.html(
-      `<!DOCTYPE html>
-      <html><head><title>Access Denied</title></head>
-      <body>
-        <h1>Access Denied</h1>
-        <p>Your access has been revoked. Contact an administrator for assistance.</p>
-        <p><a href="${resolveUrl('/')}">Back to home</a></p>
-      </body></html>`,
+      <Layout currentPath="/auth/access-denied" user={null}>
+        <AccessDeniedPage />
+      </Layout>,
     )
   })
 

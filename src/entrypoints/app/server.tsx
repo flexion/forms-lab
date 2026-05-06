@@ -45,6 +45,7 @@ import {
 } from '../../services/variant-preferences'
 import { getBasePath, resolveUrl } from '../../shared/base-path'
 import { requireAuth, sessionReader } from './middleware/auth'
+import { createAdminRoutes } from './routes/admin/index'
 import { createAuthRoutes } from './routes/auth/index'
 import catalog from './routes/catalog/index'
 import { createFormRouter } from './routes/forms/index'
@@ -289,6 +290,10 @@ app.use(
 // Mount auth routes
 app.route('/auth', createAuthRoutes(userStore, accessStore))
 
+// Mount admin routes (requireAdmin is applied inside createAdminRoutes)
+app.use('/admin/*', requireAuth(accessStore))
+app.route('/admin', createAdminRoutes(accessStore, userStore))
+
 // Mount settings routes (variant picker)
 app.route(
   '/settings',
@@ -310,7 +315,7 @@ app.get('/health', (c) => {
 })
 
 // New project routes (requires auth)
-app.use('/new', requireAuth())
+app.use('/new', requireAuth(accessStore))
 
 // Resolve the callout payload the /new page needs to describe the user's
 // currently-selected extraction variant. Factored out because both GET and
