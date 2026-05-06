@@ -22,6 +22,7 @@
         ./modules/homepage.nix
         ./modules/notify.nix
         ./modules/notify-failure.nix
+        ./modules/activity-digest.nix
         ./modules/secrets.nix
       ];
     };
