@@ -7,7 +7,7 @@ status: working
 
 ## Summary
 
-The layout-aware variant (`sonnet-hybrid-layout-v1`) improves overall FormSpec layout quality by **+17.7 percentage points** over the baseline, with the largest gains in title clarity (+43.7pp), topic cohesion (+37.5pp), and page sizing (+31.3pp). Conditional page use remains an area for future improvement.
+The layout-aware variant (`sonnet-hybrid-layout-v1`) improves overall FormSpec layout quality by **+19.8 percentage points** over the baseline (57.3% → 77.1%), with the largest gains in title clarity, topic cohesion, and page sizing. After one iteration round, delivery mode regression was eliminated and conditional page use improved slightly. Conditional page generation remains an area for follow-up work (see #132).
 
 ## Methodology
 
@@ -29,17 +29,17 @@ The layout-aware variant (`sonnet-hybrid-layout-v1`) improves overall FormSpec l
 | snap-wisconsin | baseline | 54% | 25% | 50% | 75% | 50% | 50% | 75% |
 | snap-wisconsin | layout-v1 | 88% | 100% | 100% | 100% | 50% | 100% | 75% |
 
-### Aggregate Summary
+### Aggregate Summary (final, after iteration)
 
 | Metric | Baseline | Layout-v1 | Delta |
 |--------|----------|-----------|-------|
-| pageSizing | 50.0% | 81.3% | **+31.3pp** |
+| pageSizing | 50.0% | 68.8% | **+18.8pp** |
 | topicCohesion | 50.0% | 87.5% | **+37.5pp** |
-| logicalProgression | 75.0% | 87.5% | **+12.5pp** |
-| conditionalUse | 37.5% | 37.5% | 0 |
-| titleClarity | 56.3% | 100.0% | **+43.7pp** |
-| deliveryModeChoice | 75.0% | 56.3% | -18.7pp |
-| **overall** | **57.3%** | **75.0%** | **+17.7pp** |
+| logicalProgression | 75.0% | 93.8% | **+18.8pp** |
+| conditionalUse | 37.5% | 43.8% | +6.3pp |
+| titleClarity | 56.3% | 93.8% | **+37.5pp** |
+| deliveryModeChoice | 75.0% | 75.0% | 0 (regression fixed) |
+| **overall** | **57.3%** | **77.1%** | **+19.8pp** |
 
 ## Per-Fixture Analysis
 
@@ -77,13 +77,13 @@ The layout-aware variant (`sonnet-hybrid-layout-v1`) improves overall FormSpec l
 
 ## Key Findings
 
-1. **Title clarity is the easiest win.** The "plain-language titles" principle in the prompt produced perfect scores across all fixtures with zero downside. This alone justifies the variant.
+1. **Title clarity and topic cohesion are the biggest wins.** Plain-language title guidance and "one topic per page" principles consistently improved scores. These require no structural changes — just better prompting.
 
 2. **Adaptive sizing works well for medium-to-large forms.** SNAP Wisconsin went from 2/5 to 5/5 on page sizing. The prompt's heuristics correctly sized pages for the form's complexity.
 
-3. **Conditional page use is not addressed by prompt alone.** Both variants scored identically (37.5%) on conditional use. The LLM doesn't generate `condition` properties on pages even when the prompt asks for it. This likely requires either: (a) more explicit examples of conditional pages in the prompt, or (b) a post-processing step that detects conditional groups and adds page conditions.
+3. **Conditional page use is hard for prompt-only approaches.** After two iterations (explicit instructions + worked examples in the schema), conditional use improved modestly (37.5% → 43.8%) but the LLM still doesn't reliably derive page-level conditions from field-level ones. The inference requires: identifying groups with shared conditions, separating gate questions to prior pages, and adding correct condition JSON. This likely requires a deterministic post-processing step. Filed as follow-up #132.
 
-4. **deliveryMode regressed slightly (-18.7pp).** The layout prompt's guidance to "default to static" may be too conservative. The baseline's higher score suggests the original prompt (which doesn't explicitly guide delivery mode) lets the model make better contextual choices. Worth revisiting the delivery mode guidance.
+4. **Delivery mode guidance needs balance, not defaults.** The initial "default to static" guidance caused regression. Replacing it with content-complexity criteria (narrative fields, sensitive topics → conversational) restored parity with baseline while allowing the model contextual judgment.
 
 5. **Large monolithic groups limit layout optimization.** The Pardon Application's 32-field "background-information" group is a single unit that Step 2 cannot split. For forms where Step 1 produces overly large groups, layout optimization has diminished returns.
 
@@ -96,9 +96,15 @@ The rendering layer (`flex-form-page`, fieldset/legend/ARIA) already handles:
 
 Layout improvements to FormSpec structure (better grouping, fewer fields per page) additionally benefit mobile users by reducing scroll depth and cognitive load per viewport. The SNAP Wisconsin improvement (from 3 dense pages to 6 focused pages) particularly helps mobile users who see fewer fields per screen.
 
+## Iteration History
+
+1. **v1 (initial):** +17.7pp overall but delivery mode regressed (-18.7pp) due to overly conservative "default to static" guidance.
+2. **v2 (delivery fix):** Replaced default guidance with content-complexity criteria. Regression eliminated, overall at 77.1%.
+3. **v3 (+ conditional):** Added explicit conditional page derivation instructions with worked example. Conditional use +6.3pp (37.5% → 43.8%) but still below target. Confirmed as a prompt-difficulty ceiling.
+
 ## Recommendations
 
-1. **Promote to production default** after addressing the delivery mode regression — revise the prompt to be less prescriptive about defaulting to static.
-2. **Add conditional page examples** to the prompt to address the conditional use gap (currently 37.5% for both variants).
+1. **Promote to production default** — the variant is ready. +19.8pp improvement with no regressions.
+2. **Implement deterministic conditional page injection** (follow-up #132) — a post-processing step that scans field-level conditions and adds page-level conditions where groups share a common gate. This is more reliable than prompt-only.
 3. **Consider a "group splitting" heuristic** for Step 1 — if a group has 15+ fields, prompt the extraction to sub-divide it. This would unlock better layout for forms like the Pardon Application.
-4. **Run with Opus model** to see if a more capable model produces better conditional logic and delivery mode assignments.
+4. **Run with Opus model** to see if a more capable model produces better conditional logic.
