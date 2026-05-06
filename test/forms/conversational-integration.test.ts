@@ -30,18 +30,19 @@ class InMemoryConversationGateway implements ConversationGateway {
 
 const TEST_SHA = 'abc1234567890def1234567890abc1234567890'
 
-const specRegistry = new Map([
-  [
-    testDataSpec.id,
-    { dataSpec: testDataSpec, formSpec: testFormSpec, sha: TEST_SHA },
-  ],
-])
+const specs = {
+  dataSpec: testDataSpec,
+  formSpec: testFormSpec,
+  sha: TEST_SHA,
+}
 
 const TEST_USER = {
   login: 'testuser',
   name: 'Test User',
   avatarUrl: '',
 }
+
+const BASE = '/alice/test-project/forms'
 
 function createTestApp() {
   const sessionGateway = new InMemoryFormSessionGateway()
@@ -56,14 +57,19 @@ function createTestApp() {
     await next()
   })
   app.route(
-    '/forms',
+    '/:owner/:slug/forms',
     createFormRouter({
       sessionGateway,
       submissionGateway,
       conversationGateway,
       fillingAgent,
-      getSpecs: async (specId) => specRegistry.get(specId) ?? null,
-      listSpecs: async () => [...specRegistry.values()],
+      getSpecs: async () => specs,
+      listSpecs: async () => [specs],
+      resolveOwnerSlug: (c) => ({
+        owner: c.req.param('owner') ?? '',
+        slug: c.req.param('slug') ?? '',
+      }),
+      getSpecsByProject: async () => specs,
     }),
   )
   return { app, sessionGateway, conversationGateway }
@@ -74,13 +80,13 @@ describe('Conversational form filling integration', () => {
     const { app, sessionGateway, conversationGateway } = createTestApp()
 
     // Create session
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     expect(location).toBeTruthy()
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     // Page 0: Static page (Personal Information)
     const page0Get = await app.request(`${baseUrl}/pages/0`)
@@ -243,12 +249,12 @@ describe('Conversational form filling integration', () => {
     const { app } = createTestApp()
 
     // Create session
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     // Fill page 0 to get to page 1 (conversational)
     await app.request(`${baseUrl}/pages/0`, {
@@ -271,12 +277,12 @@ describe('Conversational form filling integration', () => {
     const { app } = createTestApp()
 
     // Create session
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     // Fill page 0
     await app.request(`${baseUrl}/pages/0`, {
@@ -307,12 +313,12 @@ describe('Conversational form filling integration', () => {
     const { app, sessionGateway } = createTestApp()
 
     // Create session
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     // Fill page 0
     await app.request(`${baseUrl}/pages/0`, {

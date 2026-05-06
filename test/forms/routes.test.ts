@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { Hono } from 'hono'
+import { type Context, Hono } from 'hono'
 import { createFormRouter } from '../../src/entrypoints/app/routes/forms/index'
 import { InMemoryFormSessionGateway } from '../../src/services/forms/session'
 import { InMemorySubmissionGateway } from '../../src/services/forms/submission'
@@ -7,12 +7,11 @@ import { testDataSpec, testFormSpec } from './fixtures'
 
 const TEST_SHA = 'abc1234567890def1234567890abc1234567890'
 
-const specRegistry = new Map([
-  [
-    testDataSpec.id,
-    { dataSpec: testDataSpec, formSpec: testFormSpec, sha: TEST_SHA },
-  ],
-])
+const specs = {
+  dataSpec: testDataSpec,
+  formSpec: testFormSpec,
+  sha: TEST_SHA,
+}
 
 const TEST_USER = {
   login: 'testuser',
@@ -30,12 +29,17 @@ function createTestApp() {
     await next()
   })
   app.route(
-    '/forms',
+    '/:owner/:slug/forms',
     createFormRouter({
       sessionGateway,
       submissionGateway,
-      getSpecs: async (specId) => specRegistry.get(specId) ?? null,
-      listSpecs: async () => [...specRegistry.values()],
+      getSpecs: async () => specs,
+      listSpecs: async () => [specs],
+      resolveOwnerSlug: (c) => ({
+        owner: c.req.param('owner') ?? '',
+        slug: c.req.param('slug') ?? '',
+      }),
+      getSpecsByProject: async () => specs,
     }),
   )
   return app
@@ -51,21 +55,85 @@ function createUnauthTestApp() {
     await next()
   })
   app.route(
-    '/forms',
+    '/:owner/:slug/forms',
     createFormRouter({
       sessionGateway,
       submissionGateway,
-      getSpecs: async (specId) => specRegistry.get(specId) ?? null,
-      listSpecs: async () => [...specRegistry.values()],
+      getSpecs: async () => specs,
+      listSpecs: async () => [specs],
+      resolveOwnerSlug: (c) => ({
+        owner: c.req.param('owner') ?? '',
+        slug: c.req.param('slug') ?? '',
+      }),
+      getSpecsByProject: async () => specs,
     }),
   )
   return app
 }
 
+/** Helper to create a directory-only app (no project-scoped routes) for
+ *  testing the /forms directory, My Sessions, and submission detail pages. */
+function createDirectoryApp() {
+  const sessionGateway = new InMemoryFormSessionGateway()
+  const submissionGateway = new InMemorySubmissionGateway()
+  const app = new Hono()
+  app.use('*', async (c, next) => {
+    c.set('user', TEST_USER)
+    await next()
+  })
+  app.route(
+    '/forms',
+    createFormRouter({
+      sessionGateway,
+      submissionGateway,
+      getSpecs: async (specId) => (specId === testDataSpec.id ? specs : null),
+      listSpecs: async () => [specs],
+    }),
+  )
+  // Also mount project-scoped routes for creating sessions
+  app.route(
+    '/:owner/:slug/forms',
+    createFormRouter({
+      sessionGateway,
+      submissionGateway,
+      getSpecs: async () => specs,
+      listSpecs: async () => [specs],
+      resolveOwnerSlug: (c) => ({
+        owner: c.req.param('owner') ?? '',
+        slug: c.req.param('slug') ?? '',
+      }),
+      getSpecsByProject: async () => specs,
+    }),
+  )
+  return { app, sessionGateway, submissionGateway }
+}
+
+function createUnauthDirectoryApp() {
+  const sessionGateway = new InMemoryFormSessionGateway()
+  const submissionGateway = new InMemorySubmissionGateway()
+  const app = new Hono()
+  app.use('*', async (c, next) => {
+    c.set('user', null)
+    await next()
+  })
+  app.route(
+    '/forms',
+    createFormRouter({
+      sessionGateway,
+      submissionGateway,
+      getSpecs: async (specId) => (specId === testDataSpec.id ? specs : null),
+      listSpecs: async () => [specs],
+    }),
+  )
+  return app
+}
+
+const BASE = '/alice/test-project/forms'
+
 describe('Form routes', () => {
-  it('GET /forms/benefits-app returns landing page', async () => {
+  it('GET /:owner/:slug/forms returns landing page', async () => {
     const app = createTestApp()
-    const res = await app.request('/forms/benefits-app')
+    const res = await app.request(BASE)
     expect(res.status).toBe(200)
     const html = await res.text()
     expect(html).toContain('Benefits Application Form')
@@ -74,21 +142,41 @@ describe('Form routes', () => {
     expect(html).toContain('3 sections')
   })
 
-  it('GET /forms/nonexistent returns 404', async () => {
-    const app = createTestApp()
-    const res = await app.request('/forms/nonexistent')
+  it('GET /:owner/:slug/forms for nonexistent project returns 404', async () => {
+    const sessionGateway = new InMemoryFormSessionGateway()
+    const submissionGateway = new InMemorySubmissionGateway()
+    const app = new Hono()
+    app.use('*', async (c, next) => {
+      c.set('user', TEST_USER)
+      await next()
+    })
+    app.route(
+      '/:owner/:slug/forms',
+      createFormRouter({
+        sessionGateway,
+        submissionGateway,
+        getSpecs: async () => null,
+        listSpecs: async () => [],
+        resolveOwnerSlug: (c) => ({
+          owner: c.req.param('owner') ?? '',
+          slug: c.req.param('slug') ?? '',
+        }),
+        getSpecsByProject: async () => null,
+      }),
+    )
+    const res = await app.request('/alice/nonexistent/forms')
     expect(res.status).toBe(404)
   })
 
-  it('POST /forms/benefits-app/sessions creates session and redirects', async () => {
+  it('POST /:owner/:slug/forms/sessions creates session and redirects', async () => {
     const app = createTestApp()
-    const res = await app.request('/forms/benefits-app/sessions', {
+    const res = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     expect(res.status).toBe(302)
     const location = res.headers.get('Location')
     expect(location).toMatch(
-      /\/forms\/benefits-app\/sessions\/[\w-]+\/pages\/0/,
+      /\/alice\/test-project\/forms\/sessions\/[\w-]+\/pages\/0/,
     )
   })
 
@@ -96,13 +184,13 @@ describe('Form routes', () => {
     const app = createTestApp()
 
     // Create session
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     expect(location).toBeTruthy()
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     // GET page 0
     const page0Get = await app.request(`${baseUrl}/pages/0`)
@@ -175,13 +263,13 @@ describe('Form routes', () => {
 
   it('validation errors re-render the page', async () => {
     const app = createTestApp()
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     expect(location).toBeTruthy()
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     // POST page 0 with missing required fields
     const res = await app.request(`${baseUrl}/pages/0`, {
@@ -195,12 +283,12 @@ describe('Form routes', () => {
 
   it('validation errors show error summary with links', async () => {
     const app = createTestApp()
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     const res = await app.request(`${baseUrl}/pages/0`, {
       method: 'POST',
@@ -214,12 +302,12 @@ describe('Form routes', () => {
 
   it('validation errors prefix page title with Error:', async () => {
     const app = createTestApp()
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     const res = await app.request(`${baseUrl}/pages/0`, {
       method: 'POST',
@@ -233,12 +321,12 @@ describe('Form routes', () => {
 
   it('renders step text on form pages', async () => {
     const app = createTestApp()
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     const res = await app.request(`${baseUrl}/pages/0`)
     const html = await res.text()
@@ -247,7 +335,7 @@ describe('Form routes', () => {
 
   it('returns 404 for invalid session ID', async () => {
     const app = createTestApp()
-    const res = await app.request('/forms/benefits-app/sessions/bad-id/pages/0')
+    const res = await app.request(`${BASE}/sessions/bad-id/pages/0`)
     expect(res.status).toBe(404)
   })
 
@@ -255,12 +343,12 @@ describe('Form routes', () => {
     const app = createTestApp()
 
     // Create session and fill all pages
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     await app.request(`${baseUrl}/pages/0`, {
       method: 'POST',
@@ -301,7 +389,7 @@ describe('Form routes', () => {
 
   it('unauthenticated users are redirected from session routes', async () => {
     const app = createUnauthTestApp()
-    const res = await app.request('/forms/benefits-app/sessions', {
+    const res = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     expect(res.status).toBe(302)
@@ -311,14 +399,14 @@ describe('Form routes', () => {
 
   it('landing page requires auth', async () => {
     const app = createUnauthTestApp()
-    const res = await app.request('/forms/benefits-app')
+    const res = await app.request(BASE)
     expect(res.status).toBe(302)
     const location = res.headers.get('Location')
     expect(location).toContain('/auth/signin')
   })
 
   it('GET /forms shows available forms', async () => {
-    const app = createTestApp()
+    const { app } = createDirectoryApp()
     const res = await app.request('/forms')
     expect(res.status).toBe(200)
     const html = await res.text()
@@ -327,7 +415,7 @@ describe('Form routes', () => {
   })
 
   it('forms index requires auth', async () => {
-    const app = createUnauthTestApp()
+    const app = createUnauthDirectoryApp()
     const res = await app.request('/forms')
     expect(res.status).toBe(302)
     const location = res.headers.get('Location')
@@ -335,9 +423,9 @@ describe('Form routes', () => {
   })
 
   it('GET /forms/sessions shows user sessions', async () => {
-    const app = createTestApp()
-    // Create a session first
-    await app.request('/forms/benefits-app/sessions', { method: 'POST' })
+    const { app } = createDirectoryApp()
+    // Create a session first via project-scoped route
+    await app.request(`${BASE}/sessions`, { method: 'POST' })
     const res = await app.request('/forms/sessions')
     expect(res.status).toBe(200)
     const html = await res.text()
@@ -347,7 +435,7 @@ describe('Form routes', () => {
   })
 
   it('sessions page shows empty state when no sessions', async () => {
-    const app = createTestApp()
+    const { app } = createDirectoryApp()
     const res = await app.request('/forms/sessions')
     expect(res.status).toBe(200)
     const html = await res.text()
@@ -355,7 +443,7 @@ describe('Form routes', () => {
   })
 
   it('sessions page requires auth', async () => {
-    const app = createUnauthTestApp()
+    const app = createUnauthDirectoryApp()
     const res = await app.request('/forms/sessions')
     expect(res.status).toBe(302)
     const location = res.headers.get('Location')
@@ -363,32 +451,51 @@ describe('Form routes', () => {
   })
 
   it('sessions page only shows own sessions', async () => {
-    const app = createTestApp()
-    // testuser creates a session
-    await app.request('/forms/benefits-app/sessions', { method: 'POST' })
-
-    // Create a separate app with a different user
+    // Set up shared gateways
     const sessionGateway = new InMemoryFormSessionGateway()
     const submissionGateway = new InMemorySubmissionGateway()
-    const otherApp = new Hono()
-    otherApp.use('*', async (c, next) => {
-      c.set('user', { login: 'otheruser', name: 'Other', avatarUrl: '' })
+    const routerDeps = {
+      sessionGateway,
+      submissionGateway,
+      getSpecs: async () => specs,
+      listSpecs: async () => [specs],
+      resolveOwnerSlug: (c: Context) => ({
+        owner: c.req.param('owner') ?? '',
+        slug: c.req.param('slug') ?? '',
+      }),
+      getSpecsByProject: async () => specs,
+    } as const
+
+    // User A creates a session
+    const appA = new Hono()
+    appA.use('*', async (c, next) => {
+      c.set('user', { login: 'userA', name: 'User A', avatarUrl: '' })
       await next()
     })
-    otherApp.route(
+    appA.route('/:owner/:slug/forms', createFormRouter(routerDeps))
+    await appA.request(`${BASE}/sessions`, { method: 'POST' })
+
+    // User B creates a session with their own app but same gateways
+    const appB = new Hono()
+    appB.use('*', async (c, next) => {
+      c.set('user', { login: 'userB', name: 'User B', avatarUrl: '' })
+      await next()
+    })
+    appB.route('/:owner/:slug/forms', createFormRouter(routerDeps))
+    // Also mount directory for listing sessions
+    appB.route(
       '/forms',
       createFormRouter({
         sessionGateway,
         submissionGateway,
-        getSpecs: async (specId) => specRegistry.get(specId) ?? null,
-        listSpecs: async () => [...specRegistry.values()],
+        getSpecs: async (specId) => (specId === testDataSpec.id ? specs : null),
+        listSpecs: async () => [specs],
       }),
     )
-    // otheruser creates a session in the same gateway
-    await otherApp.request('/forms/benefits-app/sessions', { method: 'POST' })
+    await appB.request(`${BASE}/sessions`, { method: 'POST' })
 
-    // otheruser should only see their own session
-    const res = await otherApp.request('/forms/sessions')
+    // userB should only see their own session
+    const res = await appB.request('/forms/sessions')
     const html = await res.text()
     expect(html).toContain('In Progress')
     // Verify it shows exactly one session (their own)
@@ -396,21 +503,25 @@ describe('Form routes', () => {
     expect(matches).toHaveLength(1)
   })
 
-  it('GET /forms/:specId/branches/:branch shows preview banner', async () => {
+  it('GET /:owner/:slug/forms/branches/:branch shows preview banner', async () => {
     const app = createTestApp()
-    const res = await app.request('/forms/benefits-app/branches/feature-x')
+    const res = await app.request(
+      '/alice/test-project/forms/branches/feature-x',
+    )
     expect(res.status).toBe(200)
     const html = await res.text()
     expect(html).toContain('flex-preview-banner')
     expect(html).toContain('feature-x')
     expect(html).toContain('Benefits Application Form')
     // Start link should be branch-qualified
-    expect(html).toContain('/forms/benefits-app/branches/feature-x/sessions')
+    expect(html).toContain(
+      '/alice/test-project/forms/branches/feature-x/sessions',
+    )
   })
 
-  it('GET /forms/:specId (main) does not show the preview banner', async () => {
+  it('GET /:owner/:slug/forms (main) does not show the preview banner', async () => {
     const app = createTestApp()
-    const res = await app.request('/forms/benefits-app')
+    const res = await app.request(BASE)
     expect(res.status).toBe(200)
     const html = await res.text()
     expect(html).not.toContain('flex-preview-banner')
@@ -425,24 +536,29 @@ describe('Form routes', () => {
       await next()
     })
     app.route(
-      '/forms',
+      '/:owner/:slug/forms',
       createFormRouter({
         sessionGateway,
         submissionGateway,
-        getSpecs: async (specId) => specRegistry.get(specId) ?? null,
-        listSpecs: async () => [...specRegistry.values()],
+        getSpecs: async () => specs,
+        listSpecs: async () => [specs],
+        resolveOwnerSlug: (c) => ({
+          owner: c.req.param('owner') ?? '',
+          slug: c.req.param('slug') ?? '',
+        }),
+        getSpecsByProject: async () => specs,
       }),
     )
 
     const createRes = await app.request(
-      '/forms/benefits-app/branches/feature-x/sessions',
+      '/alice/test-project/forms/branches/feature-x/sessions',
       { method: 'POST' },
     )
     expect(createRes.status).toBe(302)
     const location = createRes.headers.get('Location') ?? ''
     expect(location).toContain('/branches/feature-x/')
     const sessionId = location.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/branches/feature-x/sessions/${sessionId}`
+    const baseUrl = `/alice/test-project/forms/branches/feature-x/sessions/${sessionId}`
 
     // Fill all pages
     await app.request(`${baseUrl}/pages/0`, {
@@ -496,8 +612,13 @@ describe('Form routes', () => {
     const routerDeps = {
       sessionGateway,
       submissionGateway,
-      getSpecs: async (specId: string) => specRegistry.get(specId) ?? null,
-      listSpecs: async () => [...specRegistry.values()],
+      getSpecs: async () => specs,
+      listSpecs: async () => [specs],
+      resolveOwnerSlug: (c: Context) => ({
+        owner: c.req.param('owner') ?? '',
+        slug: c.req.param('slug') ?? '',
+      }),
+      getSpecsByProject: async () => specs,
     } as const
 
     // User A creates a session
@@ -506,8 +627,8 @@ describe('Form routes', () => {
       c.set('user', { login: 'userA', name: 'User A', avatarUrl: '' })
       await next()
     })
-    appA.route('/forms', createFormRouter(routerDeps))
-    const createRes = await appA.request('/forms/benefits-app/sessions', {
+    appA.route('/:owner/:slug/forms', createFormRouter(routerDeps))
+    const createRes = await appA.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
@@ -519,23 +640,21 @@ describe('Form routes', () => {
       c.set('user', { login: 'userB', name: 'User B', avatarUrl: '' })
       await next()
     })
-    appB.route('/forms', createFormRouter(routerDeps))
-    const res = await appB.request(
-      `/forms/benefits-app/sessions/${sessionId}/pages/0`,
-    )
+    appB.route('/:owner/:slug/forms', createFormRouter(routerDeps))
+    const res = await appB.request(`${BASE}/sessions/${sessionId}/pages/0`)
     expect(res.status).toBe(404)
   })
 
   it('GET /forms/sessions/:sessionId/submission shows read-only review', async () => {
-    const app = createTestApp()
+    const { app } = createDirectoryApp()
 
-    // Create and complete a session
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    // Create and complete a session via project-scoped route
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
     const sessionId = location?.split('/sessions/')[1].split('/pages/')[0]
-    const baseUrl = `/forms/benefits-app/sessions/${sessionId}`
+    const baseUrl = `${BASE}/sessions/${sessionId}`
 
     await app.request(`${baseUrl}/pages/0`, {
       method: 'POST',
@@ -574,8 +693,8 @@ describe('Form routes', () => {
   })
 
   it('submission detail returns 404 for active session', async () => {
-    const app = createTestApp()
-    const createRes = await app.request('/forms/benefits-app/sessions', {
+    const { app } = createDirectoryApp()
+    const createRes = await app.request(`${BASE}/sessions`, {
       method: 'POST',
     })
     const location = createRes.headers.get('Location')
