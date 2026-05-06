@@ -47,18 +47,18 @@ Apply these civic tech best practices when assigning groups to pages:
 2. **Front-load easy questions** — place simple, low-effort fields (name, contact info) on early pages to build momentum before complex sections.
 3. **Group for recognition** — related fields together reduce cognitive load. Users should recognize why fields appear on the same page.
 4. **Use plain-language titles** — page titles should describe what the user will do, not internal jargon (e.g., "Tell us about yourself" not "Personal Information Section A").
-5. **Conditional pages** — if a group has a condition, place it on its own page so it can be skipped entirely without confusing the user.
+5. **Conditional pages** — scan the DataCollectionSpec for groups where most or all requirements share the same condition (e.g., multiple fields with "condition": {"field": "hasServedInMilitary", "operator": "equals", "value": "Yes"}). When you find such a group, place it on its own page and add that same condition to the page. The "gate" question (the field referenced in the condition) must appear on a PRIOR page so the system knows whether to show or skip the conditional page. Example: if fields about military details all require hasServedInMilitary == "Yes", put those fields' group on a page with "condition": {"field": "hasServedInMilitary", "operator": "equals", "value": "Yes"}, and ensure the hasServedInMilitary field itself is on an earlier page.
 6. **Don't over-paginate** — avoid single-field pages unless justified by sensitivity or conditionality. Two closely related groups can share a page.
 
 ## deliveryMode assignment
 
 Assign a deliveryMode to each page based on its content:
 
-- **static** — straightforward fields with clear labels (name, date, address). Most pages should be static.
-- **conversational** — sections with many conditional fields, complex eligibility logic, or questions that benefit from guided explanation.
-- **hybrid** — moderately complex sections where some fields are straightforward but others may need clarification.
+- **static** — straightforward factual fields with clear labels where the user knows the answer immediately (name, date of birth, mailing address).
+- **conversational** — sections involving: narrative free-text fields, sensitive topics (criminal history, substance use, legal attestations), complex eligibility logic, or fields where users commonly need guidance to understand what's being asked.
+- **hybrid** — pages mixing simple factual fields with one or two that may need clarification (e.g., an address page that also asks about mailing preferences).
 
-Default to "static" unless the page content clearly warrants conversational or hybrid treatment.
+Choose based on the content's complexity, not just field count. A page with 3 narrative fields about criminal conduct is more complex than a page with 8 address fields.
 
 ## FormSpec JSON schema
 
@@ -70,11 +70,19 @@ Return ONLY valid JSON (no markdown fences, no explanation) matching this schema
   "title": "string — a user-friendly form title",
   "pages": [
     {
-      "id": "page-<n>",
+      "id": "page-1",
       "title": "string — plain-language page title",
       "description": "string (optional) — brief guidance for the user",
-      "groups": ["group-id-1", "group-id-2"],
-      "deliveryMode": "static | conversational | hybrid"
+      "groups": ["group-id-1"],
+      "deliveryMode": "static"
+    },
+    {
+      "id": "page-2",
+      "title": "Your military service",
+      "description": "Tell us about your time in the armed forces.",
+      "groups": ["military-service-details"],
+      "condition": { "field": "hasServedInMilitary", "operator": "equals", "value": "Yes" },
+      "deliveryMode": "hybrid"
     }
   ],
   "createdAt": "${new Date().toISOString()}",
@@ -82,6 +90,8 @@ Return ONLY valid JSON (no markdown fences, no explanation) matching this schema
 }
 
 Each page's "groups" array references group IDs from the DataCollectionSpec. Every group must appear in exactly one page.
+
+The "condition" property is OPTIONAL — use it when a page's content only applies to users who answered a specific way on a previous page. The "field" must reference a fieldName from the DataCollectionSpec. When a condition is present, the page is skipped if the condition is not met.
 
 ## DataCollectionSpec
 
