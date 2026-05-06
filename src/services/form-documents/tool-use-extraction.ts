@@ -11,6 +11,8 @@
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText, stepCountIs } from 'ai'
+import type { ActivityStore } from '../activity'
+import { trackLlmCall } from '../activity'
 import type { PdfExtractor } from './extraction'
 import { generateFormSpec, mapAcroFormFields } from './extraction-steps'
 import { extractionTools, reconstructSpec } from './extraction-tools'
@@ -20,6 +22,8 @@ const DEFAULT_MODEL = 'us.anthropic.claude-sonnet-4-20250514-v1:0'
 
 export interface ToolUseExtractorOptions {
   model?: string
+  /** Optional activity store for tracking LLM usage. */
+  activityStore?: ActivityStore
 }
 
 export function createToolUsePdfExtractor(
@@ -50,6 +54,7 @@ export function createToolUsePdfExtractor(
       // Step 1: Extract DataCollectionSpec via tool-use (constrained generation)
       // maxSteps allows the model to make multiple rounds of tool calls —
       // large forms need 50+ calls which exceed a single response.
+      const startTime = Date.now()
       const response = await generateText({
         model: bedrock(model),
         maxOutputTokens: 32768,
@@ -84,6 +89,16 @@ Guidelines:
           },
         ],
       })
+      if (options?.activityStore) {
+        trackLlmCall(options.activityStore, {
+          userId: extractionOptions?.userId,
+          projectId: extractionOptions?.slug,
+          operation: 'extraction',
+          model,
+          usage: response.usage,
+          durationMs: Date.now() - startTime,
+        })
+      }
 
       // Collect tool calls from all steps (model may take multiple rounds)
       const toolCalls = response.steps
@@ -105,10 +120,25 @@ Guidelines:
 
       // Step 2: Generate default FormSpec from extracted spec (shared helper)
       const bedrockModel = bedrock(model)
-      const formSpec = await generateFormSpec(bedrockModel, spec)
+      const formSpec = await generateFormSpec(
+        bedrockModel,
+        spec,
+        options?.activityStore,
+        extractionOptions?.userId,
+        extractionOptions?.slug,
+        model,
+      )
 
       // Step 3: Enumerate PDF AcroForm fields and map to spec fieldNames (shared helper)
-      const fieldMapping = await mapAcroFormFields(bedrockModel, pdf, spec)
+      const fieldMapping = await mapAcroFormFields(
+        bedrockModel,
+        pdf,
+        spec,
+        options?.activityStore,
+        extractionOptions?.userId,
+        extractionOptions?.slug,
+        model,
+      )
 
       return {
         spec,

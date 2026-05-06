@@ -172,7 +172,8 @@ export function createExtractorRegistry(
       modelId: SONNET_MODEL_ID,
       pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
     },
-    create: () => createToolUsePdfExtractor({ model: SONNET_MODEL_ID }),
+    create: () =>
+      createToolUsePdfExtractor({ model: SONNET_MODEL_ID, activityStore }),
   })
 
   registry.register({
