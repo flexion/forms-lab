@@ -18,38 +18,36 @@ bears the burden.
 
 ## The approach
 
-Forms Lab separates **what to collect** from **how to present it.**
+**Configuration over code.** Forms are defined as structured JSON specs — what
+data to collect, how to present it, how fields map back to source documents.
+The specs are readable and editable by non-technical domain experts through a
+no-code UI, and equally accessible to LLM agents that can generate and refine
+them programmatically.
 
-- A `DataCollectionSpec` describes the fields and their semantics — extracted
-  from a source PDF using LLM-assisted analysis
-- A `FormSpec` describes how those fields are presented — page structure,
-  labels, help text, conditional flow
-- Swap the presentation (static page, conversational chat, review layout)
-  without touching extraction. Swap the extraction strategy without touching
-  delivery.
+**LLM assistance across the lifecycle.** Rather than bolting AI onto one step,
+Forms Lab introduces LLM capabilities at multiple stages — extracting fields
+from source PDFs, shaping raw extractions into usable form definitions,
+powering conversational form-filling, and generating accessible forms from
+regulatory source material. Each LLM-powered step is a pluggable _variant_:
+swappable at runtime, comparable in evaluation harnesses, improvable
+independently.
 
-LLMs are integrated pragmatically throughout the pipeline: extraction,
-shaping, conversational form-filling. Each LLM-powered step is a pluggable
-_variant_ that can be selected at runtime, compared in evaluation harnesses,
-and improved independently.
+**Git-native collaboration.** Every project is a git repository. Branches
+represent draft edits; merging publishes. This gives teams version history,
+diff-based review, and rollback — the same workflow developers already trust,
+extended to form content that non-developers manage through the UI.
 
-## What we've learned
+**Modern CSS with conformance testing.** The design system uses USWDS 3.x
+design tokens exclusively, enforced by automated stylelint rules. Cascade
+layers (`@layer`) provide predictable specificity. A component conformance
+registry ensures the UI stays consistent as it grows.
 
-We've run structured experiments comparing extraction strategies, model
-selection, and form-shaping approaches. Headlines:
+**Evaluation-driven development.** LLM outputs are non-deterministic, so the
+platform includes structured evaluation harnesses that score extraction and
+shaping quality across fixture sets. This replaces "does it look right?" with
+measurable, reproducible comparisons between strategies.
 
-- **Hybrid extraction dominates prompt-only approaches.** A single inline
-  exemplar with temperature=0 achieves 99.2% precision — better than complex
-  prompting at the same cost.
-- **Tool-use is the structural precision lever.** Forcing typed tool calls
-  instead of free JSON pushes sensitivity from 27% to 79%.
-- **Model selection dominates prompt engineering** once a task exceeds a
-  model's capability boundary.
-- **Model size is not the dominant lever for shaping.** Opus, Sonnet, and
-  Haiku cluster around the same precision for form commands — prompt
-  disambiguation is the bottleneck.
-
-Full experiment suites:
+Experiment results and methodology:
 [PDF extraction](catalog/experiments/pdf-field-extraction/_suite.md) ·
 [Shaping](catalog/experiments/shaping-model-comparison/_suite.md) ·
 [Authoring pipeline](catalog/experiments/authoring-pipeline/_suite.md)
