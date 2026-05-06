@@ -26,7 +26,7 @@ flex-accordion {
   background-color: var(--flex-color-bg-subtle);
   border: none;
   border-block-end: 1px solid var(--flex-color-border);
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   font-weight: 700;
   color: var(--flex-color-text);
   cursor: pointer;
@@ -65,7 +65,7 @@ flex-accordion {
 .flex-accordion__content {
   padding: var(--flex-space-md);
   border-block-end: 1px solid var(--flex-color-border);
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   color: var(--flex-color-text);
   line-height: 1.5;
 

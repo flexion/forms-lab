@@ -92,7 +92,7 @@
 
 .flex-search__submit {
   font-weight: 700;
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 0.9;
   color: var(--flex-color-on-accent);
   background-color: var(--flex-color-accent);

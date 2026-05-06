@@ -2,7 +2,7 @@
    Variants: no-labels, counters, small-counters, centered */
 
 .flex-step-indicator {
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.1;
   background-color: var(--flex-color-bg);
   margin-block-end: 2rem;
@@ -65,7 +65,7 @@
 .flex-step-indicator__segment-label {
   color: var(--flex-gray-cool-60);
   display: block;
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   margin-block-start: calc(0.5rem + 0.5rem);
   padding-inline-end: 2rem;
   text-align: start;

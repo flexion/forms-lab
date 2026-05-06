@@ -19,6 +19,6 @@
 
   &[data-size="big"] {
     padding-inline: 0.5rem;
-    font-size: var(--flex-text-uswds);
+    font-size: var(--flex-text-md);
   }
 }

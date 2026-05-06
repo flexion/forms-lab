@@ -13,7 +13,7 @@ flex-tab-group {
   background: none;
   border: 1px solid transparent;
   border-block-end: none;
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   font-weight: 700;
   color: var(--flex-color-text-muted);
   cursor: pointer;

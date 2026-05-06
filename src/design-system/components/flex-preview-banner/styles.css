@@ -7,7 +7,7 @@
   background-color: var(--flex-color-warning-lighter);
   border-block-end: 2px solid var(--flex-color-warning);
   color: var(--flex-color-text);
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
 }
 

@@ -46,7 +46,7 @@ flex-pipeline-panel {
 }
 
 .pipeline-panel__body {
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
 }
 
 .pipeline-panel__body p {

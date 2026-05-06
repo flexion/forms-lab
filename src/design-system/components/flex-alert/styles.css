@@ -99,13 +99,13 @@
 .flex-alert__heading {
   font-weight: 700;
   margin-block-end: var(--flex-space-xs);
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
 }
 
 .flex-alert__text {
   font-weight: 400;
   margin: 0;
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
 }

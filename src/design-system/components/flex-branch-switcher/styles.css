@@ -16,7 +16,7 @@ flex-branch-switcher {
   background: var(--flex-color-surface);
   color: var(--flex-color-text);
   font-family: var(--flex-font-mono);
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
   cursor: pointer;
 }
 
@@ -62,7 +62,7 @@ flex-branch-switcher {
   border: 1px solid var(--flex-color-border);
   border-radius: var(--flex-radius-sm);
   font-family: var(--flex-font-sans);
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
 }
 
 .flex-branch-switcher__list {
@@ -94,7 +94,7 @@ flex-branch-switcher {
   flex: 1;
   color: var(--flex-color-text);
   font-family: var(--flex-font-mono);
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
   text-decoration: none;
 }
 
@@ -124,7 +124,7 @@ flex-branch-switcher {
   border: 1px solid var(--flex-color-border);
   border-radius: var(--flex-radius-sm);
   font-family: var(--flex-font-mono);
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
 }
 
 .flex-branch-switcher__create-submit {
@@ -133,7 +133,7 @@ flex-branch-switcher {
   border-radius: var(--flex-radius-sm);
   background: var(--flex-color-accent);
   color: var(--flex-color-on-accent);
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
   cursor: pointer;
 }
 

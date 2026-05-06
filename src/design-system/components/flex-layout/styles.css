@@ -14,7 +14,7 @@
 }
 
 .catalog-sidebar {
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
   border-inline-end: 1px solid var(--flex-color-border);
   padding-inline-end: var(--flex-space-lg);
   overflow-y: auto;
@@ -23,7 +23,7 @@
   inset-block-start: var(--flex-space-md);
 
   h2 {
-    font-size: var(--flex-text-base);
+    font-size: var(--flex-text-2xs);
     font-weight: 600;
     color: var(--flex-color-text);
     margin-block-end: var(--flex-space-sm);
@@ -81,7 +81,7 @@
       display: block;
       cursor: pointer;
       font-weight: 600;
-      font-size: var(--flex-text-base);
+      font-size: var(--flex-text-2xs);
       color: var(--flex-color-accent);
       padding-block: var(--flex-space-sm);
       list-style: none;

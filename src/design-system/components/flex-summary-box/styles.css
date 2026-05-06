@@ -2,7 +2,7 @@
    Bordered callout with info-lighter background */
 
 .flex-summary-box {
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
   color: var(--flex-color-text);
   background-color: var(--flex-color-info-lighter);

@@ -6,7 +6,7 @@
 .flex-select,
 .flex-textarea {
   font-family: var(--flex-font-sans);
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.3;
   color: var(--flex-color-text);
   background-color: var(--flex-color-surface);
@@ -58,7 +58,7 @@
 .flex-error-message,
 .flex-legend {
   font-family: var(--flex-font-sans);
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.3;
   color: var(--flex-color-text);
 }
@@ -68,7 +68,7 @@
 .flex-checkbox__label,
 .flex-radio__label {
   font-family: var(--flex-font-sans);
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.3;
   color: var(--flex-color-text);
   cursor: pointer;

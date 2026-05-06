@@ -69,7 +69,7 @@
   align-items: center;
   cursor: pointer;
   list-style: none;
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
 }
 
 .deployment-table__summary::-webkit-details-marker {
@@ -173,7 +173,7 @@
   padding-left: var(--flex-space-xl);
   background-color: var(--flex-color-bg-subtle);
   border-top: 1px solid var(--flex-color-border);
-  font-size: var(--flex-text-base);
+  font-size: var(--flex-text-2xs);
 }
 
 .deployment-table__detail-list {

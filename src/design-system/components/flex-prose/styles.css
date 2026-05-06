@@ -4,7 +4,7 @@
    Table, code, link, and hr styling within prose */
 
 .prose {
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
   color: var(--flex-color-text);
 }
@@ -171,7 +171,7 @@
 /* --- Tables — USWDS prose table styles --- */
 
 .prose table {
-  font-size: var(--flex-text-uswds);
+  font-size: var(--flex-text-md);
   line-height: 1.5;
   border-collapse: collapse;
   border-spacing: 0;
