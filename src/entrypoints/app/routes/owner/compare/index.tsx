@@ -94,6 +94,7 @@ export function createCompareRoutes(
         user={user}
         title={`Compare ${parsed.base}...${parsed.head}`}
         contentWidth="full"
+        currentSection="projects"
       >
         <ReviewPage
           owner={owner}
@@ -210,7 +211,7 @@ function handleError(c: Context, err: unknown) {
   }
   if (err instanceof AppError) {
     return c.html(
-      <Layout user={c.get('user')}>
+      <Layout user={c.get('user')} currentSection="projects">
         <ErrorPage statusCode={err.statusCode} message={err.message} />
       </Layout>,
       err.statusCode as ContentfulStatusCode,
