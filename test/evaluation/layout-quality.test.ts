@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'bun:test'
+import type { DataCollectionSpec } from '../../src/services/data-collection'
 import {
-  layoutQualityKind,
   type LayoutJudge,
+  layoutQualityKind,
   setLayoutJudge,
 } from '../../src/services/evaluation/kinds/layout-quality'
-import type { DataCollectionSpec } from '../../src/services/data-collection'
 import type { FormSpec } from '../../src/services/forms'
 
 describe('layoutQualityKind', () => {

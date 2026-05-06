@@ -429,9 +429,7 @@ export async function evaluate(
     case 'layout': {
       const strategyId = args[1]
       if (!strategyId) {
-        console.error(
-          'Usage: evaluate layout <strategy-id> [--out-dir <path>]',
-        )
+        console.error('Usage: evaluate layout <strategy-id> [--out-dir <path>]')
         return 1
       }
 
@@ -466,11 +464,8 @@ export async function evaluate(
         return 1
       }
 
-      const {
-        layoutQualityKind,
-        setLayoutJudge,
-        createBedrockLayoutJudge,
-      } = await import('../../../services/evaluation')
+      const { layoutQualityKind, setLayoutJudge, createBedrockLayoutJudge } =
+        await import('../../../services/evaluation')
       const { OPUS_MODEL_ID } = await import('../../../services/extraction')
 
       const judge = createBedrockLayoutJudge(OPUS_MODEL_ID)

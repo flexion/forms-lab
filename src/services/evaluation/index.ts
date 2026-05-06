@@ -11,14 +11,13 @@ export {
 export { runEvaluation } from './harness'
 // Judges
 export { createBedrockFieldJudge } from './judge'
-export { createBedrockLayoutJudge } from './layout-judge'
 // Kinds
 export {
-  layoutQualityKind,
-  setLayoutJudge,
   type LayoutJudge,
   type LayoutJudgeResponse,
   type LayoutQualityOutput,
+  layoutQualityKind,
+  setLayoutJudge,
 } from './kinds/layout-quality'
 export {
   type ExtractionOutput,
@@ -26,6 +25,7 @@ export {
 } from './kinds/pdf-field-extraction'
 export { createLlmJudgeKind } from './kinds/pdf-field-extraction-judge'
 export { shapingCommandsKind } from './kinds/shaping-commands'
+export { createBedrockLayoutJudge } from './layout-judge'
 // Layout judge prompt
 export { buildLayoutJudgePrompt } from './layout-judge-prompt'
 export { evaluationRunSchema } from './schemas'

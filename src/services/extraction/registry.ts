@@ -128,7 +128,8 @@ export function createExtractorRegistry(
         'Hybrid extraction prompt with layout-aware FormSpec generation. Step 2 uses civic tech best practices (GOV.UK, USDS, Code for America) for adaptive page sizing, topic cohesion, and progressive disclosure.',
       status: 'experimental',
       courseTopics: ['evaluation', 'prompt-optimization', 'form-design'],
-      catalogPath: '/catalog/experiments/layout-quality/sonnet-hybrid-layout-v1',
+      catalogPath:
+        '/catalog/experiments/layout-quality/sonnet-hybrid-layout-v1',
       modelId: SONNET_MODEL_ID,
       pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
     },
