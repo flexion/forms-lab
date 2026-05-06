@@ -83,10 +83,10 @@ interface FormRouterDeps {
     specVersion: string,
   ) => Promise<FieldMapping | null>
   accessStore?: AccessStore
-  /** Resolves owner/slug from route context. When provided, routes use
+  /** Resolves owner/slug from route context. Routes use
    *  project-scoped URL shapes (/:owner/:slug/forms/...). */
   resolveOwnerSlug?: (c: Context) => { owner: string; slug: string }
-  /** Resolves specs for a project by owner/slug. Used in project-scoped mode. */
+  /** Resolves specs for a project by owner/slug. */
   getSpecsByProject?: (
     owner: string,
     slug: string,
@@ -99,17 +99,6 @@ interface FormRouterDeps {
 }
 
 const MAIN_BRANCH = 'main'
-
-/**
- * Produce the path prefix for form URLs on a given branch. Main uses the
- * bare `/forms/:specId` shape; other branches get the `/branches/:branch`
- * infix.
- */
-function formPathPrefix(specId: string, branch: string): string {
-  return branch === MAIN_BRANCH
-    ? `/forms/${specId}`
-    : `/forms/${specId}/branches/${branch}`
-}
 
 function projectFormPathPrefix(
   owner: string,
@@ -163,36 +152,30 @@ export function createFormRouter(deps: FormRouterDeps) {
   const forms = new Hono()
 
   /**
-   * Resolve specs and URL prefix from the request context. In project-scoped
-   * mode (resolveOwnerSlug + getSpecsByProject provided), owner/slug come from
-   * route params and URLs use the `/:owner/:slug/forms` shape. In legacy mode,
-   * specId is read from the `:specId` route param.
+   * Resolve specs and URL prefix from the request context. Owner/slug come
+   * from route params and URLs use the `/:owner/:slug/forms` shape.
+   * Only available when the router is created in project-scoped mode
+   * (resolveOwnerSlug + getSpecsByProject provided).
    */
   async function resolveFormContext(c: Context): Promise<{
     specs: ResolvedSpecs
     prefix: string
     branch: string
-    owner?: string
-    slug?: string
+    owner: string
+    slug: string
   } | null> {
+    if (!resolveOwnerSlug || !getSpecsByProject) return null
     const branch = readBranch(c)
-    if (resolveOwnerSlug && getSpecsByProject) {
-      const { owner, slug } = resolveOwnerSlug(c)
-      const specs = await getSpecsByProject(owner, slug, branch)
-      if (!specs) return null
-      return {
-        specs,
-        prefix: projectFormPathPrefix(owner, slug, branch),
-        branch,
-        owner,
-        slug,
-      }
-    }
-    const specId = c.req.param('specId')
-    if (!specId) return null
-    const specs = await getSpecs(specId, branch)
+    const { owner, slug } = resolveOwnerSlug(c)
+    const specs = await getSpecsByProject(owner, slug, branch)
     if (!specs) return null
-    return { specs, prefix: formPathPrefix(specs.dataSpec.id, branch), branch }
+    return {
+      specs,
+      prefix: projectFormPathPrefix(owner, slug, branch),
+      branch,
+      owner,
+      slug,
+    }
   }
 
   // All form routes require authentication
@@ -331,9 +314,7 @@ export function createFormRouter(deps: FormRouterDeps) {
                           ? resolveUrl(
                               `/${project.owner}/${project.slug}/forms/sessions/${s.id}/pages/0`,
                             )
-                          : resolveUrl(
-                              `/forms/${s.specId}/sessions/${s.id}/pages/0`,
-                            )
+                          : '#'
                         return (
                           <li key={s.id}>
                             <a href={sessionHref}>
@@ -385,12 +366,10 @@ export function createFormRouter(deps: FormRouterDeps) {
   }
 
   // -----------------------------------------------------------------
-  // Handlers — parameterized on branch. In project-scoped mode
-  // (resolveOwnerSlug provided), routes use /:owner/:slug/forms/...;
-  // in legacy mode, routes use /:specId/...
-  // Both call into these handlers with `readBranch(c)` returning the
-  // resolved branch name. The preview banner is rendered whenever the
-  // branch is non-main.
+  // Handlers — parameterized on branch. Routes use the project-scoped
+  // URL shape /:owner/:slug/forms/... with `readBranch(c)` returning
+  // the resolved branch name. The preview banner is rendered whenever
+  // the branch is non-main.
   // -----------------------------------------------------------------
 
   async function handleLanding(c: Context) {
@@ -732,9 +711,11 @@ export function createFormRouter(deps: FormRouterDeps) {
         )}
         <FormConfirmation
           submission={submission}
-          pdfDownloadUrl={resolveUrl(
-            `/forms/${submission.specId}/submissions/${submission.id}/pdf`,
-          )}
+          pdfDownloadUrl={
+            ctx
+              ? resolveUrl(`${ctx.prefix}/submissions/${submission.id}/pdf`)
+              : undefined
+          }
         />
       </Layout>,
     )
@@ -770,16 +751,19 @@ export function createFormRouter(deps: FormRouterDeps) {
 
     const submissions = submissionGateway.listByOwner(user.login)
     const submission = submissions.find((s) => s.sessionId === sessionId)
+    const project = resolveProjectForSpec
+      ? await resolveProjectForSpec(session.specId)
+      : null
 
     return c.html(
       <Layout user={user} title="Submission Details" currentSection="forms">
         <FormReview pages={reviewPages} fields={session.fields} readOnly />
-        {submission && (
+        {submission && project && (
           <div class="flex-form" data-size="large">
             <p>
               <a
                 href={resolveUrl(
-                  `/forms/${session.specId}/submissions/${submission.id}/pdf`,
+                  `/${project.owner}/${project.slug}/forms/submissions/${submission.id}/pdf`,
                 )}
                 class="flex-button flex-button--outline"
               >
@@ -1103,8 +1087,10 @@ export function createFormRouter(deps: FormRouterDeps) {
   // Submission detail (read-only review of completed form)
   forms.get('/sessions/:sessionId/submission', handleSubmissionDetail)
 
+  // Project-scoped form interaction routes — only registered when
+  // resolveOwnerSlug is provided. When it is not, this router only
+  // serves directory / session listing pages (above).
   if (resolveOwnerSlug) {
-    // Project-scoped routes: no :specId param needed
     forms.get('/', handleLanding)
     forms.get('/branches/:branch', handleLanding)
     forms.post('/sessions', handleCreateSession)
@@ -1138,76 +1124,6 @@ export function createFormRouter(deps: FormRouterDeps) {
     forms.post('/sessions/:sessionId/pages/:pageIndex/chat', handleChatMessage)
     forms.post(
       '/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
-      handleChatMessage,
-    )
-  } else {
-    // Legacy specId-based routes
-    // PDF download
-    forms.get('/:specId/submissions/:submissionId/pdf', handlePdfDownload)
-
-    // Form landing page
-    forms.get('/:specId', handleLanding)
-    forms.get('/:specId/branches/:branch', handleLanding)
-
-    // Create session
-    forms.post('/:specId/sessions', handleCreateSession)
-    forms.post('/:specId/branches/:branch/sessions', handleCreateSession)
-
-    // Render page
-    forms.get('/:specId/sessions/:sessionId/pages/:pageIndex', handleRenderPage)
-    forms.get(
-      '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex',
-      handleRenderPage,
-    )
-
-    // Submit page (validate and advance)
-    forms.post(
-      '/:specId/sessions/:sessionId/pages/:pageIndex',
-      handleSubmitPage,
-    )
-    forms.post(
-      '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex',
-      handleSubmitPage,
-    )
-
-    // Review page
-    forms.get('/:specId/sessions/:sessionId/review', handleReview)
-    forms.get(
-      '/:specId/branches/:branch/sessions/:sessionId/review',
-      handleReview,
-    )
-
-    // Submit
-    forms.post('/:specId/sessions/:sessionId/submit', handleSubmit)
-    forms.post(
-      '/:specId/branches/:branch/sessions/:sessionId/submit',
-      handleSubmit,
-    )
-
-    // Confirmation
-    forms.get('/:specId/sessions/:sessionId/confirmation', handleConfirmation)
-    forms.get(
-      '/:specId/branches/:branch/sessions/:sessionId/confirmation',
-      handleConfirmation,
-    )
-
-    // Chat view (conversational mode)
-    forms.get(
-      '/:specId/sessions/:sessionId/pages/:pageIndex/chat',
-      handleChatView,
-    )
-    forms.get(
-      '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
-      handleChatView,
-    )
-
-    // Chat message (conversational mode)
-    forms.post(
-      '/:specId/sessions/:sessionId/pages/:pageIndex/chat',
-      handleChatMessage,
-    )
-    forms.post(
-      '/:specId/branches/:branch/sessions/:sessionId/pages/:pageIndex/chat',
       handleChatMessage,
     )
   }

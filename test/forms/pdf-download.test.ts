@@ -15,6 +15,14 @@ const TEST_USER = {
   avatarUrl: '',
 }
 
+const specs = {
+  dataSpec: testDataSpec,
+  formSpec: testFormSpec,
+  sha: TEST_SHA,
+}
+
+const BASE = '/alice/test-project/forms'
+
 async function createTestPdf(): Promise<Buffer> {
   const doc = await PDFDocument.create()
   doc.addPage()
@@ -44,17 +52,17 @@ function createTestApp(opts?: {
     await next()
   })
   app.route(
-    '/forms',
+    '/:owner/:slug/forms',
     createFormRouter({
       sessionGateway,
       submissionGateway,
-      getSpecs: async (specId) =>
-        specId === testDataSpec.id
-          ? { dataSpec: testDataSpec, formSpec: testFormSpec, sha: TEST_SHA }
-          : null,
-      listSpecs: async () => [
-        { dataSpec: testDataSpec, formSpec: testFormSpec, sha: TEST_SHA },
-      ],
+      getSpecs: async () => specs,
+      listSpecs: async () => [specs],
+      resolveOwnerSlug: (c) => ({
+        owner: c.req.param('owner') ?? '',
+        slug: c.req.param('slug') ?? '',
+      }),
+      getSpecsByProject: async () => specs,
       getSourcePdf: sourcePdf ? async () => sourcePdf : undefined,
       getFieldMapping: fieldMapping ? async () => fieldMapping : undefined,
     }),
@@ -83,9 +91,7 @@ describe('PDF download route', () => {
     const submission = sessionGateway.submit(session.id)
     submissionGateway.save(submission)
 
-    const res = await app.request(
-      `/forms/${testDataSpec.id}/submissions/${submission.id}/pdf`,
-    )
+    const res = await app.request(`${BASE}/submissions/${submission.id}/pdf`)
     expect(res.status).toBe(200)
     expect(res.headers.get('content-type')).toBe('application/pdf')
     expect(res.headers.get('content-disposition')).toContain('attachment')
@@ -101,9 +107,7 @@ describe('PDF download route', () => {
 
   it('returns 404 when submission does not exist', async () => {
     const { app } = createTestApp()
-    const res = await app.request(
-      `/forms/${testDataSpec.id}/submissions/nonexistent/pdf`,
-    )
+    const res = await app.request(`${BASE}/submissions/nonexistent/pdf`)
     expect(res.status).toBe(404)
   })
 
@@ -126,9 +130,7 @@ describe('PDF download route', () => {
     const submission = sessionGateway.submit(session.id)
     submissionGateway.save(submission)
 
-    const res = await app.request(
-      `/forms/${testDataSpec.id}/submissions/${submission.id}/pdf`,
-    )
+    const res = await app.request(`${BASE}/submissions/${submission.id}/pdf`)
     expect(res.status).toBe(404)
   })
 
@@ -149,9 +151,7 @@ describe('PDF download route', () => {
     const submission = sessionGateway.submit(session.id)
     submissionGateway.save(submission)
 
-    const res = await app.request(
-      `/forms/${testDataSpec.id}/submissions/${submission.id}/pdf`,
-    )
+    const res = await app.request(`${BASE}/submissions/${submission.id}/pdf`)
     expect(res.status).toBe(404)
   })
 })
