@@ -369,7 +369,7 @@ export const ProjectOverview: FC<{
   )
 }
 
-type RepoTab = 'overview' | 'pulls' | 'history' | 'files'
+type RepoTab = 'overview' | 'forms' | 'pulls' | 'history' | 'files'
 
 const RepoNav: FC<{
   owner: string
@@ -379,6 +379,7 @@ const RepoNav: FC<{
   const base = `/${owner}/${slug}`
   const tabs: { id: RepoTab; label: string; href: string }[] = [
     { id: 'overview', label: 'Overview', href: base },
+    { id: 'forms', label: 'Forms', href: `${base}/forms` },
     { id: 'pulls', label: 'Pull Requests', href: `${base}/pulls` },
     { id: 'history', label: 'History', href: `${base}/commits` },
     { id: 'files', label: 'Files', href: `${base}/tree/main` },

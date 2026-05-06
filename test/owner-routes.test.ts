@@ -436,6 +436,16 @@ describe('GET /:owner/:slug (project overview)', () => {
     expect(html).toContain('Files')
   })
 
+  it('shows Forms tab linking to /:owner/:slug/forms', async () => {
+    const { app, service, projectStore } = createTestApp(danielUser)
+    const project = await createReadyProject(service, projectStore)
+
+    const res = await app.request(`/danielnaab/${project.slug}`)
+    const html = await res.text()
+    expect(html).toContain(`/danielnaab/${project.slug}/forms`)
+    expect(html).toContain('>Forms<')
+  })
+
   it('shows clone URL with copy button', async () => {
     const { app, service, projectStore } = createTestApp(danielUser)
     const project = await createReadyProject(service, projectStore)
