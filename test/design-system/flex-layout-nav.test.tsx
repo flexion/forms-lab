@@ -57,8 +57,6 @@ test('currentSection="catalog" highlights Catalog nav item', async () => {
 })
 
 test('no section set means no nav item is highlighted', async () => {
-  const html = await render(
-    Layout({ user: testUser, children: 'content' }),
-  )
+  const html = await render(Layout({ user: testUser, children: 'content' }))
   expect(html).not.toContain('aria-current="page"')
 })

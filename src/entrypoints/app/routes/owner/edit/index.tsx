@@ -63,7 +63,11 @@ export function createEditRoutes(
       }
       const branches = await service.listBranches(slug)
       return c.html(
-        <Layout user={user} title={`Edit ${view.project.name}`} currentSection="projects">
+        <Layout
+          user={user}
+          title={`Edit ${view.project.name}`}
+          currentSection="projects"
+        >
           <EditorPage
             mode="no-branch"
             view={view}
