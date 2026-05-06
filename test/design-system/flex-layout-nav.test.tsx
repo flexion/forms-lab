@@ -42,7 +42,7 @@ test('currentSection="projects" highlights Projects nav item', async () => {
       children: 'content',
     }),
   )
-  const projectsLinkMatch = html.match(/<a[^>]*href="[^"]*\/testuser"[^>]*>/)
+  const projectsLinkMatch = html.match(/<a[^>]*href="[^"]*\/projects"[^>]*>/)
   expect(projectsLinkMatch).not.toBeNull()
   expect(projectsLinkMatch?.[0]).toContain('aria-current="page"')
 })

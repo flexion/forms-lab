@@ -111,7 +111,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
                 current={isForms}
               />
               <HeaderNavItem
-                href={resolveUrl(`/${props.user.login}`)}
+                href={resolveUrl('/projects')}
                 label="Projects"
                 current={isProjects}
               />
@@ -134,6 +134,11 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
                 href={resolveUrl('/forms')}
                 label="Forms"
                 current={isForms}
+              />
+              <HeaderNavItem
+                href={resolveUrl('/projects')}
+                label="Projects"
+                current={isProjects}
               />
               <HeaderNavItem
                 href={resolveUrl('/catalog')}
