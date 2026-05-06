@@ -13,11 +13,10 @@ export { runEvaluation } from './harness'
 export { createBedrockFieldJudge } from './judge'
 // Kinds
 export {
+  createLayoutQualityKind,
   type LayoutJudge,
   type LayoutJudgeResponse,
   type LayoutQualityOutput,
-  layoutQualityKind,
-  setLayoutJudge,
 } from './kinds/layout-quality'
 export {
   type ExtractionOutput,

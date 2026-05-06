@@ -464,12 +464,12 @@ export async function evaluate(
         return 1
       }
 
-      const { layoutQualityKind, setLayoutJudge, createBedrockLayoutJudge } =
+      const { createLayoutQualityKind, createBedrockLayoutJudge } =
         await import('../../../services/evaluation')
       const { OPUS_MODEL_ID } = await import('../../../services/extraction')
 
       const judge = createBedrockLayoutJudge(OPUS_MODEL_ID)
-      setLayoutJudge(judge)
+      const layoutQualityKind = createLayoutQualityKind(judge)
 
       const cacheDbPath = process.env.CACHE_DB_PATH ?? 'data/cache.sqlite'
       mkdirSync('data', { recursive: true })

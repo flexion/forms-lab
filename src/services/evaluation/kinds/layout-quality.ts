@@ -27,22 +27,22 @@ const DIMENSIONS = [
   'deliveryModeChoice',
 ] as const
 
-let currentJudge: LayoutJudge | undefined
-
-export const layoutQualityKind: EvaluationKind<LayoutQualityOutput, undefined> =
-  {
+/**
+ * Create a layout quality evaluation kind with the given judge.
+ *
+ * Follows the same factory pattern as `createLlmJudgeKind` —
+ * the judge is injected at construction, not via mutable state.
+ */
+export function createLayoutQualityKind(
+  judge: LayoutJudge,
+): EvaluationKind<LayoutQualityOutput, undefined> {
+  return {
     id: 'layout-quality',
     description:
       'Evaluates FormSpec layout quality using LLM-as-judge against a civic tech best practices rubric',
 
     async score(output: LayoutQualityOutput): Promise<CaseMetrics> {
-      if (!currentJudge) {
-        throw new Error(
-          'layoutQualityKind: judge not set. Call setLayoutJudge() before scoring.',
-        )
-      }
-
-      const response = await currentJudge.judge(output.spec, output.formSpec)
+      const response = await judge.judge(output.spec, output.formSpec)
 
       const metrics: Record<string, number> = {}
       let total = 0
@@ -99,7 +99,4 @@ export const layoutQualityKind: EvaluationKind<LayoutQualityOutput, undefined> =
       return { metrics }
     },
   }
-
-export function setLayoutJudge(judge: LayoutJudge): void {
-  currentJudge = judge
 }
