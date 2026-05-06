@@ -1,3 +1,4 @@
+import { activity } from './commands/activity'
 import { deploy } from './commands/deploy'
 import { evaluate } from './commands/evaluate'
 import { extract } from './commands/extract'
@@ -19,6 +20,11 @@ export interface Command {
 }
 
 const commands: Command[] = [
+  {
+    name: 'activity',
+    description: 'View activity reports and post usage digests',
+    run: activity,
+  },
   {
     name: 'sync-stories',
     description: 'Sync user stories from GitHub Issues',
