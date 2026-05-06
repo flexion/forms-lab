@@ -569,6 +569,35 @@ describe('ProjectService', () => {
     })
   })
 
+  describe('listAllProjects', () => {
+    it('returns projects from multiple users', async () => {
+      await service.createProject('Alice Project', SAMPLE_PDF, alice)
+      await service.createProject('Bob Project', SAMPLE_PDF, bob)
+
+      const all = service.listAllProjects()
+      expect(all).toHaveLength(2)
+      const names = all.map((p) => p.name).sort()
+      expect(names).toEqual(['Alice Project', 'Bob Project'])
+    })
+
+    it('returns empty array when no projects exist', () => {
+      const all = service.listAllProjects()
+      expect(all).toHaveLength(0)
+    })
+
+    it('includes projects from all users, not just one', async () => {
+      await service.createProject('A1', SAMPLE_PDF, alice)
+      await service.createProject('A2', SAMPLE_PDF, alice)
+      await service.createProject('B1', SAMPLE_PDF, bob)
+
+      const all = service.listAllProjects()
+      expect(all).toHaveLength(3)
+
+      const createdBy = all.map((p) => p.createdBy).sort()
+      expect(createdBy).toEqual(['alice', 'alice', 'bob'])
+    })
+  })
+
   describe('getFileContent', () => {
     it('reads file from git repo', async () => {
       const project = await service.createProject(
