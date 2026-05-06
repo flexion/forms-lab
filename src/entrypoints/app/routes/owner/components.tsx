@@ -1200,7 +1200,10 @@ const AUTH_ERROR_MESSAGES: Record<string, { heading: string; body: string }> = {
   },
 }
 
-export const LandingPage: FC<{ error?: string | null }> = ({ error }) => {
+export const LandingPage: FC<{
+  error?: string | null
+  user?: SessionUser | null
+}> = ({ error, user }) => {
   const errorInfo = error ? AUTH_ERROR_MESSAGES[error] : null
   return (
     <div class="l-stack" data-space="lg">
@@ -1279,9 +1282,15 @@ export const LandingPage: FC<{ error?: string | null }> = ({ error }) => {
       <section class="l-stack">
         <h2>Get involved</h2>
         <p>
-          <a href={resolveUrl('/auth/signin')} class="flex-button">
-            Try it — sign in with GitHub
-          </a>
+          {user ? (
+            <a href={resolveUrl('/new')} class="flex-button">
+              Create a project
+            </a>
+          ) : (
+            <a href={resolveUrl('/auth/signin')} class="flex-button">
+              Try it — sign in with GitHub
+            </a>
+          )}
         </p>
         <p class="l-cluster">
           <a href={resolveUrl('/catalog')}>Learn more</a>

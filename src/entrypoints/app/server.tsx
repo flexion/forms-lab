@@ -471,14 +471,14 @@ app.get('/', (c) => {
     const projects = projectService.listUserProjects(user.login)
     return c.html(
       <Layout currentPath="/" user={user}>
-        <LandingPage error={error} />
+        <LandingPage error={error} user={user} />
         <Dashboard projects={projects} user={user} />
       </Layout>,
     )
   }
   return c.html(
     <Layout currentPath="/" user={user}>
-      <LandingPage error={error} />
+      <LandingPage error={error} user={user} />
     </Layout>,
   )
 })
