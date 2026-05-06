@@ -1178,6 +1178,10 @@ const AUTH_ERROR_MESSAGES: Record<string, { heading: string; body: string }> = {
     heading: 'Access denied',
     body: 'Your GitHub account is not on the allowlist for this instance. Contact the administrator to request access.',
   },
+  access_denied: {
+    heading: 'Access denied',
+    body: 'Your GitHub account is not on the allowlist for this instance. Contact the administrator to request access.',
+  },
   config: {
     heading: 'Sign-in is not configured',
     body: 'The server is missing OAuth credentials. Contact the administrator.',
@@ -1208,49 +1212,98 @@ export const LandingPage: FC<{ error?: string | null }> = ({ error }) => {
           <p>{errorInfo.body}</p>
         </div>
       )}
-      <h1>Forms Lab</h1>
-      <p>
-        An LLM-assisted platform for digitizing government forms. Upload a PDF,
-        and the system extracts its structure into a reviewable specification --
-        fields, types, validation rules, conditional logic -- all
-        version-controlled in git.
-      </p>
 
       <section class="l-stack">
-        <h2>How it works</h2>
-        <ol
-          class="l-stack"
-          style="list-style-position: inside; padding-left: 0;"
-        >
-          <li>
-            <strong>Upload</strong> a government PDF form
-          </li>
-          <li>
-            <strong>Extract</strong> -- the platform identifies fields,
-            groupings, and conditions
-          </li>
-          <li>
-            <strong>Review</strong> -- inspect the extracted specification, flag
-            low-confidence fields
-          </li>
-          <li>
-            <strong>Collaborate</strong> -- fork projects, track changes through
-            git history
-          </li>
-        </ol>
+        <h1>Government forms shouldn't be this hard.</h1>
+        <p>
+          Forms Lab is an experiment in making high-quality digital forms
+          achievable for any public sector organization. It combines practical
+          experience from federal forms work with LLM capabilities to collapse
+          the cost of turning paper forms into accessible, modern experiences.
+        </p>
+        <p>
+          Too many agencies are stuck with PDFs — not because they lack
+          ambition, but because procurement timelines, authority-to-operate
+          processes, and limited development capacity make change expensive.
+          Forms Lab is designed to change that equation.
+        </p>
       </section>
 
       <section class="l-stack">
-        <h2>Get started</h2>
-        <p>
-          Sign in with GitHub to create your first project, or browse the{' '}
-          <a href={resolveUrl('/catalog')}>catalog</a> to explore the platform's
-          architecture and design decisions.
-        </p>
+        <h2>What it does</h2>
+        <dl class="l-stack">
+          <div>
+            <dt>
+              <strong>Upload a PDF, get a structured specification</strong>
+            </dt>
+            <dd>
+              Agencies have forms locked in PDFs. Extracting their logic
+              manually takes weeks. LLM-assisted extraction collapses that to
+              minutes — fields, types, validation rules, conditional logic, all
+              captured in a reviewable spec.
+            </dd>
+          </div>
+          <div>
+            <dt>
+              <strong>Shape the experience through conversation</strong>
+            </dt>
+            <dd>
+              Designing accessible, plain-language forms usually requires
+              specialized UX talent. Here, you describe what you want and the
+              system produces it — page structure, field labels, help text,
+              conditional flow.
+            </dd>
+          </div>
+          <div>
+            <dt>
+              <strong>Deliver forms that meet people where they are</strong>
+            </dt>
+            <dd>
+              Responsive, accessible, mobile-friendly. The kind of experience
+              the public deserves but most agencies can't afford to build from
+              scratch.
+            </dd>
+          </div>
+          <div>
+            <dt>
+              <strong>Own your data, track every change</strong>
+            </dt>
+            <dd>
+              Form definitions are version-controlled, not locked in a vendor's
+              database. Fork, adapt, collaborate — like code.
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="l-stack">
+        <h2>Get involved</h2>
         <p>
           <a href={resolveUrl('/auth/signin')} class="flex-button">
-            Sign in with GitHub
+            Try it — sign in with GitHub
           </a>
+        </p>
+        <p>
+          <a href={resolveUrl('/catalog')}>Learn more</a> — browse architecture
+          decisions, experiments, and design rationale.
+        </p>
+        <p>
+          <a href={resolveUrl('/presentation')}>Watch the presentation</a> — a
+          guided overview you can share with colleagues.
+        </p>
+      </section>
+
+      <section class="l-stack" data-space="sm">
+        <p>
+          <small>
+            Forms Lab grew out of{' '}
+            <a href="https://github.com/flexion/llm-class-2026-winter-cohort">
+              Flexion's LLMs In Production class
+            </a>
+            , building on experience from the{' '}
+            <a href="https://github.com/gsa-tts/forms">10x Form Platform</a> (
+            <a href="https://github.com/flexion/forms">Flexion fork</a>).
+          </small>
         </p>
       </section>
     </div>
