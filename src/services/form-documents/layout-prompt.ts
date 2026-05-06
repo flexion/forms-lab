@@ -76,7 +76,9 @@ Return ONLY valid JSON (no markdown fences, no explanation) matching this schema
       "groups": ["group-id-1", "group-id-2"],
       "deliveryMode": "static | conversational | hybrid"
     }
-  ]
+  ],
+  "createdAt": "${new Date().toISOString()}",
+  "updatedAt": "${new Date().toISOString()}"
 }
 
 Each page's "groups" array references group IDs from the DataCollectionSpec. Every group must appear in exactly one page.
