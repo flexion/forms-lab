@@ -7,6 +7,7 @@ import { FormPageView } from '../../../../design-system/components/flex-form-pag
 import { FormReview } from '../../../../design-system/components/flex-form-review'
 import { Layout } from '../../../../design-system/components/flex-layout'
 import { PreviewBanner } from '../../../../design-system/components/flex-preview-banner'
+import type { AccessStore } from '../../../../services/auth'
 import type { DataCollectionSpec } from '../../../../services/data-collection'
 import type { FieldMapping } from '../../../../services/form-documents'
 import { fillPdf } from '../../../../services/form-documents'
@@ -79,6 +80,7 @@ interface FormRouterDeps {
     specId: string,
     specVersion: string,
   ) => Promise<FieldMapping | null>
+  accessStore?: AccessStore
 }
 
 const MAIN_BRANCH = 'main'
@@ -134,7 +136,7 @@ export function createFormRouter(deps: FormRouterDeps) {
   const forms = new Hono()
 
   // All form routes require authentication
-  forms.use('*', requireAuth())
+  forms.use('*', requireAuth(deps.accessStore))
 
   // Forms index
   forms.get('/', async (c) => {

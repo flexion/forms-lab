@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { Layout } from '../../../../design-system/components/flex-layout'
+import type { AccessStore } from '../../../../services/auth'
 import type {
   TaskRegistries,
   VariantPreferencesService,
@@ -12,11 +13,12 @@ import { VariantPickerPage } from './components'
 export interface SettingsRoutesDeps {
   preferences: VariantPreferencesService
   registries: TaskRegistries
+  accessStore?: AccessStore
 }
 
 export function createSettingsRoutes(deps: SettingsRoutesDeps): Hono {
   const app = new Hono()
-  app.use('*', requireAuth())
+  app.use('*', requireAuth(deps.accessStore))
 
   app.get('/variants', (c) => {
     const user = c.get('user')

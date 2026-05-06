@@ -130,7 +130,8 @@ export function createAuthRoutes(
           .split(',')
           .map((d) => d.trim())
           .filter(Boolean)
-        // Always include flexion.us as a hardcoded domain bypass
+        // Policy: flexion.us is always auto-approved regardless of config.
+        // This is intentional — org users should never need manual approval.
         if (
           !allowedDomains.map((d) => d.toLowerCase()).includes('flexion.us')
         ) {
