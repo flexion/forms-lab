@@ -145,7 +145,11 @@ export function createOwnerRoutes(
         service.listBranches(slug),
       ])
       return c.html(
-        <Layout user={user} title={`Pull Requests — ${view.project.name}`} currentSection="projects">
+        <Layout
+          user={user}
+          title={`Pull Requests — ${view.project.name}`}
+          currentSection="projects"
+        >
           <PullRequestsPage view={view} owner={owner} branches={branches} />
         </Layout>,
       )
