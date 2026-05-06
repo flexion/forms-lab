@@ -156,6 +156,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     getFieldMapping,
     resolveOwnerSlug,
     getSpecsByProject,
+    resolveProjectForSpec,
   } = deps
   const forms = new Hono()
 
@@ -200,6 +201,18 @@ export function createFormRouter(deps: FormRouterDeps) {
   if (!resolveOwnerSlug) {
     forms.get('/', async (c) => {
       const allSpecs = await listSpecs()
+      // Resolve project context for each spec so we can link to project-scoped URLs
+      const entries = resolveProjectForSpec
+        ? await Promise.all(
+            allSpecs.map(async (specs) => ({
+              ...specs,
+              project: await resolveProjectForSpec(specs.dataSpec.id),
+            })),
+          )
+        : allSpecs.map((specs) => ({
+            ...specs,
+            project: null as { owner: string; slug: string } | null,
+          }))
       return c.html(
         <Layout user={c.get('user')} title="Forms" currentPath="/forms">
           <div class="flex-form" data-size="large">
@@ -210,27 +223,44 @@ export function createFormRouter(deps: FormRouterDeps) {
               <h1>Available Forms</h1>
               <a href={resolveUrl('/forms/sessions')}>My sessions</a>
             </div>
-            {allSpecs.length === 0 ? (
+            {entries.length === 0 ? (
               <p>No forms available.</p>
             ) : (
               <table class="flex-table" data-variant="borderless">
                 <thead>
                   <tr>
                     <th scope="col">Form</th>
+                    <th scope="col">Project</th>
                     <th scope="col">Description</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {allSpecs.map(({ dataSpec, formSpec }) => (
-                    <tr key={dataSpec.id}>
-                      <th scope="row">
-                        <a href={resolveUrl(`/forms/${dataSpec.id}`)}>
-                          {formSpec.title}
-                        </a>
-                      </th>
-                      <td>{formSpec.description ?? ''}</td>
-                    </tr>
-                  ))}
+                  {entries.map(({ dataSpec, formSpec, project }) => {
+                    const formHref = project
+                      ? resolveUrl(`/${project.owner}/${project.slug}/forms`)
+                      : '#'
+                    return (
+                      <tr key={dataSpec.id}>
+                        <th scope="row">
+                          <a href={formHref}>{formSpec.title}</a>
+                        </th>
+                        <td>
+                          {project ? (
+                            <a
+                              href={resolveUrl(
+                                `/${project.owner}/${project.slug}`,
+                              )}
+                            >
+                              {project.owner}/{project.slug}
+                            </a>
+                          ) : (
+                            '\u2014'
+                          )}
+                        </td>
+                        <td>{formSpec.description ?? ''}</td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             )}
@@ -258,6 +288,17 @@ export function createFormRouter(deps: FormRouterDeps) {
         }),
       )
       const titles = new Map<string, string>(titlesEntries)
+      // Resolve project context for each spec so active session links
+      // can use project-scoped URLs.
+      const projectEntries = resolveProjectForSpec
+        ? await Promise.all(
+            uniqueSpecIds.map(async (specId) => {
+              const project = await resolveProjectForSpec(specId)
+              return [specId, project] as const
+            }),
+          )
+        : []
+      const projectMap = new Map(projectEntries)
       return c.html(
         <Layout user={user} title="My Sessions" currentPath="/forms">
           <div class="flex-form" data-size="large">
@@ -276,13 +317,17 @@ export function createFormRouter(deps: FormRouterDeps) {
                     <ul class="l-stack">
                       {active.map((s) => {
                         const title = titles.get(s.specId) ?? s.specId
+                        const project = projectMap.get(s.specId)
+                        const sessionHref = project
+                          ? resolveUrl(
+                              `/${project.owner}/${project.slug}/forms/sessions/${s.id}/pages/0`,
+                            )
+                          : resolveUrl(
+                              `/forms/${s.specId}/sessions/${s.id}/pages/0`,
+                            )
                         return (
                           <li key={s.id}>
-                            <a
-                              href={resolveUrl(
-                                `/forms/${s.specId}/sessions/${s.id}/pages/0`,
-                              )}
-                            >
+                            <a href={sessionHref}>
                               <strong>{title}</strong>
                             </a>
                             <span class="u-text-muted">
