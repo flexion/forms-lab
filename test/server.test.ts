@@ -78,9 +78,10 @@ describe('Authentication', () => {
     expect(html).toContain('flex-header__nav-link">Projects</a>')
   })
 
-  it('does not show Projects link in header nav for unauthenticated users', async () => {
+  it('shows Projects link for unauthenticated users pointing to /projects', async () => {
     const res = await app.request('/')
     const html = await res.text()
-    expect(html).not.toContain('flex-header__nav-link">Projects</a>')
+    expect(html).toContain('Projects</a>')
+    expect(html).toContain('/projects')
   })
 })
