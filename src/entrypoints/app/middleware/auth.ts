@@ -1,6 +1,7 @@
-import { getCookie } from 'hono/cookie'
+import { deleteCookie, getCookie } from 'hono/cookie'
 import { createMiddleware } from 'hono/factory'
 import {
+  type AccessStore,
   COOKIE_NAME,
   decryptSession,
   type SessionUser,
@@ -35,7 +36,7 @@ export function sessionReader() {
   })
 }
 
-export function requireAuth() {
+export function requireAuth(accessStore?: AccessStore) {
   return createMiddleware(async (c, next) => {
     const user = c.get('user')
     if (!user) {
@@ -45,6 +46,36 @@ export function requireAuth() {
       const returnTo = encodeURIComponent(fullPath)
       return c.redirect(`${resolveUrl('/auth/signin')}?returnTo=${returnTo}`)
     }
+
+    if (accessStore) {
+      const entry = accessStore.get(user.login)
+      if (entry && entry.status !== 'approved') {
+        deleteCookie(c, COOKIE_NAME)
+        const returnTo = encodeURIComponent(c.req.path)
+        return c.redirect(`${resolveUrl('/auth/signin')}?returnTo=${returnTo}`)
+      }
+    }
+
+    await next()
+  })
+}
+
+export function requireAdmin() {
+  return createMiddleware(async (c, next) => {
+    const user = c.get('user')
+    if (!user) {
+      return c.text('Forbidden', 403)
+    }
+
+    const adminUsers = (process.env.ADMIN_USERS ?? 'danielnaab')
+      .split(',')
+      .map((u) => u.trim())
+      .filter(Boolean)
+
+    if (!adminUsers.includes(user.login)) {
+      return c.text('Forbidden', 403)
+    }
+
     await next()
   })
 }
