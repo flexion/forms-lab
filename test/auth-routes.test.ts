@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Hono } from 'hono'
 import { sessionReader } from '../src/entrypoints/app/middleware/auth'
 import { createAuthRoutes } from '../src/entrypoints/app/routes/auth'
-import type { GitHubUser, UserStore } from '../src/services/auth'
+import type { AccessStore, GitHubUser, UserStore } from '../src/services/auth'
 import { COOKIE_NAME } from '../src/services/auth'
 
 describe('Auth Routes', () => {
@@ -10,6 +10,7 @@ describe('Auth Routes', () => {
   let originalEnv: NodeJS.ProcessEnv
   let originalFetch: typeof global.fetch
   let mockUserStore: UserStore
+  let mockAccessStore: AccessStore
 
   beforeEach(() => {
     // Save original environment and fetch
@@ -29,10 +30,21 @@ describe('Auth Routes', () => {
       exists: mock(() => false),
     }
 
+    // Create mock AccessStore
+    mockAccessStore = {
+      get: mock(() => null),
+      requestAccess: mock(() => {}),
+      approve: mock(() => {}),
+      deny: mock(() => {}),
+      revoke: mock(() => {}),
+      setApproved: mock(() => {}),
+      listByStatus: mock(() => []),
+    }
+
     // Create app
     app = new Hono()
     app.use('*', sessionReader())
-    app.route('/auth', createAuthRoutes(mockUserStore))
+    app.route('/auth', createAuthRoutes(mockUserStore, mockAccessStore))
   })
 
   afterEach(() => {
@@ -132,7 +144,7 @@ describe('Auth Routes', () => {
       })
     })
 
-    it('redirects to home with error for unauthorized user', async () => {
+    it('redirects to request-access for unauthorized user', async () => {
       const mockUser: GitHubUser = {
         login: 'unauthorized',
         name: 'Unauthorized User',
@@ -172,10 +184,11 @@ describe('Auth Routes', () => {
       )
 
       expect(res.status).toBe(302)
-      expect(res.headers.get('Location')).toBe('/?error=unauthorized')
+      expect(res.headers.get('Location')).toBe('/auth/request-access')
 
+      // User gets a temporary session so request-access page knows who they are
       const cookie = res.headers.get('Set-Cookie')
-      expect(cookie).toBeNull()
+      expect(cookie).toContain(COOKIE_NAME)
     })
 
     it('redirects to root when returnTo is not specified', async () => {

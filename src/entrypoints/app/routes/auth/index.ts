@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { deleteCookie, setCookie } from 'hono/cookie'
-import type { UserStore } from '../../../../services/auth'
+import type { AccessStore, UserStore } from '../../../../services/auth'
 import {
   COOKIE_MAX_AGE,
   COOKIE_NAME,
@@ -12,7 +12,10 @@ import {
 } from '../../../../services/auth'
 import { resolveUrl } from '../../../../shared/base-path'
 
-export function createAuthRoutes(userStore: UserStore): Hono {
+export function createAuthRoutes(
+  userStore: UserStore,
+  accessStore: AccessStore,
+): Hono {
   const auth = new Hono()
 
   /**
@@ -103,51 +106,77 @@ export function createAuthRoutes(userStore: UserStore): Hono {
       // Fetch user profile
       const ghUser = await fetchUserProfile(token)
 
-      // Authorization: user passes if their GitHub login is on the
-      // ALLOWED_USERS list OR any of their verified emails matches a
-      // domain on ALLOWED_EMAIL_DOMAINS. Either mechanism alone is
-      // sufficient; both are evaluated so a personal-login dev can
-      // still get in on an instance with a strict corporate domain.
+      // --- Three-layer authorization ---
+      // Layer 1: env var bypass
       const allowedUsers = (process.env.ALLOWED_USERS ?? 'danielnaab')
         .split(',')
         .map((u) => u.trim())
         .filter(Boolean)
-      const allowedDomains = (process.env.ALLOWED_EMAIL_DOMAINS ?? '')
-        .split(',')
-        .map((d) => d.trim())
-        .filter(Boolean)
 
-      let authorised = allowedUsers.includes(ghUser.login)
-      let emailMatchDomain: string | null = null
+      if (allowedUsers.includes(ghUser.login)) {
+        // Env-var user: auto-approve and record
+        accessStore.setApproved(ghUser.login, 'env')
+      } else {
+        // Layer 2: domain bypass
+        const allowedDomains = (
+          process.env.ALLOWED_EMAIL_DOMAINS ?? 'flexion.us'
+        )
+          .split(',')
+          .map((d) => d.trim())
+          .filter(Boolean)
+        // Always include flexion.us as a hardcoded domain bypass
+        if (
+          !allowedDomains.map((d) => d.toLowerCase()).includes('flexion.us')
+        ) {
+          allowedDomains.push('flexion.us')
+        }
 
-      if (!authorised && allowedDomains.length > 0) {
         const emails = await fetchUserEmails(token)
         if (hasAllowedEmailDomain(emails, allowedDomains)) {
-          authorised = true
-          emailMatchDomain =
-            emails.find((e) => {
-              const at = e.email.lastIndexOf('@')
-              if (at === -1 || !e.verified) return false
-              const domain = e.email.slice(at + 1).toLowerCase()
-              return allowedDomains.map((d) => d.toLowerCase()).includes(domain)
-            })?.email ?? null
+          accessStore.setApproved(ghUser.login, 'domain')
+        } else {
+          // Layer 3: database lookup
+          const entry = accessStore.get(ghUser.login)
+
+          if (!entry) {
+            // New external user — persist profile, set session so
+            // request-access page knows who they are, redirect
+            userStore.upsert({
+              login: ghUser.login,
+              name: ghUser.name ?? ghUser.login,
+              avatarUrl: ghUser.avatar_url,
+            })
+            const sessionData = {
+              login: ghUser.login,
+              name: ghUser.name ?? ghUser.login,
+              avatarUrl: ghUser.avatar_url,
+            }
+            const encryptedSession = await encryptSession(
+              sessionData,
+              sessionSecret,
+            )
+            setCookie(c, COOKIE_NAME, encryptedSession, {
+              httpOnly: true,
+              sameSite: 'Lax',
+              maxAge: COOKIE_MAX_AGE,
+              path: '/',
+            })
+            return c.redirect(resolveUrl('/auth/request-access'))
+          }
+
+          if (entry.status === 'pending') {
+            return c.redirect(resolveUrl('/auth/access-pending'))
+          }
+
+          if (entry.status === 'revoked') {
+            console.log(
+              `Authorization denied for revoked user: ${ghUser.login}`,
+            )
+            return c.redirect(resolveUrl('/auth/access-denied'))
+          }
+
+          // entry.status === 'approved' — fall through to session creation
         }
-      }
-
-      if (!authorised) {
-        console.log(
-          `Authorization failed for user: ${ghUser.login} (allowlist=${allowedUsers.length} users, ${allowedDomains.length} domains)`,
-        )
-        return c.redirect(resolveUrl('/?error=unauthorized'))
-      }
-
-      if (emailMatchDomain) {
-        const domain = emailMatchDomain.slice(
-          emailMatchDomain.lastIndexOf('@') + 1,
-        )
-        console.log(
-          `Authorized ${ghUser.login} via email domain match: @${domain}`,
-        )
       }
 
       // Persist user profile
@@ -191,6 +220,75 @@ export function createAuthRoutes(userStore: UserStore): Hono {
   auth.post('/signout', (c) => {
     deleteCookie(c, COOKIE_NAME)
     return c.redirect(resolveUrl('/'))
+  })
+
+  // GET /auth/request-access — shows "request access" page
+  auth.get('/request-access', (c) => {
+    const user = c.get('user')
+    return c.html(
+      `<!DOCTYPE html>
+      <html><head><title>Request Access</title></head>
+      <body>
+        <h1>Request Access to Forms Lab</h1>
+        ${user ? `<p>Signed in as <strong>@${user.login}</strong></p>` : ''}
+        <form method="POST" action="${resolveUrl('/auth/request-access')}">
+          <button type="submit">Request Access</button>
+        </form>
+      </body></html>`,
+    )
+  })
+
+  // POST /auth/request-access — records the request
+  auth.post('/request-access', async (c) => {
+    const user = c.get('user')
+    if (!user) {
+      return c.redirect(resolveUrl('/auth/signin'))
+    }
+    accessStore.requestAccess(user.login)
+
+    // Fire notification (best-effort)
+    try {
+      const { notifyEvent } = await import('../../../../services/notifications')
+      await notifyEvent({
+        type: 'access.requested',
+        title: `Access requested by @${user.login}`,
+        status: 'info',
+        details: `${user.name} (${user.login}) requested access to Forms Lab`,
+        url: 'https://forms.labs.flexion.us/admin/users',
+      })
+    } catch {
+      // Notification failure should not block the request
+    }
+
+    // Clear the temporary session — they don't have access yet
+    deleteCookie(c, COOKIE_NAME)
+    return c.redirect(resolveUrl('/auth/access-pending'))
+  })
+
+  // GET /auth/access-pending
+  auth.get('/access-pending', (c) => {
+    return c.html(
+      `<!DOCTYPE html>
+      <html><head><title>Access Pending</title></head>
+      <body>
+        <h1>Access Request Pending</h1>
+        <p>Your request is being reviewed. You'll be notified when approved.</p>
+        <p><a href="${resolveUrl('/')}">Back to home</a></p>
+      </body></html>`,
+    )
+  })
+
+  // GET /auth/access-denied
+  auth.get('/access-denied', (c) => {
+    return c.html(
+      `<!DOCTYPE html>
+      <html><head><title>Access Denied</title></head>
+      <body>
+        <h1>Access Denied</h1>
+        <p>Your access has been revoked. Contact an administrator for assistance.</p>
+        <p><a href="${resolveUrl('/')}">Back to home</a></p>
+      </body></html>`,
+    )
   })
 
   return auth
