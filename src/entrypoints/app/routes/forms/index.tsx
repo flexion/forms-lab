@@ -568,6 +568,9 @@ export function createFormRouter(deps: FormRouterDeps) {
               ]}
             />
           )}
+          {ctx.owner && ctx.slug && (
+            <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
+          )}
           <FormPageView
             page={{
               title: resolvedPage.page.title,

@@ -59,7 +59,7 @@ export function createOwnerRoutes(
     }
 
     return c.html(
-      <Layout user={c.get('user')}>
+      <Layout user={c.get('user')} currentSection="projects">
         <ProfilePage
           user={displayProfile}
           projects={projects}
@@ -113,7 +113,7 @@ export function createOwnerRoutes(
           }
         : null
       return c.html(
-        <Layout user={user}>
+        <Layout user={user} currentSection="projects">
           <ProjectOverview
             view={view}
             owner={owner}
@@ -145,7 +145,7 @@ export function createOwnerRoutes(
         service.listBranches(slug),
       ])
       return c.html(
-        <Layout user={user} title={`Pull Requests — ${view.project.name}`}>
+        <Layout user={user} title={`Pull Requests — ${view.project.name}`} currentSection="projects">
           <PullRequestsPage view={view} owner={owner} branches={branches} />
         </Layout>,
       )
@@ -164,7 +164,7 @@ export function createOwnerRoutes(
     try {
       const history = await service.getHistory(owner, slug)
       return c.html(
-        <Layout user={c.get('user')}>
+        <Layout user={c.get('user')} currentSection="projects">
           <CommitListPage history={history} owner={owner} slug={slug} />
         </Layout>,
       )
@@ -208,7 +208,7 @@ export function createOwnerRoutes(
           }
         : null
       return c.html(
-        <Layout user={user}>
+        <Layout user={user} currentSection="projects">
           <ProjectOverview
             view={view}
             owner={owner}
@@ -235,7 +235,7 @@ export function createOwnerRoutes(
     try {
       const entries = await service.getTree(owner, slug, ref, '')
       return c.html(
-        <Layout user={c.get('user')}>
+        <Layout user={c.get('user')} currentSection="projects">
           <TreePage
             entries={entries}
             owner={owner}
@@ -259,7 +259,7 @@ export function createOwnerRoutes(
     try {
       const entries = await service.getTree(owner, slug, ref, path)
       return c.html(
-        <Layout user={c.get('user')}>
+        <Layout user={c.get('user')} currentSection="projects">
           <TreePage
             entries={entries}
             owner={owner}
@@ -287,7 +287,7 @@ export function createOwnerRoutes(
       const content = await service.getFileContent(owner, slug, ref, path)
       if (!content) {
         return c.html(
-          <Layout user={c.get('user')}>
+          <Layout user={c.get('user')} currentSection="projects">
             <ErrorPage statusCode={404} message="File not found" />
           </Layout>,
           404,
@@ -295,7 +295,7 @@ export function createOwnerRoutes(
       }
 
       return c.html(
-        <Layout user={c.get('user')}>
+        <Layout user={c.get('user')} currentSection="projects">
           <BlobPage
             content={content}
             owner={owner}
@@ -325,7 +325,7 @@ export function createOwnerRoutes(
       const view = await service.getProject(owner, slug, user)
       if (!view.isOwner) {
         return c.html(
-          <Layout user={user}>
+          <Layout user={user} currentSection="projects">
             <ErrorPage statusCode={403} message="Permission denied" />
           </Layout>,
           403,
@@ -333,7 +333,7 @@ export function createOwnerRoutes(
       }
 
       return c.html(
-        <Layout user={user}>
+        <Layout user={user} currentSection="projects">
           <SettingsPage project={view.project} owner={owner} />
         </Layout>,
       )
@@ -369,7 +369,7 @@ export function createOwnerRoutes(
       }
 
       return c.html(
-        <Layout user={user}>
+        <Layout user={user} currentSection="projects">
           <ErrorPage statusCode={400} message="Unknown action" />
         </Layout>,
         400,
@@ -414,7 +414,7 @@ function handleError(c: Context, err: unknown) {
   }
   if (err instanceof AppError) {
     return c.html(
-      <Layout user={c.get('user')}>
+      <Layout user={c.get('user')} currentSection="projects">
         <ErrorPage statusCode={err.statusCode} message={err.message} />
       </Layout>,
       err.statusCode as ContentfulStatusCode,
