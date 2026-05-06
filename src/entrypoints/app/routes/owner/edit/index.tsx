@@ -52,7 +52,7 @@ export function createEditRoutes(
       const view = await service.getProject(owner, slug, user)
       if (!view.isOwner) {
         return c.html(
-          <Layout user={user}>
+          <Layout user={user} currentSection="projects">
             <ErrorPage
               statusCode={403}
               message="Only the project owner can edit the form."
@@ -63,7 +63,7 @@ export function createEditRoutes(
       }
       const branches = await service.listBranches(slug)
       return c.html(
-        <Layout user={user} title={`Edit ${view.project.name}`}>
+        <Layout user={user} title={`Edit ${view.project.name}`} currentSection="projects">
           <EditorPage
             mode="no-branch"
             view={view}
@@ -89,7 +89,7 @@ export function createEditRoutes(
       const view = await service.getProject(owner, slug, user, branch)
       if (!view.isOwner) {
         return c.html(
-          <Layout user={user}>
+          <Layout user={user} currentSection="projects">
             <ErrorPage
               statusCode={403}
               message="Only the project owner can edit the form."
@@ -154,6 +154,7 @@ export function createEditRoutes(
           user={user}
           title={`Edit ${view.project.name}`}
           contentWidth="full"
+          currentSection="projects"
         >
           <EditorPage
             mode="editing"
@@ -382,7 +383,7 @@ function handleError(c: Context, err: unknown) {
   }
   if (err instanceof AppError) {
     return c.html(
-      <Layout user={c.get('user')}>
+      <Layout user={c.get('user')} currentSection="projects">
         <ErrorPage statusCode={err.statusCode} message={err.message} />
       </Layout>,
       err.statusCode as ContentfulStatusCode,
