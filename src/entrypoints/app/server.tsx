@@ -297,7 +297,11 @@ app.route('/admin', createAdminRoutes(accessStore, userStore))
 // Mount settings routes (variant picker)
 app.route(
   '/settings',
-  createSettingsRoutes({ preferences: variantPreferences, registries }),
+  createSettingsRoutes({
+    preferences: variantPreferences,
+    registries,
+    accessStore,
+  }),
 )
 
 // Mount catalog routes
@@ -577,6 +581,7 @@ app.route(
       if (!buf) return null
       return JSON.parse(buf.toString())
     },
+    accessStore,
   }),
 )
 
