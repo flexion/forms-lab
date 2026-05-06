@@ -61,8 +61,6 @@ Experiment results and methodology:
 - **Catalog** —
   [https://forms.labs.flexion.us/main/catalog](https://forms.labs.flexion.us/main/catalog)
   (architecture, decisions, experiments, design system)
-- **Presentation** —
-  [https://forms.labs.flexion.us/main/presentation](https://forms.labs.flexion.us/main/presentation)
 
 ### Local development
 

@@ -1211,10 +1211,8 @@ export const GetInvolved: FC = () => {
             Try it — sign in with GitHub
           </a>
         </p>
-        <p class="l-cluster">
-          <a href={resolveUrl('/catalog')}>Learn more</a>
-          <span aria-hidden="true">•</span>
-          <a href={resolveUrl('/presentation')}>Watch the presentation</a>
+        <p>
+          <a href={resolveUrl('/catalog')}>Learn more in the catalog</a>
         </p>
       </section>
     </div>
