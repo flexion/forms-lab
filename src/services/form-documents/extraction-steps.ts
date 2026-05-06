@@ -12,6 +12,7 @@ import { trackLlmCall } from '../activity'
 import type { DataCollectionSpec } from '../data-collection'
 import type { FormSpec } from '../forms'
 import { enumerateFields } from './field-mapping'
+import { buildLayoutPrompt } from './layout-prompt'
 import { formSpecSchema } from './schemas'
 import type { FieldMapping } from './types'
 
@@ -83,6 +84,19 @@ ${JSON.stringify(spec, null, 2)}`,
     })
   }
 
+  return parseJsonResponse(result.text, formSpecSchema)
+}
+
+/** Step 2 (layout variant): Generate a FormSpec using layout-aware prompt. */
+export async function generateFormSpecWithLayout(
+  model: LanguageModel,
+  spec: DataCollectionSpec,
+): Promise<FormSpec> {
+  const result = await generateText({
+    model,
+    maxOutputTokens: 8192,
+    messages: [{ role: 'user', content: buildLayoutPrompt(spec) }],
+  })
   return parseJsonResponse(result.text, formSpecSchema)
 }
 

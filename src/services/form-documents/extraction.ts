@@ -1,9 +1,12 @@
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
+import type { LanguageModel } from 'ai'
 import { generateText } from 'ai'
 import type { ActivityStore } from '../activity'
 import { trackLlmCall } from '../activity'
+import type { DataCollectionSpec } from '../data-collection'
 import type { ExtractionExemplar } from '../extraction'
+import type { FormSpec } from '../forms'
 import type { PolicyChunk, PolicyRetriever } from '../rag'
 import type { CacheStore } from '../storage'
 import {
@@ -107,6 +110,15 @@ export interface BedrockExtractorOptions {
    * Ignored when `retriever` is not set.
    */
   retrievalK?: number
+  /**
+   * Custom FormSpec generator for Step 2. When provided, replaces the
+   * default `generateFormSpec` call. Use `generateFormSpecWithLayout`
+   * for layout-aware generation.
+   */
+  formSpecGenerator?: (
+    model: LanguageModel,
+    spec: DataCollectionSpec,
+  ) => Promise<FormSpec>
 }
 
 /**
@@ -311,14 +323,16 @@ ${exemplarSection}Guidelines:
 
       // Step 2: Generate default FormSpec from extracted spec
       const bedrockModel = bedrock(model)
-      const formSpec = await generateFormSpec(
-        bedrockModel,
-        spec,
-        options?.activityStore,
-        extractionOptions?.userId,
-        extractionOptions?.slug,
-        model,
-      )
+      const formSpec = options?.formSpecGenerator
+        ? await options.formSpecGenerator(bedrockModel, spec)
+        : await generateFormSpec(
+            bedrockModel,
+            spec,
+            options?.activityStore,
+            extractionOptions?.userId,
+            extractionOptions?.slug,
+            model,
+          )
 
       // Step 3: Enumerate PDF AcroForm fields and map to spec fieldNames
       const fieldMapping = await mapAcroFormFields(

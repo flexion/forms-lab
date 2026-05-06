@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import type { DataCollectionSpec } from '../../src/services/data-collection'
+import { generateFormSpecWithLayout } from '../../src/services/form-documents/extraction-steps'
 import { buildLayoutPrompt } from '../../src/services/form-documents/layout-prompt'
 
 const smallSpec: DataCollectionSpec = {
@@ -96,5 +97,11 @@ describe('buildLayoutPrompt', () => {
     expect(prompt).toContain('static')
     expect(prompt).toContain('conversational')
     expect(prompt).toContain('hybrid')
+  })
+})
+
+describe('generateFormSpecWithLayout', () => {
+  it('is exported as a function', () => {
+    expect(typeof generateFormSpecWithLayout).toBe('function')
   })
 })

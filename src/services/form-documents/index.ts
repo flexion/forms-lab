@@ -7,6 +7,7 @@ export {
   createBedrockPdfExtractor,
   createCachedPdfExtractor,
 } from './extraction'
+export { generateFormSpecWithLayout } from './extraction-steps'
 export { enumerateFields } from './field-mapping'
 export { fillPdf } from './filling'
 export { createMappingRegistry } from './mapping-registry'
