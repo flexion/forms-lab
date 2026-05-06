@@ -17,6 +17,14 @@ interface LayoutProps {
   contentWidth?: 'centered' | 'full'
 }
 
+function isAdminUser(login: string): boolean {
+  const admins = (process.env.ADMIN_USERS ?? 'danielnaab')
+    .split(',')
+    .map((u) => u.trim())
+    .filter(Boolean)
+  return admins.includes(login)
+}
+
 export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
   const title = props.title ? `${props.title} | Forms Lab` : 'Forms Lab'
 
@@ -101,6 +109,13 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
                 label="Catalog"
                 current={props.currentPath?.startsWith('/catalog') ?? false}
               />
+              {isAdminUser(props.user.login) && (
+                <HeaderNavItem
+                  href={resolveUrl('/admin/users')}
+                  label="Admin"
+                  current={props.currentPath?.startsWith('/admin') ?? false}
+                />
+              )}
             </>
           ) : (
             <>
