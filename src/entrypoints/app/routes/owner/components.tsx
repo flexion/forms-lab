@@ -1201,10 +1201,29 @@ const AUTH_ERROR_MESSAGES: Record<string, { heading: string; body: string }> = {
   },
 }
 
+export const GetInvolved: FC = () => {
+  return (
+    <div class="l-stack" data-space="lg">
+      <section class="l-stack">
+        <h2>Get involved</h2>
+        <p>
+          <a href={resolveUrl('/auth/signin')} class="flex-button">
+            Try it — sign in with GitHub
+          </a>
+        </p>
+        <p class="l-cluster">
+          <a href={resolveUrl('/catalog')}>Learn more</a>
+          <span aria-hidden="true">•</span>
+          <a href={resolveUrl('/presentation')}>Watch the presentation</a>
+        </p>
+      </section>
+    </div>
+  )
+}
+
 export const LandingPage: FC<{
   error?: string | null
-  user?: SessionUser | null
-}> = ({ error, user }) => {
+}> = ({ error }) => {
   const errorInfo = error ? AUTH_ERROR_MESSAGES[error] : null
   return (
     <div class="l-stack" data-space="lg">
@@ -1279,22 +1298,6 @@ export const LandingPage: FC<{
           </div>
         </dl>
       </section>
-
-      {!user && (
-        <section class="l-stack">
-          <h2>Get involved</h2>
-          <p>
-            <a href={resolveUrl('/auth/signin')} class="flex-button">
-              Try it — sign in with GitHub
-            </a>
-          </p>
-          <p class="l-cluster">
-            <a href={resolveUrl('/catalog')}>Learn more</a>
-            <span aria-hidden="true">•</span>
-            <a href={resolveUrl('/presentation')}>Watch the presentation</a>
-          </p>
-        </section>
-      )}
 
       <hr style="border: 0; border-top: 1px solid var(--flex-color-border); margin-block: var(--flex-space-lg) var(--flex-space-md);" />
       <p style="text-align: center;">
