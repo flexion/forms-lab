@@ -1,4 +1,5 @@
 import { StrategyRegistry } from '../../shared/strategy-registry'
+import type { ActivityStore } from '../activity'
 import {
   createBedrockPdfExtractor,
   createToolUsePdfExtractor,
@@ -15,7 +16,9 @@ import {
 } from './models'
 import { getRagRetriever } from './rag-corpus'
 
-export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
+export function createExtractorRegistry(
+  activityStore?: ActivityStore,
+): StrategyRegistry<PdfExtractor> {
   const registry = new StrategyRegistry<PdfExtractor>()
   const [nestedGroupsExemplar] = exemplars
 
@@ -31,7 +34,8 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       modelId: OPUS_MODEL_ID,
       pricing: { inputPer1k: 0.015, outputPer1k: 0.075 },
     },
-    create: () => createBedrockPdfExtractor({ model: OPUS_MODEL_ID }),
+    create: () =>
+      createBedrockPdfExtractor({ model: OPUS_MODEL_ID, activityStore }),
   })
 
   registry.register({
@@ -46,7 +50,8 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       modelId: SONNET_MODEL_ID,
       pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
     },
-    create: () => createBedrockPdfExtractor({ model: SONNET_MODEL_ID }),
+    create: () =>
+      createBedrockPdfExtractor({ model: SONNET_MODEL_ID, activityStore }),
   })
 
   registry.register({
@@ -61,7 +66,8 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       modelId: HAIKU_MODEL_ID,
       pricing: { inputPer1k: 0.0008, outputPer1k: 0.004 },
     },
-    create: () => createBedrockPdfExtractor({ model: HAIKU_MODEL_ID }),
+    create: () =>
+      createBedrockPdfExtractor({ model: HAIKU_MODEL_ID, activityStore }),
   })
 
   registry.register({
@@ -78,7 +84,11 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
     },
     create: () =>
-      createBedrockPdfExtractor({ model: SONNET_MODEL_ID, temperature: 0 }),
+      createBedrockPdfExtractor({
+        model: SONNET_MODEL_ID,
+        temperature: 0,
+        activityStore,
+      }),
   })
 
   registry.register({
@@ -104,6 +114,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
         temperature: 0,
         promptVariant: 'hybrid',
         hybridExemplar: nestedGroupsExemplar,
+        activityStore,
       })
     },
   })
@@ -121,7 +132,11 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
     },
     create: () =>
-      createBedrockPdfExtractor({ model: SONNET_MODEL_ID, exemplars }),
+      createBedrockPdfExtractor({
+        model: SONNET_MODEL_ID,
+        exemplars,
+        activityStore,
+      }),
   })
 
   registry.register({
@@ -141,6 +156,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
         model: SONNET_MODEL_ID,
         retriever: getRagRetriever(),
         retrievalK: 2,
+        activityStore,
       }),
   })
 
@@ -175,6 +191,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       createBedrockPdfExtractor({
         model: NOVA_PRO_MODEL_ID,
         maxOutputTokens: 10000,
+        activityStore,
       }),
   })
 
@@ -199,6 +216,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       createBedrockPdfExtractor({
         model: NOVA_LITE_MODEL_ID,
         maxOutputTokens: 10000,
+        activityStore,
       }),
   })
 
@@ -223,6 +241,7 @@ export function createExtractorRegistry(): StrategyRegistry<PdfExtractor> {
       createBedrockPdfExtractor({
         model: LLAMA_3_2_VISION_MODEL_ID,
         maxOutputTokens: 8000,
+        activityStore,
       }),
   })
 

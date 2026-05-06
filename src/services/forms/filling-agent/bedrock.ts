@@ -3,6 +3,8 @@ import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText, tool } from 'ai'
 import { z } from 'zod'
+import type { ActivityStore } from '../../activity'
+import { trackLlmCall } from '../../activity'
 import { evaluateCondition } from '../resolver'
 import { buildSystemPrompt } from './system-prompt-builder'
 import type {
@@ -17,6 +19,8 @@ const DEFAULT_MODEL = 'us.anthropic.claude-sonnet-4-20250514-v1:0'
 export interface BedrockFillingAgentOptions {
   model?: string
   region?: string
+  /** Optional activity store for tracking LLM usage. */
+  activityStore?: ActivityStore
 }
 
 /**
@@ -31,9 +35,11 @@ export interface BedrockFillingAgentOptions {
 export class BedrockFillingAgent implements FillingAgent {
   private model: string
   private bedrock: ReturnType<typeof createAmazonBedrock>
+  private activityStore?: ActivityStore
 
   constructor(options?: BedrockFillingAgentOptions) {
     this.model = options?.model ?? DEFAULT_MODEL
+    this.activityStore = options?.activityStore
 
     this.bedrock = createAmazonBedrock({
       credentialProvider: fromNodeProviderChain(),
@@ -65,6 +71,7 @@ export class BedrockFillingAgent implements FillingAgent {
     )
 
     // Call LLM with tools - use tool() helper for proper schema format
+    const startTime = Date.now()
     const result = await generateText({
       model: this.bedrock(this.model),
       system: systemPrompt,
@@ -98,6 +105,16 @@ export class BedrockFillingAgent implements FillingAgent {
         }),
       },
     })
+    if (this.activityStore) {
+      trackLlmCall(this.activityStore, {
+        userId: context.userId,
+        projectId: context.projectId,
+        operation: 'filling',
+        model: this.model,
+        usage: result.usage,
+        durationMs: Date.now() - startTime,
+      })
+    }
 
     console.log(
       '[BedrockFillingAgent] Result:',

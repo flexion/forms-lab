@@ -8,6 +8,7 @@ import {
   loadFixturePdf,
 } from '../../../fixtures/index'
 import { Layout } from '../../design-system/components/flex-layout'
+import { createActivityStore } from '../../services/activity'
 import { createAccessStore, createUserStore } from '../../services/auth'
 import type { DataCollectionSpec } from '../../services/data-collection'
 import { createExtractorRegistry } from '../../services/extraction'
@@ -71,6 +72,10 @@ mkdirSync(dirname(projectDbPath), { recursive: true })
 mkdirSync(dirname(cacheDbPath), { recursive: true })
 mkdirSync(reposPath, { recursive: true })
 
+const activityDbPath = process.env.ACTIVITY_DB_PATH ?? 'data/activity.sqlite'
+mkdirSync(dirname(activityDbPath), { recursive: true })
+const activityStore = createActivityStore(activityDbPath)
+
 const projectStore = createProjectStore(projectDbPath)
 const cacheStore = createCacheStore(cacheDbPath)
 const userStore = createUserStore(projectDbPath)
@@ -80,8 +85,8 @@ const formProjectRepo = createFormProjectRepo(reposPath)
 // Variant registries: one per task. Each user's preferred variant is
 // resolved against these at call time so a settings change takes effect
 // on the next extraction without restarting the process.
-const extractionRegistry = createExtractorRegistry()
-const shapingRegistry = createShapingRegistry()
+const extractionRegistry = createExtractorRegistry(activityStore)
+const shapingRegistry = createShapingRegistry(activityStore)
 const fillingRegistry = createFillingRegistry()
 const mappingRegistry = createMappingRegistry()
 const authoringCriteriaRegistry = createAuthoringCriteriaRegistry()
@@ -132,7 +137,7 @@ const conversationGateway = new SqliteConversationGateway(formsDbPath)
 const fillingAgent =
   process.env.USE_SCRIPTED_AGENT === 'true'
     ? new ScriptedFillingAgent()
-    : new BedrockFillingAgent()
+    : new BedrockFillingAgent({ activityStore })
 
 /**
  * Adapter: resolve a DataCollectionSpec id to (owner, slug, spec, formSpec)

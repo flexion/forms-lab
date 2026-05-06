@@ -7,6 +7,8 @@
 
 import type { LanguageModel } from 'ai'
 import { generateText } from 'ai'
+import type { ActivityStore } from '../activity'
+import { trackLlmCall } from '../activity'
 import type { DataCollectionSpec } from '../data-collection'
 import type { FormSpec } from '../forms'
 import { enumerateFields } from './field-mapping'
@@ -30,7 +32,12 @@ export function parseJsonResponse<T>(
 export async function generateFormSpec(
   model: LanguageModel,
   spec: DataCollectionSpec,
+  activityStore?: ActivityStore,
+  userId?: string,
+  projectId?: string,
+  modelId?: string,
 ): Promise<FormSpec> {
+  const startTime = Date.now()
   const result = await generateText({
     model,
     maxOutputTokens: 8192,
@@ -65,6 +72,16 @@ ${JSON.stringify(spec, null, 2)}`,
       },
     ],
   })
+  if (activityStore && modelId) {
+    trackLlmCall(activityStore, {
+      userId,
+      projectId,
+      operation: 'extraction-formspec',
+      model: modelId,
+      usage: result.usage,
+      durationMs: Date.now() - startTime,
+    })
+  }
 
   return parseJsonResponse(result.text, formSpecSchema)
 }
@@ -74,6 +91,10 @@ export async function mapAcroFormFields(
   model: LanguageModel,
   pdf: Buffer,
   spec: DataCollectionSpec,
+  activityStore?: ActivityStore,
+  userId?: string,
+  projectId?: string,
+  modelId?: string,
 ): Promise<FieldMapping> {
   const pdfFieldNames = await enumerateFields(pdf)
   let fieldMapping: FieldMapping = {}
@@ -83,6 +104,7 @@ export async function mapAcroFormFields(
       .flatMap((g) => g.requirements)
       .map((r) => ({ fieldName: r.fieldName, label: r.label }))
 
+    const startTime = Date.now()
     const mappingResult = await generateText({
       model,
       maxOutputTokens: 4096,
@@ -104,6 +126,16 @@ Rules:
         },
       ],
     })
+    if (activityStore && modelId) {
+      trackLlmCall(activityStore, {
+        userId,
+        projectId,
+        operation: 'extraction-fieldmapping',
+        model: modelId,
+        usage: mappingResult.usage,
+        durationMs: Date.now() - startTime,
+      })
+    }
 
     const mappingText = mappingResult.text.trim()
     const jsonStr = mappingText.startsWith('```')

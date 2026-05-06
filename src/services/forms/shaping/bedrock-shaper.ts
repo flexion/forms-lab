@@ -1,6 +1,8 @@
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
+import type { ActivityStore } from '../../activity'
+import { trackLlmCall } from '../../activity'
 import type { Command } from './commands'
 import { commandTools } from './tools'
 import type { FormShaper, ShapingRequest, ShapingResult } from './types'
@@ -57,6 +59,8 @@ ${previous}
 
 export interface BedrockShaperOptions {
   model?: string
+  /** Optional activity store for tracking LLM usage. */
+  activityStore?: ActivityStore
 }
 
 export function createBedrockFormShaper(
@@ -74,12 +78,23 @@ export function createBedrockFormShaper(
   return {
     async shape(request: ShapingRequest): Promise<ShapingResult> {
       const model = options?.model ?? DEFAULT_MODEL
+      const startTime = Date.now()
       const response = await generateText({
         model: bedrock(model),
         maxOutputTokens: 4096,
         tools: commandTools,
         messages: [{ role: 'user', content: buildPrompt(request) }],
       })
+      if (options?.activityStore) {
+        trackLlmCall(options.activityStore, {
+          userId: request.userId,
+          projectId: request.projectId,
+          operation: 'shaping',
+          model,
+          usage: response.usage,
+          durationMs: Date.now() - startTime,
+        })
+      }
 
       const commands: Command[] = []
       for (const call of response.toolCalls ?? []) {
