@@ -13,10 +13,19 @@ export { runEvaluation } from './harness'
 export { createBedrockFieldJudge } from './judge'
 // Kinds
 export {
+  layoutQualityKind,
+  setLayoutJudge,
+  type LayoutJudge,
+  type LayoutJudgeResponse,
+  type LayoutQualityOutput,
+} from './kinds/layout-quality'
+export {
   type ExtractionOutput,
   pdfFieldExtractionKind,
 } from './kinds/pdf-field-extraction'
 export { createLlmJudgeKind } from './kinds/pdf-field-extraction-judge'
 export { shapingCommandsKind } from './kinds/shaping-commands'
+// Layout judge prompt
+export { buildLayoutJudgePrompt } from './layout-judge-prompt'
 export { evaluationRunSchema } from './schemas'
 export type { RunResult } from './types'
