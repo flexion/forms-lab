@@ -293,7 +293,7 @@ app.use(
 )
 
 // Mount auth routes
-app.route('/auth', createAuthRoutes(userStore, accessStore))
+app.route('/auth', createAuthRoutes(userStore, accessStore, { activityStore }))
 
 // Mount admin routes (requireAdmin is applied inside createAdminRoutes)
 app.use('/admin/*', requireAuth(accessStore))
@@ -407,6 +407,16 @@ app.post('/new', async (c) => {
       const pdf = Buffer.from(await file.arrayBuffer())
       const name = file.name.replace(/\.pdf$/i, '')
       const project = await projectService.createProject(name, pdf, user)
+      activityStore.track({
+        eventType: 'pdf_uploaded',
+        userId: user.login,
+        projectId: project.slug,
+      })
+      activityStore.track({
+        eventType: 'project_created',
+        userId: user.login,
+        projectId: project.slug,
+      })
       return c.redirect(
         resolveUrl(`/${user.login}/${project.slug}/edit/import`),
       )
@@ -438,6 +448,11 @@ app.post('/new', async (c) => {
         user,
         { corpusSlug: corpusMetadata.slug },
       )
+      activityStore.track({
+        eventType: 'project_created',
+        userId: user.login,
+        projectId: project.slug,
+      })
       return c.redirect(
         resolveUrl(`/${user.login}/${project.slug}/edit/import`),
       )
@@ -461,6 +476,11 @@ app.post('/new', async (c) => {
     const pdf = loadFixturePdf(fixture)
     const name = fixture.name
     const project = await projectService.createProject(name, pdf, user)
+    activityStore.track({
+      eventType: 'project_created',
+      userId: user.login,
+      projectId: project.slug,
+    })
     return c.redirect(resolveUrl(`/${user.login}/${project.slug}`))
   } catch (err) {
     console.error('Error creating project:', err)

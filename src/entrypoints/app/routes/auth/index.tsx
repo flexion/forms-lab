@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { deleteCookie, setCookie } from 'hono/cookie'
+import type { ActivityStore } from '../../../../services/activity'
 import { Layout } from '../../../../design-system/components/flex-layout'
 import type { AccessStore, UserStore } from '../../../../services/auth'
 import {
@@ -21,6 +22,7 @@ import {
 export function createAuthRoutes(
   userStore: UserStore,
   accessStore: AccessStore,
+  options?: { activityStore?: ActivityStore },
 ): Hono {
   const auth = new Hono()
 
@@ -208,6 +210,11 @@ export function createAuthRoutes(
         sameSite: 'Lax',
         maxAge: COOKIE_MAX_AGE,
         path: '/',
+      })
+
+      options?.activityStore?.track({
+        eventType: 'sign_in',
+        userId: ghUser.login,
       })
 
       const returnTo = state.returnTo || resolveUrl('/')
