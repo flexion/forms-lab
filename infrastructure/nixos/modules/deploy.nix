@@ -113,8 +113,11 @@ let
       echo "Updating worktree for $BRANCH..."
       cd "$BRANCH_DIR"
       # Fetch directly in the worktree — can't update the bare repo ref while
-      # the branch is checked out, so use FETCH_HEAD + reset instead
-      ${pkgs.git}/bin/git fetch origin "$BRANCH"
+      # the branch is checked out, so use FETCH_HEAD + reset instead.
+      # --refmap="" suppresses the bare repo's configured refspec
+      # (+refs/heads/*:refs/heads/*) which would try to update the local
+      # branch ref and fail for checked-out branches.
+      ${pkgs.git}/bin/git fetch origin --refmap="" "refs/heads/$BRANCH"
       ${pkgs.git}/bin/git reset --hard FETCH_HEAD
     fi
 
