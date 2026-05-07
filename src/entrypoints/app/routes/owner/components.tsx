@@ -239,50 +239,6 @@ export const ProjectOverview: FC<{
         isOwner={isOwner}
       />
 
-      {isOwner && formSpec ? (
-        <div
-          class="l-cluster"
-          style="gap: var(--flex-space-sm); justify-content: flex-end;"
-        >
-          <a
-            href={resolveUrl(
-              branch && branch !== 'main'
-                ? `${repoBase}/edit/${branch}`
-                : `${repoBase}/edit`,
-            )}
-            class="flex-button"
-          >
-            Edit form structure
-          </a>
-        </div>
-      ) : !isOwner && user ? (
-        <div
-          class="l-cluster"
-          style="gap: var(--flex-space-sm); justify-content: flex-end;"
-        >
-          <form method="post" action={resolveUrl(`${repoBase}/fork`)}>
-            <button type="submit" class="flex-button" data-variant="outline">
-              Fork
-            </button>
-          </form>
-        </div>
-      ) : !isOwner && !user ? (
-        <div
-          class="l-cluster"
-          style="gap: var(--flex-space-sm); justify-content: flex-end;"
-        >
-          <a
-            href={resolveUrl(
-              `/auth/signin?returnTo=${encodeURIComponent(repoBase)}`,
-            )}
-            class="flex-button"
-            data-variant="outline"
-          >
-            Sign in to fork
-          </a>
-        </div>
-      ) : null}
-
       {corpus && (
         <aside
           class="l-stack"
@@ -326,6 +282,36 @@ export const ProjectOverview: FC<{
         >
           Copy
         </button>
+        {isOwner && formSpec && (
+          <a
+            href={resolveUrl(
+              branch && branch !== 'main'
+                ? `${repoBase}/edit/${branch}`
+                : `${repoBase}/edit`,
+            )}
+            class="flex-button"
+          >
+            Edit form structure
+          </a>
+        )}
+        {!isOwner && user && (
+          <form method="post" action={resolveUrl(`${repoBase}/fork`)}>
+            <button type="submit" class="flex-button" data-variant="outline">
+              Fork
+            </button>
+          </form>
+        )}
+        {!isOwner && !user && (
+          <a
+            href={resolveUrl(
+              `/auth/signin?returnTo=${encodeURIComponent(repoBase)}`,
+            )}
+            class="flex-button"
+            data-variant="outline"
+          >
+            Sign in to fork
+          </a>
+        )}
       </div>
 
       {viewingSha && (

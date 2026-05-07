@@ -96,6 +96,8 @@ interface FormRouterDeps {
   resolveProjectForSpec?: (
     specId: string,
   ) => Promise<{ owner: string; slug: string } | null>
+  /** Gets the display name for a project by slug. Used in project-scoped mode for the page title. */
+  getProjectName?: (slug: string) => string | null
 }
 
 const MAIN_BRANCH = 'main'
@@ -148,6 +150,7 @@ export function createFormRouter(deps: FormRouterDeps) {
     resolveOwnerSlug,
     getSpecsByProject,
     resolveProjectForSpec,
+    getProjectName,
   } = deps
   const forms = new Hono()
 
@@ -384,16 +387,19 @@ export function createFormRouter(deps: FormRouterDeps) {
       >
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         {ctx.owner && ctx.slug && (
-          <Breadcrumb
-            items={[
-              { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
-              {
-                label: ctx.slug,
-                href: resolveUrl(`/${ctx.owner}/${ctx.slug}`),
-              },
-              { label: 'Forms' },
-            ]}
-          />
+          <header class="repo-header">
+            <Breadcrumb
+              items={[
+                { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+                { label: ctx.slug },
+              ]}
+            />
+            <div class="repo-header__title-row">
+              <h1 class="repo-header__title">
+                {getProjectName?.(ctx.slug) ?? ctx.slug}
+              </h1>
+            </div>
+          </header>
         )}
         {ctx.owner && ctx.slug && (
           <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
@@ -401,6 +407,7 @@ export function createFormRouter(deps: FormRouterDeps) {
         <FormLanding
           formSpec={specs.formSpec}
           startUrl={resolveUrl(`${prefix}/sessions`)}
+          hideTitle={!!(ctx.owner && ctx.slug)}
         />
       </Layout>,
     )
@@ -449,22 +456,19 @@ export function createFormRouter(deps: FormRouterDeps) {
       <Layout user={user} title={page.page.title} currentSection="forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         {ctx.owner && ctx.slug && (
-          <Breadcrumb
-            items={[
-              { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
-              {
-                label: ctx.slug,
-                href: resolveUrl(`/${ctx.owner}/${ctx.slug}`),
-              },
-              {
-                label: 'Forms',
-                href: resolveUrl(`/${ctx.owner}/${ctx.slug}/forms`),
-              },
-              {
-                label: `Page ${Number(pageIndex) + 1} of ${specs.formSpec.pages.length}`,
-              },
-            ]}
-          />
+          <header class="repo-header">
+            <Breadcrumb
+              items={[
+                { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+                { label: ctx.slug },
+              ]}
+            />
+            <div class="repo-header__title-row">
+              <h1 class="repo-header__title">
+                {getProjectName?.(ctx.slug) ?? ctx.slug}
+              </h1>
+            </div>
+          </header>
         )}
         {ctx.owner && ctx.slug && (
           <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
@@ -551,22 +555,19 @@ export function createFormRouter(deps: FormRouterDeps) {
         >
           {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
           {ctx.owner && ctx.slug && (
-            <Breadcrumb
-              items={[
-                { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
-                {
-                  label: ctx.slug,
-                  href: resolveUrl(`/${ctx.owner}/${ctx.slug}`),
-                },
-                {
-                  label: 'Forms',
-                  href: resolveUrl(`/${ctx.owner}/${ctx.slug}/forms`),
-                },
-                {
-                  label: `Page ${Number(pageIndex) + 1} of ${specs.formSpec.pages.length}`,
-                },
-              ]}
-            />
+            <header class="repo-header">
+              <Breadcrumb
+                items={[
+                  { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+                  { label: ctx.slug },
+                ]}
+              />
+              <div class="repo-header__title-row">
+                <h1 class="repo-header__title">
+                  {getProjectName?.(ctx.slug) ?? ctx.slug}
+                </h1>
+              </div>
+            </header>
           )}
           {ctx.owner && ctx.slug && (
             <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
@@ -617,20 +618,19 @@ export function createFormRouter(deps: FormRouterDeps) {
       <Layout user={user} title="Review" currentSection="forms">
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
         {ctx.owner && ctx.slug && (
-          <Breadcrumb
-            items={[
-              { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
-              {
-                label: ctx.slug,
-                href: resolveUrl(`/${ctx.owner}/${ctx.slug}`),
-              },
-              {
-                label: 'Forms',
-                href: resolveUrl(`/${ctx.owner}/${ctx.slug}/forms`),
-              },
-              { label: 'Review' },
-            ]}
-          />
+          <header class="repo-header">
+            <Breadcrumb
+              items={[
+                { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+                { label: ctx.slug },
+              ]}
+            />
+            <div class="repo-header__title-row">
+              <h1 class="repo-header__title">
+                {getProjectName?.(ctx.slug) ?? ctx.slug}
+              </h1>
+            </div>
+          </header>
         )}
         {ctx.owner && ctx.slug && (
           <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
@@ -694,20 +694,19 @@ export function createFormRouter(deps: FormRouterDeps) {
             )
           : null}
         {ctx?.owner && ctx?.slug && (
-          <Breadcrumb
-            items={[
-              { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
-              {
-                label: ctx.slug,
-                href: resolveUrl(`/${ctx.owner}/${ctx.slug}`),
-              },
-              {
-                label: 'Forms',
-                href: resolveUrl(`/${ctx.owner}/${ctx.slug}/forms`),
-              },
-              { label: 'Confirmation' },
-            ]}
-          />
+          <header class="repo-header">
+            <Breadcrumb
+              items={[
+                { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+                { label: ctx.slug },
+              ]}
+            />
+            <div class="repo-header__title-row">
+              <h1 class="repo-header__title">
+                {getProjectName?.(ctx.slug) ?? ctx.slug}
+              </h1>
+            </div>
+          </header>
         )}
         {ctx?.owner && ctx?.slug && (
           <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
@@ -903,6 +902,21 @@ export function createFormRouter(deps: FormRouterDeps) {
         contentWidth="full"
       >
         {previewBannerFor(branch, specs.sha, getEditHref, specs.dataSpec.id)}
+        {ctx.owner && ctx.slug && (
+          <header class="repo-header">
+            <Breadcrumb
+              items={[
+                { label: ctx.owner, href: resolveUrl(`/${ctx.owner}`) },
+                { label: ctx.slug },
+              ]}
+            />
+            <div class="repo-header__title-row">
+              <h1 class="repo-header__title">
+                {getProjectName?.(ctx.slug) ?? ctx.slug}
+              </h1>
+            </div>
+          </header>
+        )}
         {ctx.owner && ctx.slug && (
           <RepoNav owner={ctx.owner} slug={ctx.slug} current="forms" />
         )}
