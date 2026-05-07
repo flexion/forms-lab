@@ -34,3 +34,4 @@ data/
 .direnv/
 result
 .superpowers/
+test-results/
