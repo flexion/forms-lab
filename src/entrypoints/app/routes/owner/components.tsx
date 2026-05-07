@@ -738,7 +738,8 @@ export const TreePage: FC<{
   ref: string
   path: string
   isOwner?: boolean
-}> = ({ entries, owner, slug, ref, path, isOwner }) => {
+  projectName?: string
+}> = ({ entries, owner, slug, ref, path, isOwner, projectName }) => {
   const pathSegments = path ? path.split('/') : []
 
   return (
@@ -763,7 +764,7 @@ export const TreePage: FC<{
           ]}
         />
         <div class="repo-header__title-row">
-          <h1 class="repo-header__title">Files</h1>
+          <h1 class="repo-header__title">{projectName ?? slug}</h1>
         </div>
       </header>
 
@@ -818,7 +819,8 @@ export const BlobPage: FC<{
   ref: string
   path: string
   isOwner?: boolean
-}> = ({ content, owner, slug, ref, path, isOwner }) => {
+  projectName?: string
+}> = ({ content, owner, slug, ref, path, isOwner, projectName }) => {
   const pathSegments = path ? path.split('/') : []
   const fileName = path.split('/').pop() ?? path
   const isJson = fileName.endsWith('.json')
@@ -860,7 +862,7 @@ export const BlobPage: FC<{
           ]}
         />
         <div class="repo-header__title-row">
-          <h1 class="repo-header__title">{fileName}</h1>
+          <h1 class="repo-header__title">{projectName ?? slug}</h1>
         </div>
       </header>
 
@@ -902,18 +904,18 @@ export const CommitListPage: FC<{
   owner: string
   slug: string
   isOwner?: boolean
-}> = ({ history, owner, slug, isOwner }) => (
+  projectName?: string
+}> = ({ history, owner, slug, isOwner, projectName }) => (
   <div class="l-stack">
     <header class="repo-header">
       <Breadcrumb
         items={[
           { label: owner, href: resolveUrl(`/${owner}`) },
-          { label: slug, href: resolveUrl(`/${owner}/${slug}`) },
-          { label: 'History' },
+          { label: slug },
         ]}
       />
       <div class="repo-header__title-row">
-        <h1 class="repo-header__title">History</h1>
+        <h1 class="repo-header__title">{projectName ?? slug}</h1>
       </div>
     </header>
 

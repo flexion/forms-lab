@@ -168,6 +168,7 @@ export function createOwnerRoutes(
     try {
       const user = c.get('user')
       const history = await service.getHistory(owner, slug)
+      const projectName = service.getProjectName(slug)
       return c.html(
         <Layout user={user} currentSection="projects">
           <CommitListPage
@@ -175,6 +176,7 @@ export function createOwnerRoutes(
             owner={owner}
             slug={slug}
             isOwner={user?.login === owner}
+            projectName={projectName ?? undefined}
           />
         </Layout>,
       )
@@ -245,6 +247,7 @@ export function createOwnerRoutes(
     try {
       const user = c.get('user')
       const entries = await service.getTree(owner, slug, ref, '')
+      const projectName = service.getProjectName(slug)
       return c.html(
         <Layout user={user} currentSection="projects">
           <TreePage
@@ -254,6 +257,7 @@ export function createOwnerRoutes(
             ref={ref}
             path=""
             isOwner={user?.login === owner}
+            projectName={projectName ?? undefined}
           />
         </Layout>,
       )
@@ -271,6 +275,7 @@ export function createOwnerRoutes(
     try {
       const user = c.get('user')
       const entries = await service.getTree(owner, slug, ref, path)
+      const projectName = service.getProjectName(slug)
       return c.html(
         <Layout user={user} currentSection="projects">
           <TreePage
@@ -280,6 +285,7 @@ export function createOwnerRoutes(
             ref={ref}
             path={path}
             isOwner={user?.login === owner}
+            projectName={projectName ?? undefined}
           />
         </Layout>,
       )
@@ -309,6 +315,7 @@ export function createOwnerRoutes(
         )
       }
 
+      const projectName = service.getProjectName(slug)
       return c.html(
         <Layout user={user} currentSection="projects">
           <BlobPage
@@ -318,6 +325,7 @@ export function createOwnerRoutes(
             ref={ref}
             path={path}
             isOwner={user?.login === owner}
+            projectName={projectName ?? undefined}
           />
         </Layout>,
       )

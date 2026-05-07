@@ -35,7 +35,7 @@ export function createAdminRoutes(
     const revokedUsers = enriched(revoked)
 
     return c.html(
-      <Layout currentPath="/admin/users" user={c.get('user')}>
+      <Layout currentSection="admin" user={c.get('user')}>
         <AdminUsersPage
           pending={pendingUsers}
           approved={approvedUsers}
