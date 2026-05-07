@@ -367,8 +367,10 @@ flex-header {
   .flex-header__close-btn {
     display: block;
     position: absolute;
-    inset-block-start: 0.5rem;
-    inset-inline-end: 0.5rem;
+    top: 0.5rem;
+    right: 0.5rem;
+    float: none;
+    margin: 0;
   }
 
   .flex-header__nav-list {
