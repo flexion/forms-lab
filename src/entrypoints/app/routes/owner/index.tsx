@@ -166,10 +166,16 @@ export function createOwnerRoutes(
     const slug = c.req.param('slug')
 
     try {
+      const user = c.get('user')
       const history = await service.getHistory(owner, slug)
       return c.html(
-        <Layout user={c.get('user')} currentSection="projects">
-          <CommitListPage history={history} owner={owner} slug={slug} />
+        <Layout user={user} currentSection="projects">
+          <CommitListPage
+            history={history}
+            owner={owner}
+            slug={slug}
+            isOwner={user?.login === owner}
+          />
         </Layout>,
       )
     } catch (err) {
@@ -237,15 +243,17 @@ export function createOwnerRoutes(
     const ref = c.req.param('ref')
 
     try {
+      const user = c.get('user')
       const entries = await service.getTree(owner, slug, ref, '')
       return c.html(
-        <Layout user={c.get('user')} currentSection="projects">
+        <Layout user={user} currentSection="projects">
           <TreePage
             entries={entries}
             owner={owner}
             slug={slug}
             ref={ref}
             path=""
+            isOwner={user?.login === owner}
           />
         </Layout>,
       )
@@ -261,15 +269,17 @@ export function createOwnerRoutes(
     const path = c.req.path.split(`/tree/${ref}/`)[1] ?? ''
 
     try {
+      const user = c.get('user')
       const entries = await service.getTree(owner, slug, ref, path)
       return c.html(
-        <Layout user={c.get('user')} currentSection="projects">
+        <Layout user={user} currentSection="projects">
           <TreePage
             entries={entries}
             owner={owner}
             slug={slug}
             ref={ref}
             path={path}
+            isOwner={user?.login === owner}
           />
         </Layout>,
       )
@@ -288,10 +298,11 @@ export function createOwnerRoutes(
     const path = c.req.path.split(`/blob/${ref}/`)[1] ?? ''
 
     try {
+      const user = c.get('user')
       const content = await service.getFileContent(owner, slug, ref, path)
       if (!content) {
         return c.html(
-          <Layout user={c.get('user')} currentSection="projects">
+          <Layout user={user} currentSection="projects">
             <ErrorPage statusCode={404} message="File not found" />
           </Layout>,
           404,
@@ -299,13 +310,14 @@ export function createOwnerRoutes(
       }
 
       return c.html(
-        <Layout user={c.get('user')} currentSection="projects">
+        <Layout user={user} currentSection="projects">
           <BlobPage
             content={content}
             owner={owner}
             slug={slug}
             ref={ref}
             path={path}
+            isOwner={user?.login === owner}
           />
         </Layout>,
       )
