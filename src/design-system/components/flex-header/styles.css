@@ -364,9 +364,8 @@ flex-header {
 
   .flex-header__close-btn {
     display: block;
-    position: absolute;
-    inset-block-start: 0.25rem;
-    inset-inline-end: 0.25rem;
+    align-self: flex-end;
+    margin: -0.5rem -0.5rem 0;
   }
 
   .flex-header__nav-list {
@@ -424,19 +423,28 @@ flex-header {
   }
 
   .flex-header__user-identity {
-    padding-inline: 0;
+    padding: 0;
   }
 
   .flex-header__user-theme {
-    padding-inline: 0;
+    padding: 0;
   }
 
   .flex-header__user-settings {
+    padding: 0;
+  }
+
+  .flex-header__user-settings-link {
     padding-inline: 0;
   }
 
   .flex-header__user-signout {
+    padding: 0;
+  }
+
+  .flex-header__user-signout-btn {
     padding-inline: 0;
+    text-align: start;
   }
 
   /* Signed-out parallel: theme toggle as a utility section at the bottom of the panel */
