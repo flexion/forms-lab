@@ -345,38 +345,34 @@ flex-header {
 
   .flex-header__nav {
     position: fixed;
-    inset-inline-end: 0;
-    inset-block-end: 0;
-    inset-block-start: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     background: var(--flex-color-surface);
     border-inline-end: 0;
     display: none;
-    flex-direction: column;
-    justify-content: flex-start;
     overflow-y: auto;
     padding: var(--flex-space-md);
     inline-size: 240px;
     z-index: 500;
 
     &.is-visible {
-      display: flex;
+      display: block;
       animation: flex-header-slidein 0.3s ease-in-out;
     }
   }
 
   .flex-header__close-btn {
     display: block;
-    position: absolute;
-    top: var(--flex-space-sm);
-    right: var(--flex-space-sm);
-    float: none;
-    margin: 0;
+    block-size: 48px;
+    inline-size: 48px;
   }
 
   .flex-header__nav-list {
-    flex-direction: column;
-    align-items: stretch;
-    inline-size: 100%;
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
   .flex-header__nav-item {
@@ -388,8 +384,9 @@ flex-header {
   }
 
   .flex-header__nav-link {
-    padding-block: 12px;
-    padding-inline: 0;
+    display: block;
+    block-size: auto;
+    padding: 12px 0;
   }
 
   .flex-header__nav-link--current::after,
