@@ -587,6 +587,7 @@ app.route(
     },
     accessStore,
     resolveProjectForSpec: findProjectBySpecId,
+    getProjectName: (slug) => projectService.getProjectName(slug),
   }),
 )
 
@@ -663,6 +664,7 @@ projectFormApp.route(
       if (!buf) return null
       return JSON.parse(buf.toString())
     },
+    getProjectName: (slug) => projectService.getProjectName(slug),
   }),
 )
 app.route('/', projectFormApp)
