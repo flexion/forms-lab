@@ -1662,16 +1662,18 @@
     "Roboto Mono Web", "Bitstream Vera Sans Mono", "Consolas", "Courier",
     monospace; /* @uswds font-mono */
 
-  /* Typography scale — USWDS 3.13 theme tokens, all rem for accessibility */
-  --flex-text-3xs: 0.8125rem;  /* 13px — USWDS 3xs */
-  --flex-text-2xs: 0.875rem;   /* 14px — USWDS 2xs */
-  --flex-text-xs: 0.9375rem;   /* 15px — USWDS xs */
-  --flex-text-sm: 1rem;        /* 16px — USWDS sm */
-  --flex-text-md: 1.0625rem;   /* 17px — USWDS md (normalized for Source Sans Pro) */
-  --flex-text-lg: 1.375rem;    /* 22px — USWDS lg */
-  --flex-text-xl: 2rem;         /* 32px — USWDS xl */
-  --flex-text-2xl: 2.5rem;     /* 40px — USWDS 2xl */
-  --flex-text-3xl: 3rem;        /* 48px — USWDS 3xl */
+  /* Typography scale — USWDS 3.13 theme tokens, all rem for accessibility.
+     Values use USWDS's Source Sans Pro cap-height normalization, not round
+     numbers, so computed sizes match USWDS reference components exactly. */
+  --flex-text-3xs: 0.81rem;    /* 12.96px — USWDS 3xs */
+  --flex-text-2xs: 0.87rem;    /* 13.92px — USWDS 2xs */
+  --flex-text-xs: 0.93rem;     /* 14.88px — USWDS xs */
+  --flex-text-sm: 1rem;        /* 16px    — USWDS sm */
+  --flex-text-md: 1.06rem;     /* 16.96px — USWDS md (normalized for Source Sans Pro) */
+  --flex-text-lg: 1.37rem;     /* 21.92px — USWDS lg */
+  --flex-text-xl: 2rem;        /* 32px    — USWDS xl */
+  --flex-text-2xl: 2.5rem;     /* 40px    — USWDS 2xl */
+  --flex-text-3xl: 3rem;       /* 48px    — USWDS 3xl */
 
   /* Focus tokens */
   --flex-focus-ring: 4px solid var(--flex-color-accent);
