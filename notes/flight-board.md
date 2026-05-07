@@ -6,6 +6,7 @@
 |-------|--------|--------|----------|---------|
 | #9 Carlos completes complex sections through conversation | story-9/conversational-sections | in-progress | .worktrees/story-9-conversational-sections | 2026-04-18 |
 | #9 UX fixes (live field updates, loading, context) | story-9/ux-fixes | pr-open ([#83](https://github.com/flexion/forms-lab/pull/83)) | main repo checkout | 2026-04-19 |
+| #121 Optimize generated form layout | story-121/form-layout | pr-open ([#134](https://github.com/flexion/forms-lab/pull/134)) | .worktrees/story-121-form-layout | 2026-05-07 |
 
 ## Landed
 
