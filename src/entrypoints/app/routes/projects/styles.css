@@ -92,7 +92,9 @@
   cursor: pointer;
   text-align: start;
   inline-size: 100%;
+  padding: var(--flex-space-md);
   border: 1px solid var(--flex-color-border);
+  border-radius: var(--flex-radius-md);
   background: var(--flex-color-surface);
   transition: all 0.15s ease-in-out;
 }
