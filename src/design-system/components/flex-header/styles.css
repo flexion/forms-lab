@@ -386,7 +386,7 @@ flex-header {
   .flex-header__nav-link {
     display: block;
     block-size: auto;
-    padding: 12px 0;
+    padding: var(--flex-space-sm) 0;
   }
 
   .flex-header__nav-link--current::after,
