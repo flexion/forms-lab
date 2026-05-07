@@ -354,8 +354,8 @@ flex-header {
     flex-direction: column;
     justify-content: flex-start;
     overflow-y: auto;
-    padding: 1rem;
-    inline-size: 15rem;
+    padding: var(--flex-space-md);
+    inline-size: 240px;
     z-index: 500;
 
     &.is-visible {
@@ -367,8 +367,8 @@ flex-header {
   .flex-header__close-btn {
     display: block;
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
+    top: var(--flex-space-sm);
+    right: var(--flex-space-sm);
     float: none;
     margin: 0;
   }
@@ -388,7 +388,7 @@ flex-header {
   }
 
   .flex-header__nav-link {
-    padding-block: 0.75rem;
+    padding-block: 12px;
     padding-inline: 0;
   }
 
@@ -457,7 +457,7 @@ flex-header {
 
 @keyframes flex-header-slidein {
   0% {
-    transform: translateX(15rem);
+    transform: translateX(240px);
   }
 
   100% {
