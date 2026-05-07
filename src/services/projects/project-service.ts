@@ -85,6 +85,7 @@ export interface ProjectService {
   ): Promise<ProjectView>
   listUserProjects(owner: string): ProjectIndex[]
   listAllProjects(): ProjectIndex[]
+  getProjectName(slug: string): string | null
   deleteProject(owner: string, slug: string, user: SessionUser): Promise<void>
   retryExtraction(owner: string, slug: string, user: SessionUser): Promise<void>
   forkProject(
@@ -528,6 +529,10 @@ export function createProjectService(
 
     listAllProjects(): ProjectIndex[] {
       return store.list()
+    },
+
+    getProjectName(slug: string): string | null {
+      return store.getBySlug(slug)?.name ?? null
     },
 
     async deleteProject(

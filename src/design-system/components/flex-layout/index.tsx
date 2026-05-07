@@ -12,7 +12,7 @@ import { Header, HeaderNavItem, type HeaderUser } from '../flex-header'
 interface LayoutProps {
   title?: string
   sidebar?: Child
-  currentSection?: 'home' | 'forms' | 'projects' | 'catalog'
+  currentSection?: 'home' | 'forms' | 'projects' | 'catalog' | 'admin'
   user?: HeaderUser | null
   contentWidth?: 'centered' | 'full'
 }
@@ -32,6 +32,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
   const isForms = props.currentSection === 'forms'
   const isProjects = props.currentSection === 'projects'
   const isCatalog = props.currentSection === 'catalog'
+  const isAdmin = props.currentSection === 'admin'
 
   return (
     <html lang="en" data-theme="auto">
@@ -114,7 +115,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = (props) => {
                 <HeaderNavItem
                   href={resolveUrl('/admin/users')}
                   label="Admin"
-                  current={props.currentPath?.startsWith('/admin') ?? false}
+                  current={isAdmin}
                 />
               )}
             </>

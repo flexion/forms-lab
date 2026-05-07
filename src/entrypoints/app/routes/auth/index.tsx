@@ -233,7 +233,7 @@ export function createAuthRoutes(
   auth.get('/request-access', (c) => {
     const user = c.get('user')
     return c.html(
-      <Layout currentPath="/auth/request-access" user={user}>
+      <Layout currentSection="home" user={user}>
         <RequestAccessPage user={user} />
       </Layout>,
     )
@@ -269,7 +269,7 @@ export function createAuthRoutes(
   // GET /auth/access-pending
   auth.get('/access-pending', (c) => {
     return c.html(
-      <Layout currentPath="/auth/access-pending" user={null}>
+      <Layout currentSection="home" user={null}>
         <AccessPendingPage />
       </Layout>,
     )
@@ -278,7 +278,7 @@ export function createAuthRoutes(
   // GET /auth/access-denied
   auth.get('/access-denied', (c) => {
     return c.html(
-      <Layout currentPath="/auth/access-denied" user={null}>
+      <Layout currentSection="home" user={null}>
         <AccessDeniedPage />
       </Layout>,
     )
