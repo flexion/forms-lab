@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { deleteCookie, setCookie } from 'hono/cookie'
-import type { ActivityStore } from '../../../../services/activity'
 import { Layout } from '../../../../design-system/components/flex-layout'
+import type { ActivityStore } from '../../../../services/activity'
 import type { AccessStore, UserStore } from '../../../../services/auth'
 import {
   COOKIE_MAX_AGE,
