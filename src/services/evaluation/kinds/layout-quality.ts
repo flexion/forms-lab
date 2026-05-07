@@ -1,14 +1,13 @@
 import type { DataCollectionSpec } from '../../data-collection'
 import type { FormSpec } from '../../forms'
 import type { CaseMetrics, EvaluationKind, SummaryMetrics } from '../types'
+import type { LayoutJudgeResponse } from '../layout-judge-schemas'
+
+export type { LayoutJudgeResponse }
 
 export interface LayoutQualityOutput {
   spec: DataCollectionSpec
   formSpec: FormSpec
-}
-
-export interface LayoutJudgeResponse {
-  scores: Record<string, { score: number; rationale: string }>
 }
 
 export interface LayoutJudge {
@@ -41,7 +40,7 @@ export function createLayoutQualityKind(
     description:
       'Evaluates FormSpec layout quality using LLM-as-judge against a civic tech best practices rubric',
 
-    async score(output: LayoutQualityOutput): Promise<CaseMetrics> {
+    async score(output: LayoutQualityOutput, _groundTruth: undefined): Promise<CaseMetrics> {
       const response = await judge.judge(output.spec, output.formSpec)
 
       const metrics: Record<string, number> = {}

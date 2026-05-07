@@ -3,8 +3,12 @@ import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { generateText } from 'ai'
 import type { DataCollectionSpec } from '../data-collection'
 import type { FormSpec } from '../forms'
-import type { LayoutJudge, LayoutJudgeResponse } from './kinds/layout-quality'
+import type { LayoutJudge } from './kinds/layout-quality'
 import { buildLayoutJudgePrompt } from './layout-judge-prompt'
+import {
+  type LayoutJudgeResponse,
+  layoutJudgeResponseSchema,
+} from './layout-judge-schemas'
 
 export function createBedrockLayoutJudge(model: string): LayoutJudge {
   const bedrock = createAmazonBedrock({
@@ -29,7 +33,7 @@ export function createBedrockLayoutJudge(model: string): LayoutJudge {
       const jsonStr = trimmed.startsWith('```')
         ? trimmed.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '')
         : trimmed
-      return JSON.parse(jsonStr) as LayoutJudgeResponse
+      return layoutJudgeResponseSchema.parse(JSON.parse(jsonStr))
     },
   }
 }

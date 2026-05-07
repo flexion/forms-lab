@@ -91,12 +91,27 @@ ${JSON.stringify(spec, null, 2)}`,
 export async function generateFormSpecWithLayout(
   model: LanguageModel,
   spec: DataCollectionSpec,
+  activityStore?: ActivityStore,
+  userId?: string,
+  projectId?: string,
+  modelId?: string,
 ): Promise<FormSpec> {
+  const startTime = Date.now()
   const result = await generateText({
     model,
     maxOutputTokens: 8192,
     messages: [{ role: 'user', content: buildLayoutPrompt(spec) }],
   })
+  if (activityStore && modelId) {
+    trackLlmCall(activityStore, {
+      userId,
+      projectId,
+      operation: 'extraction-formspec-layout',
+      model: modelId,
+      usage: result.usage,
+      durationMs: Date.now() - startTime,
+    })
+  }
   return parseJsonResponse(result.text, formSpecSchema)
 }
 

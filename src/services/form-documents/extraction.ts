@@ -113,11 +113,17 @@ export interface BedrockExtractorOptions {
   /**
    * Custom FormSpec generator for Step 2. When provided, replaces the
    * default `generateFormSpec` call. Use `generateFormSpecWithLayout`
-   * for layout-aware generation.
+   * for layout-aware generation. Receives the same activity-tracking
+   * arguments as `generateFormSpec` so LLM cost is tracked regardless
+   * of which generator is active.
    */
   formSpecGenerator?: (
     model: LanguageModel,
     spec: DataCollectionSpec,
+    activityStore?: ActivityStore,
+    userId?: string,
+    projectId?: string,
+    modelId?: string,
   ) => Promise<FormSpec>
 }
 
@@ -324,7 +330,14 @@ ${exemplarSection}Guidelines:
       // Step 2: Generate default FormSpec from extracted spec
       const bedrockModel = bedrock(model)
       const formSpec = options?.formSpecGenerator
-        ? await options.formSpecGenerator(bedrockModel, spec)
+        ? await options.formSpecGenerator(
+            bedrockModel,
+            spec,
+            options?.activityStore,
+            extractionOptions?.userId,
+            extractionOptions?.slug,
+            model,
+          )
         : await generateFormSpec(
             bedrockModel,
             spec,

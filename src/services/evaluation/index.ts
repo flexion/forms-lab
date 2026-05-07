@@ -25,7 +25,5 @@ export {
 export { createLlmJudgeKind } from './kinds/pdf-field-extraction-judge'
 export { shapingCommandsKind } from './kinds/shaping-commands'
 export { createBedrockLayoutJudge } from './layout-judge'
-// Layout judge prompt
-export { buildLayoutJudgePrompt } from './layout-judge-prompt'
 export { evaluationRunSchema } from './schemas'
 export type { RunResult } from './types'

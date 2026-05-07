@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'bun:test'
 import type { DataCollectionSpec } from '../../src/services/data-collection'
-import { generateFormSpecWithLayout } from '../../src/services/form-documents/extraction-steps'
-import { buildLayoutPrompt } from '../../src/services/form-documents/layout-prompt'
+import {
+  buildLayoutPrompt,
+  generateFormSpecWithLayout,
+} from '../../src/services/form-documents'
 
 const smallSpec: DataCollectionSpec = {
   id: 'contact-info',

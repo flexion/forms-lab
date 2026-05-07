@@ -443,10 +443,9 @@ export async function evaluate(
         '../../../../fixtures/index'
       )
       const fixtures = loadAllFixturesForEvaluation()
-      const withGT = fixtures.filter((f) => f.groundTruth !== undefined)
 
-      if (withGT.length === 0) {
-        console.error('No fixtures with ground truth found.')
+      if (fixtures.length === 0) {
+        console.error('No fixtures found.')
         return 1
       }
 
@@ -482,12 +481,12 @@ export async function evaluate(
       )
 
       console.log(`Running layout evaluation: ${strategyMeta.metadata.name}`)
-      console.log(`Fixtures: ${withGT.length}`)
+      console.log(`Fixtures: ${fixtures.length}`)
 
       const start = Date.now()
       const cases: RunResult['cases'] = []
 
-      for (const fixture of withGT) {
+      for (const fixture of fixtures) {
         try {
           const result = await extractor.extract(fixture.pdf, {
             slug: fixture.slug,
@@ -526,6 +525,8 @@ export async function evaluate(
         summary: summary.metrics,
         cases,
       }
+
+      evaluationRunSchema.parse(runResult)
 
       mkdirSync(outDir, { recursive: true })
       const jsonPath = join(outDir, `${strategyId}.json`)
