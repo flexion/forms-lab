@@ -229,53 +229,59 @@ export const ProjectOverview: FC<{
         )}
         <div class="repo-header__title-row">
           <h1 class="repo-header__title">{project.name}</h1>
-          <div class="repo-header__actions">
-            {isOwner && formSpec && (
-              <a
-                href={resolveUrl(
-                  branch && branch !== 'main'
-                    ? `${repoBase}/edit/${branch}`
-                    : `${repoBase}/edit`,
-                )}
-                class="flex-button"
-              >
-                Edit form structure
-              </a>
-            )}
-            {isOwner ? (
-              <a
-                href={resolveUrl(`${repoBase}/settings`)}
-                class="flex-button"
-                data-variant="outline"
-              >
-                Settings
-              </a>
-            ) : user ? (
-              <form method="post" action={resolveUrl(`${repoBase}/fork`)}>
-                <button
-                  type="submit"
-                  class="flex-button"
-                  data-variant="outline"
-                >
-                  Fork
-                </button>
-              </form>
-            ) : (
-              <a
-                href={resolveUrl(
-                  `/auth/signin?returnTo=${encodeURIComponent(repoBase)}`,
-                )}
-                class="flex-button"
-                data-variant="outline"
-              >
-                Sign in to fork
-              </a>
-            )}
-          </div>
         </div>
       </header>
 
-      <RepoNav owner={owner} slug={project.slug} current="overview" />
+      <RepoNav
+        owner={owner}
+        slug={project.slug}
+        current="overview"
+        isOwner={isOwner}
+      />
+
+      {isOwner && formSpec ? (
+        <div
+          class="l-cluster"
+          style="gap: var(--flex-space-sm); justify-content: flex-end;"
+        >
+          <a
+            href={resolveUrl(
+              branch && branch !== 'main'
+                ? `${repoBase}/edit/${branch}`
+                : `${repoBase}/edit`,
+            )}
+            class="flex-button"
+          >
+            Edit form structure
+          </a>
+        </div>
+      ) : !isOwner && user ? (
+        <div
+          class="l-cluster"
+          style="gap: var(--flex-space-sm); justify-content: flex-end;"
+        >
+          <form method="post" action={resolveUrl(`${repoBase}/fork`)}>
+            <button type="submit" class="flex-button" data-variant="outline">
+              Fork
+            </button>
+          </form>
+        </div>
+      ) : !isOwner && !user ? (
+        <div
+          class="l-cluster"
+          style="gap: var(--flex-space-sm); justify-content: flex-end;"
+        >
+          <a
+            href={resolveUrl(
+              `/auth/signin?returnTo=${encodeURIComponent(repoBase)}`,
+            )}
+            class="flex-button"
+            data-variant="outline"
+          >
+            Sign in to fork
+          </a>
+        </div>
+      ) : null}
 
       {corpus && (
         <aside
@@ -370,13 +376,20 @@ export const ProjectOverview: FC<{
   )
 }
 
-export type RepoTab = 'overview' | 'forms' | 'pulls' | 'history' | 'files'
+export type RepoTab =
+  | 'overview'
+  | 'forms'
+  | 'pulls'
+  | 'history'
+  | 'files'
+  | 'settings'
 
 export const RepoNav: FC<{
   owner: string
   slug: string
   current: RepoTab
-}> = ({ owner, slug, current }) => {
+  isOwner?: boolean
+}> = ({ owner, slug, current, isOwner }) => {
   const base = `/${owner}/${slug}`
   const tabs: { id: RepoTab; label: string; href: string }[] = [
     { id: 'overview', label: 'Overview', href: base },
@@ -385,6 +398,9 @@ export const RepoNav: FC<{
     { id: 'history', label: 'History', href: `${base}/commits` },
     { id: 'files', label: 'Files', href: `${base}/tree/main` },
   ]
+  if (isOwner) {
+    tabs.push({ id: 'settings', label: 'Settings', href: `${base}/settings` })
+  }
   return (
     <nav class="repo-nav" aria-label="Repository">
       <ul class="repo-nav__list">
@@ -436,21 +452,15 @@ export const PullRequestsPage: FC<{
         )}
         <div class="repo-header__title-row">
           <h1 class="repo-header__title">{project.name}</h1>
-          <div class="repo-header__actions">
-            {isOwner && (
-              <a
-                href={resolveUrl(`${repoBase}/settings`)}
-                class="flex-button"
-                data-variant="outline"
-              >
-                Settings
-              </a>
-            )}
-          </div>
         </div>
       </header>
 
-      <RepoNav owner={owner} slug={project.slug} current="pulls" />
+      <RepoNav
+        owner={owner}
+        slug={project.slug}
+        current="pulls"
+        isOwner={isOwner}
+      />
 
       <section class="l-stack">
         <h2>Open</h2>
@@ -673,17 +683,20 @@ export const SettingsPage: FC<{
       <Breadcrumb
         items={[
           { label: owner, href: resolveUrl(`/${owner}`) },
-          {
-            label: project.slug,
-            href: resolveUrl(`/${owner}/${project.slug}`),
-          },
-          { label: 'Settings' },
+          { label: project.slug },
         ]}
       />
       <div class="repo-header__title-row">
-        <h1 class="repo-header__title">Settings</h1>
+        <h1 class="repo-header__title">{project.name}</h1>
       </div>
     </header>
+
+    <RepoNav
+      owner={owner}
+      slug={project.slug}
+      current="settings"
+      isOwner={true}
+    />
 
     <section class="l-stack">
       <h2>Extraction</h2>
@@ -724,7 +737,8 @@ export const TreePage: FC<{
   slug: string
   ref: string
   path: string
-}> = ({ entries, owner, slug, ref, path }) => {
+  isOwner?: boolean
+}> = ({ entries, owner, slug, ref, path, isOwner }) => {
   const pathSegments = path ? path.split('/') : []
 
   return (
@@ -753,7 +767,7 @@ export const TreePage: FC<{
         </div>
       </header>
 
-      <RepoNav owner={owner} slug={slug} current="files" />
+      <RepoNav owner={owner} slug={slug} current="files" isOwner={isOwner} />
 
       <table class="flex-table" data-variant="borderless">
         <thead>
@@ -803,7 +817,8 @@ export const BlobPage: FC<{
   slug: string
   ref: string
   path: string
-}> = ({ content, owner, slug, ref, path }) => {
+  isOwner?: boolean
+}> = ({ content, owner, slug, ref, path, isOwner }) => {
   const pathSegments = path ? path.split('/') : []
   const fileName = path.split('/').pop() ?? path
   const isJson = fileName.endsWith('.json')
@@ -849,6 +864,8 @@ export const BlobPage: FC<{
         </div>
       </header>
 
+      <RepoNav owner={owner} slug={slug} current="files" isOwner={isOwner} />
+
       {isSpecJson && (
         <p>
           <a href={resolveUrl(`/${owner}/${slug}`)}>
@@ -884,7 +901,8 @@ export const CommitListPage: FC<{
   history: CommitEntry[]
   owner: string
   slug: string
-}> = ({ history, owner, slug }) => (
+  isOwner?: boolean
+}> = ({ history, owner, slug, isOwner }) => (
   <div class="l-stack">
     <header class="repo-header">
       <Breadcrumb
@@ -899,7 +917,7 @@ export const CommitListPage: FC<{
       </div>
     </header>
 
-    <RepoNav owner={owner} slug={slug} current="history" />
+    <RepoNav owner={owner} slug={slug} current="history" isOwner={isOwner} />
 
     <table class="flex-table" data-variant="borderless" data-stacked>
       <thead>
