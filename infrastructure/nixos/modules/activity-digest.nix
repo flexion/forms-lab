@@ -16,7 +16,6 @@
     };
 
     script = ''
-      export ACTIVITY_DB_PATH="/srv/forms-lab/data/activity.sqlite"
       exec ${pkgs.bun}/bin/bun run src/entrypoints/cli/main.ts activity digest
     '';
   };
