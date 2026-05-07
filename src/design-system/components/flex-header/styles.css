@@ -380,7 +380,7 @@ flex-header {
 
   .flex-header__nav-link {
     padding-block: 0.75rem;
-    padding-inline: 1rem;
+    padding-inline: 0;
   }
 
   .flex-header__nav-link--current::after,
