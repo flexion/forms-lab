@@ -278,7 +278,7 @@ export function createProjectService(
     const { variantId, modelId } = extraction.resolveVariant(author)
     const extractor = extraction.resolveExtractor(variantId)
     extractor
-      .extract(pdf)
+      .extract(pdf, { userId: author })
       .then(async (result) => {
         // Initial extraction lands on an "import" branch so the owner can
         // iterate before publishing to main via the review workflow.

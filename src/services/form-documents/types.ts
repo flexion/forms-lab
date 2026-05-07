@@ -41,6 +41,8 @@ export interface ExtractionOptions {
    * extractors. Optional because non-RAG variants ignore it.
    */
   slug?: string
+  /** User login for activity tracking. */
+  userId?: string
 }
 
 /**

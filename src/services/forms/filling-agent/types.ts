@@ -20,6 +20,10 @@ export interface FillingContext {
   groups: RequirementGroup[]
   collectedFields: Record<string, FieldEntry>
   messages: ConversationMessage[]
+  /** User login for activity tracking. */
+  userId?: string
+  /** Project identifier for activity tracking. */
+  projectId?: string
 }
 
 export interface FillingTurn {

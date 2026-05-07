@@ -855,6 +855,8 @@ export function createFormRouter(deps: FormRouterDeps) {
           groups: page.groups,
           collectedFields: session.fields,
           messages: [],
+          userId: user.login,
+          projectId: session.specId,
         },
         null,
       )
@@ -1037,6 +1039,8 @@ export function createFormRouter(deps: FormRouterDeps) {
           groups: page.groups,
           collectedFields: session.fields,
           messages,
+          userId: user.login,
+          projectId: session.specId,
         },
         userMessage,
       )

@@ -238,6 +238,8 @@ export function createEditRoutes(
         intent: body.intent,
         state,
         previousAttempt: body.previousAttempt,
+        userId: user.login,
+        projectId: slug,
       })
 
       return c.json({

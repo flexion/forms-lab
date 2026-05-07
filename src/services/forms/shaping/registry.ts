@@ -1,4 +1,5 @@
 import { StrategyRegistry } from '../../../shared/strategy-registry'
+import type { ActivityStore } from '../../activity'
 import {
   HAIKU_MODEL_ID,
   OPUS_MODEL_ID,
@@ -8,11 +9,16 @@ import { createBedrockFormShaper } from './bedrock-shaper'
 import { withValidationRetry } from './retry'
 import type { FormShaper } from './types'
 
-function registeredShaper(model: string): FormShaper {
-  return withValidationRetry(createBedrockFormShaper({ model }))
+function registeredShaper(
+  model: string,
+  activityStore?: ActivityStore,
+): FormShaper {
+  return withValidationRetry(createBedrockFormShaper({ model, activityStore }))
 }
 
-export function createShapingRegistry(): StrategyRegistry<FormShaper> {
+export function createShapingRegistry(
+  activityStore?: ActivityStore,
+): StrategyRegistry<FormShaper> {
   const registry = new StrategyRegistry<FormShaper>()
 
   registry.register({
@@ -26,7 +32,7 @@ export function createShapingRegistry(): StrategyRegistry<FormShaper> {
       catalogPath: '/catalog/experiments/shaping-model-comparison/sonnet',
       modelId: SONNET_MODEL_ID,
     },
-    create: () => registeredShaper(SONNET_MODEL_ID),
+    create: () => registeredShaper(SONNET_MODEL_ID, activityStore),
   })
 
   registry.register({
@@ -40,7 +46,7 @@ export function createShapingRegistry(): StrategyRegistry<FormShaper> {
       catalogPath: '/catalog/experiments/shaping-model-comparison/haiku',
       modelId: HAIKU_MODEL_ID,
     },
-    create: () => registeredShaper(HAIKU_MODEL_ID),
+    create: () => registeredShaper(HAIKU_MODEL_ID, activityStore),
   })
 
   registry.register({
@@ -54,7 +60,7 @@ export function createShapingRegistry(): StrategyRegistry<FormShaper> {
       catalogPath: '/catalog/experiments/shaping-model-comparison/opus',
       modelId: OPUS_MODEL_ID,
     },
-    create: () => registeredShaper(OPUS_MODEL_ID),
+    create: () => registeredShaper(OPUS_MODEL_ID, activityStore),
   })
 
   registry.setDefault('bedrock-sonnet')
