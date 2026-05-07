@@ -101,8 +101,6 @@ flex-header {
   text-align: center;
   cursor: pointer;
   flex: none;
-  float: right;
-  margin: -0.75rem -1rem 1rem auto;
 
   &:focus {
     outline: 0.25rem solid var(--flex-color-focus);
@@ -366,6 +364,9 @@ flex-header {
 
   .flex-header__close-btn {
     display: block;
+    position: absolute;
+    inset-block-start: 0.25rem;
+    inset-inline-end: 0.25rem;
   }
 
   .flex-header__nav-list {
@@ -376,6 +377,10 @@ flex-header {
 
   .flex-header__nav-item {
     border-block-start: 1px solid var(--flex-color-border);
+  }
+
+  .flex-header__nav-item:first-child {
+    border-block-start: 0;
   }
 
   .flex-header__nav-link {
