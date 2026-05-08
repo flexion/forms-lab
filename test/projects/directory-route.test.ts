@@ -180,13 +180,22 @@ describe('GET /projects — projects directory route', () => {
     expect(html).toContain('Projects | Forms Lab')
   })
 
-  it('renders breadcrumb with "Projects" label', async () => {
+  it('shows New Project button for logged-in users', async () => {
     const { service } = makeService()
     const app = createTestApp(service)
 
     const res = await app.request('/projects')
     const html = await res.text()
-    expect(html).toContain('flex-breadcrumb')
-    expect(html).toContain('Projects')
+    expect(html).toContain('New Project')
+    expect(html).toContain('/new')
+  })
+
+  it('hides New Project button for anonymous users', async () => {
+    const { service } = makeService()
+    const app = createTestApp(service, null)
+
+    const res = await app.request('/projects')
+    const html = await res.text()
+    expect(html).not.toContain('New Project')
   })
 })

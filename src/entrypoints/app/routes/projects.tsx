@@ -1,5 +1,4 @@
 import type { Context } from 'hono'
-import { Breadcrumb } from '../../../design-system/components/flex-breadcrumb/index'
 import { Layout } from '../../../design-system/components/flex-layout/index'
 import type { ProjectService } from '../../../services/projects'
 import { resolveUrl } from '../../../shared/base-path'
@@ -12,9 +11,15 @@ export function projectsDirectoryHandler(projectService: ProjectService) {
       .filter((p) => p.status === 'ready')
     return c.html(
       <Layout user={user} title="Projects" currentSection="projects">
-        <Breadcrumb items={[{ label: 'Projects' }]} />
         <div class="flex-form" data-size="large">
-          <h1>Projects</h1>
+          <div class="l-cluster justify-between" style="align-items: baseline;">
+            <h1>Projects</h1>
+            {user && (
+              <a href={resolveUrl('/new')} class="flex-button">
+                New Project
+              </a>
+            )}
+          </div>
           {projects.length === 0 ? (
             <p>No projects yet.</p>
           ) : (
