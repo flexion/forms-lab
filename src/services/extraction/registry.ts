@@ -3,6 +3,7 @@ import type { ActivityStore } from '../activity'
 import {
   createBedrockPdfExtractor,
   createToolUsePdfExtractor,
+  generateFormSpecWithLayout,
   type PdfExtractor,
 } from '../form-documents'
 import { exemplars } from './exemplars'
@@ -115,6 +116,35 @@ export function createExtractorRegistry(
         promptVariant: 'hybrid',
         hybridExemplar: nestedGroupsExemplar,
         activityStore,
+      })
+    },
+  })
+
+  registry.register({
+    id: 'sonnet-hybrid-layout-v1',
+    metadata: {
+      name: 'Claude Sonnet 4 (hybrid + layout)',
+      description:
+        'Hybrid extraction prompt with layout-aware FormSpec generation. Step 2 uses civic tech best practices (GOV.UK, USDS, Code for America) for adaptive page sizing, topic cohesion, and progressive disclosure.',
+      status: 'experimental',
+      courseTopics: ['evaluation', 'prompt-optimization', 'form-design'],
+      catalogPath:
+        '/catalog/experiments/layout-quality/sonnet-hybrid-layout-v1',
+      modelId: SONNET_MODEL_ID,
+      pricing: { inputPer1k: 0.003, outputPer1k: 0.015 },
+    },
+    create: () => {
+      if (!nestedGroupsExemplar) {
+        throw new Error(
+          'sonnet-hybrid-layout-v1: nested-groups exemplar missing from exemplars[]',
+        )
+      }
+      return createBedrockPdfExtractor({
+        model: SONNET_MODEL_ID,
+        temperature: 0,
+        promptVariant: 'hybrid',
+        hybridExemplar: nestedGroupsExemplar,
+        formSpecGenerator: generateFormSpecWithLayout,
       })
     },
   })

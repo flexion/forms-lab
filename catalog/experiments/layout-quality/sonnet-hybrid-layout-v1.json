@@ -1,0 +1,191 @@
+{
+  "kind": "layout-quality",
+  "implementation": "sonnet-hybrid-layout-v1",
+  "specVersion": "2026-05-06",
+  "status": "current",
+  "timestamp": "2026-05-06T08:10:01.163Z",
+  "model": "Claude Sonnet 4 (hybrid + layout)",
+  "summary": {
+    "pageSizing": 0.6875,
+    "topicCohesion": 0.875,
+    "logicalProgression": 0.9375,
+    "conditionalUse": 0.4375,
+    "titleClarity": 0.9375,
+    "deliveryModeChoice": 0.75,
+    "overall": 0.7708333333333333
+  },
+  "cases": [
+    {
+      "fixture": "pardon-application",
+      "metrics": {
+        "pageSizing": 0.5,
+        "topicCohesion": 0.75,
+        "logicalProgression": 1,
+        "conditionalUse": 0.5,
+        "titleClarity": 1,
+        "deliveryModeChoice": 0.75,
+        "overall": 0.75
+      },
+      "details": {
+        "rawScores": {
+          "pageSizing": {
+            "score": 3,
+            "rationale": "Page 1 has 32 fields which is quite large and could overwhelm users, while pages like 4, 7, and 9 have only 1-2 fields; splitting the background information into identity, address/contact, and demographics would improve usability."
+          },
+          "topicCohesion": {
+            "score": 4,
+            "rationale": "Most pages group related topics well (military, case background, certifications), though page 5 combines substance use and financial matters which are somewhat distinct sensitive topics, and page 3 mixes housing and employment."
+          },
+          "logicalProgression": {
+            "score": 5,
+            "rationale": "The flow moves naturally from identity to background history, then personal growth, sensitive matters, the actual conviction details, reasons for pardon, and finally legal certifications and references."
+          },
+          "conditionalUse": {
+            "score": 3,
+            "rationale": "Military service and previous application details have conditional relevance but the form doesn't use page-level conditions to skip them for non-applicable users, and substance use history could also be conditionally shown."
+          },
+          "titleClarity": {
+            "score": 5,
+            "rationale": "All page titles are plain-language, user-friendly, and clearly communicate what the user will be asked about without jargon or bureaucratic numbering."
+          },
+          "deliveryModeChoice": {
+            "score": 4,
+            "rationale": "Conversational mode is well-chosen for sensitive topics like substance use, conviction details, and reasons for pardon; however, the certification/signatures page might be better as static since it requires precise legal acknowledgments rather than dialogue."
+          }
+        },
+        "pageCount": 9,
+        "fieldCount": 76,
+        "groupCount": 13
+      }
+    },
+    {
+      "fixture": "i-9",
+      "metrics": {
+        "pageSizing": 0.5,
+        "topicCohesion": 1,
+        "logicalProgression": 0.75,
+        "conditionalUse": 0.25,
+        "titleClarity": 0.75,
+        "deliveryModeChoice": 0.5,
+        "overall": 0.625
+      },
+      "details": {
+        "rawScores": {
+          "pageSizing": {
+            "score": 3,
+            "rationale": "Page 1 has 20 fields and page 2 has 20 fields, which are large but manageable given they map to logical form sections; however, page 1 could benefit from being split into personal info and immigration status sub-pages."
+          },
+          "topicCohesion": {
+            "score": 5,
+            "rationale": "Each page maps directly to a single logical group from the I-9 form structure, maintaining perfect topic cohesion within each page."
+          },
+          "logicalProgression": {
+            "score": 4,
+            "rationale": "The flow from employee info to employer verification to preparer to reverification follows the official I-9 section order, though placing preparer certification after employer verification is slightly odd since it relates to Section 1."
+          },
+          "conditionalUse": {
+            "score": 2,
+            "rationale": "The form has clearly conditional sections (preparer/translator only applies if someone assisted, reverification only for rehires, immigration fields conditional on citizenship status) but no page-level conditions are defined."
+          },
+          "titleClarity": {
+            "score": 4,
+            "rationale": "Titles like 'Tell us about yourself,' 'Document verification,' and 'Preparer assistance' are plain-language and descriptive, though 'Tell us about yourself' slightly undersells the citizenship attestation component."
+          },
+          "deliveryModeChoice": {
+            "score": 3,
+            "rationale": "Using conversational mode for the employee section makes sense given conditional immigration fields, but the employer verification section with complex document lists would benefit more from conversational/hybrid guidance, while the simple preparer fields being static is appropriate."
+          }
+        },
+        "pageCount": 4,
+        "fieldCount": 61,
+        "groupCount": 4
+      }
+    },
+    {
+      "fixture": "w-9",
+      "metrics": {
+        "pageSizing": 0.75,
+        "topicCohesion": 0.75,
+        "logicalProgression": 1,
+        "conditionalUse": 0.5,
+        "titleClarity": 1,
+        "deliveryModeChoice": 0.75,
+        "overall": 0.7916666666666666
+      },
+      "details": {
+        "rawScores": {
+          "pageSizing": {
+            "score": 4,
+            "rationale": "19 fields spread across 4 pages is reasonable; page 1 has 6 fields and page 4 has 6 fields which are appropriately sized, though page 3 with only 2 fields is slightly thin."
+          },
+          "topicCohesion": {
+            "score": 4,
+            "rationale": "Most pages are cohesive, though page 1 mixes entity identification with address information (two distinct groups), and account numbers are oddly placed with address rather than with taxpayer identification."
+          },
+          "logicalProgression": {
+            "score": 5,
+            "rationale": "The flow from identity → tax classification → TIN → certification/signature follows the natural W-9 order and moves from easy to sensitive information logically."
+          },
+          "conditionalUse": {
+            "score": 3,
+            "rationale": "The LLC tax classification field is conditional on selecting LLC, and the foreign partners indicator is situational, but no page-level conditions are used to handle these cases."
+          },
+          "titleClarity": {
+            "score": 5,
+            "rationale": "Titles like 'Tell us about yourself,' 'Tax classification and exemptions,' 'Taxpayer identification,' and 'Certification and signature' are clear, plain-language, and descriptive."
+          },
+          "deliveryModeChoice": {
+            "score": 4,
+            "rationale": "Using conversational mode for the sensitive TIN page and certification is smart, and hybrid for the conditional tax classification section is appropriate, though the static mode for page 1 is also fitting for straightforward fields."
+          }
+        },
+        "pageCount": 4,
+        "fieldCount": 19,
+        "groupCount": 6
+      }
+    },
+    {
+      "fixture": "snap-wisconsin",
+      "metrics": {
+        "pageSizing": 1,
+        "topicCohesion": 1,
+        "logicalProgression": 1,
+        "conditionalUse": 0.5,
+        "titleClarity": 1,
+        "deliveryModeChoice": 1,
+        "overall": 0.9166666666666666
+      },
+      "details": {
+        "rawScores": {
+          "pageSizing": {
+            "score": 5,
+            "rationale": "Each page has 6-9 fields, which is well-balanced for a 43-field form spread across 6 pages, avoiding both overcrowding and over-pagination."
+          },
+          "topicCohesion": {
+            "score": 5,
+            "rationale": "Each page maps directly to one cohesive data group with clearly related fields (personal info, household, income, assets, expenses, signature)."
+          },
+          "logicalProgression": {
+            "score": 5,
+            "rationale": "The flow moves naturally from identity → household → income → assets → expenses → review/signature, following standard benefits application logic and progressing from easy to more complex/sensitive."
+          },
+          "conditionalUse": {
+            "score": 3,
+            "rationale": "The household composition and self-employment fields could benefit from page-level conditions (e.g., only showing household members if applicable), but no conditional logic is used despite optional field groups."
+          },
+          "titleClarity": {
+            "score": 5,
+            "rationale": "All titles are plain-language, user-friendly, and clearly describe what the user will be asked on each page (e.g., 'Your income sources', 'Your monthly expenses')."
+          },
+          "deliveryModeChoice": {
+            "score": 5,
+            "rationale": "Static mode is appropriate for straightforward factual fields (personal info, household), hybrid for moderately complex financial sections (income, assets, expenses), and conversational for the review/expedited screening questions that benefit from guided interaction."
+          }
+        },
+        "pageCount": 6,
+        "fieldCount": 43,
+        "groupCount": 6
+      }
+    }
+  ]
+}

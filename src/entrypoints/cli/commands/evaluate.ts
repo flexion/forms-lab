@@ -51,6 +51,12 @@ function printUsage(): void {
   console.log(
     '    --out-dir <path>     Override catalog output dir (for tests)',
   )
+  console.log(
+    '  layout <strategy-id>   Evaluate layout quality of FormSpec output',
+  )
+  console.log(
+    '    --out-dir <path>     Override catalog output dir (for tests)',
+  )
 }
 
 export async function evaluate(
@@ -418,6 +424,123 @@ export async function evaluate(
       }
 
       return errors > 0 ? 1 : 0
+    }
+
+    case 'layout': {
+      const strategyId = args[1]
+      if (!strategyId) {
+        console.error('Usage: evaluate layout <strategy-id> [--out-dir <path>]')
+        return 1
+      }
+
+      const outDirIdx = args.indexOf('--out-dir')
+      const outDir =
+        outDirIdx !== -1 && args[outDirIdx + 1]
+          ? args[outDirIdx + 1]
+          : join('catalog', 'experiments', 'layout-quality')
+
+      const { loadAllFixturesForEvaluation } = await import(
+        '../../../../fixtures/index'
+      )
+      const fixtures = loadAllFixturesForEvaluation()
+
+      if (fixtures.length === 0) {
+        console.error('No fixtures found.')
+        return 1
+      }
+
+      const registry = createExtractorRegistry()
+      const strategyMeta = registry.list().find((s) => s.id === strategyId)
+      if (!strategyMeta) {
+        console.error(`Unknown strategy: ${strategyId}`)
+        console.error(
+          'Available:',
+          registry
+            .list()
+            .map((s) => s.id)
+            .join(', '),
+        )
+        return 1
+      }
+
+      const { createLayoutQualityKind, createBedrockLayoutJudge } =
+        await import('../../../services/evaluation')
+      const { OPUS_MODEL_ID } = await import('../../../services/extraction')
+
+      const judge = createBedrockLayoutJudge(OPUS_MODEL_ID)
+      const layoutQualityKind = createLayoutQualityKind(judge)
+
+      const cacheDbPath = process.env.CACHE_DB_PATH ?? 'data/cache.sqlite'
+      mkdirSync('data', { recursive: true })
+      const cacheStore = createCacheStore(cacheDbPath)
+      const extractor = createCachedPdfExtractor(
+        registry.get(strategyId),
+        cacheStore,
+        strategyMeta.metadata.modelId,
+        strategyId,
+      )
+
+      console.log(`Running layout evaluation: ${strategyMeta.metadata.name}`)
+      console.log(`Fixtures: ${fixtures.length}`)
+
+      const start = Date.now()
+      const cases: RunResult['cases'] = []
+
+      for (const fixture of fixtures) {
+        try {
+          const result = await extractor.extract(fixture.pdf, {
+            slug: fixture.slug,
+          })
+          const caseMetrics = await layoutQualityKind.score(
+            { spec: result.spec, formSpec: result.formSpec },
+            undefined,
+          )
+          cases.push({
+            fixture: fixture.slug,
+            metrics: caseMetrics.metrics,
+            details: caseMetrics.details,
+          })
+          console.log(
+            `  ${fixture.slug}: overall=${(caseMetrics.metrics.overall * 100).toFixed(0)}%`,
+          )
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err)
+          cases.push({
+            fixture: fixture.slug,
+            metrics: { overall: 0 },
+            details: { error: message },
+          })
+          console.log(`  ${fixture.slug}: FAILED — ${message}`)
+        }
+      }
+
+      const summary = layoutQualityKind.summarize(cases)
+      const runResult: RunResult = {
+        kind: layoutQualityKind.id,
+        implementation: strategyId,
+        specVersion: '2026-05-06',
+        status: 'current',
+        timestamp: new Date().toISOString(),
+        model: strategyMeta.metadata.name,
+        summary: summary.metrics,
+        cases,
+      }
+
+      evaluationRunSchema.parse(runResult)
+
+      mkdirSync(outDir, { recursive: true })
+      const jsonPath = join(outDir, `${strategyId}.json`)
+      writeFileSync(jsonPath, JSON.stringify(runResult, null, 2))
+
+      const elapsed = ((Date.now() - start) / 1000).toFixed(1)
+      console.log(`\nLayout evaluation complete (${elapsed}s)`)
+      console.log('Summary:')
+      for (const [key, value] of Object.entries(runResult.summary)) {
+        console.log(`  ${key}: ${(value * 100).toFixed(1)}%`)
+      }
+      console.log(`\nResults written to ${outDir}/`)
+
+      return 0
     }
 
     case 'authoring': {
